@@ -1,0 +1,107 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Plugin de modelo exemplo &rsaquo; Catalogação &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="cat_unimarc_field_181c" class="cat" style="padding:1em;">
+
+ <h3>Construtor do campo 182c UNIMARC</h3>
+
+ <div class="page-section">
+ <form name="f_pop" action="">
+ <table>
+ <tr>
+ <td><label for="f1">Tipo de Material </label></td>
+ <td>
+ <select name="f1" id="f1">
+ [% IF ( f1 == "s" ) %]
+ <option value="s" selected="selected">s - áudio</option>
+ [% ELSE %]
+ <option value="s">s - áudio</option>
+ [% END %]
+
+ [% IF ( f1 == "c" ) %]
+ <option value="c" selected="selected">c - computador</option>
+ [% ELSE %]
+ <option value="c">c - computador</option>
+ [% END %]
+
+ [% IF ( f1 == "h" ) %]
+ <option value="h" selected="selected">h - microforma</option>
+ [% ELSE %]
+ <option value="h">h - microforma</option>
+ [% END %]
+
+ [% IF ( f1 == "p" ) %]
+ <option value="p" selected="selected">p - microscópico</option>
+ [% ELSE %]
+ <option value="p">p - microscópico</option>
+ [% END %]
+
+ [% IF ( f1 == "g" ) %]
+ <option value="g" selected="selected">g - projetado</option>
+ [% ELSE %]
+ <option value="g">g - projetado</option>
+ [% END %]
+
+ [% IF ( f1 == "e" ) %]
+ <option value="e" selected="selected">e - estereográfica</option>
+ [% ELSE %]
+ <option value="e">e - estereográfica</option>
+ [% END %]
+
+ [% IF ( f1 == "n" ) %]
+ <option value="n" selected="selected">n - não mediado</option>
+ [% ELSE %]
+ <option value="n">n - não mediado</option>
+ [% END %]
+
+ [% IF ( f1 == "v" ) %]
+ <option value="v" selected="selected">v - vídeo</option>
+ [% ELSE %]
+ <option value="v">v - vídeo</option>
+ [% END %]
+
+ [% IF ( f1 == "x" ) %]
+ <option value="x" selected="selected">x - outro</option>
+ [% ELSE %]
+ <option value="x">x - outro</option>
+ [% END %]
+
+ [% IF ( f1 == "z" ) %]
+ <option value="z" selected="selected">z - não especificado</option>
+ [% ELSE %]
+ <option value="z">z - não especificado</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+
+ </table>
+ <p><input type="button" class="btn btn-primary" value="OK" onclick="submitMyForm();" /> <a href="#" class="cancel close">Anular</a> </p>
+ </form>
+ </div> <!-- /.page-section -->
+
+<script>
+
+    function submitMyForm() {
+        var doc   = opener.document;
+        var field = doc.getElementById("[% index | html %]");
+        subfield();
+
+        function subfield() {
+            const tag = $(field).closest('.tag');
+            const sub = tag.find('[id*="tag_182_subfield_2_"]');
+            if ( field !== undefined ) {
+                sub[0].value = "RDAmedia";
+            }
+            return subfield;
+        }
+
+        field.value = document.f_pop.f1.value;
+        window.close();
+        return false;
+    }
+</script>
+
+[% INCLUDE 'popup-bottom.inc' %]

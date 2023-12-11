@@ -1,0 +1,155 @@
+[% USE raw %]
+[% USE Koha %]
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Chaves API &rsaquo; Leitores &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="pat_apikeys" class="pat">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'patron-search-header.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/members/members-home.pl">Leitores</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% patron.borrowernumber | uri %]">[% INCLUDE 'patron-title.inc' %]</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Chaves da API</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ [% INCLUDE 'members-toolbar.inc' %]
+
+ <h1>Chaves da API para [% INCLUDE 'patron-title.inc' %]</h1>
+
+ [% IF fresh_api_key %]
+ [%# A fresh api key was generated, display the secret, only once %]
+ <div class="dialog message">Assegure-se que copia a chave da API agora. Não a poderá ver novamente!</div>
+ <div class="page-section rows">
+ <ol>
+ <li>
+ <span class="label">Descrição: </span>
+ [% fresh_api_key.description | html %]
+ </li>
+ <li>
+ <span class="label">ID do cliente: </span>
+ [% fresh_api_key.client_id | html %]
+ </li>
+ <li>
+ <span class="label">Chave: </span>
+ [% fresh_api_key.plain_text_secret | html %]
+ </li>
+ </ol>
+ </div>
+ [% END %]
+
+ <form id="add-api-key" action="/cgi-bin/koha/members/apikeys.pl" method="post" style="display:none">
+ <input type="hidden" name="patron_id" value="[% patron.id | html %]" />
+ <input type="hidden" name="csrf_token" value="[% csrf_token | html %]" />
+ <input type="hidden" name="op" value="generate" />
+ <fieldset class="brief">
+ <legend>Gerar novo ID de cliente/palavra-passe</legend>
+ <ol>
+ <li>
+ <label for="description">Descrição: </label>
+ <input type="text" name="description" />
+ <input class="btn btn-primary" type="submit" value="Guardar" />
+ <a href="#" class="cancel toggle_element" data-element="#add-api-key">Anular</a>
+ </li>
+ </ol>
+ </fieldset>
+ </form>
+
+ [% IF api_keys.count %]
+ <div class="page-section" id="keys">
+ <p>
+ <button class="btn btn-default toggle_element" type="submit" id="show-api-form" data-element="#add-api-key"><i class="fa fa-plus"></i> Gerar novo ID de cliente/chave</button>
+ </p>
+ <table>
+ <thead>
+ <tr>
+ <th>Descrição</th>
+ <th>ID do cliente</th>
+ <th>Activo</th>
+ <th class="noExport">Ações</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH key IN api_keys %]
+ <tr>
+ <td>[% key.description | html %]</td>
+ <td>[% key.client_id | html %]</td>
+ <td>[% IF key.active %]Sim[% ELSE %]Não[% END %]</td>
+ <td>
+ <form action="/cgi-bin/koha/members/apikeys.pl" method="post">
+ <input type="hidden" name="patron_id" value="[% patron.id | html %]" />
+ <input type="hidden" name="key" value="[% key.id | html %]" />
+ <input type="hidden" name="csrf_token" value="[% csrf_token | html %]" />
+ <input type="hidden" name="op" value="delete" />
+ <button class="btn btn-default btn-xs delete" type="submit"><i class="fa fa-trash"></i> Apagar</button>
+ </form>
+ <form action="/cgi-bin/koha/members/apikeys.pl" method="post">
+ <input type="hidden" name="patron_id" value="[% patron.id | html %]" />
+ <input type="hidden" name="key" value="[% key.id | html %]" />
+ <input type="hidden" name="csrf_token" value="[% csrf_token | html %]" />
+ [% IF key.active %]
+ <input type="hidden" name="op" value="revoke" />
+ <button class="btn btn-default btn-xs" type="submit"><i class="fa fa-remove"></i> Revogar</button>
+ [% ELSE %]
+ <input type="hidden" name="op" value="activate" />
+ <button class="btn btn-default btn-xs" type="submit"><i class="fa fa-play"></i> Ativar</button>
+ [% END %]
+ </form>
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div> <!-- /#keys.page-section -->
+ [% ELSE %]
+ <div class="dialog message">
+ <p>Ainda não foi definida nenhuma chave para este leitor.</p>
+ <p>
+ <a href="#" class="btn btn-default toggle_element" data-element="#add-api-key" id="show-api-form">
+ <i class="fa fa-plus"></i>
+ <span>Gerar novo ID de cliente/palavra-passe</span>
+ </a>
+ <p>
+ </div>
+ [% END # /IF api_keys.count %]
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'circ-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'str/members-menu.inc' %]
+ [% Asset.js("js/members-menu.js") | $raw %]
+ <script>
+        $(document).ready(function(){
+            $(".delete").on("click", function(e){
+                return confirmDelete(_("Tem a certeza que pretende eliminar esta chave?"));
+            });
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

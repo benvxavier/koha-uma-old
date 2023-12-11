@@ -1,0 +1,385 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE ItemTypes %]
+[% SET footerjs = 1 %]
+ [% INCLUDE 'doc-head-open.inc' %]
+ <title>[% IF batch_id %]Editar lote de etiquetas ([% batch_id | html %])[% ELSE %]Novo lote de etiquetas[% END %]&rsaquo; Lotes &rsaquo; Etiquetas &rsaquo; Catalogação &rsaquo; Koha</title>
+ [% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="labels_label-edit-batch" class="tools labels" onload="dofocus();">
+ [% WRAPPER 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/cataloguing/cataloging-home.pl">Catalogar</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/labels/label-home.pl">Etiquetas</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/labels/label-manage.pl?label_element=batch">Lotes</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ [% IF description %]
+ <span>Editar [% description | html %]</span>
+ [% ELSIF batch_id %]
+ <span>Editar lote de etiquetas [% batch_id | html %]</span>
+ [% ELSE %]
+ <span>Novo lote de etiquetas</span>
+ [% END %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+ <div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ [% INCLUDE 'labels-toolbar.inc' %]
+
+ [% IF description %]
+ <h1>Editar [% description | html %]</h1>
+ [% ELSIF batch_id %]
+ <h1>Editar lote de etiquetas [% batch_id | html %]</h1>
+ [% ELSE %]
+ <h1>Novo lote de etiquetas</h1>
+ [% END %]
+
+ [% IF ( err ) %]
+ [% BLOCK xlate_errtype %]
+ [%    SWITCH errtype %]
+ [%       CASE 'ITEM_NOT_REMOVED' %]
+ <span>Exemplares não removidos do lote [% batch_id | html %].</span>
+ [%       CASE 'BATCH_NOT_DELETED' %]
+ <span>Lote [% batch_id | html %] não foi eliminado.</span>
+ [%       CASE 'ITEM_NOT_ADDED' %]
+ <span>Exemplares não adicionados ao lote [% batch_id | html %].</span>
+ [%       CASE 'BRANCH_NOT_SET' %]
+ <span>Biblioteca não definida. Por favor defina a biblioteca antes de adicionar exemplares ao lote.</span>
+ [%       CASE 'BATCH_NOT_DEDUP' %]
+ <span>Lote [% batch_id | html %] não foi totalmente duplicado. </span>
+ [%       CASE %]
+ <span>Tipo de erro desconhecido [% errtype | html %].</span>
+ [%    END %]
+ [% END %]
+ <div class="dialog alert">
+ <strong>AVISO:</strong> Ocorreu um erro: [% PROCESS xlate_errtype %] Por favor peça ao administrador do sistema para verificar o erro para mais detalhes. </div>
+ [% ELSIF ( duplicate_message ) %]
+ <div class="dialog message">
+ <strong>Exemplares duplicados removidos do lote número [% batch_id | html %]: [% duplicate_count | html %]</strong>
+ </div>
+ [% END %]
+
+ <div id="manage-label-batches">
+ <form name="add_by_number" action="/cgi-bin/koha/labels/label-edit-batch.pl" method="post">
+ <div>
+ <fieldset class="rows" style="border-bottom: 0px; border: 0px;">
+ <ol><li id="description">
+ <input type="hidden" name="op" value="add" />
+ <input type="hidden" name="batch_id" value="[% batch_id | html %]" />
+ <label for="description">Descrição do lote: </label>
+ <input type="text" name="description" value="[% description | html %]"> <span id="change-status"></span>
+ </li>
+ <li>
+ <input type="radio" name="number_type" id="barcode_enter" value="barcode" checked />
+ <label for="barcode_enter">Inserir por código de barras:</label>
+ </li>
+ <li>
+ <input type="radio" name="number_type" id="itemnum_enter" value="itemnumber" />
+ <label for="itemnum_enter">Inserir por número de exemplar:</label>
+ </li>
+ <li>
+ <label for="number_list">
+ Adicionar por código(s) de barras ou número(s) de exemplar: </label>
+ <textarea rows="5" id="number_list" name="number_list" tabindex="1" class="focus"></textarea>
+ <div class="hint">
+ Um número por linha. <br /> Deixe vazio para adicionar pela pesquisa de exemplar (número de exemplar) </div>
+ </li></ol>
+ </fieldset>
+ </div>
+ </form>
+ <div id="batch-manage" class="btn-toolbar">
+ <a class="btn btn-default" id="additems" href="#"><i class="fa fa-plus"></i> Adicionar itens</a>[% IF ( table_loop ) %]
+ <a class="btn btn-default" id="savedesc" href="#" data-batch_id="[% batch_id | html %]"><i class="fa fa-save"></i> Guardar descrição</a>
+ <a class="btn btn-default" id="removeitems" href="#"><i class="fa fa-trash"></i> Remover items selecionados</a>
+ <a class="btn btn-default" id="deletebatch" href="#"><i class="fa fa-minus-square"></i> Eliminar lote</a>
+ <a class="btn btn-default" id="deduplicate" href="#"><i class="fa fa-minus"></i> Remover duplicados</a>
+ <a class="btn btn-default" id="exportitems" href="#"><i class="fa fa-share-square-o"></i> Exportar itens selecionados</a>
+ <a class="btn btn-default" id="exportbatch" href="#"><i class="fa fa-share-square-o"></i> Exportar lote</a>[% END %]
+ </div>
+ [% IF ( table_loop ) %]
+ <form name="items">
+ <h2>Itens no lote [% batch_id | html %]</h2>
+
+ <div class="page-section">
+ <table id="batcht">
+ [% FOREACH table_loo IN table_loop %]
+ [% IF ( table_loo.header_fields ) %]
+ <thead>
+ <tr>
+ [% FOREACH header_field IN table_loo.header_fields %]
+ [% SWITCH header_field.field_label -%]
+ [% CASE "Label number" -%]
+ <th>Número de etiqueta</th>
+ [% CASE "Summary" -%]
+ <th class="anti-the">Sumário</th>
+ [% CASE "Item type" %]
+ <th>Tipo de documento</th>
+ [% CASE "Call number" %]
+ <th>Cota</th>
+ [% CASE "Barcode" %]
+ <th>Código de barras</th>
+ [% CASE "Select" -%]
+ <th>Seleccionar</th>
+ [% CASE %]
+ <th>[% header_field.field_label | html %]</th>
+ [% END -%]
+ [% END %]
+ </tr>
+ </thead>
+ <tbody>
+ [% ELSE %]
+ <tr>
+ [% FOREACH text_field IN table_loo.text_fields %]
+ [% IF ( text_field.select_field ) %]
+ <td>
+ <a class="btn btn-default btn-xs delete" href="/cgi-bin/koha/labels/label-edit-batch.pl?op=remove&amp;batch_id=[% batch_id |url %]&amp;label_id=[% text_field.field_value |url %]"><i class="fa fa-trash"></i> Apagar</a>
+ <a class="btn btn-default btn-xs export" href="#" data-batch-id="[% batch_id | html %]" data-label-id="[% text_field.field_value | html %]"><i class="fa fa-share-square-o"></i> Exportar</a>
+ </td>
+ <td><input type="checkbox" name="action" value="[% text_field.field_value | html %]"></td>
+ [% ELSE %]
+ <td>
+ [% IF ( text_field.field_name == '_item_type_tbl' ) %]
+ [% ItemTypes.GetDescription( text_field.field_value ) | html %]
+ [% ELSE %]
+ [% text_field.field_value | $raw %]
+ [% END %]
+ </td>
+ [% END %]
+ [% END %]
+ </tr>
+ [% END %]
+ [% END %]
+ </tbody>
+ </table>
+ </div> <!-- /.page-section -->
+ </form>
+ [% ELSE %]
+ <div class="dialog message">
+ <h4>Não existem itens neste lote</h4>
+ <p>Adicionar itens usando a área de texto ou deixar vazio para adicionar via pesquisa.</p>
+ </div>
+ [% END %]
+ </div>
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'cat-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'greybox.inc' %]
+ [% INCLUDE 'datatables.inc' %]
+ <script>
+        function DeleteConfirm() {
+            var msg = _("Tem a certeza que pretende eliminar o lote %s?").format("[% batch_id | html %]");
+            var answer = confirm(msg);
+            if (answer) {
+                window.location = "/cgi-bin/koha/labels/label-manage.pl?op=delete&amp;label_element=batch&amp;element_id=[% batch_id | html %]";
+            }
+            else {
+                return; // abort delete
+            }
+        }
+        function dofocus() {    // named function req'd for body onload event by some FF and IE7 security models
+            $(".focus:last").select();
+        }
+        function verifyBarcodes(barcodes) {
+            if (barcodes.value == '') {
+                alert(_("Por favor adicione códigos de barras usando a área de texto directamente ou a pesquisa de exemplares."));
+                return false;   // not ok
+            }
+            else {
+                return true;    // ok
+            }
+        }
+        function Remove() {
+            items = new Array;
+            item_num = new Array;
+            if(document.items.action.length > 0) {
+                for (var i=0; i < document.items.action.length; i++) {
+                    if (document.items.action[i].checked) {
+                        items.push("label_id=" +  document.items.action[i].value);
+                        item_num.push(i+1);
+                    }
+                }
+                getstr = items.join("&");
+                item_msg = item_num.join(", ");
+                var msg = _("Tem a certeza que pretende eliminar o(s) número(s): %s deste lote?").format(item_msg);
+            } else if (document.items.action.checked) {
+                alert(_("A eliminação de uma etiqueta de um lote com apenas uma etiqueta vai eliminar o lote também.") + "\n\n" + _("Se é isto que deseja, selecione a opção 'Eliminar lote' na barra de ferramentas"));
+                    return; // no deletion for single item batch
+            } else {
+                alert(_("Por favor, selecione pelo menos uma etiqueta a eliminar."));
+                return;     // no item selected
+            }
+            var answer = confirm(msg);
+            if (answer) {
+                window.location = "/cgi-bin/koha/labels/label-edit-batch.pl?op=remove&amp;batch_id=[% batch_id | html %]&amp;" + getstr;
+            } else {
+                return; // abort delete
+            }
+        }
+        function Add() {
+            var number_list = document.getElementById("number_list");
+            if (number_list.value == '') {
+                window.open("/cgi-bin/koha/labels/label-item-search.pl?batch_id=[% batch_id | html %]&amp;type=labels",'FindABibIndex','width=875,height=400,toolbar=no,scrollbars=yes');
+            } else {
+                document.forms["add_by_number"].submit();
+            }
+        }
+
+        function add_item(item_number) {
+            $("#itemnum_enter").prop("checked",true);
+            $("#number_list").val($("#number_list").val()+item_number+"\r\n");
+        }
+
+        function DeDuplicate() {
+            window.location = "/cgi-bin/koha/labels/label-edit-batch.pl?op=de_duplicate&amp;batch_id=[% batch_id | html %]";
+        }
+
+        function Xport(mode) {
+            if (mode == 'label') {
+                labels= new Array;
+                if(document.items.action.length > 0) {
+                    for (var i=0; i < document.items.action.length; i++) {
+                        if (document.items.action[i].checked) {
+                            labels.push("label_id=" +  document.items.action[i].value);
+                        }
+                    }
+                    if (labels.length < 1) {
+                        alert(_("Por favor, seleccione pelo menos uma etiqueta a exportar."));
+                        return;     // no batch selected
+                    }
+                    getstr = labels.join("&");
+                }
+                else if (document.items.action.checked) {
+                    getstr = document.items.action.value;
+                } else {
+                    alert(_("Por favor, seleccione pelo menos uma etiqueta a exportar."));
+                    return;     // no batch selected
+                }
+                return GB_showCenter(_("Exportar etiquetas"), "/cgi-bin/koha/labels/label-print.pl?batch_id=[% batch_id | html %]&" + getstr, 400, 800);
+            } else if (mode == 'batch') {
+                return GB_showCenter(_("Exportar etiquetas"), "/cgi-bin/koha/labels/label-print.pl?batch_id=[% batch_id | html %]", 400, 800);
+            } else {
+                // some pass-thru error trapping just in case...
+            }
+        }
+
+        function selected_layout() {
+            if (document.items.action.length) {
+                for (i=0;i<document.items.action.length;i++){
+                    if (document.items.action[i].checked==true){
+                        return(document.items.action[i].value);
+                    }
+                }
+            } else {
+                if (document.items.action.checked){
+                    return(document.items.action.value);
+                }
+            }
+            alert(_("Por favor, seleccione pelo menos um item."));
+            return (-1);
+        }
+
+        $(document).ready(function() {
+            $('#navmenulist a[href$="/cgi-bin/koha/labels/label-home.pl"]').addClass("current");
+            [% IF table_loop %]
+                $("#description").show();
+            [% ELSE %]
+                $("#description").hide();
+            [% END %]
+            $("#batcht").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "autoWidth": false,
+                "aoColumnDefs": [
+                    { "sType": "anti-the", "aTargets" : [ "anti-the" ] },
+                    { "aTargets": [ -1, -2 ], "bSortable": false, "bSearchable": false },
+                ],
+                "aaSorting": [[ 0, "asc" ]],
+                "sPaginationType": "full"
+            }));
+            $("#additems").click(function(){
+                Add();
+                return false;
+            });
+            $("#removeitems").click(function(){
+                Remove();
+                return false;
+            });
+            $("#deletebatch").click(function(){
+                DeleteConfirm();
+                return false;
+            });
+            $("#deduplicate").click(function(){
+                DeDuplicate();
+                return false;
+            });
+            $("#exportitems").click(function(){
+                Xport('label');
+                return false;
+            });
+            $("#exportbatch").click(function(){
+                Xport('batch');
+                return false;
+            });
+            $(".delete").on("click", function(){
+                return confirmDelete( _("Tem a certeza que pretende eliminar isto?") );
+            });
+            $(".export").on("click", function(e){
+                e.preventDefault();
+                var label_id = $(this).data("label-id");
+                var batch_id = $(this).data("batch-id");
+                GB_showCenter(_("Exportar etiquetas"),"/cgi-bin/koha/labels/label-print.pl?batch_id=" + batch_id + "&label_id=" + label_id, 400, 800);
+            });
+            $("#savedesc").click(function(event){
+                event.preventDefault(); // prevent form submission
+                var newdescription = $('input[name="description"]').val();
+                var batch_id = $(this).data('batch_id');
+                var ajaxData = {
+                    'newdescription': newdescription,
+                    'batch_id': batch_id,
+                    'card_element': "batch",
+                    'creator': "label",
+                };
+
+                $.ajax({
+                    url: '/cgi-bin/koha/svc/creator_batches',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: ajaxData,
+                })
+
+                .done(function(data){
+                    if (data.status == 'success') {
+                        $("input[name='description']").text(data.newdesc);
+                        $("#change-status").text(_("Guardado"));
+                    } else {
+                        $("#change-status").text(_("Não foi possível guardar a descrição"));
+                    }
+                });
+            });
+         });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

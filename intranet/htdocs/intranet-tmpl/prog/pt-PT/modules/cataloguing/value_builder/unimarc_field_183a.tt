@@ -1,0 +1,405 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Plugin de modelo exemplo &rsaquo; Catalogação &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="cat_unimarc_field_183a" class="cat" style="padding:1em;">
+
+ <h3>Construtor do campo 183a UNIMARC</h3>
+ <div class="page-section">
+ <form name="f_pop" action="">
+ <table>
+ <tr>
+ <td>
+ <select name="f1" id="f1">
+ <optgroup label="Portadores de áudio">
+ [% IF ( f1 == "sg" ) %]
+ <option value="sg" selected="selected">sg - cartucho de áudio</option>
+ [% ELSE %]
+ <option value="sg">sg - cartucho de áudio</option>
+ [% END %]
+
+ [% IF ( f1 == "sb" ) %]
+ <option value="sb" selected="selected">sb - cinto de áudio</option>
+ [% ELSE %]
+ <option value="sb">sb - cinto de áudio</option>
+ [% END %]
+
+ [% IF ( f1 == "se" ) %]
+ <option value="se" selected="selected">se - cilindro de áudio</option>
+ [% ELSE %]
+ <option value="se">se - cilindro de áudio</option>
+ [% END %]
+
+ [% IF ( f1 == "sd" ) %]
+ <option value="sd" selected="selected">sd - disco de áudio</option>
+ [% ELSE %]
+ <option value="sd">sd - disco de áudio</option>
+ [% END %]
+
+ [% IF ( f1 == "si" ) %]
+ <option value="si" selected="selected">si - bobina de trilha sonora</option>
+ [% ELSE %]
+ <option value="si">si - bobina de trilha sonora</option>
+ [% END %]
+
+ [% IF ( f1 == "sq" ) %]
+ <option value="sq" selected="selected">sq - rolo de áudio</option>
+ [% ELSE %]
+ <option value="sq">sq - rolo de áudio</option>
+ [% END %]
+
+ [% IF ( f1 == "sw" ) %]
+ <option value="sw" selected="selected">ws - carretel de fio de áudio</option>
+ [% ELSE %]
+ <option value="sw">ws - carretel de fio de áudio</option>
+ [% END %]
+
+ [% IF ( f1 == "ss" ) %]
+ <option value="ss" selected="selected">ss - cassete de áudio</option>
+ [% ELSE %]
+ <option value="ss">ss - cassete de áudio</option>
+ [% END %]
+
+ [% IF ( f1 == "st" ) %]
+ <option value="st" selected="selected">st - rolo de fita de áudio</option>
+ [% ELSE %]
+ <option value="st">st - rolo de fita de áudio</option>
+ [% END %]
+
+ [% IF ( f1 == "sz" ) %]
+ <option value="sz" disabled="disabled" selected="selected">sz - outro portador de áudio</option>
+ [% ELSE %]
+ <option value="sz" >sz - outro portador de áudio</option>
+ [% END %]
+ </optgroup>
+
+ <optgroup label="Portadores de computador">
+ [% IF ( f1 == "ck" ) %]
+ <option value="ck" selected="selected">ck - cartão de computador</option>
+ [% ELSE %]
+ <option value="ck">ck - cartão de computador</option>
+ [% END %]
+
+ [% IF ( f1 == "cb" ) %]
+ <option value="cb" selected="selected">cb - cartucho de chip de computador</option>
+ [% ELSE %]
+ <option value="cb">cb - cartucho de chip de computador</option>
+ [% END %]
+
+ [% IF ( f1 == "cd" ) %]
+ <option value="cd" selected="selected">cd - disco de computador</option>
+ [% ELSE %]
+ <option value="cd">cd - disco de computador</option>
+ [% END %]
+
+ [% IF ( f1 == "ce" ) %]
+ <option value="ce" selected="selected">ce - cartucho de disco de computador</option>
+ [% ELSE %]
+ <option value="ce">ce - cartucho de disco de computador</option>
+ [% END %]
+
+ [% IF ( f1 == "ca" ) %]
+ <option value="ca" selected="selected">ca - cartucho de fita de computador</option>
+ [% ELSE %]
+ <option value="ca">ca - cartucho de fita de computador</option>
+ [% END %]
+
+ [% IF ( f1 == "cf" ) %]
+ <option value="cf" selected="selected">cf - cassete de fita de computador</option>
+ [% ELSE %]
+ <option value="cf">cf - cassete de fita de computador</option>
+ [% END %]
+
+ [% IF ( f1 == "ch" ) %]
+ <option value="ch" selected="selected">ch - rolo de fita de computador</option>
+ [% ELSE %]
+ <option value="ch">ch - rolo de fita de computador</option>
+ [% END %]
+
+ [% IF ( f1 == "cr" ) %]
+ <option value="cr" selected="selected">cr - recurso electrónico</option>
+ [% ELSE %]
+ <option value="cr">cr - recurso electrónico</option>
+ [% END %]
+
+ [% IF ( f1 == "cz" ) %]
+ <option value="cz" selected="selected">cz - outra operadora de computador</option>
+ [% ELSE %]
+ <option value="cz">cz - outra operadora de computador</option>
+ [% END %]
+ </optgroup>
+
+ <optgroup label="Portadores de microformas">
+ [% IF ( f1 == "ha" ) %]
+ <option value="ha" selected="selected">ha - cartão de abertura</option>
+ [% ELSE %]
+ <option value="ha">ha - cartão de abertura</option>
+ [% END %]
+
+ [% IF ( f1 == "he" ) %]
+ <option value="he" selected="selected">he - micro ficha</option>
+ [% ELSE %]
+ <option value="he">he - micro ficha</option>
+ [% END %]
+
+ [% IF ( f1 == "hf" ) %]
+ <option value="hf" selected="selected">hf - cassete micro ficha</option>
+ [% ELSE %]
+ <option value="hf">hf - cassete micro ficha</option>
+ [% END %]
+
+ [% IF ( f1 == "hb" ) %]
+ <option value="hb" selected="selected">hb - cartucho de microforma</option>
+ [% ELSE %]
+ <option value="hb">hb - cartucho de microforma</option>
+ [% END %]
+
+ [% IF ( f1 == "hc" ) %]
+ <option value="hc" selected="selected">hc - cassete de microfilme</option>
+ [% ELSE %]
+ <option value="hc">hc - cassete de microfilme</option>
+ [% END %]
+
+ [% IF ( f1 == "hd" ) %]
+ <option value="hd" selected="selected">hd - bobina de microfilme</option>
+ [% ELSE %]
+ <option value="hd">hd - bobina de microfilme</option>
+ [% END %]
+
+ [% IF ( f1 == "hj" ) %]
+ <option value="hj" selected="selected">hj - bobina de microfilme</option>
+ [% ELSE %]
+ <option value="hj">hj - bobina de microfilme</option>
+ [% END %]
+
+ [% IF ( f1 == "hh" ) %]
+ <option value="hh" selected="selected">hh - microfilme</option>
+ [% ELSE %]
+ <option value="hh">hh - microfilme</option>
+ [% END %]
+
+ [% IF ( f1 == "hg" ) %]
+ <option value="hg" selected="selected">hg - micro opaco</option>
+ [% ELSE %]
+ <option value="hg">hg - micro opaco</option>
+ [% END %]
+
+ [% IF ( f1 == "hz" ) %]
+ <option value="hz" selected="selected">hz - outro portador de microforma</option>
+ [% ELSE %]
+ <option value="hz">hz - outro portador de microforma</option>
+ [% END %]
+ </optgroup>
+
+ <optgroup label="Portadores microscópicos">
+ [% IF ( f1 == "pp" ) %]
+ <option value="pp" selected="selected">pp - lamelas de microscópio</option>
+ [% ELSE %]
+ <option value="pp">pp - lamelas de microscópio</option>
+ [% END %]
+
+ [% IF ( f1 == "pz" ) %]
+ <option value="pz" selected="selected">pz - outro portador microscópico</option>
+ [% ELSE %]
+ <option value="pz">pz - outro portador microscópico</option>
+ [% END %]
+ </optgroup>
+
+ <optgroup label="Portadores de imagens projetadas">
+ [% IF ( f1 == "mc" ) %]
+ <option value="mc" selected="selected">mc - cartucho de filme</option>
+ [% ELSE %]
+ <option value="mc">mc - cartucho de filme</option>
+ [% END %]
+
+ [% IF ( f1 == "mf" ) %]
+ <option value="mf" selected="selected">mf - cassete de filme</option>
+ [% ELSE %]
+ <option value="mf">mf - cassete de filme</option>
+ [% END %]
+
+ [% IF ( f1 == "mr" ) %]
+ <option value="mr" selected="selected">mr - rolo de filme</option>
+ [% ELSE %]
+ <option value="mr">mr - rolo de filme</option>
+ [% END %]
+
+ [% IF ( f1 == "mo" ) %]
+ <option value="mo" selected="selected">mo - bobina de filme</option>
+ [% ELSE %]
+ <option value="mo">mo - bobina de filme</option>
+ [% END %]
+
+ [% IF ( f1 == "gd" ) %]
+ <option value="gd" selected="selected">gd - filme</option>
+ [% ELSE %]
+ <option value="gd">gd - filme</option>
+ [% END %]
+
+ [% IF ( f1 == "gf" ) %]
+ <option value="gf" selected="selected">gf - tira de filme</option>
+ [% ELSE %]
+ <option value="gf">gf - tira de filme</option>
+ [% END %]
+
+ [% IF ( f1 == "gc" ) %]
+ <option value="gc" selected="selected">gc - cartucho de fita do filme</option>
+ [% ELSE %]
+ <option value="gc">gc - cartucho de fita do filme</option>
+ [% END %]
+
+ [% IF ( f1 == "gt" ) %]
+ <option value="gt" selected="selected">gt - transparência aérea</option>
+ [% ELSE %]
+ <option value="gt">gt - transparência aérea</option>
+ [% END %]
+
+ [% IF ( f1 == "gs" ) %]
+ <option value="gs" selected="selected">gs - slide</option>
+ [% ELSE %]
+ <option value="gs">gs - slide</option>
+ [% END %]
+
+ [% IF ( f1 == "mz" ) %]
+ <option value="mz" selected="selected">mz - outro portador de imagem projetada</option>
+ [% ELSE %]
+ <option value="mz">mz - outro portador de imagem projetada</option>
+ [% END %]
+ </optgroup>
+
+ <optgroup label="Portadores estereográficos">
+ [% IF ( f1 == "eh" ) %]
+ <option value="eh" selected="selected">eh - cartão estereográfico</option>
+ [% ELSE %]
+ <option value="eh">eh - cartão estereográfico</option>
+ [% END %]
+
+ [% IF ( f1 == "es" ) %]
+ <option value="es" selected="selected">es - disco estereográfico</option>
+ [% ELSE %]
+ <option value="es">es - disco estereográfico</option>
+ [% END %]
+
+ [% IF ( f1 == "ez" ) %]
+ <option value="ez" selected="selected">ez - outro portador estereográfico</option>
+ [% ELSE %]
+ <option value="ez">ez - outro portador estereográfico</option>
+ [% END %]
+ </optgroup>
+
+ <optgroup label="Portadores não mediados">
+ [% IF ( f1 == "no" ) %]
+ <option value="no" selected="selected">no - cartão</option>
+ [% ELSE %]
+ <option value="no">no - cartão</option>
+ [% END %]
+
+ [% IF ( f1 == "nn" ) %]
+ <option value="nn" selected="selected">nn - flipchart</option>
+ [% ELSE %]
+ <option value="nn">nn - flipchart</option>
+ [% END %]
+
+ [% IF ( f1 == "na" ) %]
+ <option value="na" selected="selected">no - rolo</option>
+ [% ELSE %]
+ <option value="na">no - rolo</option>
+ [% END %]
+
+ [% IF ( f1 == "nb" ) %]
+ <option value="nb" selected="selected">nb - folha</option>
+ [% ELSE %]
+ <option value="nb">nb - folha</option>
+ [% END %]
+
+ [% IF ( f1 == "nc" ) %]
+ <option value="nc" selected="selected">nc - volume</option>
+ [% ELSE %]
+ <option value="nc">nc - volume</option>
+ [% END %]
+
+ [% IF ( f1 == "nr" ) %]
+ <option value="nr" selected="selected">nr - objecto</option>
+ [% ELSE %]
+ <option value="nr">nr - objecto</option>
+ [% END %]
+
+ [% IF ( f1 == "nz" ) %]
+ <option value="nz" selected="selected">nz - outro portador não mediado</option>
+ [% ELSE %]
+ <option value="nz">nz - outro portador não mediado</option>
+ [% END %]
+ </optgroup>
+
+ <optgroup label="Portadores de vídeo">
+ [% IF ( f1 == "vc" ) %]
+ <option value="vc" selected="selected">vc - cartucho de vídeo</option>
+ [% ELSE %]
+ <option value="vc">vc - cartucho de vídeo</option>
+ [% END %]
+
+ [% IF ( f1 == "vf" ) %]
+ <option value="vf" selected="selected">vf - cassete de vídeo</option>
+ [% ELSE %]
+ <option value="vf">vf - cassete de vídeo</option>
+ [% END %]
+
+ [% IF ( f1 == "vd" ) %]
+ <option value="vd" selected="selected">vd - disco de vídeo</option>
+ [% ELSE %]
+ <option value="vd">vd - disco de vídeo</option>
+ [% END %]
+
+ [% IF ( f1 == "vr" ) %]
+ <option value="vr" selected="selected">vr - fita de vídeo</option>
+ [% ELSE %]
+ <option value="vr">vr - fita de vídeo</option>
+ [% END %]
+
+ [% IF ( f1 == "vz" ) %]
+ <option value="vz" selected="selected">vz - outro portador de vídeo</option>
+ [% ELSE %]
+ <option value="vz">vz - outro portador de vídeo</option>
+ [% END %]
+ </optgroup>
+
+ <optgroup label="Portadores não especificados">
+ [% IF ( f1 == "zu" ) %]
+ <option value="zu" selected="selected">zu - não especificado</option>
+ [% ELSE %]
+ <option value="zu">zu - não especificado</option>
+ [% END %]
+ </optgroup>
+
+ </select>
+ </td>
+ </tr>
+ </table>
+ <p><input type="button" class="btn btn-primary" value="OK" onclick="submitMyForm();" /> <a href="#" class="cancel close">Anular</a> </p>
+ </form>
+ </div> <!-- /.page-section -->
+
+<script>
+
+   function submitMyForm() {
+        var doc   = opener.document;
+        var field = doc.getElementById("[% index | html %]");
+        subfield();
+
+        function subfield() {
+            const tag = $(field).closest('.tag');
+            const sub = tag.find('[id*="tag_183_subfield_2_"]');
+            if ( field != 'undefined' ) {
+                sub[0].value = "RDAcarrier";
+            }
+            return subfield;
+        }
+
+        field.value = document.f_pop.f1.value;
+        window.close();
+        return false;
+    }
+</script>
+
+[% INCLUDE 'popup-bottom.inc' %]

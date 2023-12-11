@@ -1,0 +1,25 @@
+---
+description:
+- Algumas moedas básicas com o dolár americano a ser usado por omissão no módulo de
+  aquisições
+tables:
+- currency:
+    multiline: []
+    rows:
+    - active: 1
+      currency: USD
+      rate: 1.0
+      symbol: $
+    - active: 0
+      currency: GBP
+      rate: 1.9929
+      symbol: £
+    - active: 0
+      currency: CAD
+      rate: 1.02207
+      symbol: $
+    - active: 0
+      currency: EUR
+      rate: .874003
+      symbol: €
+    translatable: []

@@ -1,0 +1,43 @@
+[% USE raw %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Erro [% errno | html %] &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="err_[% errno | html %]" class="err">
+
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="#" aria-current="page">
+ Erro [% errno | html %] </a>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+ <div class="main container-fluid">
+ <div class="row">
+ <div class="col-md-8 col-md-offset-2">
+
+ <h1>Ocorreu um erro!</h1>
+ <h2><em>Erro [% errno | html %]</em></h2>
+ <h3>Esta mensagem pode ter sido causada por uma das seguintes razões:</h3>
+ <ul style="padding-bottom: 0.5em;">
+ <li>Usou um link externo para um item que não está mais disponível</li>
+ <li>Seguiu um link desatualizado de um mecanismo de pesquisa ou marcador</li>
+ <li>Tentou aceder a uma página que necessita de autenticação</li>
+ <li>O endereço está quebrado e a página não existe</li>
+ </ul>
+ <h3>O que se segue?</h3>
+ <ul style="margin-bottom: 1em; padding-bottom: 1em; border-bottom: 1px solid #CCC;">
+ <li>Use a barra de menu superior para navegar para outra parte do Koha.</li>
+ <li>Para reportar um link quebrado ou outro problema, por favor contacte o administrador do Koha. <a href="mailto:[% admin | uri %]">Enviar email</a></li>
+ </ul>
+
+ </div> <!-- /.col-md-8 -->
+ </div> <!-- /.row -->
+
+[% INCLUDE 'intranet-bottom.inc' %]

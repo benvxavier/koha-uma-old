@@ -1,0 +1,222 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Koha %]
+[% USE KohaDates %]
+[% USE Price %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Fecho de caixa &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="cashup" class="pos">
+ [% WRAPPER 'header.inc' %]
+ [% INCLUDE 'circ-search.inc' %]
+[% END %]
+
+ [% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/pos/pay.pl">Gestão do dinheiro</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Resumo de contabilidade de [% library.branchname | html %]</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+ [% END #/ WRAPPER sub-header.inc %]
+
+ <div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+ [% IF ( error_registers ) %]
+ <div id="error_message" class="dialog message">
+ <p>
+ Deve ter pelo menos uma caixa registadora associada a esta biblioteca antes de conseguir registar pagamentos. </p>
+ [% IF ( CAN_user_parameters_manage_cash_registers ) %]
+ <form action="/cgi-bin/koha/admin/cash_registers.pl" method="get">
+ <input type="hidden" name="op" value="add_form" />
+ <button class="new" type="submit"><i class="fa fa-plus"></i> Criar uma nova caixa registadora</button>
+ </form>
+ [% END %]
+ </div>
+ [% ELSE %]
+
+ [% IF ( error_cashup_permission ) %]
+ <div id="error_message" class="dialog alert">
+ Não possui permissões para realizar ações de levantamento. </div>
+ [% END %]
+
+ [% IF CAN_user_cash_management_cashup %]
+ <div id="toolbar" class="btn-toolbar">
+ <button type="button" class="cashup_all btn btn-default" data-toggle="modal" data-target="#confirmCashupAllModal"><i class="fa fa-money"></i> Fechar todas</button>
+ </div>
+ [% END %]
+
+ <h1>Resumo de contabilidade de [% library.branchname | html %]</h1>
+
+ <h2>Sumário</h2>
+ <ul>
+ <li>Total de recebimentos(dinheiro): <span id="income"></span></li>
+ <li>Total de saídas (dinheiro): <span id="outgoing"></span></li>
+ <li>Total financiável: <span id="bankable"></span></li>
+ </ul>
+
+ <div class="page-section">
+ <table id="registers" class="table_registers">
+ <thead>
+ <tr>
+ <th>Nome da caixa registadora</th>
+ <th>Descrição da caixa registadora</th>
+ <th>Último levantamento</th>
+ <th>Flutuante</th>
+ <th>Financiável</th>
+ <th>Rendimento (dinheiro)</th>
+ <th>Saída (dinheiro)</th>
+ [% IF CAN_user_cash_management_cashup %]
+ <th class="noExport">Ações</th>
+ [% END %]
+ </tr>
+ </thead>
+ <tbody>
+ [% SET bankable = 0, ctotal = 0, dtotal = 0, cctotal = 0, cdtotal = 0 %]
+ [% FOREACH register IN registers %]
+ <tr>
+ <td><a href="/cgi-bin/koha/pos/register.pl?registerid=[% register.id | uri %]">[% register.name | html %]</a></td>
+ <td>[% register.description | html %]</td>
+ <td>
+ [%- IF register.last_cashup -%]
+ [% register.last_cashup.timestamp | $KohaDates with_hours => 1 %] (<a data-toggle="modal" data-cashup="[% register.last_cashup.id | html %]" data-register="[% register.description | html %]" href="#cashupSummaryModal" class="button">Sumário</a>) [%- ELSE -%] Sem último fecho de caixa [%- END -%] </td>
+ <td>[% register.starting_float | $Price %]</td>
+ <td>
+ [% SET rbankable = ( register.outstanding_accountlines.total( payment_type => [ 'CASH', 'SIP00' ]) * -1 ) %]
+ [% SET bankable = bankable + rbankable %]
+ [% rbankable | $Price %]
+ </td>
+ <td>
+ [% SET rctotal = ( register.outstanding_accountlines.credits_total * -1 ) %]
+ [% SET rcctotal = ( register.outstanding_accountlines.credits_total( payment_type => [ 'CASH', 'SIP00' ]) * -1 ) %]
+ [% rctotal | $Price %] ([% rcctotal | $Price %])
+ [% SET ctotal = ctotal + rctotal %]
+ [% SET cctotal = cctotal + rcctotal %]
+ </td>
+ <td>
+ [% SET rdtotal = ( register.outstanding_accountlines.debits_total * -1 ) %]
+ [% SET rcdtotal = ( register.outstanding_accountlines.debits_total( payment_type => [ 'CASH', 'SIP00' ]) * -1 ) %]
+ [% rdtotal | $Price %] ([% rcdtotal | $Price %])
+ [% SET dtotal = dtotal + rdtotal %]
+ [% SET cdtotal = cdtotal + rcdtotal %]
+ </td>
+ [% IF CAN_user_cash_management_cashup %]
+ <td>
+ <button type="button" class="cashup_individual btn btn-xs btn-default" data-toggle="modal" data-target="#confirmCashupModal" data-register="[% register.description | html %]" data-bankable="[% rbankable | $Price %]" data-float="[% register.starting_float | $Price %]" data-registerid="[% register.id | html %]"><i class="fa fa-money"></i> Registar levantamento</button>
+ </td>
+ [% END %]
+ </tr>
+ [% END %]
+ </tbody>
+ <tfoot>
+ <tr>
+ <td colspan="4" align="right">Totais:</td>
+ <td>[% bankable | $Price %]</td>
+ <td>[% ctotal | $Price %] ([% cctotal | $Price %])</td>
+ <td>[% dtotal | $Price %] ([% cdtotal | $Price %])</td>
+ [% IF CAN_user_cash_management_cashup %]
+ <td>
+ <button type="button" class="cashup_all btn btn-xs btn-default" data-toggle="modal" data-target="#confirmCashupAllModal"><i class="fa fa-money"></i> Fechar todas</button>
+ </td>
+ [% END %]
+ </tr>
+ </tfoot>
+ </table>
+ </div> <!-- /.page-section -->
+ [% END %]
+ </main>
+ </div>
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'pos-menu.inc' %]
+ </aside>
+ </div>
+
+ </div>
+ <!-- /.row -->
+
+ <!-- Confirm cashup modal -->
+ <div class="modal" id="confirmCashupModal" tabindex="-1" role="dialog" aria-labelledby="confirmCashupLabel">
+ <div class="modal-dialog" role="document">
+ <div class="modal-content">
+ <div class="modal-header">
+ <button aria-label="Fechar" class="closebtn" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+ <h4 class="modal-title" id="confirmCashupLabel">Confirmar o levantamento de <em><span id="registerc"></span></em></h4>
+ </div>
+ <div class="modal-body">
+ Por favor, confirme que removeu <span id="cashc"></span> da caixa registadora e deixou o montante de <span id="floatc"></span>.
+ </div> <!-- /.modal-body -->
+ <div class="modal-footer">
+ <a id="cashup_confirm" href="" class="btn btn-default">Confirmar</a>
+ <button type="button" class="btn btn-default" data-dismiss="modal">Anular</button>
+ </div> <!-- /.modal-footer -->
+ </div> <!-- /.modal-content -->
+ </div> <!-- /.modal-dialog -->
+ </div> <!-- /#confirmCashupModal -->
+
+ <!-- Confirm cashupall modal -->
+ <div class="modal" id="confirmCashupAllModal" tabindex="-1" role="dialog" aria-labelledby="confirmCashupAllLabel">
+ <div class="modal-dialog" role="document">
+ <div class="modal-content">
+ <div class="modal-header">
+ <button aria-label="Fechar" class="closebtn" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+ <h4 class="modal-title" id="confirmCashupAllLabel">Confirmar o levantamento de <em>todos</em> caixas registadoras</h4>
+ </div>
+ <div class="modal-body">
+ <p>Por favor, confirme que recebeu [% bankable | $Price %] para depósito.</p>
+ <ul>
+ <li>Total recebido (dinheiro): [% ctotal | $Price %] ([% cctotal | $Price %])</li>
+ <li>Total de saídas (dinheiro): [% dtotal | $Price %] ([% cdtotal | $Price %])</li>
+ </ul>
+ </div> <!-- /.modal-body -->
+ <div class="modal-footer">
+ <a id="cashup_all_confirm" href="/cgi-bin/koha/pos/registers.pl?op=cashup" class="btn btn-default">Confirmar</a>
+ <button type="button" class="btn btn-default" data-dismiss="modal">Anular</button>
+ </div> <!-- /.modal-footer -->
+ </div> <!-- /.modal-content -->
+ </div> <!-- /.modal-dialog -->
+ </div> <!-- /#confirmCashupAllModal -->
+
+ [% INCLUDE 'modals/cashup_summary.inc' %]
+
+ [% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'datatables.inc' %]
+ [% INCLUDE 'format_price.inc' %]
+ [% INCLUDE 'js-date-format.inc' %]
+ [% Asset.js("js/cashup_modal.js") | $raw %]
+ <script>
+            $(document).ready(function () {
+
+                [%# js used here as we don't have access to these template variables where we need them #%]
+                $("#bankable").text('[% bankable | $Price %]');
+                $("#income").text('[% ctotal | $Price %] ([% cctotal | $Price %])');
+                $("#outgoing").text('[% dtotal | $Price %] ([% cdtotal | $Price %])');
+
+                var registers_table = $("#registers").dataTable($.extend(true, {}, dataTablesDefaults, {
+                    "bFilter": false,
+                    "paginationType": "full"
+                }));
+
+                $("#confirmCashupModal").on("shown.bs.modal", function(e){
+                   var button = $(e.relatedTarget);
+                   var register = button.data('register');
+                   $("#registerc").text(register);
+                   var bankable = button.data('bankable');
+                   $("#cashc").text(bankable);
+                   var rfloat = button.data('float');
+                   $('#floatc').text(rfloat);
+                   var rid = button.data('registerid');
+                   $('#cashup_confirm').attr("href", '/cgi-bin/koha/pos/registers.pl?op=cashup&registerid='+rid);
+                });
+            });
+        </script>
+ [% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

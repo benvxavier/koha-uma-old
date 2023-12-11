@@ -1,0 +1,90 @@
+[% USE HtmlTags %]
+[% INCLUDE 'doc-head-open.inc' %]<title>Configurações da base de dados &rsaquo; Instalador Web &rsaquo; Koha</title>
+[% INCLUDE 'installer-doc-head-close.inc' %]
+</head>
+
+<body id="installer" class="installer">
+ <div class="container-fluid">
+ <div class="row">
+ <div id="installer-step2" class="installer-main col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
+
+
+ <div id="logo"><a href="#">Koha</a></div>
+ <h1>Instalador Web &rsaquo; Configurações da base de dados</h1>
+
+ <div id="steps">
+ <ol>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Escolha o idioma</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Verificação das dependências Perl</li>
+ <li class="current open"><i class="fa fa-square-o" aria-hidden="true"></i> Definições da base de dados</li>
+ <li class="open"><i class="fa fa-square-o" aria-hidden="true"></i> Configurar a base de dados</li>
+ <li class="open"><i class="fa fa-square-o" aria-hidden="true"></i> Instalar as configurações básicas</li>
+ <li class="open"><i class="fa fa-square-o" aria-hidden="true"></i> Integração</li>
+ </ol>
+ </div>
+
+ <h3>Definições da base de dados:</h3>
+ <ul>
+ <li><em>Tipo de base de dados: </em> [%- dbms | $HtmlTags tag=>'code' -%]</li>
+ <li><em>Nome da base de dados: </em> [%- dbname | $HtmlTags tag=>'code' -%]</li>
+ <li><em>Servidor de base de dados: </em> [%- hostname | $HtmlTags tag=>'code' -%]</li>
+ <li><em>Porta da base de dados: </em> [%- port| $HtmlTags tag=>'code' -%] (provavelmente OK se vazio)</li>
+ <li><em>Utilizador da base de dados: </em> [%- user | $HtmlTags tag=>'code' -%]</li>
+ </ul>
+
+ [% IF ( dbconnection ) %]
+ <form name="checkdbparameters" method="post" action="install.pl">
+ [% IF ( checkdatabaseaccess ) %]
+ <div class="alert alert-success" role="alert"><p>Foi estabelecido o acesso.</p></div>
+ [% IF ( checkdatabasecreated ) %]
+ <ul>
+ <li>A base de dados [% dbname | $HtmlTags tag=>'code' %] existe.</li>
+ [% IF ( checkgrantaccess ) %]
+ <li>O utilizador [% user | $HtmlTags tag=>'code' %] possui todos os privilégios necessários na base de dados [% dbname | $HtmlTags tag=>'code' %].</li>
+ </ul>
+ [% ELSE %]
+ </ul>
+ <p class="error">O utilizador [% user | $HtmlTags tag=>'code' %] não possui privilégios suficientes na base de dados [% dbname | $HtmlTags tag=>'code' %].</p>
+ <p class="hint">Peça os privilégios necessários ou faça alteração dos mesmos. O utilizador [% user | $HtmlTags tag=>'code' %] deve ter privilégios para USAGE, INSERT, UPDATE, DELETE, DROP e CREATE na base de dados [% dbname | $HtmlTags tag=>'code' %].</p>
+ <p>Precisa de ajuda? Para obter ajuda sobre as permissões, pesquise online por "[% dbms | $HtmlTags tag=>'code' %] definir as permissões" </p>
+ [% END %]
+ [% IF ( warnDbRowFormat ) %]
+ <div class="alert alert-danger" role="alert">
+ <p>Tabelas da base de dados com o formato de linha diferente de 'DYNAMIC': [% warnDbRowFormat | html %]</p>
+ <p>Podem acontecer alguns problemas nas atualizações para as novas versões do Koha a não ser que atualize o formato de linha das suas tabelas da base de dados.</p>
+ <p>Para descobrir como evitar este problema veja a página wiki: <a href="https://wiki.koha-community.org/wiki/Database_row_format">Formato de linha da base de dados</a>
+ </p>
+ </div>
+ [% END %]
+ [% ELSE %]
+ <div class="alert alert-danger" role="alert"><p>Não foi detetada nenhuma base de dados [% dbname | $HtmlTags tag=>'code' %].</p></div>
+ <p>Por favor crie a base de dados antes de continuar.</p>
+ [% END %]
+ [% ELSE %]
+ <div class="alert alert-warning" role="alert">[% error | html %] : [% message | html %]</div>
+ <div class="hint">
+ <ul>
+ <li>Verificar se a base de dados funciona.</li>
+ <li>Verifique as definições da base de dados no [% 'koha-conf.xml' | $HtmlTags Tag=>'code' %].</li>
+ <li>Verifique a configuração do nome do servidor no [% INCLUDE txt_kohaconf_xml %]. Alguns servidores de base de dados requerem [% '127.0.0.1' | $HtmlTags tag=>'code' %] em vez de [% 'localhost' | $HtmlTags tag=>'code' %].</li>
+ </ul>
+ </div>
+ <p>Por favor, corrija estes erros. <a href="/cgi-bin/koha/installer/install.pl">Posteriormente inicie o instalador novamente.</a>
+ [% END %]
+ [% UNLESS ( error ) %]
+ <input type="hidden" name="step" value="3" />
+ <p><input class="btn btn-primary" type="submit" value="Continuar para o próximo passo" /></p>
+ [% END %]
+ </form>
+ [% ELSE %]
+ <form name="checkinformation" method="post" action="install.pl">
+ <input type="hidden" name="step" value="2" />
+ <input type="hidden" name="checkdb" value="1" />
+ <p><input class="btn btn-primary" type="submit" value="Continuar para o próximo passo" /> </p>
+ </form>
+ [% END # / IF dbconnection %]
+ </div> <!-- / #installer-step2 -->
+ </div> <!-- / .row -->
+ </div><!-- / .container-fluid -->
+
+[% INCLUDE 'installer-intranet-bottom.inc' %]

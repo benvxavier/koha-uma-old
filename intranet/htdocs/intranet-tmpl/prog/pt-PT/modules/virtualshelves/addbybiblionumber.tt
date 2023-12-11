@@ -1,0 +1,118 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Adicionar à lista &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="lists_addbybiblionumber" class="lists">
+ <div class="container-fluid">
+
+[% UNLESS (authorized) %]
+<h1>Erro ao adicionar à lista</h1>
+ <p align="center">
+ [% IF (errcode==1) %]Não foi possível criar uma nova lista. Por favor verifique o nome.<br/>[% END %] [% IF (errcode==2) %]Desculpe, não possui permissões para adicionar elementos à lista.<br/>[% END %]
+ <a href="javascript:self.close();">Fechar a janela.</a>
+ </p>
+[% ELSE %]
+
+ [% IF ( multiple ) %]
+ <h1>Adicionar [% total | html %] exemplares a [% IF ( singleshelf ) %]<em>[% shelfname | html %]</em>: [% ELSE %]uma lista:[% END %]</h1>
+ [% ELSE %]
+ <h1>Adicionar a [% IF ( singleshelf ) %]<em>[% shelfname | html %]</em>[% ELSE %]uma lista:[% END %]</h1>
+ [% END %]
+ <ul>
+ [% FOREACH biblio IN biblios %]
+ <li> <span class="title">[% biblio.title | html %]</span>
+ [% IF ( biblio.author ) %]<span class="author"> [% biblio.author | html %] </span>[% END %]
+ </li>
+ [% END %]
+ </ul>
+
+ <form name="f1" action="/cgi-bin/koha/virtualshelves/addbybiblionumber.pl" method="post">
+ [% FOREACH biblio IN biblios %] <input type="hidden" name="biblionumber" value="[% biblio.biblionumber | html %]" />[% END %]
+ <input type="hidden" name="confirmed" value="1" />
+ [% IF ( shelfnumber ) %]<input type="hidden" name="shelfnumber" value="[% shelfnumber | html %]" />[% END %]
+
+[% UNLESS ( shelfnumber ) %]
+
+[% UNLESS ( newshelf ) %]
+ [% IF private_shelves.count OR public_shelves.count OR private_shelves_shared_with_me.count %]
+ <fieldset class="rows">
+ <legend>Seleccionar um lista existente</legend>
+ <ol>
+ <li>
+ <label>Escolher a Lista</label>
+ <select name="shelfnumber" id="shelfnumber">
+ [% IF private_shelves.count %]
+ <optgroup label="Listas privadas">
+ [% FOREACH private_shelf IN private_shelves %]
+ <option value="[% private_shelf.shelfnumber | html %]">[% private_shelf.shelfname | html %]</option>
+ [% END %]
+ </optgroup>
+ [% END %]
+ [% IF private_shelves_shared_with_me.count %]
+ <optgroup label="Listas privadas partilhadas comigo">
+ [% FOREACH private_shelf IN private_shelves_shared_with_me %]
+ <option value="[% private_shelf.shelfnumber | html %]">[% private_shelf.shelfname | html %]</option>
+ [% END %]
+ </optgroup>
+ [% END %]
+ [% IF public_shelves.count %]
+ <optgroup label="Listas públicas">
+ [% FOREACH public_shelf IN public_shelves %]
+ <option value="[% public_shelf.shelfnumber | html %]">[% public_shelf.shelfname | html %]</option>
+ [% END %]
+ </optgroup>
+ [% END %]
+ </select>
+ </li>
+ </ol>
+ [% FOREACH biblio IN biblios %]<input type="hidden" name="biblionumber" value="[% biblio.biblionumber | html %]" />[% END %]
+ [% UNLESS ( biblionumbers ) %]
+ <input type="hidden" name="biblionumber" value="[% biblionumber | html %]" />
+ [% ELSE %]
+ <input type="hidden" name="biblionumbers" value="[% biblionumbers | html %]" />
+ [% END %]
+ </fieldset>
+
+ <p>... ou...</p>
+[% END %]
+[% END %]
+
+ <fieldset class="rows"><legend>Adicionar a uma nova lista:</legend>
+ <ol><li>
+ <label for="newvirtualshelf">
+ Nome da lista: </label>
+ [% FOREACH biblio IN biblios %]<input type="hidden" name="biblionumber" value="[% biblio.biblionumber | html %]" />[% END %]
+ [% UNLESS ( biblionumbers ) %]
+ <input type="hidden" name="biblionumber" id="biblionumber" value="[% biblionumber | html %]" />
+ [% ELSE %]
+ <input type="hidden" name="biblionumbers" id="biblionumbers" value="[% biblionumbers | html %]" />
+ [% END %]
+ <input type="text" name="newvirtualshelf" id="newvirtualshelf" size="40" />
+ <input type="hidden" name="confirmed" value="1" />
+ </li>
+ <li>
+ <label for="category">Categoria:</label>
+ <select name="public" id="public">
+ <option value="0">Privada</option>
+ <option value="1">Público</option>
+ </select>
+ </li></ol>
+ </fieldset>
+
+
+[% END %]
+
+
+<!-- SAVE -->
+ <fieldset class="action">
+ <input type="hidden" name="sortfield" value="title" />
+ <input class="btn btn-primary" type="submit" value="Guardar" /> <a class="close cancel" href="#">Anular</a>
+ </fieldset>
+ </form>
+<!-- /SAVE -->
+
+[% END %]
+
+[% SET popup_window = 1 %]
+[% INCLUDE 'intranet-bottom.inc' %]

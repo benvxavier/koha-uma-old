@@ -1,0 +1,479 @@
+---
+Leitores -:
+  Avisos e notificações:
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: EnhancedMessagingPreferences
+    - que os técnicos definam quais os avisos que os leitores vão receber e quando
+      os vão receber.
+    - <br><strong>NOTA:</strong> Apenas é aplicado a avisos de cortesia. Para definir
+      se os leitores têm acesso a estas configurações, use a preferência de sistema
+      <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=EnhancedMessagingPreferencesOPAC">EnhancedMessagingPreferencesOPAC</a>.
+    - <br><strong>NOTA:</strong> Esta preferência de sistema necessita que as tarefas
+      <code>misc/cronjobs/process_message_queue.pl</code> e <code>misc/cronjobs/advance_notices.pl</code>
+      estejam em funcionamento. Peça ao administrador do sistema para as configurar.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: EnhancedMessagingPreferencesOPAC
+    - que os leitores definam as preferências de mensagem no OPAC.
+    - <br><strong>NOTA:</strong> A preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=EnhancedMessagingPreferences">EnhancedMessagingPreferences</a>
+      tem que estar ativa.
+  - - choices:
+        '0': Não enviar
+        '1': Enviar
+      pref: AutoEmailNewUser
+    - um email ao leitores recentemente criados.
+    - <br><strong>NOTA:</strong> Esta preferência usa o aviso WELCOME.
+  - - choices:
+        '0': Não notificar
+        '1': Notificar
+      pref: NotifyPasswordChange
+    - os leitores quando a sua palavra-passe é alterada.
+  - - choices:
+        '0': Não enviar
+        '1': Enviar
+      pref: UseEmailReceipts
+    - recibos de email aos leitores relativos aos pagamentos e perdões de multas.
+  - - Usar o
+    - choices:
+        B_email: email alternativo
+        OFF: primeiro endereço de email válido
+        cardnumber: número de cartão
+        email: email principal
+        emailpro: email secundário
+      default: OFF
+      pref: EmailFieldPrimary
+    - para o envio dos avisos de email.
+    - <br><strong>NOTA:</strong> Se estiver definido como "primeiro válido", a ordem
+      pelo qual os endereços de email deve ser verificados é definida na preferência
+      <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=EmailFieldPrecedence">EmailFieldPrecedence</a>.
+  - - 'Quando a preferência <a href=''/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=EmailFieldPrimary''>EmailFieldPrimary</a>
+      está definida para ''<strong>primeiro válido</strong>'', o endereço de email
+      do leitor deve ser verificado nos seguintes campos e deve ser usado o primeiro
+      email válido encontrado:'
+    - class: multi
+      pref: EmailFieldPrecedence
+    - <br><strong>NOTA:</strong> Todos os campos de leitor podem ser usados, mas para
+      funcionar corretamente deve conter um campo de email válido ou um valor vazio.
+    - As opções válidas são as <a href='http://schema.koha-community.org/__VERSION__/tables/borrowers.html'
+      target='blank'>colunas da base de dados</a> da tabela borrowers, separadas por
+      | (barra).
+    - 'Exemplo: email|emailpro|B_email'
+  - - choices:
+        '0': Não activar
+        '1': Activar
+      pref: TalkingTechItivaPhoneNotification
+    - notificações por telefone ao leitor usando o Talking Tech i-tiva (avisos de
+      atrasos, pré-avisos de atrasos e reservas são suportados).
+    - <br/><i class="fa fa-exclamation-triangle"></i> Se a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=TalkingTechItivaPhoneNotification">TalkingTechItivaPhoneNotification</a>
+      estiver activa, a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=PhoneNotification">PhoneNotification</a>
+      deve estar inactiva.
+  - - choices:
+        '0': Não activar
+        '1': Activar
+      pref: PhoneNotification
+    - geração de notificações por telefone ao leitor. Requer um plugin para processar
+      as notificações por telefone.
+    - <br/><i class="fa fa-exclamation-triangle"></i> Se a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=PhoneNotification">PhoneNotification</a>
+      estiver habilitada, a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=TalkingTechItivaPhoneNotification">TalkingTechItivaPhoneNotification</a>
+      deverá ser desabilitada.
+  - - 'Usar o driver SMS::Enviar::'
+    - pref: SMSSendDriver
+    - para enviar mensagens SMS.
+    - '<br>Se prefere receber as SMS via Email, defina a preferência de sistema SMSendDriver
+      como: Email'
+    - <br><strong>NOTA:</strong> Muitos dos fornecedores deixaram de fornecer suporte
+      para esta funcionalidade e não é recomendado para uso a não ser que tenham um
+      gateway dedicado de SMS para Email.
+  - - Definir o nome de utilizador/login
+    - pref: SMSSendUsername
+    - e a palavra-passe
+    - pref: SMSSendPassword
+    - . Sobrepor o endereço de origem com
+    - class: email
+      pref: EmailSMSSendDriverFromAddress
+    - para os emails enviados com o driver de envio "Email".
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: FallbackToSMSIfNoEmail
+    - enviar as mensagens das sugestões de aquisição por SMS se o email do leitor
+      não estiver definido.
+  - - 'Enviar as notificações de renovação automática:'
+    - choices:
+        cron: (Obsoleto) de acordo com a opção --send-notices da tarefa de envio
+        never: nunca
+        preferences: de acordo com as preferências de mensagens do leitor
+      pref: AutoRenewalNotices
+  Expiração da conta de leitor:
+  - - Quando renovar leitores, basear a nova data de expiração na
+    - choices:
+        combination: na última data entre a data corrente e da data de expiração.
+        dateexpiry: data de expiração corrente do leitor.
+        now: data corrente.
+      pref: BorrowerRenewalPeriodBase
+  - - Mostrar um aviso ao leitor se a sua conta está a expirar ou expirou
+    - class: integer
+      pref: NotifyBorrowerDeparture
+    - dias de antecedência.
+  - - Enviar um aviso de expiração de conta quando o cartão de leitor estiver a expirar
+      em
+    - class: integer
+      pref: MembershipExpiryDaysNotice
+    - dias.
+    - <br><strong>NOTA:</strong> Esta preferência de sistema necessita que a tarefa
+      <code>misc/cronjobs/membership_expiry.pl</code> esteja em funcionamento. Peça
+      ao administrador do sistema para a configurar.
+  Formulários dos leitores:
+  - - 'As seguintes <a href=''http://schema.koha-community.org/__VERSION__/tables/borrowers.html''
+      target=''blank''>colunas da base de dados</a> devem ser preenchidas no ecrã
+      de registo do leitor:'
+    - exclusions: flags
+      pref: BorrowerMandatoryField
+      source: borrowers
+      type: modalselect
+    - <strong>NOTA:</strong> Se a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=autoMemberNum">autoMemberNum</a>
+      estiver activa, a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=BorrowerMandatoryField">BorrowerMandatoryField</a>
+      não deve conter o campo <code>cardnumber</code>.
+  - - 'As seguintes <a href=''http://schema.koha-community.org/__VERSION__/tables/borrowers.html''
+      target=''blank''>colunas da base de dados</a> não devem aparecer no ecrã de
+      modificação de leitor:'
+    - exclusions: branchcode|categorycode|flags
+      pref: BorrowerUnwantedField
+      source: borrowers
+      type: modalselect
+  - - 'O leitores podem ter os seguintes títulos:'
+    - class: multi
+      pref: BorrowersTitles
+    - (múltiplas escolhas separadas com |)
+  - - choices:
+        '0': Não preencher
+        '1': Preencher
+      pref: autoMemberNum
+    - o campo do número de cartão na adição do leitor com o próximo número de cartão
+      disponível (por exemplo, se o maior número de cartão usado for 26345000012941,
+      então o campo será preenchido com 26345000012942).
+    - <strong>NOTA:</strong> Se a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=autoMemberNum">autoMemberNum</a>
+      estiver activa, a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=BorrowerMandatoryField">BorrowerMandatoryField</a>
+      não deve conter o campo <code>cardnumber</code>.
+  - - Números de cartão dos leitores devem
+    - pref: CardnumberLength
+    - caracteres. O tamanho pode ser um único número para especificar um tamanho exato,
+      um intervalo separado por vírgula ('Min,Max') ou um máximo sem mínimo (',Max').
+    - Se a coluna <code>cardnumber</code> estiver incluída na lista da preferência
+      <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=BorrowerMandatoryField">BorrowerMandatoryField</a>,
+      o tamanho mínimo, se não especificado, é 1 por omissão. O máximo não pode ser
+      maior que 32 que é o tamanho da coluna na base de dados.
+  - - choices:
+        '0': Não fazer
+        '1': Fazer
+      pref: uppercasesurnames
+    - o armazenamento e a visualização dos sobrenomes em letras maiúsculas.
+  - - 'As seguintes <a href=''http://schema.koha-community.org/__VERSION__/tables/borrowers.html''
+      target=''blank''>colunas da base de dados</a>:'
+    - pref: PatronQuickAddFields
+      source: borrowers
+      type: modalselect
+    - serão adicionados ao formulário de criação rápida de leitor quando um novo leitor
+      estiver a ser criado. Mostrará apenas os campos obrigatórios e os campos especificados
+      aqui. Se aplicável, o formulário do fiador também será mostrado, campos individuais
+      nesse formulário serão ignorados.
+  - - 'Quando adicionar novos leitores ou modificar os leitores existentes, os seguintes
+      campos do formulário devem aparecer escondidos (podem ser mostrados posteriormente):'
+    - multiple:
+        additional: Atributos adicionais e identificadores
+        alt_address: Endereço alternativo
+        alt_contact: Contato alternativo
+        debarments: Restrições do leitor (leitores existentes)
+        flags: Permissões de conta do leitor (leitores existentes)
+        guarantor: Informação do fiador
+        housebound: Regras de empréstimo caseiro
+        identity: Identidade do leitor
+        lib_mgmt: Gestão da biblioteca
+        lib_setup: Configuração da biblioteca
+        login: Autenticação no interfaces OPAC/Técnicos
+        messaging: Preferências de mensagens
+        primary_address: Endereço principal
+        primary_contact: Contato principal
+      pref: CollapseFieldsPatronAddForm
+  - - 'As seguintes <a href=''http://schema.koha-community.org/__VERSION__/tables/borrowers.html''
+      target=''blank''>colunas da base de dados</a>:'
+    - pref: PatronDuplicateMatchingAddFields
+      source: borrowers
+      type: modalselect
+    - serão utilizados para detectar possíveis duplicados aquando da criação de um
+      novo leitor
+  Geral:
+  - - choices:
+        hardno: Não verificar
+        hardyes: Verificar
+        softno: A menos que sobreposto pela categoria de leitor, não verificar
+        softyes: A menos que sobreposto pela categoria de leitor, verificar
+      default: no
+      pref: CheckPrevCheckout
+    - o histórico de empréstimo do leitor para verificar se o exemplar foi emprestado
+      anteriormente.
+  - - Acionar o aviso se o exemplar tiver sido emprestado há menos de
+    - default: 0
+      pref: CheckPrevCheckoutDelay
+    - dias.
+    - Necessita que a preferência <a href='/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=CheckPrevCheckout'>CheckPrevCheckout</a>
+      esteja ativa. Não existe limite de tempo se estiver definida a 0 ou vazia.
+  - - choices:
+        '0': Não activar
+        '1': Activar
+      pref: ExtendedPatronAttributes
+    - a pesquisa, edição e exibição de atributos personalizados para os leitores.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: intranetreadinghistory
+    - que os técnicos acedam ao histórico de empréstimos e de reservas do leitor (o
+      histórico de empréstimos continuará a ser armazenado, independentemente dos
+      técnicos poderem ou não aceder).
+  - - Quando eliminar um leitor tem listas públicas ou partilhadas,
+    - choices:
+        delete: eliminar essas listas.
+        transfer: alterar o dono dessas listas.
+      pref: ListOwnershipUponPatronDeletion
+    - Todas as listas públicas ou partilhadas deste leitor são eliminadas ou tranferidas
+      para um novo dono de acordo com a sua opção; as listas privadas (não partilhadas)
+      são eliminadas.
+    - '<br/>Quando alterar o dono na eliminação do leitor, o número de leitor '
+    - class: integer
+      pref: ListOwnerDesignated
+    - será usado novo dono da lista, ou deixe em campo em branco para alterar o dono
+      para o técnico que procedeu à eliminição do leitor.
+  - - A multa de atraso para todos os empréstimo vai ao máximo até
+    - class: currency
+      pref: MaxFine
+    - '[% local_currency %].'
+    - Valor vazio significa sem limite. Limites únicos de exemplares são definidos
+      na table das regras de circulação.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: patronimages
+    - que as imagens sejam carregadas e mostradas para os leitores no interface dos
+      técnicos.
+  - - Por omissão, mostrar
+    - class: integer
+      pref: PatronsPerPage
+    - resultados por página no interface dos técnicos.
+  - - 'Lista de campos separados por vírgulas que serão usados por omissão na pesquisa
+      de leitores através da opção "padrão" no módulo de leitores ou de empréstimo:'
+    - class: multi
+      pref: DefaultPatronSearchFields
+    - Se deixado em branco, o Koha utilizará por omissão "firstname,middle_name,surname,othernames,cardnumber,userid".
+      Campos adicionados nesta preferência serão adicionados como opções de pesquisa
+      na caixa de selecção da página de pesquisa de leitores.
+  - - choices:
+        contains: Contém
+        starts_with: Começa por
+      pref: DefaultPatronSearchMethod
+    - Ative este método de pesquisa para determinar se é usado o Começa por ou o Contém
+      na funcionalidade de autocomplete das pesquisas de leitores.
+  - - 'Mostrar os campos seguintes da tabela dos exemplares da base de dados como
+      colunas no separador de estatísticas no registo do leitor: '
+    - pref: StatisticsFields
+      source: items
+      type: modalselect
+    - 'Se deixado em branco, a omissão é: location|itype|ccode'
+  - - choices:
+        '0': Não activar
+        '1': Activar
+      pref: EnableBorrowerFiles
+    - a capacidade de carregar e associar ficheiros arbitrários a um registo de leitor.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: useDischarge
+    - que os bibliotecários coloquem quitações aos leitores e que os leitores realizem
+      pedidos de quitação.
+  - - choices:
+        '0': Não efetuar
+        '1': Efetuar
+      pref: FeeOnChangePatronCategory
+    - a cobrança da taxa quando um leitor passa para uma categoria com taxa de inscrição.
+  - - choices:
+        '0': Não registar
+        '1': Registar
+      pref: TrackLastPatronActivity
+    - a última atividade do leitor.
+    - A primeira vez que um leitor se autenticar no OPAC, conectar ao Koha via SIP
+      ou via ILS-DI ou requisitar um exemplar, a data borrowers.lastseen será atualizada
+      com a data e hora atuais.
+  - - choices:
+        '0': Desabilitar
+        '1': Habilitar
+      pref: AutoApprovePatronProfileSettings
+    - aprovação automática de actualizações aos detalhes do leitor, a partir do OPAC.
+    - Requer que a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OPACPatronDetails">OPACPatronDetails</a>
+      esteja activa.
+  - - choices:
+        '0': Permitir que todos os utilizadores autorizados
+        '1': Permitir que apenas os superbibliotecários
+      pref: ProtectSuperlibrarianPrivileges
+    - acedam/modifiquem os privilégios de superbibliotecários.
+    - <br><strong>Nota:</strong> Um utilizador autorizado precisa de ter a permissão
+      'permissões' ativa (se não for superbibliotecário).
+  - - choices:
+        '0': Permitir que apenas o staff
+        '1': Permitir que os leitores
+      pref: AllowPatronToControlAutorenewal
+    - activem/desactivem as auto-renovações para a conta. Se permitido um leitor poderá
+      actualizar a sua própria conta para activar/desactivar a auto-renovação.
+  - - Bloquear os leitores expirados após
+    - class: integer
+      pref: LockExpiredDelay
+    - dias. Deixe vazio para não ativar a funcionalidade.
+    - <br><strong>NOTA:</strong> Esta preferência de sistema necessita que a tarefa
+      misc/cronjobs/cleanup_database.pl esteja em funcionamento. Peça ao administrador
+      do sistema para a configurar.
+  Privacidade:
+  - - Usar o seguinte URL
+    - class: url
+      pref: PrivacyPolicyURL
+    - como a sua política de privacidade nas mensagens sobre a privacidade e a proteção
+      dos dados. (Se a política da privacidade dos dados estiver a forçar o consentimento,
+      assegure-se que a página não está bloqueada.)
+    - <br><strong>NOTA:</strong> O URL apenas será mostrado se a preferência de sistema
+      <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=PrivacyPolicyConsent">PrivacyPolicyConsent</a>
+      estiver ativa.
+  - - 'Definir a política da privacidade dos dados como:'
+    - choices:
+        '': desativada
+        Enforced: forçada
+        Permissive: permissiva
+      pref: PrivacyPolicyConsent
+    - . Quando estiver como forçada, os leitores têm de dar o seu consentimento antes
+      de usar o OPAC. Se estiver definida como permissiva, o Koha irá avisar mas não
+      vai forçar o consentimento.
+    - <br><strong>NOTA:</strong> Se ativar esta preferência, deve também definir o
+      URL para a sua política de privacidade na preferência de sistema <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=PrivacyPolicyURL">PrivacyPolicyURL</a>.
+  - - Bloquear/expirar os leitores que tenham submetido um pedido de cancelamento
+      de inscrição (consentimento recusado) após
+    - pref: UnsubscribeReflectionDelay
+    - dias, anonimizar as contas de leitor bloqueadas/expiradas após
+    - pref: PatronAnonymizeDelay
+    - dias e remover as contas de leitor anonimizadas após
+    - pref: PatronRemovalDelay
+    - 'dias. <br>IMPORTANTE: nenhuma ação é efetuada quando estes valores estão vazios
+      (sem texto). No entanto, o zero (''0'') é interpretado como ação imediata (executar
+      agora)! As ações são realizadas pela tarefa de limpeza da base de dados.'
+  Relações dos leitores:
+  - - 'Fiadores podem ser o seguinte daqueles que garantem:'
+    - class: multi
+      pref: borrowerRelationship
+    - (insira os múltiplos valores separados por |). Deixe em branco para não activar.
+  - - 'Quando adicionar um leitor a um leitor fiador o sistema deve preencher os seguintes
+      campos do leitor com os dados do registo do leitor fiador:'
+    - multiple:
+        B_address: Endereço alternativo - Morada
+        B_address2: Endereço alternativo - Morada 2
+        B_city: Endereço alternativo - Cidade
+        B_country: Endereço alternativo - País
+        B_email: Endereço alternativo - Email
+        B_phone: Endereço alternativo - Telefone
+        B_state: Endereço alternativo - Estado
+        B_streetnumber: Endereço alternativo - Número de rua
+        B_streettype: Endereço alternativo - Tipo de rua
+        B_zipcode: Endereço alternativo - Código postal
+        address: Endereço principal - Morada
+        address2: Endereço principal - Morada 2
+        altcontactaddress1: Contacto alternativo - Morada
+        altcontactaddress2: Contacto alternativo - Morada 2
+        altcontactaddress3: Contacto alternativo - Cidade
+        altcontactcountry: Contacto alternativo - País
+        altcontactfirstname: Contacto alternativo - Primeiro nome
+        altcontactphone: Contacto alternativo - Telefone
+        altcontactstate: Contacto alternativo - Estado
+        altcontactsurname: Contacto alternativo - Apelido
+        altcontactzipcode: Contacto alternativo - Código postal
+        city: Endereço principal - Cidade
+        contactnote: Endereço alternativo - Nota de contato
+        country: Endereço principal - País
+        email: Contato - Email principal
+        emailpro: Contato - Email secundário
+        fax: Contato - Fax
+        mobile: Contato - Outro telefone
+        phone: Contato - Telefone principal
+        phonepro: Contato - Telefone secundário
+        state: Endereço principal - Estado
+        streetnumber: Endereço principal - Número de polícia
+        streettype: Endereço principal - Tipo de rua
+        surname: Apelido
+        zipcode: Endereço principal - Código postal
+      pref: PrefillGuaranteeField
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowStaffToSetCheckoutsVisibilityForGuarantor
+    - que os técnicos possam definir a possibilidade dos empréstimos do leitores sejam
+      vistos por leitores ligados no OPAC.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowStaffToSetFinesVisibilityForGuarantor
+    - que os técnicos possam definir a possibilidade das multas do leitor sejam vistos
+      por leitores ligados no OPAC.
+  Segurança:
+  - - As palavras-passe dos leitores e técnicos devem ter pelo menos
+    - class: integer
+      pref: minPasswordLength
+    - caracteres.
+  - - choices:
+        '0': Não requer
+        '1': Requer
+      pref: RequireStrongPassword
+    - que os técnicos e os leitores utilizem palavras-passe seguras
+    - (deve conter pelo menos um dígito, uma minúscula e uma maiúscula).
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: EnableExpiredPasswordReset
+    - a capacidade dos leitores consigam redefinir a palavra-passe quando a mesma
+      expirou.
+    - Se não estiver ativa, os leitores devem usar a funcionalidade de recuperação
+      da palavra-passe ou pedir aos técnicos
+    - para redefinir a palavra-passe.
+  - - Bloquear a conta de um leitor se atingir as
+    - class: integer
+      pref: FailedLoginAttempts
+    - tentativas de autenticação falhadas.
+  - - choices:
+        '0': Não activar
+        '1': Activar
+      pref: Pseudonymization
+    - pseudonimização para cumprir com as políticas de privcidade de dados e as regulações
+      como o RGPD nas informações pessoais.
+    - Leitores e transacções serão copiadas para uma tabela separada para fins estatísticos.
+    - '<br/>Use os seguintes campos para leitores:'
+    - multiple:
+        branchcode: Biblioteca do leitor
+        categorycode: Categoria de leitor
+        city: Cidade
+        country: País
+        dateenrolled: Data da criação do leitor no Koha
+        sex: Género do leitor
+        sort1: Sort 1
+        sort2: Sort 2
+        state: Estado
+        title: Título do leitor
+        zipcode: Código postal
+      pref: PseudonymizationPatronFields
+    - '<br/> E os seguintes campos para as transacções:'
+    - multiple:
+        ccode: Colecção
+        datetime: Data e hora da transacção
+        holdingbranch: Biblioteca de empréstimo
+        homebranch: Biblioteca de origem
+        itemcallnumber: Cota do exemplar
+        itemnumber: Número do exemplar
+        itemtype: Tipo de documento
+        location: Localização
+        transaction_branchcode: Biblioteca onde ocorreu a transacção
+        transaction_type: Tipo de transacção
+      pref: PseudonymizationTransactionFields

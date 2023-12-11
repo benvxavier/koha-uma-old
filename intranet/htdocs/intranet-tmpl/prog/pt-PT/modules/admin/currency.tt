@@ -1,0 +1,286 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE KohaDates %]
+[% USE TablesSettings %]
+[% USE HtmlTags %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>[% IF op == 'add_form' %][% IF currency %]Modificar moeda '[% currency.currency | html %]'[% ELSE %]Nova moeda[% END %][% END %] [% IF op == 'delete_confirm' %]Confirmar eliminação da moeda '[% currency.currency | html %]'[% END %] [% IF op == 'list' %]Moedas[% END %] &rsaquo; Moedas e taxas de câmbio &rsaquo; Administração &rsaquo; Koha </title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="admin_currency" class="admin">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'currencies-admin-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/admin-home.pl">Administração</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/currency.pl">Moedas e câmbios</a>
+ [% END %]
+
+ [% IF op == 'add_form' %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ [% IF currency %]
+ <span>Modificar moeda '[% currency.currency | html %]'</span>
+ [% ELSE %]
+ <span>Nova moeda</span>
+ [% END %]
+ [% END %]
+ [% END %]
+
+ [% IF op == 'delete_confirm' %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Confirmar a eliminação da moeda [% currency.currency | $HtmlTags tag='span' attributes=>'class="ex"' %]</span>
+ [% END %]
+
+ [% ELSIF op == 'list' %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Divisas</span>
+ [% END %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+[% IF op == 'list' %]
+<div id="toolbar" class="btn-toolbar">
+ <a class="btn btn-default" id="newcurrency" href="/cgi-bin/koha/admin/currency.pl?op=add_form"><i class="fa fa-plus"></i> Nova moeda</a>
+</div>
+[% END %]
+
+[% FOR m IN messages %]
+ <div class="dialog [% m.type | html %]">
+ [% SWITCH m.code %]
+ [% CASE 'error_on_update' %]
+ <span>Ocorreu um erro ao atualizar esta moeda. Pode já existir no sistema</span>
+ [% CASE 'error_on_insert' %]
+ <span>Ocorreu um erro ao adicionar esta moeda. O código da moeda pode já existir</span>
+ [% CASE 'error_on_delete' %]
+ <span>Ocorreu um erro ao eliminar esta moeda. Verifique os registos do sistema</span>
+ [% CASE 'success_on_update' %]
+ <span>Moeda atualizada com sucesso</span>
+ [% CASE 'success_on_insert' %]
+ <span>Moeda adicionada com sucesso</span>
+ [% CASE 'success_on_delete' %]
+ <span>Moeda eliminada com sucesso</span>
+ [% CASE %]
+ <span>[% m.code | html %]</span>
+ [% END %]
+ </div>
+[% END %]
+
+
+
+[% IF op == 'add_form' %]
+
+<form action="/cgi-bin/koha/admin/currency.pl" name="Aform" method="post" class="validated">
+ <input type="hidden" name="op" value="add_validate" />
+ <fieldset class="rows">
+ <legend>
+ <h1>
+ [% IF currency %]
+ <span>Modificar moeda</span>
+ [% ELSE %]
+ <span>Nova moeda</span>
+ [% END %]
+ </h1>
+ </legend>
+ <ol>
+ <li>
+ [% IF currency %]
+ <span class="label">Moeda: </span>
+ <input type="hidden" name="is_a_modif" value="1" />
+ <input type="hidden" name="currency_code" id="currency" value="[% currency.currency | html %]" />[% currency.currency | html %]
+ [% ELSE %]
+ <label for="currency_code" class="required">Moeda: </label>
+ <input type="text" name="currency_code" id="currency_code" class="focus" size="50" maxlength="50" required="required" class="required" /> <span class="required">Obrigatório</span>
+ [% END %]
+ </li>
+ <li>
+ <label for="rate" class="required">Taxa: </label>
+ <input type="text" name="rate" id="rate" size="10" maxlength="10" value="[% currency.rate | html %]" required="required" class="required" /> <span class="required">Obrigatório</span>
+ </li>
+ <li>
+ <label for="symbol" class="required">Símbolo: </label>
+ <input type="text" name="symbol" id="symbol" size="5" maxlength="5" value="[% currency.symbol | html %]" required="required" class="required" /> <span class="required">Obrigatório</span>
+ </li>
+ <li>
+ <label for="isocode">Código ISO: </label>
+ <input type="text" name="isocode" id="isocode" size="5" maxlength="5" value="[% currency.isocode | html %]" />
+ </li>
+ <li>
+ <span class="label">Atualizado: </span>[% currency.timestamp | $KohaDates %]
+ </li>
+ <li>
+ <label for="p_sep_by_space">Separação entre o símbolo e o valor: </label>
+ [% IF currency.p_sep_by_space %]
+ <input type="checkbox" id="p_sep_by_space" name="p_sep_by_space" value="1" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" id="p_sep_by_space" name="p_sep_by_space" value="1" />
+ [% END %]
+ </li>
+ <li>
+ <label for="active">Activo: </label>
+ [% IF currency.active %]
+ <input type="checkbox" id="active" name="active" value="1" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" id="active" name="active" value="1" />
+ [% END %]
+ <span id="hint" class="hint"></span>
+ </li>
+ </ol>
+ </fieldset>
+
+ <fieldset class="action">
+ <input class="btn btn-primary" type="submit" value="Submeter" />
+ <a href="/cgi-bin/koha/admin/currency.pl" class="cancel">Anular</a>
+ </fieldset>
+ </form>
+
+[% END %]
+
+[% IF op =='delete_confirm' %]
+ [% IF nb_of_orders or nb_of_vendors %]
+ <div class="dialog alert">
+ <h1>Não é possível eliminar a moeda [% currency.currency | $HtmlTags tag='span' attributes=>'class="ex"' %]</h1>
+ <p>
+ [% IF nb_of_orders %]
+ <span>Esta moeda é usada por [% nb_of_orders | html %] encomendas.</span>
+ [% ELSIF nb_of_vendors %]
+ <span>Esta moeda é usada por [% nb_of_vendors | html %] fornecedores.</span>
+ [% END %]
+ <span>Impossível eliminar</span>
+ </p>
+ <form action="/cgi-bin/koha/admin/currency.pl" method="post">
+ <button type="submit" class="approve"><i class="fa fa-fw fa-check"></i> OK</button>
+ </form>
+ </div>
+ [% ELSE %]
+ <div class="dialog alert">
+ <h1>Confirmar a eliminação da moeda [% currency.currency | $HtmlTags tag='span' attributes=>'class="ex"' %]</h1>
+ <table>
+ <tr><th>Moeda</th>
+ <td>[% currency.currency | html %]</td>
+ </tr>
+ <tr><th>Taxa</th>
+ <td>[% currency.rate | html %]</td>
+ </tr>
+ </table>
+ <form action="/cgi-bin/koha/admin/currency.pl" method="post">
+ <input type="hidden" name="op" value="delete_confirmed" />
+ <input type="hidden" name="currency_code" value="[% currency.currency | html %]" />
+ <button type="submit" class="approve"><i class="fa fa-fw fa-check"></i> Sim, eliminar esta moeda</button>
+ </form>
+ <form action="/cgi-bin/koha/admin/currency.pl" method="post">
+ <button type="submit" class="deny"><i class="fa fa-fw fa-remove"></i> Não, não eliminar</button>
+ </form>
+ </div>
+ [% END %]
+[% END %]
+
+[% IF op == 'list' %]
+
+<h1>Moedas e câmbios</h1>
+
+ [% IF currencies and no_active_currency %]
+ <div class="dialog alert"><h3>Nenhuma moeda ativa definida</h3><p>Por favor edite uma moeda e marque-a como activa.</p></div>
+ [% END %][% IF searchfield %] Pesquisou por [% searchfield | html %]</span>
+ [% END %]
+
+ <div class="page-section">
+ <table id='currencies-table'>
+ <thead>
+ <tr>
+ <th>Moeda</th>
+ <th>Taxa</th>
+ <th>Símbolo</th>
+ <th>Código ISO</th>
+ <th>Última atualização</th>
+ <th>Activo</th>
+ <th>Arquivado</th>
+ <th class="NoSort noExport">Ações</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH currency IN currencies %]
+ <tr>
+ <td>[% currency.currency | html %]</td>
+ <td>[% currency.rate | html %]</td>
+ <td>[% currency.symbol | html %]</td>
+ <td>[% currency.isocode | html %]</td>
+ <td data-order="[% currency.timestamp | html %]">[% currency.timestamp | $KohaDates %]</td>
+ <td style="color:green;">[% IF currency.active %]✓[% END %]</td>
+ <td>[% IF currency.archived %]Sim[% END %]</td>
+ <td class="actions">
+ <a class="btn btn-default btn-xs" href="/cgi-bin/koha/admin/currency.pl?op=add_form&amp;currency_code=[% currency.currency | html %]"><i class="fa fa-pencil"></i> Alterar</a>
+ <a class="btn btn-default btn-xs" href="/cgi-bin/koha/admin/currency.pl?op=delete_confirm&amp;currency_code=[% currency.currency | html %]"><i class="fa fa-trash"></i> Apagar</a>
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div>
+
+ <div class="hint">
+ <p>
+ Quando importar ficheiros MARC nas ferramentas, a ferramenta irá tentar encontrar e usar o preço da moeda ativa correntemente. </p>
+ <p>
+ Alguns exemplos de preços compatíveis incluem "$9.99", "9.99 USD", "$9.99 USD", "9.99 USD (10.00 CAN)", "$9.99 USD (paperback)". Estes exemplos assumem a moeda USB como a moeda ativa. </p>
+ </div>
+
+[% END %]
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'admin-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/admin-menu.js") | $raw %]
+ [% INCLUDE 'datatables.inc' %]
+ [% INCLUDE 'columns_settings.inc' %]
+ <script>
+
+        function check_currency(val) {
+            if ( val == 1.0 ) {
+                $("#active").prop('disabled', false);
+                $("#hint").html("");
+            } else {
+                $("#active").prop('checked', false);
+                $("#active").prop('disabled', true);
+                $("#hint").html(_("A moeda activa deve ter um câmbio de 1.0"));
+            }
+        }
+
+        $(document).ready(function() {
+            columns_settings = [% TablesSettings.GetTableSettings( 'admin', 'currency', 'currencies-table', 'json' ) | $raw %]
+            var issuest = KohaTable("currencies-table", {
+            }, columns_settings );
+
+            // prevents users to check active with a currency != 1
+            $("#rate").keyup(function() {
+                check_currency( $(this).val() );
+            });
+            check_currency( $("#rate").val() );
+            $("#currency_code").on("blur",function(){
+                toUC(this);
+            });
+        });
+
+    </script>
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

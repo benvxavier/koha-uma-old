@@ -1,0 +1,50 @@
+[% USE Koha %]
+[% USE AdditionalContents %]
+[% SET OpacNav = AdditionalContents.get( location => "OpacNav", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
+[% SET OpacNavBottom = AdditionalContents.get( location => "OpacNavBottom", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Por favor confirme o seu registo &rsaquo; [% IF ( LibraryNameTitle ) %][% LibraryNameTitle | html %][% ELSE %]Koha online[% END %] catálogo</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% BLOCK cssinclude %][% END %]
+</head>
+[% INCLUDE 'bodytag.inc' bodyid='opac-confirmation-pending' %]
+[% INCLUDE 'masthead.inc' %]
+
+ <div class="main">
+ <nav aria-label="Caminho de navegação" class="breadcrumbs" id="breadcrumbs">
+ <ol class="breadcrumb">
+ <li class="breadcrumb-item">
+ <a href="/cgi-bin/koha/opac-main.pl">Início</a>
+ </li>
+ <li class="breadcrumb-item active">
+ <a href="#">Registar nova conta</a>
+ </li>
+ </ol>
+ </nav> <!-- /#breadcrumbs -->
+
+ <div class="container-fluid">
+ <div class="row">
+ [% IF ( OpacNav ) %]
+ <div class="col-lg-2">
+ [% INCLUDE 'navigation.inc' %]
+ </div>
+ <div class="col-10 order-first order-md-first order-lg-2">
+ [% ELSE %]
+ <div class="col order-first order-md-first order-lg-2">
+ [% END %]
+ <div id="registration-confirmation-pending" class="maincontent">
+ <h1>Por favor confirme o seu registo</h1>
+ <div id="confirmation-pending" class="alert alert-info">
+
+ <p>Um email de confirmação foi enviado para o endereço de email <strong>[% email | html %]</strong>.</p>
+
+ <p>A sua conta não será activada até que siga a ligação fornecida no email de confirmação.</p>
+ </div> <!-- /#confirmation-pending -->
+ </div> <!-- /#registration-confirmation-pending -->
+ </div> <!-- /.col/10 -->
+ </div> <!-- /.row -->
+ </div> <!-- /.container-fluid -->
+ </div> <!-- /.main -->
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %][% END %]

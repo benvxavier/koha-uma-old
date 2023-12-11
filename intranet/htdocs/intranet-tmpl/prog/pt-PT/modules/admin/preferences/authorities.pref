@@ -1,0 +1,144 @@
+---
+Autoridades -:
+  Geral:
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      default: no
+      pref: AuthDisplayHierarchy
+    - a hierarquia de termos mais abrangentes/termos mais restritos ao ver as autoridades.
+  - - Usar o seguinte texto para alterar o modo como os registos de autoridade controlam
+      os indicadores dos campos do registo bibliográfico (e possivelmente o subcampo
+      $2).<br>
+    - 'Linhas iniciadas pelo símbolo de comentário (#) serão ignorados. Cada linha
+      deve ter a seguinte forma: (marc21|unimarc), tag, ind1:(auth1|auth2|some_value),
+      ind2:(auth1|auth2|thesaurus|some_value).<br>'
+    - Aqui auth1 e auth2 referem-se aos indicadores do registo de autoridade, tag
+      é o número do campo do registo bibliográfico ou um asterisco (*), e some_value
+      é um valor fixo (um caractere).<br>
+    - A opção thesaurus em MARC21 referencia indicadores controlados pelo campo de
+      autoridade 008/11 e 040$f.
+    - pref: AuthorityControlledIndicators
+      type: textarea
+  - - Quando editar registos,
+    - choices:
+        '0': não forçar
+        '1': forçar
+      default: yes
+      pref: RequireChoosingExistingAuthority
+    - que os catalogadores referenciem autoridades existentes. Se definir para não
+      forçar, os catalogadores podem inserir manualmente termos não controlados nos
+      campos controlados
+  - - Quando editar registos,
+    - choices:
+        '0': não gerar
+        '1': gerar
+      default: yes
+      pref: AutoCreateAuthorities
+    - registos de autoridade que estejam em falta (<a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=RequireChoosingExistingAuthority">RequireChoosingExistingAuthority</a>
+      deve ser definida para "não permitir" para que esta preferência funcione).
+  - - Quando modificar um registo de autoridade, não atualizar os registos bibliográficos
+      associados se o número exceder os
+    - default: 50
+      pref: AuthorityMergeLimit
+    - registos. (Acima deste limite, a tarefa merge_authority irá alterar esses registos.)
+    - <br><strong>NOTA:</strong> Esta preferência de sistema necessita que a tarefa
+      <code>misc/cronjobs/merge_authorities.pl</code> esteja em funcionamento. Peça
+      ao administrador do sistema para a configurar.
+  - - 'Usar o seguinte texto para o conteúdo do campo de controlo 008 das autoridades
+      MARC21 na posição 06-39 (campo de tamanho fixo). NÃO incluir a data (posição
+      00-05):'
+    - class: code
+      default: '|| aca||aabn           | a|a     d'
+      pref: MARCAuthorityControlField008
+      type: textarea
+  - - choices:
+        '0': Não utilizar
+        '1': Utilizar
+      default: yes
+      pref: UseAuthoritiesForTracings
+    - números dos registos de autoridade em vez de texto para as pesquisas de assunto.
+  - - 'Usar o seguinte texto para o conteúdo do campo 100 das autoridades UNIMARC
+      na posição 08-35 (campo de tamanho fixo). NÃO incluir a data (posição 00-07):'
+    - class: code
+      default: afrey50      ba0
+      pref: UNIMARCAuthorityField100
+      type: textarea
+  - - Quando atualizar os registos bibliográficos a partir da unificação de autoridades,
+      tratar os subcampos de um campo relevante do registo bibliográfico no modo
+    - choices:
+        loose: livre
+        strict: restrito
+      default: loose
+      pref: AuthorityMergeMode
+    - . No modo restrito, os subcampos que não se encontram no registo de autoridade
+      serão eliminados. No modo livre, os subcampos serão mantidos. O modo livre é
+      o modo por omissão.
+  - - 'Usar o seguinte texto como o valor por omissão do campo 667$a dos registos
+      de autoridade MARC21 (a preferência <a href=''/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=RequireChoosingExistingAuthority''>RequireChoosingExistingAuthority</a>
+      não deve estar ativa e a preferência <a href=''/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=AutoCreateAuthorities''>AutoCreateAuthorities</a>
+      deve estar ativa):'
+    - class: code
+      default: Machine generated authority record
+      pref: GenerateAuthorityField667
+      type: textarea
+  - - 'Usar o seguinte texto como o valor por omissão do campo 670$a dos registos
+      de autoridade MARC21 (a preferência <a href=''/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=RequireChoosingExistingAuthority''>RequireChoosingExistingAuthority</a>
+      não deve estar ativa e a preferência <a href=''/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=AutoCreateAuthorities''>AutoCreateAuthorities</a>
+      deve estar ativa):'
+    - class: code
+      default: Work cat.
+      pref: GenerateAuthorityField670
+      type: textarea
+  Ligação:
+  - - Usar o
+    - choices:
+        Default: omissão
+        FirstMatch: primeira correspondência
+        LastMatch: última correspondência
+      default: Default
+      pref: LinkerModule
+    - módulo conector para fazer corresponder cabeçalhos com registos de autoridade.
+  - - 'Definir as seguintes opções para o conector de autoridades:'
+    - class: multi
+      pref: LinkerOptions
+    - (separar as opções com |).
+  - - choices:
+        '0': Não
+        '1': Fazer
+      default: yes
+      pref: LinkerRelink
+    - religar cabeçalhos que já se encontravam ligados aos registos de autoridade.
+  - - choices:
+        '0': Não
+        '1': Manter
+      default: no
+      pref: LinkerKeepStale
+    - manter ligações existentes para registos de autoridade em cabeçalhos onde seja
+      impossível encontrar uma correspondência.
+  - - choices:
+        '0': Não fazer
+        '1': Fazer
+      default: no
+      pref: CatalogModuleRelink
+    - a religação automaticamente dos cabeçalhos que já tenham sido anteriormente
+      ligados quando os registos foram guardados no módulo de catalogação (requer
+      a preferência de sistema <a href='/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=AutoLinkBiblios'>AutoLinkBiblios</a>).
+  - - choices:
+        '0': Não tentar
+        '1': Tentar
+      default: no
+      pref: AutoLinkBiblios
+    - a ligação automaticamente dos cabeçalhos quando guardar os registos no módulo
+      de catalogação, obedecendo às preferências de sistema <a href='/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=LinkerRelink'>LinkerRelink</a>
+      e <a href='/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=CatalogModuleRelink'>CatalogModuleRelink</a>
+      para a edição de registos.
+  - - choices:
+        '0': Não comparar
+        '1': Comparar
+      default: no
+      pref: LinkerConsiderThesaurus
+    - a fonte para os cabeçalhos 6XXX com a fonte do thesaurus nos registos de autoridade
+      durante a ligação. A ativação desta preferência pode exigir uma reindexação
+      e pode gerar novos registos de autoridade se a preferência AutoCreateAuthorities
+      estiver ativa.

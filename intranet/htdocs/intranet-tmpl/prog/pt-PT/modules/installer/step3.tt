@@ -1,0 +1,444 @@
+[% USE raw %]
+[% INCLUDE 'doc-head-open.inc' %]
+
+<title>
+ [% IF ( proposeimport ) %] Definir a base de dados [% END %] [% IF ( importdatastructure ) %] [% IF ( error ) %] Erro ao criar as tabelas da base de dados [% ELSE %] Tabelas da base de dados criadas [% END %] [% END %] [% IF ( default ) %] [% IF ( upgrading ) %] Base de dados atualizada [% ELSE %] Instalar algumas configurações básicas [% END %] [% END %] [% IF ( choosemarc ) %] Definir o tipo de MARC a usar [% END %] [% IF ( selectframeworks ) %] Selecionar as configurações por omissão [% END %] [% IF ( addframeworks ) %] Dados por omissão carregados [% END %] [% IF ( finish ) %] Instalação completa [% END %] &rsaquo; Instalador Web &rsaquo; Koha </title>
+
+[% INCLUDE 'installer-doc-head-close.inc' %]
+</head>
+
+<body id="installer" class="installer">
+ <div class="container-fluid">
+ <div class="row">
+ <div id="installer-step3" class="installer-main col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
+ <div id="logo"><a href="#">Koha</a></div>
+ [% IF ( finish ) %]
+ <h1>Instalador Web &rsaquo; Instalação terminada</h1>
+
+ <div id="steps">
+ <ol>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Escolha o idioma</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Verificação das dependências Perl</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Definições da base de dados</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Configurar a base de dados</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Instalar as configurações básicas</li>
+ <li class="open"><i class="fa fa-square-o" aria-hidden="true"></i> Integração</li>
+ </ol>
+ </div>
+
+ <h3>Parabéns, instalação completa</h3>
+ <p><a class="btn btn-primary" href="/cgi-bin/koha/installer/onboarding.pl">Iniciar o processo de instalação</a></p>
+ [% END %]
+
+ [% IF ( choosemarc ) %]
+ <h2>Seleccione o formato MARC</h2>
+
+ <div id="steps">
+ <ol>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Escolha o idioma</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Verificação das dependências Perl</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Definições da base de dados</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Configurar a base de dados</li>
+ <li class="current open"><i class="fa fa-square-o" aria-hidden="true"></i> Instalar as configurações básicas</li>
+ <ol>
+ <li class="current open"><i class="fa fa-square-o" aria-hidden="true"></i> Seleccione o formato MARC</li>
+ <li class="open"><i class="fa fa-square-o" aria-hidden="true"></i> Selecionar as configurações por omissão</li>
+ </ol>
+ <li class="open"><i class="fa fa-square-o" aria-hidden="true"></i> Integração</li>
+ </ol>
+ </div>
+
+ <form name="frameworkselection" method="post" action="install.pl">
+ <input type="hidden" name="step" value="3" />
+ <input type="hidden" name="op" value="selectframeworks" />
+
+ <p>MARC significa Machine Readable Cataloging. Um registo MARC contém informações bibliográficas sobre um exemplar. O MARC21 é utilizado globalmente, enquanto o UNIMARC tende a ser usado na Europa. </p>
+
+ [% FOREACH flavourloo IN flavourloop %]
+ [% IF ( flavourloo.label == "Unimarc") %]
+ <p>
+ <label><input type="radio" name="marcflavour" id="marcflavour" value="[% flavourloo.code | html %]" /> [% flavourloo.label | html %]</label>
+ </p>
+ [% ELSE %]
+ <p>
+ <label><input type="radio" name="marcflavour" id="marcflavour" value="[% flavourloo.code | html %]" checked="checked" /> [% flavourloo.label | html %]</label>
+ </p>
+ [% END %]
+ [% END %]
+ <p><input class="btn btn-primary" type="submit" value="Continuar para o próximo passo" /></p>
+ </form>
+ [% END # / IF choosemarc %]
+
+ [% IF ( selectframeworks ) %]
+ <h1>Instalador Web &rsaquo; Selecionar as configurações por omissão</h1>
+
+ <div id="steps">
+ <ol>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Escolha o idioma</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Verificação das dependências Perl</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Definições da base de dados</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Configurar a base de dados</li>
+ <li class="current open"><i class="fa fa-square-o" aria-hidden="true"></i> Instalar as configurações básicas</li>
+ <ol>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Seleccione o formato MARC</li>
+ <li class="current open"><i class="fa fa-square-o" aria-hidden="true"></i> Selecionar as configurações por omissão</li>
+ </ol>
+ <li class="open"><i class="fa fa-square-o" aria-hidden="true"></i> Integração</li>
+ </ol>
+ </div>
+
+ <form name="frameworkselection" method="post" action="install.pl">
+ <input type="hidden" name="step" value="3" />
+ <input type="hidden" name="op" value="addframeworks" />
+ [% IF ( frameworksloop ) %]
+ <h3>Modelos MARC: [% marcflavour | html %]</h3>
+ [% IF ( en_marc_frameworks ) %]
+ <h4><span class="error">Sem modelos MARC disponível para o seu idioma. Usando o modelo por omissão em inglês (en).<span></h4>
+ [% END %]
+ [% FOREACH frameworksloo IN frameworksloop %]
+ [%- SWITCH frameworksloo.label -%]
+ [%- CASE 'mandatory' -%]<h4>Obrigatório</h4>
+ [%- CASE 'optional'  -%]<h4>Opcional</h4>
+ [%- END -%]
+
+ <div class="checkboxes">
+
+ <p>
+ <a class="selectall [% frameworksloo.label FILTER lower | html %]" href="#">Seleccionar todos</a>
+ <a class="deselectall [% frameworksloo.label FILTER lower | html %]" href="#">Limpar a seleção</a>
+ </p>
+
+ [% FOREACH framework IN frameworksloo.frameworks %]
+ <div class="checkbox">
+ <label>
+ [% IF ( framework.checked ) %]
+ <input type="checkbox" name="framework" value="[% framework.fwkfile | html %]" id ="[% framework.fwkname | html %]" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" name="framework" value="[% framework.fwkfile | html %]" id ="[% framework.fwkname | html %]" />
+ [% END %]
+ [% FOREACH description IN framework.fwkdescription %]
+ [% description | html %]<br />
+ [% END %]
+ <em>([% framework.fwkname | html %])</em>
+ </label>
+ </div>
+ <hr />
+ [% END # / FOREACH framework %]
+ </div>
+ [% END # / FOREACH frameworksloo %]
+ [% END # / IF frameworkdsloop %]
+
+ <h3>Outra data</h3>
+
+ [% IF ( en_sample_data ) %]
+ <h4><span class="error">Sem exemplos de dados e configurações disponíveis para o seu idioma. Exemplos por omissão para Inglês<span></h4>
+ [% END %]
+
+ [% FOREACH levelloo IN levelloop %]
+ [%- SWITCH levelloo.label -%]
+ [%- CASE 'mandatory' -%]<h4>Obrigatório</h4>
+ [%- CASE 'optional'  -%]<h4>Opcional</h4>
+ [%- END -%]
+
+ <div class="checkboxes">
+
+ <p>
+ <a class="selectall [% levelloo.label FILTER lower | html %]" href="#">Seleccionar todos</a>
+ <a class="deselectall [% levelloo.label FILTER lower | html %]" href="#">Limpar a seleção</a>
+ </p>
+
+ [% FOREACH framework IN levelloo.frameworks %]
+ <div class="checkbox">
+ <label for="[% framework.fwkname | html %]">
+ [% IF ( framework.checked ) %]
+ <input type="checkbox" name="framework" value="[% framework.fwkfile | html %]" id="[% framework.fwkname | html %]" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" name="framework" value="[% framework.fwkfile | html %]" id="[% framework.fwkname | html %]" />
+ [% END %]
+ [% FOREACH description IN framework.fwkdescription %]
+ [% description | html %]<br />
+ [% END %]
+ </label>
+ </div> <!-- /div.checkbox -->
+ [% END # / FOREACH framework %]
+ </div>
+ [% END # / FOREACH levelloo %]
+
+ <p>Quando terminar as selecções, clique em 'Importar' para iniciar o processo. Pode demorar a terminar, por favor seja paciente.</p>
+
+ <p><input class="btn btn-primary" type="submit" value="Importar" /></p>
+ </form>
+ [% END # / IF selectframeworks %]
+
+ [% IF ( addframeworks ) %]
+ <h1>Instalador Web &rsaquo; Dados por omissão carregados</h1>
+
+ <div id="steps">
+ <ol>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Escolha o idioma</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Verificação das dependências Perl</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Definições da base de dados</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Configurar a base de dados</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Instalar as configurações básicas</li>
+ <ol>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Seleccione o formato MARC</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Selecionar as configurações por omissão</li>
+ </ol>
+ <li class="open"><i class="fa fa-square-o" aria-hidden="true"></i> Integração</li>
+ </ol>
+ </div>
+
+ [% FOREACH lis IN list %]
+ [% IF lis.level == 'mandatory' %]
+ <h3>Dados obrigatórios adicionados</h3>
+ [% ELSIF lis.level == 'optional' %]
+ <h3>Dados adicionais adicionados</h3>
+ [% ELSIF lis.level == 'mysql' %]
+ <h3>Dados MySQL adicionados</h3>
+ [% ELSIF lis.level == 'localization' %]
+ <h3>Dados de localização adicionados</h3>
+ [% ELSE %]
+ <h3>[% lis.level FILTER ucfirst | html %] data adicionada</h3>
+ [% END %]
+ <ul>
+ [% FOREACH fwklis IN lis.fwklist %]
+ <li>
+ [% fwklis.fwkname | html %]
+ [% IF ( fwklis.error ) %]<p class="bg-danger">[% fwklis.error | html %]</p>[% END %]
+ </li>
+ [% END %]
+ </ul>
+ [% END %]
+
+ <h3>Instalação básica terminada.</h3>
+
+ <p>Nos próximos passos irá proceder à configuração de alguns requisitos básico como definir o utilizador de administração (superbibliotecário).</p>
+
+ <form action="/cgi-bin/koha/installer/install.pl" method="post" name="finish">
+ <h4>
+ Pode ajudar a comunidade do Koha partilhando as suas estatísticas com a comunidade. </h4>
+ <p>
+ Se deseja partilhar alguns dos seus dados, por favor ative a funcionalidade na secção "Partilhar as estatísticas de uso" no módulo de administração. </p>
+
+ <input type="hidden" name="step" value="3" />
+ <input type="hidden" name="op" value="finish" />
+ <p>
+ <input class="btn btn-primary" type="submit" value="Definir alguns requisitos básicos para o Koha" />
+ </p>
+ </form>
+
+ [% END # / IF addframeworks %]
+
+ [% IF ( importdatastructure ) %]
+ [% IF ( error ) %]
+ <p>Os seguintes erros ocorreram durante a importação da base de dados:</p>
+ <div class="alert alert-warning"><p>[% error | html %] </p></div>
+ <p>Entre em contacto com o administrador do sistema</p>
+ [% ELSE %]
+ <h1>Instalador Web &rsaquo; Sucesso</h1>
+ <div class="alert alert-success"><p>Tabelas das base de dados criadas</p></div>
+
+ <div id="steps">
+ <ol>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Escolha o idioma</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Verificação das dependências Perl</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Definições da base de dados</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Configurar a base de dados</li>
+ <li class="open"><i class="fa fa-square-o" aria-hidden="true"></i> Instalar as configurações básicas</li>
+ <li class="open"><i class="fa fa-square-o" aria-hidden="true"></i> Integração</li>
+ </ol>
+ </div>
+
+ <form action="install.pl" method="post">
+ <input type="hidden" name="step" value="3" />
+ <p><input class="btn btn-primary" type="submit" value="Continuar para o próximo passo" /></p>
+ </form>
+ [% END %]
+ [% END # / IF importdatastructure %]
+
+ [% IF ( proposeimport ) %]
+ <h1>Instalador Web &rsaquo; Definir a base de dados</h1>
+
+ <div id="steps">
+ <ol>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Escolha o idioma</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Verificação das dependências Perl</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Definições da base de dados</li>
+ <li class="current open"><i class="fa fa-square-o" aria-hidden="true"></i> Configurar a base de dados</li>
+ <li class="open"><i class="fa fa-square-o" aria-hidden="true"></i> Instalar as configurações básicas</li>
+ <li class="open"><i class="fa fa-square-o" aria-hidden="true"></i> Integração</li>
+ </ol>
+ </div>
+
+ <p>Preparados para criar as tabelas na base de dados e preencher-las com dados por omissão.</p>
+ <form action="install.pl" method="post">
+ <input type="hidden" name="step" value="3" />
+ <input type="hidden" name="op" value="importdatastructure" />
+ <p><input class="btn btn-primary" type="submit" value="Continuar para o próximo passo" /></p>
+ </form>
+ [% END # / proposeimport %]
+
+ [% IF ( default ) %]
+ [% IF ( upgrading ) %]
+ <h1>Instalador Web &rsaquo; Atualizar a base de dados</h1>
+ <p>Estamos a atualizar o Koha da versão [% dbversion | html %] para a versão [% kohaversion | html %]</p>
+ <p><a href="install.pl?step=3&amp;op=updatestructure" class="btn btn-primary">Atualizar a base de dados</a></p>
+ [% ELSE %]
+ <h1>Instalador Web &rsaquo; Instalar as configurações básicas</h1>
+
+ <div id="steps">
+ <ol>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Escolha o idioma</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Verificação das dependências Perl</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Definições da base de dados</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Configurar a base de dados</li>
+ <li class="current open"><i class="fa fa-square-o" aria-hidden="true"></i> Instalar as configurações básicas</li>
+ <li class="open"><i class="fa fa-square-o" aria-hidden="true"></i> Integração</li>
+ </ol>
+ </div>
+
+ <p>Estamos prontos para efetuar as configurações básicas.</p>
+ <form action="install.pl" method="post">
+ <input type="hidden" name="step" value="3" />
+ <input type="hidden" name="op" value="choosemarc" />
+ <p><input class="btn btn-primary" type="submit" value="Continuar para o próximo passo" /></p>
+ </form>
+ [% END %]
+ [% END # / IF default %]
+
+ [% IF ( updatestructure ) %]
+ <h2>Atualizando a base de dados</h2>
+ [% IF has_update_succeeds || success %]
+ <p>Atualizar relatório :</p>
+ [% END %]
+
+ [%# Success for old versions %]
+ [% IF has_update_succeeds %]
+ <ul>
+ [% FOREACH l IN update_report %]
+ [% SET line = l.line %]
+ [% IF line.match('^Upgrade to') %]
+ <li>[% line | $raw %]</li>
+ [% ELSE %]
+ [% line | $raw %]<br/>
+ [% END %]
+ [% END %]
+ </ul>
+ [% END %]
+
+ [%# Success for new versions %]
+ [% IF success.size %]
+ <ul>
+ [% FOR s IN success %]
+ [% FOR o IN s.output %]
+ <li>[% o | html %]</li>
+ [% IF s.output.size > 1 %]
+ [% IF loop.first %]<ul>[% ELSIF loop.last %]</ul>[% END %]
+ [% END %]
+ [% END %]
+ [% END %]
+ </ul>
+ [% END %]
+
+ [% IF atomic_updates.success.size %]
+ <p>Atualizações atômicas:</p>
+ <ul>
+ [% FOR s IN atomic_updates.success %]
+ [% FOR o IN s.output %]
+ <li>[% o | html %]</li>
+ [% IF s.output.size > 1 %]
+ [% IF loop.first %]<ul>[% ELSIF loop.last %]</ul>[% END %]
+ [% END %]
+ [% END %]
+ [% END %]
+ </ul>
+ [% END %]
+
+ [% IF has_update_errors OR error.size %]
+ <p>Erros de atualização :</p>
+ [%# Errors for old versions %]
+ [% IF has_update_errors %]
+ <ul>
+ [% FOREACH update_error IN update_errors %]
+ <li class="update_error">[% update_error.line | html %]</li>
+ [% END %]
+ </ul>
+ [% END %]
+
+ [%# Errors for new versions %]
+ [% IF error.size %]
+ <ul>
+ [% FOR e IN error %]
+ [% FOR o IN e.output %]
+ <li class="update_error">
+ [% o | html %]
+ <br/>
+ ERRO: [% e.error | html %] [% IF e.output.size > 1 %] [% IF loop.first %]<ul>[% ELSIF loop.last %]</ul>[% END %]
+ [% END %]
+ </li>
+ [% END %]
+ [% END %]
+ </ul>
+ [% END %]
+ [% END %]
+
+ [% IF atomic_updates.error.size %]
+ <p>Erros das atualizações atómicas :</p>
+ <ul>
+ [% FOR e IN atomic_updates.error %]
+ [% FOR o IN e.output %]
+ <li class="update_error">
+ [% o | html %]
+ <br/>
+ ERRO: [% e.error | html %] [% IF e.output.size > 1 %] [% IF loop.first %]<ul>[% ELSIF loop.last %]</ul>[% END %]
+ [% END %]
+ </li>
+ [% END %]
+ [% END %]
+ </ul>
+ [% END %]
+
+ [% UNLESS error OR has_update_errors %]
+ <p>Correu tudo bem. Atualização terminada.</p>
+ <p><a href="install.pl?step=3&amp;op=finished" class="btn btn-primary">Continue para se autenticar no Koha</a></p>
+ [% ELSE %]
+ <p><a href="install.pl?step=3&amp;op=updatestructure" class="btn btn-primary">Tente novamente</a></p>
+ [% END %]
+ [% END # / IF updatestructure %]
+ </div> <!-- / #installer-step3 -->
+ </div> <!-- / .row -->
+ </div><!-- / .container-fluid -->
+
+[% IF ( selectframeworks ) %]
+ [% MACRO jsinclude BLOCK %]
+ <script>
+            $(document).ready(function(){
+                $(".selectall,.deselectall").on("click",function(e){
+                    e.preventDefault();
+                    var container = $(this).parent().parent();
+                    if( $(this).hasClass("selectall") ){
+                        var state = true;
+                    } else {
+                        var state = false;
+                    }
+                    $( container ).find("input").prop("checked", state);
+                    $( container ).find(".selectall,.deselectall").toggle();
+                    update_sample_libraries_dependencies();
+                });
+                let required_text = _("(requer bibliotecas de amostra)");
+                $("#sample_libraries_holidays, #sample_patrons").parent().after(" <span class='hint'>"+required_text+"</span>");
+                function update_sample_libraries_dependencies(){
+                    let checked = $("#sample_libraries").prop("checked");
+                    $("#sample_libraries_holidays, #sample_patrons").prop("disabled", !checked);
+                    if (!checked) {
+                        $("#sample_libraries_holidays, #sample_patrons").prop("checked", false);
+                    }
+                };
+                $("#sample_libraries").on("change", update_sample_libraries_dependencies);
+                $("#sample_libraries").change();
+            });
+        </script>
+ [% END %]
+[% END %]
+
+[% INCLUDE 'installer-intranet-bottom.inc' %]

@@ -1,0 +1,478 @@
+---
+Administração -:
+  Autenticação CAS:
+  - - 'Usar CAS para realizar a autenticação: '
+    - choices:
+        '0': Não
+        '1': Sim
+      default: 0
+      pref: casAuthentication
+  - - 'Sair do CAS quando sair do Koha: '
+    - choices:
+        '0': Não
+        '1': Sim
+      default: 0
+      pref: casLogout
+  - - 'URL do servidor do autenticação CAS (Central Authentication Service): '
+    - class: url
+      pref: casServerUrl
+  - - 'Versão do servidor CAS ao qual o Koha se irá ligar: '
+    - choices:
+        '2': CAS 2 ou anterior
+        '3': CAS 3 ou superior
+      pref: casServerVersion
+  Certificado de autenticação de cliente SSL:
+  - - 'Campo para o certificado de autenticação de cliente SSL: '
+    - choices:
+        Common Name: nome
+        None: nenhum
+        emailAddress: endereço de email
+      default: None
+      pref: AllowPKIAuth
+  Google OpenID Connect:
+  - - 'Usar a autenticação Google OpenID Connect: '
+    - choices:
+        '0': Não
+        '1': Sim
+      pref: GoogleOpenIDConnect
+    - Precisa de selecionar OAuth2 quando criar uma aplicação na consola do Google
+      Cloud, definir a origem web para seu_endereço_opac e o endereço de redirecionamento
+      para seu_endereço_opac/cgi-bin/koha/svc/auth/googleopenidconnect. Necessita
+      que as preferências <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=GoogleOAuth2ClientID">GoogleOAuth2ClientID</a>
+      e <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=GoogleOAuth2ClientSecret">GoogleOAuth2ClientSecret</a>
+      estejam definidas.
+  - - 'Google OAuth2 Client ID: '
+    - pref: GoogleOAuth2ClientID
+    - Em conjunto com a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=GoogleOAuth2ClientSecret">GoogleOAuth2ClientSecret</a>,
+      ativa a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=GoogleOpenIDConnect">GoogleOpenIDConnect.</a>
+  - - 'Google OAuth2 Client Secret: '
+    - pref: GoogleOAuth2ClientSecret
+    - Em conjunto com a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=GoogleOAuth2ClientID">GoogleOAuth2ClientID</a>,
+      ativa a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=GoogleOpenIDConnect">GoogleOpenIDConnect.</a>
+  - - 'Restringir o Google OpenID Connect a este domínio (ou subdomínio deste domínio): '
+    - pref: GoogleOpenIDConnectDomain
+    - Requer que a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=GoogleOpenIDConnect">GoogleOpenIDConnect</a>
+      esteja activa.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: GoogleOpenIDConnectAutoRegister
+    - que os leitores autenticados com o Google Open ID sejam registados no sistema
+      automaticamente. Necessita da preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=GoogleOpenIDConnect">GoogleOpenIDConnect</a>.
+  - - 'Usar este código de categoria de leitor quanto registar automaticamente um
+      leitor autenticado com o Google Open ID: '
+    - choices: patron-categories
+      pref: GoogleOpenIDConnectDefaultCategory
+    - Requer que a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=GoogleOpenIDConnect">GoogleOpenIDConnect</a>
+      esteja activa.
+  - - 'Usar este código de biblioteca quanto registar automaticamente um leitor autenticado
+      com o Google Open ID: '
+    - pref: GoogleOpenIDConnectDefaultBranch
+    - Requer que a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=GoogleOpenIDConnect">GoogleOpenIDConnect</a>
+      esteja activa.
+  Motor de pesquisa:
+  - - 'Usar o seguinte motor de pesquisa: '
+    - choices:
+        Elasticsearch: Elasticsearch
+        Zebra: Zebra
+      default: Zebra
+      pref: SearchEngine
+  - - 'Formato MARC do ElasticSearch: '
+    - choices:
+        ARRAY: Matriz pesquisável
+        ISO2709: ISO2709 (formato de troca)
+      default: ISO2709
+      pref: ElasticsearchMARCFormat
+    - <br>O formato ISO2709 é recomendado porque é mais rápido e ocupa menos espaço,
+      enquanto o formato matriz torna o registo MARC completamente pesquisável.
+    - <br><strong>NOTA:</strong> Tornar o registo completo pesquisável pode ter um
+      efeito negativo na ordenação por relevância dos resultados de pesquisa.
+  Opções de autenticação:
+  - - 'Automaticamente terminar a sessão dos utilizadores após: '
+    - class: integer
+      pref: timeout
+    - Ao adicionar um d transforma em dias, por exemplo 1d significa 1 dia.
+  - - 'Requer que a equipa se autentique num computador na mesma gama de endereços
+      IP especificados pela biblioteca (caso exista): '
+    - choices:
+        '0': Não
+        '1': Sim
+      default: 0
+      pref: AutoLocation
+    - <a href="/cgi-bin/koha/admin/branches.pl">Endereço para a administração da biblioteca</a>
+  - - 'Ativar a verificação de mudança no endereço IP remoto para segurança da sessão: '
+    - choices:
+        '0': Não
+        '1': Sim
+      default: 1
+      pref: SessionRestrictionByIP
+    - (Não ative apenas quando o endereço IP remoto muda frequentemente.)
+  - - 'Armazenamento das informações de sessão: '
+    - choices:
+        Pg: base de dados PostgreSQL (não suportado)
+        memcached: servidor Memcached
+        mysql: base de dados MySQL
+        tmp: ficheiros temporários
+      default: mysql
+      pref: SessionStorage
+  - - 'Impedir que a equipa (mas não super bibliotecários) modifique objetos (empréstimos,
+      exemplares, leitores, etc.) de outras bibliotecas: '
+    - choices:
+        '0': Não
+        '1': Sim
+      default: 0
+      pref: IndependentBranches
+    - <p class='text-danger'><strong>Aviso:</strong> Ao alterar esta preferência do
+      sistema irá alterar radicalmente o comportamento do Koha. A alteração desta
+      preferência em ambiente de produção é altamente desencorajada.</p>
+  - - 'Impedir que os técnicos (mas não super bibliotecários) vejam e aprovem/rejeitem
+      pedidos de modificação de leitores pertencentes a outras bibliotecas: '
+    - choices:
+        '0': Não
+        '1': Sim
+      default: 0
+      pref: IndependentBranchesPatronModifications
+  - - 'Impedir os técnicos (não superbibliotecários) de transferir exemplares para
+      outras bibliotecas: '
+    - choices:
+        '0': Não
+        '1': Sim
+      default: 0
+      pref: IndependentBranchesTransfers
+  Opções de visualização:
+  - - 'Endereço de email do administrador do Koha: '
+    - class: email
+      pref: KohaAdminEmailAddress
+    - (Este é o endereço de email utilizado como emissor por omissão para os emails,
+      a não ser que exista um para uma determinada biblioteca, e é referenciado quando
+      um erro interno ocorre.)
+  - - 'Endereço de email a ser definido como replyto nos emails: '
+    - class: email
+      pref: ReplytoDefault
+  - - 'Caminho de retorno ou endereço de salto para as mensagens de email não entregues: '
+    - class: email
+      pref: ReturnpathDefault
+    - Se deixar vazio, o email From será usado (normalmente é o email do administrador).
+  - - 'Endereço de email para redirecionar todas as mensagens: '
+    - class: email
+      pref: SendAllEmailsTo
+    - (Deixe este campo vazio para enviar as mensagens para o destinatário normal.)
+  - - 'Endereço de e-mail para onde serão enviados falhas nos avisos de atraso: '
+    - class: email
+      pref: AddressForFailedOverdueNotices
+    - 'Se deixado em branco, irá utilizar o primeiro endereço definido na seguinte
+      lista: ReplyTo da biblioteca, E-mail da biblioteca, <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=ReplytoDefault">ReplytoDefault</a>
+      e <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=KohaAdminEmailAddress">KohaAdminEmailAddress</a>'
+  - - 'Nível de informação que deve aparecer no browser quando um erro interno ocorre: '
+    - choices:
+        '0': Nenhuma
+        '1': Alguma
+        '2': Toda
+      default: 0
+      pref: DebugLevel
+  - - choices:
+        '0': Mostrar
+        '1': Não mostrar
+      default: 0
+      pref: noItemTypeImages
+    - os ícones dos tipos de documento no interface dos técnicos.
+  - - 'Separador por omissão para as colunas no ficheiro CSV exportado: '
+    - choices:
+        '#': '#'
+        ',': vírgulas
+        /: barras
+        ;: ponto e vírgula
+        \: barras invertidas
+        tabulation: tabulações
+      default: ','
+      pref: CSVDelimiter
+  - - 'Permitir que técnicos e leitores criem e vejam listas guardadas de livros: '
+    - choices:
+        '0': Não
+        '1': Sim
+      pref: virtualshelves
+  - - 'Vista por omissão quando editar as regras de circulação: '
+    - choices:
+        '0': Todas as bibliotecas
+        '1': A biblioteca de autenticação
+      pref: DefaultToLoggedInLibraryCircRules
+  - - 'Vista por omissão quando editar os avisos e os recibos: '
+    - choices:
+        '0': Todas as bibliotecas
+        '1': A biblioteca de autenticação
+      pref: DefaultToLoggedInLibraryNoticesSlips
+  - - 'Vista por omissão quando editar o agendamento dos avisos de atraso: '
+    - choices:
+        '0': Todas as bibliotecas
+        '1': A biblioteca de autenticação
+      pref: DefaultToLoggedInLibraryOverdueTriggers
+  - - choices:
+        '0': Não enviar
+        '1': Enviar
+      pref: EmailOverduesNoEmail
+    - os avisos de atraso dos leitores sem endereço de email para o staff da biblioteca.
+  Partilha de estatísticas de uso anónimo:
+  - - 'Partilhar dados anônimos do Koha com a comunidade: '
+    - choices:
+        '0': Não
+        '1': Sim
+        '2': Não, deixe-me pensar sobre o assunto
+      default: 2
+      pref: UsageStats
+    - .
+    - '<br>Website onde as estatísticas são publicadas: <a href="https://hea.koha-community.org">Website
+      da comunidade Hea Koha</a>.'
+    - <br><strong>NOTA:</strong> As outras preferências do grupo <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=UsageStats">UsageStats</a>
+      não têm efeito se esta preferência estiver definida como "Não" (não partilhar).
+    - <br><strong>NOTA:</strong> Esta preferência de sistema necessita que a tarefa
+      <code>misc/cronjobs/share_usage_with_koha_community.pl</code> esteja em funcionamento.
+      Peça ao administrador do sistema para a configurar.
+    - <br><strong>NOTA:</strong> Deve usar a <a href="/cgi-bin/koha/admin/usage_statistics.pl">página
+      de configuração dedicada</a> para editar as estatísticas a partilhar.
+  - - 'Usar o seguinte nome de biblioteca no site da comunidade Hea Koha: '
+    - pref: UsageStatsLibraryName
+    - . Se este campo estiver a vazio, os dados serão enviado anonimamente
+    - <br><strong>NOTA:</strong> Este valor não tem efeito se a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=UsageStats">UsageStats</a>
+      está definida como "Não" (não partilhar).
+  - - 'País onde a biblioteca está localizada e que será mostrado no site da comunidade
+      Hea Koha: '
+    - choices:
+        '': ' '
+        Afghanistan: Afeganistão
+        Albania: Albânia
+        Algeria: Algéria
+        Andorra: Andorra
+        Angola: Angola
+        Antigua & Deps: Antígua e Barbuda
+        Argentina: Argentina
+        Armenia: Arménia
+        Australia: Austrália
+        Austria: Áustria
+        Azerbaijan: Azerbaijão
+        Bahamas: Bahamas
+        Bahrain: Bahrein
+        Bangladesh: Bangladesh
+        Barbados: Barbados
+        Belarus: Bielorrússia
+        Belgium: Bélgica
+        Belize: Belize
+        Benin: Benim
+        Bhutan: Butão
+        Bolivia: Bolívia
+        Bosnia Herz.: Bósnia
+        Botswana: Botsuana
+        Brazil: Brasil
+        Brunei: Brunei
+        Bulgaria: Bulgária
+        Burkina: Burquina Faso
+        Burundi: Burundi
+        Cambodia: Camboja
+        Cameroon: Camarões
+        Canada: Canadá
+        Cape Verde: Cabo Verde
+        Centr. Afr. Rep: República Centro-Africana
+        Chad: Chade
+        Chile: Chile
+        China: China
+        Colombia: Colômbia
+        Comoros: Comores
+        Congo: Congo
+        Costa Rica: Costa Rica
+        Croatia: Croácia
+        Cuba: Cuba
+        Cyprus: Chipre
+        Czech Republic: República Checa
+        Denmark: Dinamarca
+        Djibouti: Djibuti
+        Dominica: Dominica
+        Dominican Rep.: República Dominicana
+        East Timor: Timor Leste
+        Ecuador: Equador
+        Egypt: Egipto
+        El Salvador: El Salvador
+        Equator. Guinea: Guiné Equatorial
+        Eritrea: Eritreia
+        Estonia: Estónia
+        Ethiopia: Etiópia
+        Fiji: Fiji
+        Finland: Finlândia
+        France: França
+        Gabon: Gabão
+        Gambia: Gâmbia
+        Georgia: Georgia
+        Germany: Alemanha
+        Ghana: Gana
+        Greece: Grécia
+        Grenada: Granada
+        Guatemala: Guatemala
+        Guinea: Guiné
+        Guinea-Bissau: Guiné-Bissau
+        Guyana: Guiana
+        Haiti: Haiti
+        Honduras: Honduras
+        Hungary: Hungria
+        Iceland: Islândia
+        India: Índia
+        Indonesia: Indonésia
+        Iran: Irão
+        Iraq: Iraque
+        Ireland: Irlanda
+        Israel: Israel
+        Italy: Itália
+        Ivory Coast: Costa do Marfim
+        Jamaica: Jamaica
+        Japan: Japão
+        Jordan: Jordão
+        Kazakhstan: Cazaquistão
+        Kenya: Quénia
+        Kiribati: Kiribati
+        Korea North: Coreia do Norte
+        Korea South: Coreia do Sul
+        Kosovo: Kosovo
+        Kuwait: Kuwait
+        Kyrgyzstan: Quirguistão
+        Laos: Laos
+        Latvia: Letónia
+        Lebanon: Líbano
+        Lesotho: Lesoto
+        Liberia: Libéria
+        Libya: Líbia
+        Liechtenstein: Liechtenstein
+        Lithuania: Lituânia
+        Luxembourg: Luxemburgo
+        Macedonia: Macedónia
+        Madagascar: Madagáscar
+        Malawi: Maláui
+        Malaysia: Malásia
+        Maldives: Maldivas
+        Mali: Mali
+        Malta: Malta
+        Marshall Isl.: Ilhas Marshall
+        Mauritania: Mauritânia
+        Mauritius: Maurícias
+        Mexico: México
+        Micronesia: Micronésia
+        Moldova: Moldávia
+        Monaco: Mónaco
+        Mongolia: Mongólia
+        Montenegro: Montenegro
+        Morocco: Marrocos
+        Mozambique: Moçambique
+        Myanmar: Birmânia
+        Namibia: Birmânia
+        Nauru: Nauru
+        Nepal: Nepal
+        Netherlands: Holanda
+        New Zealand: Nova Zelândia
+        Nicaragua: Nicarágua
+        Niger: Niger
+        Nigeria: Nigéria
+        Norway: Noruega
+        Oman: Omã
+        Pakistan: Paquistão
+        Palau: Palau
+        Panama: Panamá
+        Papua N. Guinea: Papua Nova Guiné
+        Paraguay: Paraguai
+        Peru: Perú
+        Philippines: Filipinas
+        Poland: Polónia
+        Portugal: Portugal
+        Qatar: Qatar
+        Romania: Roménia
+        Russian Fed.: Rússia
+        Rwanda: Ruanda
+        Samoa: Samoa
+        San Marino: San Marino
+        Sao Tome: São Tomé e Principe
+        Saudi Arabia: Arábia Saudita
+        Senegal: Senegal
+        Serbia: Sérvia
+        Seychelles: Seicheles
+        Sierra Leone: Serra Leoa
+        Singapore: Singapura
+        Slovakia: Eslováquia
+        Slovenia: Eslovénia
+        Solomon Islands: Ilhas Salomão
+        Somalia: Somália
+        South Africa: África do Sul
+        Spain: Espanha
+        Sri Lanka: Sri Lanka
+        St Kitts & Nev.: São Cristóvão e Névis
+        St Lucia: Santa Lúcia
+        St Vincent: São Vicente
+        Sudan: Sudão
+        Suriname: Suriname
+        Swaziland: Suazilândia
+        Sweden: Suécia
+        Switzerland: Suiça
+        Syria: Síria
+        Taiwan: Taiwan
+        Tajikistan: Tajiquistão
+        Tanzania: Tanzânia
+        Thailand: Tailândia
+        Togo: Togo
+        Tonga: Tonga
+        Trinidad & Tob.: Trinidade e Tobago
+        Tunisia: Tunísia
+        Turkey: Turquia
+        Turkmenistan: Turquemenistão
+        Tuvalu: Tuvalu
+        UAE: Emirados Árabes Unidos
+        USA: Estados Unidos da América
+        Uganda: Uganda
+        Ukraine: Ucrânia
+        United Kingdom: Reino Unido
+        Uruguay: Uruguai
+        Uzbekistan: Uzbequistão
+        Vanuatu: Vanuatu
+        Vatican City: Vaticano
+        Venezuela: Venezuela
+        Vietnam: Vietname
+        Yemen: Iémen
+        Zambia: Zâmbia
+        Zimbabwe: Zimbabué
+      default: ''
+      pref: UsageStatsCountry
+    - . Isto será mostrado no <a href="https://hea.koha-community.org">Website da
+      comunidade Hea Koha</a>.
+    - <br><strong>NOTA:</strong> Este valor não tem efeito se a preferência de sistema
+      <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=UsageStats">UsageStats</a>
+      estiver definida como "Não" (não partilhar).
+  - - 'URL da biblioteca a ser mostrado no site da comunidade Hea Koha: '
+    - class: url
+      pref: UsageStatsLibraryUrl
+    - <br><strong>NOTA:</strong> Este valor não tem efeito se a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=UsageStats">UsageStats</a>
+      está definida como "Não" (não partilhar).
+  - - 'Tipo da biblioteca a ser mostrado no site da comunidade Hea Koha: '
+    - choices:
+        '': ' '
+        academic: académica
+        corporate: corporativa
+        government: governamental
+        private: privada
+        public: pública
+        religiousOrg: religiosa
+        research: de pesquisa
+        school: escola
+        societyAssociation: associativa
+        subscription: de subscrição
+      default: ''
+      pref: UsageStatsLibraryType
+    - <br><strong>NOTA:</strong> Este valor não tem efeito se a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=UsageStats">UsageStats</a>
+      está definida como "Não" (não partilhar).
+  - - choices:
+        '0': Não partilhar
+        '1': Partilhar
+      pref: UsageStatsLibrariesInfo
+    - as informações das bibliotecas (nome, URL, país).
+    - <br><strong>NOTA:</strong> Este valor não tem efeito se a preferência de sistema
+      <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=UsageStats">UsageStats</a>
+      estiver definida como "Não" (não partilhar).
+  - - 'Localização geográfica da biblioteca principal: '
+    - pref: UsageStatsGeolocation
+    - <br><strong>NOTA:</strong> Este valor não tem efeito se a preferência de sistema
+      <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=UsageStats">UsageStats</a>
+      estiver definida como "Não" (não partilhar).
+    - <br><strong>NOTA:</strong> Deve usar a <a href="/cgi-bin/koha/admin/usage_statistics.pl">página
+      de configuração dedicada</a> para definir e editar esta preferência de sistema.

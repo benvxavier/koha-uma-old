@@ -1,0 +1,66 @@
+[% USE Koha %]
+[% USE AdditionalContents %]
+[% SET OpacNav = AdditionalContents.get( location => "OpacNav", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
+[% SET OpacNavBottom = AdditionalContents.get( location => "OpacNavBottom", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Quitação &rsaquo; [% IF ( LibraryNameTitle ) %][% LibraryNameTitle | html %][% ELSE %]Koha online[% END %] catálogo</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% BLOCK cssinclude %][% END %]
+</head>
+<body id="opac-discharge" class="scrollto">
+[% INCLUDE 'masthead.inc' %]
+
+<div class="main">
+ <nav aria-label="Caminho de navegação" class="breadcrumbs" id="breadcrumbs">
+ <ol class="breadcrumb">
+ <li class="breadcrumb-item">
+ <a href="/cgi-bin/koha/opac-main.pl">Início</a>
+ </li>
+ <li class="breadcrumb-item active">
+ <a href="#" aria-current="page">Quitação</a>
+ </li>
+ </ol>
+ </nav> <!-- /#breadcrumbs -->
+
+ <div class="container-fluid">
+ <div class="row">
+ <div class="col-lg-2">
+ <div id="navigation">
+ [% INCLUDE 'navigation.inc' IsPatronPage=1 %]
+ </div>
+ </div>
+ <div class="col-10 order-first order-md-first order-lg-2">
+ <div id="discharge" class="maincontent">
+ <h1>Quitação</h1>
+ [% FOR message IN messages %]
+ <div class="dialog [% message.type | html %]">
+ [% IF message.code == "unable_to_generate_pdf" %] Ocorrei um erro ao gerar o ficheiro PDF. Por favor contacte os técnicos para resolver este problema. [% END %] </div>
+ [% END %]
+
+ [% IF success %]
+ <p>O seu pedido para a quitação foi enviado. Estará disponível na sua página dentro de alguns dias.</p>
+ [% ELSIF available %]
+ <a href="/cgi-bin/koha/opac-discharge.pl?op=get">Pedir quitação</a></li>
+ [% ELSIF pending %]
+ <p>O seu pedido de quitação estará disponível dentro de alguns dias.</p>
+ [% ELSIF has_issues %]
+ <p>Não pode pedir a quitação, uma vez que possui empréstimos. Por favor retorne os exemplares antes de realizar o pedido.</p>
+ [% ELSIF not messages %]
+ <h2>O que é um quitação?</h2>
+ <p>Este documento certifica que você retornou todos os exemplares emprestados. É por vezes pedido durante a transferência de um documento de uma escola para outra. A quitação é enviado por nós para a sua biblioteca. Poderá verificar também o documento na sua conta pessoal.</p>
+ <p><strong>Aviso</strong>: Este pedido só é válido se você está em boa posição com a biblioteca. Uma vez que o pedido é feito, não pode requisitar mais documentos.</p>
+ [% IF has_checkouts %]
+ <div class="alert alert-info">Não pode pedir a quitação, uma vez que possui empréstimos. Por favor retorne os exemplares antes de realizar o pedido.</div>
+ [% ELSE %]
+ <a class="btn btn-primary" href="/cgi-bin/koha/opac-discharge.pl?op=request">Pedir uma quitação</a>
+ [% END %]
+
+ [% END %]
+ </div> <!-- / #discharge -->
+ </div> <!-- / .col-10 -->
+ </div> <!-- / .row -->
+ </div> <!-- / .container-fluid -->
+</div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %][% END %]

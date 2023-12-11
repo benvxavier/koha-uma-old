@@ -1,0 +1,149 @@
+---
+Aquisições -:
+  EDIFACT:
+  - - choices:
+        '0': Desativar
+        '1': Ativar
+      default: no
+      pref: EDIFACT
+    - a troca de mensagens EDIFACT para as aquisições
+  - - choices:
+        automatic: Sim
+        manual: Não
+      default: no
+      pref: EdifactInvoiceImport
+    - ' importar automaticamente os ficheiros de mensagens de faturas EDIFACT quando
+      são descarregados.'
+  - - 'Mapear o campo de código de sequência (GIR:LSQ) para a '
+    - choices:
+        ccode: coleção
+        location: localização
+      default: location
+      pref: EdifactLSQ
+    - ' nos exemplares.'
+  Impressão:
+  - - Usar o esquema
+    - choices:
+        pdfformat::layout1page: Inglês 1-página
+        pdfformat::layout2pages: Inglês 2-páginas
+        pdfformat::layout2pagesde: Alemão 2-páginas
+        pdfformat::layout3pages: Inglês 3-páginas
+        pdfformat::layout3pagesfr: Francês 3-páginas
+      pref: OrderPdfFormat
+    - para imprimir grupos de cestos.
+  Política:
+  - - Criar novo item quando
+    - choices:
+        cataloguing: catalogar o registo.
+        ordering: efetuar uma encomenda.
+        receiving: receber uma encomenda.
+      pref: AcqCreateItem
+    - Isto apenas é o comportamento por omissão e pode ser alterado por cada cesto.
+  - - 'As seguintes <a href=''http://schema.koha-community.org/__VERSION__/tables/items.html''
+      target=''blank''>colunas da base de dados</a> devem ser únicas para um exemplar:'
+    - pref: UniqueItemFields
+      source: items
+      type: modalselect
+  - - Ao fechar ou reabrir um cesto,
+    - choices:
+        '1': pedir sempre confirmação.
+        '2': não pedir confirmação.
+      default: 1
+      pref: BasketConfirmations
+  - - Mostrar cestos
+    - choices:
+        all: do sistema, independentemente do proprietário.
+        branch: da biblioteca do membro da equipa.
+        user: criados ou geridos por membros da equipa.
+      pref: AcqViewBaskets
+  - - Mostrar os montantes com o seguinte formato
+    - choices:
+        CH: 360'000.00 (CH)
+        FR: 360 000,00 (FR)
+        US: 360,000.00 (US)
+      pref: CurrencyFormat
+  - - As taxas são
+    - pref: TaxRates
+    - '. Insira na forma numérica: 0.12 para 12%. O primeiro item na lista será selecionado
+      por omissão. Para mais que um valor, separe com | (barra).'
+    - <br/><strong>NOTA:</strong> A base de dados apenas aceita valores até 4 casas
+      decimais, outros valores serão arredondados.
+    - <br/><strong>NOTA:</strong> As informações da taxa de imposto do fornecedor
+      podem precisar ser atualizadas se os valores de taxa de imposto forem removidos.
+  - - choices:
+        '0': Não avisar
+        '1': Avisar
+      pref: AcqWarnOnDuplicateInvoice
+    - quando o bibliotecário tenta criar um aviso com um número duplicado.
+  - - 'Ao receber exemplares, atualizar os seus subcampos se eles foram criados ao
+      fazer uma encomenda (por exemplo, o = 5 | a = "foo bar"):'
+    - pref: AcqItemSetSubfieldsWhenReceived
+  - - 'Ao cancelar um recibo, atualizar os subcampos do exemplar se eles foram criados
+      ao fazer uma encomenda (i.e. o=5|a="bar foo"):'
+    - pref: AcqItemSetSubfieldsWhenReceiptIsCancelled
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: AcqEnableFiles
+    - a capacidade de carregar e associar ficheiros arbitrários às facturas.
+  - - Definir os valores de mapeamentos para uma nova encomenda a partir de uma registo
+      MARC em reservatório.
+    - pref: MarcFieldsToOrder
+      syntax: text/x-yaml
+      type: textarea
+    - 'Pode usar os seguintes campos: price, quantity, budget_code, discount, sort1,
+      sort2'
+    - '<br/>Por exemplo:<br/>price: 947$a|947$c<br/>quantity: 969$h<br/>budget_code:
+      922$a'
+  - - Definir os valores de mapeamento para os novos exemplares criados a partir de
+      registo MARC de um ficheiro em tratamento.
+    - pref: MarcItemFieldsToOrder
+      syntax: text/x-yaml
+      type: textarea
+    - 'Pode usar os seguintes campos: homebranch, holdingbranch, itype, nonpublic_note,
+      public_note, loc, ccode, notforloan, uri, copyno, price, replacementprice e
+      itemcallnumber. Campos especiais: quantity e budget_code'
+    - '<br/>Por exemplo:<br/>holdingbranch: 975$b<br/>itype: 975$9|975$z'
+  - - choices:
+        '0': Não enviar
+        '1': Enviar
+      default: no
+      pref: ClaimsBccCopy
+    - um cópia (BCC) ao utilizador autenticado quando enviar um aviso de reclamação
+      de periódicos ou de aquisições.
+  - - Manter as sugestões de aquisição aceites ou rejeitadas por um período de
+    - class: integer
+      pref: PurgeSuggestionsOlderThan
+    - 'dia(s). Exemplo: [30] define a eliminação de sugestões com mais de 30 dias.'
+    - <br><strong>AVISO:</strong> Deixe este campo vazio se não deseja ativar esta
+      funcionalidade automática.
+    - <br><strong>NOTA:</strong> Esta preferência de sistema necessita que a tarefa
+      <code>misc/cronjobs/purge_suggestions.pl</code> esteja em funcionamento. Peça
+      ao administrador do sistema para a configurar.
+  - - choices:
+        '': Não arredondar
+        nearest_cent: Arredondar
+      default: ''
+      pref: OrderPriceRounding
+    - ao próximo cêntimo.<br>
+    - Determina se serão usados valores com precisão total ou valores arredondados
+      nos cálculos de preços.
+  - - choices:
+        '0': Não usar
+        '1': Usar
+      default: no
+      pref: UseACQFrameworkForBiblioRecords
+    - '  o modelo ''ACQ'' para os registos bibliográficos.'
+  - - 'Escolha o endereço de email para o qual as novas sugestões de aquisição devem
+      ser enviadas: '
+    - choices:
+        '0': Nenhuma
+        BranchEmailAddress: endereço de email da biblioteca
+        EmailAddressForSuggestions: EmailAddressForSuggestions
+        KohaAdminEmailAddress: KohaAdminEmailAddress
+      default: 0
+      pref: EmailPurchaseSuggestions
+    - '<br>Se escolheu <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=EmailAddressForSuggestions">EmailAddressForSuggestions</a>
+      insira um endereço de email válido: '
+    - class: email
+      pref: EmailAddressForSuggestions

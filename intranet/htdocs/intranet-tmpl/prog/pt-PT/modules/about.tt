@@ -1,0 +1,1153 @@
+[% USE raw %]
+[% USE HtmlTags %]
+[% USE Koha %]
+[% USE Asset %]
+[% USE KohaDates %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Acerca do Koha &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="about_about" class="about">
+[% INCLUDE 'header.inc' %]
+[% PROCESS 'about-team.inc' %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="#" aria-current="page">Sobre o Koha</a>
+ [% END %]
+ [% END %]
+[% END %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-md-12">
+
+ <h1>Sobre o Koha</h1>
+
+ [% WRAPPER tabs id= "abouttabs" %]
+ [% WRAPPER tabs_nav %]
+ [% WRAPPER tab_item tabname= "about" bt_active= 1 %] <span>Servidor</span> [% END %]
+ [% WRAPPER tab_item tabname= "perl" %] <span>Módulos Perl</span> [% END %]
+ [% WRAPPER tab_item tabname= "sysinfo" %] <span>Informação do sistema</span> [% END %]
+ [% WRAPPER tab_item tabname= "team" %] <span>Equipa Koha</span> [% END %]
+ [% WRAPPER tab_item tabname= "licenses" %] <span>Licenças</span> [% END %]
+ [% WRAPPER tab_item tabname= "translations" %] <span>Traduções</span> [% END %]
+ [% WRAPPER tab_item tabname= "history" %] <span>Linha temporal</span> [% END %]
+ [% WRAPPER tab_item tabname= "dedications" %] <span>Dedicatórias</span> [% END %]
+ [% END %]
+
+ [% WRAPPER tab_panels %]
+ [% WRAPPER tab_panel tabname= "about" bt_active= 1 %]
+ <table>
+ <caption>Servidor</caption>
+ <tr>
+ <th scope="row">Versão Koha: </th>
+ <td>[% kohaVersion | html %][% IF kohaCodename %] <strong>[% kohaCodename | html %]</strong>[% END %]</td>
+ </tr>
+ <tr>
+ <th scope="row">Versão SO ('uname -a'): </th>
+ <td>[% osVersion | html %]</td>
+ </tr>
+ <tr>
+ <th scope="row">Interpretador Perl : </th>
+ <td>[% perlPath | html %]</td>
+ </tr>
+ <tr>
+ <th scope="row">Versão Perl: </th>
+ <td>[% perlVersion | html %]</td>
+ </tr>
+ <tr>
+ <th scope="row">Perl @INC: </th>
+ <td>
+ [% FOREACH perlIncPat IN perlIncPath %]
+ [% perlIncPat.perlinc | html %] <br />
+ [% END %]
+ </td>
+ </tr>
+ <tr>
+ <th scope="row">Versão MySQL: </th>
+ <td>[% mysqlVersion | html %]</td>
+ </tr>
+ <tr>
+ <th scope="row">Versão Apache: </th>
+ <td>[% apacheVersion | html %]</td>
+ </tr>
+ [% IF (is_psgi) %]
+ <tr>
+ <th scope="row">PSGI: </th>
+ <td>[% psgi_server | html %]</td>
+ </tr>
+ [% END %]
+ [% IF Koha.Preference('SearchEngine') == 'Elasticsearch' %]
+ <tr>
+ <th scope="row">Elasticsearch: </th>
+ [% IF elasticsearch_fatal_config_error %]
+ <td><span class="bg-warning">[% elasticsearch_fatal_config_error | html %]</span></td>
+ [% ELSE %]
+ [% IF elasticsearch_status.running %]
+ <td class="bg-success">
+ [% ELSE %]
+ <td>
+ [% END %]
+ <span>Versão:</span>
+ <span>[% elasticsearch_status.version | html %]</span>
+ |
+ <span>Nós: </span>
+ <span>[% elasticsearch_status.nodes.join(' / ') | html %]</span>
+ |
+ <span>Estado:</span>
+ [% IF elasticsearch_status.running %]
+ <span>em execução</span>
+ |
+ <span>Indíces:</span>
+ [% FOREACH index IN elasticsearch_status.indexes %]
+ [% index.index_name | html %]
+ (<span>contagem:</span> <em>[% index.index_count | html %]</em>)
+ [% UNLESS loop.last %], [% END %]
+ [% END %]
+ [% ELSE %]
+ <span class="bg-warning">não está em execução</span>
+ [% END %]
+ </td>
+ [% END # /IF elasticsearch_fatal_config_error %]
+ </tr>
+ [% END %]
+ <tr>
+ <th scope="row">Memcached: </th>
+ [% IF memcached_running AND is_memcached_still_active AND where_is_memcached_config == 'config_only' %]
+ <td class="bg-success">
+ [% ELSE %]
+ <td>
+ [% END %]
+ <span>Servidores:</span>
+ [% IF memcached_servers %]
+ <span>[% memcached_servers | html %]</span>
+ [% ELSE %]
+ <span>indefinido</span>
+ [% END %] |
+ <span>Namespace:</span>
+ [% IF memcached_namespace %]
+ <span>[% memcached_namespace | html %]</span>
+ [% ELSE %]
+ <span>indefinido</span>
+ [% END %] |
+ <span>Estado:</span>
+ [% IF memcached_servers %]
+ [% IF memcached_running and is_memcached_still_active %]
+ <span class="bg-success">em execução</span>.
+ [% ELSE %]
+ <span class="bg-warning">não está em execução</span>.
+ [% IF is_psgi %]
+ <span>Note que o servidor memcached necessita ser iniciado antes do Plack.</span>
+ [% END %]
+ [% END %]
+ [% ELSE %]
+ <span>desconhecido</span>
+ [% END %] |
+ <span>Configuração lida de:</span>
+ [% SWITCH where_is_memcached_config %]
+ [% CASE 'config_only' %]
+ <span class="bg-success">koha-conf.xml</span>
+ [% CASE 'ENV_only' %]
+ <span class="bg-warning">ENV</span> <span>Note que o sítio correto para definir a configuração memcached é no ficheiro $KOHA_CONF</span>
+ [% CASE 'both' %]
+ <span class="bg-warning">ENV e koha-conf.xml</span> <span>Note que o sítio correto para definir a configuração memcached é no ficheiro $KOHA_CONF. Para evitar qualquer problema não exporte a configuração memchaced das variáveis de ambiente (ENV).</span>
+ [% CASE # nowhere %]
+ <span class="bg-warning">Nenhum lado</span> <span>Note que o sítio correto para definir a configuração memcached é no ficheiro $KOHA_CONF. De momento não possui uma configuração memcached válida definida.</span>
+ [% END %]
+ [% IF effective_caching_method != 'Cache::Memcached::Fast::Safe' %]
+ | <span>Método de cache efetivo:</span> [% effective_caching_method | html %]
+ [% END %]
+ </td>
+ </tr>
+ <tr>
+ <th scope="row">Versão Zebra: </th>
+ <td>[% zebraVersion | html %]</td>
+ </tr>
+ <tr>
+ <th scope="row">Estado do Zebra: </th>
+ [% IF (errZebraConnection == 10000) %]
+ <td class="bg-danger"><strong>O servidor Zebra aparenta não estar disponível. Está a correr?</strong></td>
+ [% ELSIF (errZebraConnection) %]
+ <td class="bg-warning"><strong>Mensagem de erro no Zebra: [% ( errZebraConnection ) | html %]</strong></td>
+ [% ELSE %]
+ <td class="bg-success">Em execução</td>
+ [% END %]
+ </tr>
+ <tr>
+ <th scope="row">Agente de mensagens: </th>
+ [% IF warnConnectBroker %]
+ <td class="bg-warning"><strong>A usar SQL</strong></td>
+ [% ELSE %]
+ <td class="bg-success">A usar RabbitMQ</td>
+ [% END %]
+ </tr>
+ <tr>
+ <th scope="row">Data e hora: </th>
+ <td>[% current_date_and_time | $KohaDates  with_hours => 1 %]</td>
+ </tr>
+ <tr>
+ [% timezone_config_class = (time_zone.config_invalid) ? 'bg-warning' : '' %]
+ [% timezone_env_class    = (time_zone.env_invalid)    ? 'bg-warning' : '' %]
+ <th scope="row">Fuso horário: </th>
+ <td>
+ <span>Utilizado:</span> <span>[% time_zone.actual | html %]</span>
+ [% IF time_zone.actual_bad_tz_fallback %]
+ <span>(Este é o valor por omissão devido a uma má configuração)</span>
+ [% END %]
+ |
+ <span>Configuração:</span>
+ [% IF time_zone.config != '' %]
+ <span class="[% timezone_config_class | html %]">[% time_zone.config | html %]</span>
+ [% ELSE %]
+ <span>Indefinido</span>
+ [% END %] |
+ <span>Ambiente (TZ):</span>
+ [% IF time_zone.environment != '' %]
+ <span class="[% timezone_env_class | html %]">[% time_zone.environment | html %]</span>
+ [% ELSE %]
+ <span>Indefinido</span>
+ [% END %]
+ </td>
+ </tr>
+ </table>
+ [% END # /WRAPPER tab_item about %]
+
+ [% WRAPPER tab_panel tabname= "perl" %]
+ <table style="cursor:pointer">
+ <caption>Módulos Perl</caption>
+ [% FOREACH tabl IN table %]
+ <tr>
+ [% FOREACH ro IN tabl.row %]
+ [% IF ( ro.current ) %]
+ [% IF ( ro.require ) %]
+ <th scope="row" style="font-weight:bold;" title="Módulo currente">
+ [% ELSE %]
+ <th scope="row" style="font-weight:normal" title="Módulo currente">
+ [% END %]
+ [% ELSIF ( ro.upgrade ) %]
+ [% IF ( ro.require ) %]
+ <th scope="row" style="background-color:#FFCB2F;font-weight:bold;" title="Atualização do módulo necessária">
+ [% ELSE %]
+ <th scope="row" style="background-color:#FFCB2F;font-weight:normal" title="Atualização do módulo necessária">
+ [% END %]
+ [% ELSE %]
+ [% IF ( ro.name == '' ) %]
+ <th>
+ [% ELSIF ( ro.require ) %]
+ <th scope="row" style="background-color:#FF8A8A;font-weight:bold;" title="Módulo obrigatório em falta">
+ [% ELSE %]
+ <th scope="row" style="background-color:#FF8A8A;font-weight:normal" title="Módulo opcional em falta">
+ [% END %]
+ [% END # /IF ro.current %]
+ [% IF ( ro.name ) %]
+ [% ro.name | html %]
+ <span style="font-weight:normal; font-size:smaller">
+ ([% ro.reqversion | html %]
+ [% IF ro.maxversion %] - [% ro.maxversion | html %][% END %]
+ [% IF ro.excversion %][% FOR v IN ro.excversion %], ![% v | html %][% END %][% END %])
+ </span>
+ [% END %]
+ </th>
+ [% IF ( ro.name == '' ) %]
+ <td>
+ [% ELSIF ( ro.version ) %]
+ <td>[% ro.version | html %]
+ [% ELSE %]
+ <td style="font-weight:bold">Não instalado [% END %] </td>
+ [% END # /FOREACH ro %]
+ </tr>
+ [% END # /FOREACH tabl %]
+ </table>
+ [% END # /WRAPPER tab_item perl %]
+
+ [% IF Asset.css("css/staff-global.css") == "" || Asset.js("js/vue/dist/erm.js") == "" %]
+ [% SET warnMissingCompiledFiles = 1 %]
+ [% END %]
+ [% WRAPPER tab_panel tabname= "sysinfo" %]
+ [% IF weasyprint_missing || warnPrefRequireChoosingExistingAuthority || warnPrefEasyAnalyticalRecords || warnPrefAnonymousPatronOPACPrivacy || warnPrefAnonymousPatronAnonSuggestions || warnPrefAnonymousPatronOPACPrivacy_PatronDoesNotExist || warnPrefAnonymousPatronAnonSuggestions_PatronDoesNotExist || warnPrefKohaAdminEmailAddress || warnPrefOpacHiddenItems || invalid_yesno.count || warnNoActiveCurrency || warnIsRootUser || xml_config_warnings.size || AutoSelfCheckPatronDoesNotHaveSelfCheckPerm || AutoSelfCheckPatronHasTooManyPerm || warnStatisticsFieldsError || warnNoTemplateCaching || warnILLConfiguration || has_ai_issues || oauth2_missing_deps || bad_yaml_prefs || warnRelationships || log4perl_errors || config_bcrypt_settings_no_set || warnHiddenBiblionumbers.size || warnConnectBroker || elasticsearch_has_missing || warnMissingCompiledFiles || warnDbRowFormat %]
+ [% IF ( warnDbRowFormat ) %]
+ <h2>Formato da linha da base de dados incorreto</h2>
+ <p>Tabelas da base de dados com o formato de linha diferente de 'DYNAMIC': [% warnDbRowFormat | html %]</p>
+ <p>Podem acontecer alguns problemas nas atualizações para as novas versões do Koha a não ser que atualize o formato de linha das suas tabelas da base de dados.</p>
+ <p>Para descobrir como evitar este problema veja a página wiki: <a href="https://wiki.koha-community.org/wiki/Database_row_format">Formato de linha da base de dados</a>
+ </p>
+ [% END %]
+
+ [% IF (warnIsRootUser) %]
+ <h2>Aviso sobre utilizador corrente</h2>
+ <p>Está autenticado como o utilizador de administração da base de dados. Isto não é recomendado porque algumas parte do Koha não irão funcionar como esperado com esta conta.</p>
+ <p>Por favor entre com um conta normal de técnico. Para criar essa conta, crie uma biblioteca, uma categoria de leitor 'Staff' e adicione um novo leitor. Depois forneça as permissões necessário na barra de ferramentas em 'Mais'.</p>
+ [% END # /IF warnIsRootUser %]
+
+ [% IF has_ai_issues %]
+ <h2>Problemas de dados</h2>
+ <p>
+ Algumas tabelas têm problemas com os valores de auto incremento que podem provocar a perda de dados. </p>
+ <p>
+ <strong>Não deve ignorar este aviso.</strong>
+ </p>
+ <p>
+ O problema é que o sistema InnoDB não mantém o valor do auto incremento quando o servidor SQL reinicia (apenas o define me memória). Sempre que o servidor iniciar o valor do auto incremento será definido para max(table.id)+1. </p>
+ <p>Para descobrir como evitar este problema veja a página wiki: <a href="https://wiki.koha-community.org/wiki/DBMS_auto_increment_fix">correção do auto-incremento DBMS</a>
+ </p>
+
+ <h3>Problemas encontrados</h3>
+ [% IF ai_patrons %]
+ <h4>Leitores</h4>
+ <p>Os seguintes identificadores existem em ambas as tabelas [% "borrowers" | $HtmlTags tag="strong" %] e [% "deletedborrowers" | $HtmlTags tag="strong" %]:</p>
+ <p>
+ [% FOR p IN ai_patrons %]
+ [% p.borrowernumber | html %]
+ [% UNLESS loop.last %], [% END %]
+ [% END %]
+ </p>
+ [% END %]
+ [% IF ai_biblios %]
+ <h4>Registos bibliográfico</h4>
+ <p>Os seguintes identificadores existem em ambas as tabelas [% "biblio" | $HtmlTags tag="strong" %] e [% "deletedbiblio" | $HtmlTags tag="strong" %]:</p>
+ <p>
+ [% FOR b IN ai_biblios %]
+ [% b.biblionumber | html %]
+ [% UNLESS loop.last %], [% END %]
+ [% END %]
+ </p>
+ [% END %]
+ [% IF ai_items %]
+ <h4>Exemplares</h4>
+ <p>Os seguintes identificadores existem em ambas as tabelas [% "items" | $HtmlTags tag="strong" %] e [% "deleteditems" | $HtmlTags tag="strong" %]:</p>
+ <p>
+ [% FOR i IN ai_items %]
+ [% i.itemnumber | html %]
+ [% UNLESS loop.last %], [% END %]
+ [% END %]
+ </p>
+ [% END %]
+ [% IF ai_checkouts %]
+ <h4>Empréstimo(s)</h4>
+ <p>Os seguintes identificadores existem em ambas as tabelas [% "issues" | $HtmlTags tag="strong" %] e [% "old_issues" | $HtmlTags tag="strong" %]:</p>
+ <p>
+ [% FOR c IN ai_checkouts %]
+ [% c.issue_id | html %]
+ [% UNLESS loop.last %], [% END %]
+ [% END %]
+ </p>
+ [% END %]
+ [% IF ai_holds %]
+ <h4>Reservas</h4>
+ <p>Os seguintes identificadores existem em ambas as tabelas [% "reserves" | $HtmlTags tag="strong" %] e [% "old_reserves" | $HtmlTags tag="strong" %]:</p>
+ <p>
+ [% FOR h IN ai_holds %]
+ [% h.reserve_id | html %]
+ [% UNLESS loop.last %], [% END %]
+ [% END %]
+ </p>
+ [% END %]
+ <br/>
+ [% END # /IF has_ai_issues %]
+
+ [% IF warnRelationships %]
+ <h2>Problemas de relação entre leitores</h2>
+ [% IF bad_relationships_count %]
+ <p>A sua base de dados contêm pares de leitor/fiador sem relacionamentos definidos. Eles foram definidos com o valor '_bad_data' nas colunas [% "borrowers.relationship" | $HtmlTags tag="strong" %] e/ou [% "borrower_relationships.relationship" | $HtmlTags tag="strong" %]. Por favor corrija manualmente recriando essas relações, ou peça ao administrador do sistema para corrigir os valores na base de dados.</p>
+ [% END # /IF bad_relationships_count %]
+
+ [% IF wrong_relationships %]
+ <p>Os seguintes valores são usados para as relações entre leitores, mas não existem na preferência de sistema 'borrowerRelationship':</p>
+ <ul>
+ [% FOR rel IN wrong_relationships %]
+ <li>[% rel.0 | html %]</li>
+ [% END %]
+ </ul>
+ <p>Se a relação é a que desejada, por favor adicione-a à preferência de sistema 'borrowerRelationship', caso contrário peça ao administrador de sistema para corrigir os valores em [% "borrowers.relationship" | $HtmlTags tag="strong" %] e/ou [% "borrower_relationships.relationship" | $HtmlTags tag="strong" %] na base de dados.</p>
+ [% END # /IF wrong_relationships %]
+ [% END # /IF warnRelationships %]
+
+ [% IF log4perl_errors %]
+ <h2>O sistema de registo das ações não se comporta corretamente</h2>
+ [% FOR e IN log4perl_errors %]
+ [% SWITCH e %]
+ [% CASE 'missing_config_entry' %]<span>Não existe nenhuma entrada 'log4perl_conf' no ficheiro de configuração.</span>
+ [% CASE 'cannot_read_config_file' %]<span>Não foi possível abrir o ficheiro de configuração log4perl.</span>
+ [% CASE 'logfile_not_writable' %]<span>A escrita num dos ficheiros de log listado no ficheiro de configuração não é permitida.</span>
+ [% CASE 'cannot_init_module' %]<span>Não foi possível iniciar corretamente o módulo Koha::Logger (verifique o ficheiro de log).</span>
+ [% CASE %]<span>Erro desconhecido '[% e | html %]'.</span>
+ [% END %]
+ [% END # /FOR e %]
+ [% END # /IF log4perl_errors %]
+
+ [% IF warnConnectBroker %]
+ <h2>Não foi possível conectar ao agente de mensagens</h2>
+ Ocorreu um erro ao tentar conectar com o agente de mensagens (RabbitMQ), verifique os registos do sistema. <br/>
+ Talvez não esteja instalado e configurado corretamente? <br/>
+ Entre em contacto com o administrador do sistema. [% END # /IF warnConnectBroker %] [% IF weasyprint_missing || warnPrefRequireChoosingExistingAuthority || warnPrefEasyAnalyticalRecords || warnPrefAnonymousPatronOPACPrivacy || warnPrefAnonymousPatronAnonSuggestions || warnPrefAnonymousPatronOPACPrivacy_PatronDoesNotExist || warnPrefAnonymousPatronAnonSuggestions_PatronDoesNotExist || warnPrefKohaAdminEmailAddress || warnPrefOpacHiddenItems || invalid_yesno.count || warnNoActiveCurrency || AutoSelfCheckPatronDoesNotHaveSelfCheckPerm || AutoSelfCheckPatronHasTooManyPerm || warnStatisticsFieldsError || warnNoTemplateCaching || warnILLConfiguration || warnXSLT || oauth2_missing_deps || bad_yaml_prefs || warnIssuingRules || config_bcrypt_settings_no_set || warnHiddenBiblionumbers.size || warnFastCataloging %] <h2>Aviso sobre a configuração do sistema</h2>
+ <table>
+ <caption>Preferências e parâmetros</caption>
+ [% IF (warnFastCataloging) %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>Não existe um modelo de catalogação rápida (código FA) definido na administração. A funcionalidade de catalogação rápida encontra-se desativa nos módulos de catalogação/circulação.</td>
+ </tr>
+ [% END %]
+ [% IF (warnPrefRequireChoosingExistingAuthority) %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>A preferência 'RequireChoosingExistingAuthority' está desativa, mas necessita da preferência 'AutoCreateAuthorites' ativa. Caso contrário, os catalogadores pode adicionar cabeçalhos que não estão ligados às autoridades.</td>
+ </tr>
+ [% END %]
+ [% IF (warnPrefEasyAnalyticalRecords) %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>Preferência do sistema 'EasyAnalyticalRecords' definida, mas a preferência 'UseControlNumber' está definida como 'Usar'. Defina para 'Não usar' ou então as ligações 'Mostrar analíticos' aparecerão quebradas.</td>
+ </tr>
+ [% END %]
+ [% IF warnPrefAnonymousPatronOPACPrivacy %]
+ <tr>
+ <th scope="row"><strong class="error">Erro</strong> </th>
+ <td>A preferência do sistema 'OPACPrivacy' está definida, mas a preferência AnonymousPatron está a '0'. Defina-a para um número de leitor válido para que esta funcionalidade funcione.</td>
+ </tr>
+ [% END %]
+ [% IF warnPrefAnonymousPatronAnonSuggestions %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>Preferência do sistema 'OPACPrivacy' definida, mas AnonymousPatron estava a '0'. Defina-a para um número de leitor válido se deseja que esta funcionalidade funcione.</td>
+ </tr>
+ [% END %]
+ [% IF warnPrefAnonymousPatronOPACPrivacy_PatronDoesNotExist %]
+ <tr>
+ <th scope="row"><strong class="error">Erro</strong> </th>
+ <td>Alguns leitores requisitaram privacidade na devolução de exemplares mas a preferência AnonymousPatron não está bem definida. Defina-a para um número de leitor válido se desejar que esta funcionalidade funcione.</td>
+ </tr>
+ [% END %]
+ [% IF warnPrefAnonymousPatronAnonSuggestions_PatronDoesNotExist %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>Preferência do sistema 'OPACPrivacy' definida, mas a preferência AnonymousPatron não está bem definida. Defina-a para um número de leitor válido para funcionar correctamente.</td>
+ </tr>
+ [% END %]
+ [% IF warnPrefKohaAdminEmailAddress %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>A preferência de sistema 'KohaAdminEmailAddress' não contém um endereço de email válido. Os emails não serão enviados.</td>
+ </tr>
+ [% END %]
+ [% IF warnPrefOpacHiddenItems %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>A preferência 'OpacHiddenItems' gera um aviso e vai produzir comportamentos não esperados: [% warnPrefOpacHiddenItems | html %]</th></tr>
+ [% END %]
+ [% IF warnXSLT %]
+ [% FOR p IN warnXSLT %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>A preferência de sistema '[% p.syspref | html %]' está definida como '[% p.value | html %]', mas o ficheiro '[% p.filename | html %]' não existe.</th></tr>
+ [% END %]
+ [% END %]
+ [% IF invalid_yesno.count %]
+ [% FOR p IN invalid_yesno %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>A preferência de sistema '[% p.variable | html %]' deve ser '0' ou '1', mas está definida como [% IF p.value.defined %]'[% p.value | html%]'[% ELSE %]NULL[% END %].</td>
+ </tr>
+ [% END %]
+ [% END %]
+ [% IF warnNoActiveCurrency %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>Nenhuma moeda ativa definida. Por favor vá a <a href="/cgi-bin/koha/admin/currency.pl">Administração &gt; Moedas e câmbios</a> e marque uma como ativa.</td>
+ </tr>
+ [% END %]
+ [% IF warnStatisticsFieldsError %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>A preferência de sistema 'StatisticsFields' contem campos que não pertencem à tabela de exemplares na base de dados: [% warnStatisticsFieldsError | html %] </td>
+ </tr>
+ [% END %]
+ [% IF AutoSelfCheckPatronDoesNotHaveSelfCheckPerm %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>
+ O leitor usado para o módulo de auto empréstimo no OPAC não tem a permissão self_check => self_checkout_module. </td>
+ </tr>
+ [% END %]
+ [% IF AutoSelfCheckPatronHasTooManyPerm %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>
+ O leitor usado para o módulo de auto empréstimo no OPAC tem demasiadas permissões. Deve ter apenas a permissão self_check => self_checkout_module. </td>
+ </tr>
+ [% END %]
+ [% IF warnNoTemplateCaching %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>
+ A entrada &lt;template_cache_dir&gt; está em falta no ficheiro de configuração koha-conf.xml. Ao definir a diretoria de cache irá aumentar a performance do sistema. </td>
+ </tr>
+ [% END %]
+ [% IF warnILLConfiguration %]
+ [% IF no_ill_backends %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>
+ O módulo de empréstimos inter-bibliotecas está ativo, mas não existem backends disponíveis. </td>
+ </tr>
+ [% END %]
+ [% IF ill_partner_code_not_defined %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>
+ O módulo de empréstimos inter-bibliotecas está ativo, mas não está definida a configuração 'partner_code' no koha-conf.xml. A usar por omissão o valor pré-definido 'IL'.</td>
+ </tr>
+ [% END %]
+ [% IF ill_branch_not_defined %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>
+ O módulo de empréstimos inter-bibliotecas está ativo, mas não o bloco 'branch' não se encontra definido no ficheiro koha-conf.xml. Deve definir o bloco antes de usar o módulo. </td>
+ </tr>
+ [% END %]
+ [% IF ill_partner_code_doesnt_exist %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>
+ O módulo de empréstimos inter-bibliotecas está ativo, mas a configuração 'partner_code' ([% ill_partner_code_doesnt_exist | html %]) não está definida no sistema. </td>
+ </tr>
+ [% END %]
+ [% END %]
+
+ [% IF weasyprint_missing %]
+ <tr><th scope="row"><strong>Aviso</strong> </th><td>
+ O <strong>weasyprint</strong> não está instalado. </td></tr>
+ [% END %]
+
+ [% IF oauth2_missing_deps %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>
+ A preferência de sistema 'RESTOAuth2ClientCredentials' está definida, mas a dependência Net::OAuth2::AuthorizationServer não está instalada. A funcionalidade está desativa.</td>
+ </tr>
+ [% END %]
+ [% IF bad_yaml_prefs %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>
+ Algumas preferências de sistema têm conteúdo YAML mal formado: [% bad_yaml_prefs.join(', ') | html %] </td>
+ </tr>
+ [% END %]
+ [% IF config_bcrypt_settings_no_set %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>
+ A preferência 'Pseudonymization' está definida, mas não a entrada 'bcrypt_settings' não se encontra definida no ficheiro de configurações. </td>
+ </tr>
+ [% END %]
+ [% IF warnHiddenBiblionumbers.size %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong> </th>
+ <td>
+ [% FOR w IN warnHiddenBiblionumbers %]
+ <span>Modelo bibliográfico "[% w.frameworkcode | html %]" tem o campo biblionumber escondido no interface [% w.interface | html %]</span><br/>
+ [% END %]
+ </td>
+ </tr>
+ [% END %]
+ [% IF Koha.Preference('SearchEngine') == 'Elasticsearch' && elasticsearch_status.version.substr(0,1) < 6 %]
+ <tr>
+ <th scope="row"><strong>Aviso de descontinuação</strong></th>
+ <td>
+ O Elasticsearch versão 5.x não é suportado na versão Koha 20.11 e superiores. Por favor faça o upgrade do seu cluster Elasticsearch </td>
+ </tr>
+ [% END %]
+ </table>
+ [% END # /IF warnPrefRequireChoosingExistingAuthority %]
+
+ [% IF xml_config_warnings.size %]
+ <table>
+ <caption>Ficheiro de configuração XML</caption>
+ [% FOREACH config_entry IN xml_config_warnings %]
+ [% IF config_entry.error == 'zebra_bib_index_mode_is_grs1' %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong></th>
+ <td>
+ A entrada &lt;zebra_bib_index_mode&gt; está definida para 'grs1', que não é suportado. Por favor use DOM. Para alterar veja a seguinte página: <a href="https://wiki.koha-community.org/wiki/Switching_to_dom_indexing">Alterar para a indexação DOM</a>
+ </td>
+ </tr>
+ [% ELSIF config_entry.error == 'zebra_auth_index_mode_is_grs1' %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong></th>
+ <td>
+ A entrada &lt;zebra_auth_index_mode&gt; está definida para 'grs1', que não é suportado. Por favor use DOM. Para alterar veja a seguinte página: <a href="https://wiki.koha-community.org/wiki/Switching_to_dom_indexing">Alterar para a indexação DOM</a>
+ </td>
+ </tr>
+ [% ELSIF config_entry.error == 'use_zebra_facets_entry_missing' %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong></th>
+ <td>
+ A entrada &lt;use_zebra_facets&gt; está em falta no ficheiro de configuração. Vai ser usado o sistema de cálculo de facets por omissão. </td>
+ </tr>
+ [% ELSIF config_entry.error == 'log4perl_entry_missing' %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong></th>
+ <td>
+ Tem a falta a entrada &lt;log4perl_conf&gt; no ficheiro de configuração koha-conf.xml. Por favor adicione-a, apontando para o ficheiro log4perl.conf da sua instância. </td>
+ </tr>
+ [% ELSIF config_entry.error == 'lockdir_entry_missing' %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong></th>
+ <td>
+ Tem em falta a entrada &lt;lockdir&gt; no ficheiro de configuração koha-conf.xml. Por favor adicione-a, apontando-a para a pasta de bloqueio do seu Koha.</td>
+ </tr>
+ [% ELSIF config_entry.error == 'lockdir_not_writable' %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong></th>
+ <td>
+ A entrada &lt;lockdir&gt; configurada no ficheiro koha-conf.xml aponta para uma directoria protegida contra escrita ([% config_entry.lockdir | html %]). </td>
+ </tr>
+ [% ELSIF config_entry.error == 'uploadpath_entry_missing' %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong></th>
+ <td>
+ A entrada &lt;upload_path&gt; está em falta no seu ficheiro de ficheiro de configuração koha-conf.xml. Por favor adicione-a, apontando para a diretoria configurada para o carregamento de ficheiros para a sua instância do Koha. </td>
+ </tr>
+ [% ELSIF config_entry.error == 'uploadpath_and_opacbaseurl_entry_missing' %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong></th>
+ <td>
+ A entrada &lt;upload_path&gt; está em falta no seu ficheiro de ficheiro de configuração koha-conf.xml. Por favor adicione-a, apontando para a diretoria configurada para o carregamento de ficheiros para a sua instância do Koha. Note que também necessita de definir corretamente a preferência OPACBaseURL para o plugin de carregamento funcionar. </td>
+ </tr>
+ [% ELSIF config_entry.error == 'tmp_path_missing' %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong></th>
+ <td>
+ A entrada &lt;tmp_path&gt; está em falta no seu ficheiro de ficheiro de configuração koha-conf.xml. Por favor adicione-a, apontando para a directoria temporária da sua instalação do Koha. A directoria temporária efectiva é '[% config_entry.effective_tmp_dir | html %]'. </td>
+ </tr>
+ [% ELSIF config_entry.error == 'encryption_key_missing' %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong></th>
+ <td>
+ Tem em falta a entrada &lt;encryption_key&gt; no ficheiro de configuração koha-conf.xml. Por favor gere uma chave. É recomendado o uso de pelo menos 32 bytes. (Pode usar o comando 'pwgen 32' para a gerar.) </td>
+ </tr>
+ [% END # /IF config_entry.error %]
+ [% END # /FOREACH config_entry %]
+ </table>
+ [% END # /IF xml_config_warnings.size %]
+
+ [% IF warnIssuingRules %]
+ <table>
+ <caption>Regras de empréstimo</caption>
+ [% FOREACH unit IN ir_units %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong></th>
+ <td>
+ A regra de empréstimo [% unit.branchcode || 'branchcode=default' | html %], [% unit.categorycode || 'categorycode=default' | html %], [% unit.itemtype || 'itemtype=default' | html %] irá usar 'dias' como a 'unidade de duração' por está definida de forma incorrecta como '[% unit.rule_value | html %]'. </td>
+ </tr>
+ [% END # /FOREACH unit %]
+ </table>
+ [% END # /IF warnIssuingRules %]
+
+ [% IF elasticsearch_has_missing %]
+ <table>
+ <caption>Registos não indexados no Elasticsearch</caption>
+ [% FOREACH index IN elasticsearch_status.indexes %]
+ [% IF index.missing_count %]
+ <tr>
+ <th scope="row"><strong>Aviso</strong></th>
+ <td>
+ [% index.missing_count | html %] registo(s) perdido(s) num total de [% index.index_count | html %] no índice [% index.index_name | html %]. </td>
+ </tr>
+ [% END %]
+ [% END %]
+ </table>
+ [% END # /IF elasticsearch_has_missing %]
+
+ [% IF warnMissingCompiledFiles %]
+ <tr><th scope="row"><strong class="error">Erro</strong></th><td>
+ Os ficheiros CSS e/ou JS não estão presentes. Por favor execute o comando `yarn build` para os gerar. </td></tr>
+ [% END # /IF warnMissingCompiledFiles %]
+
+ [% ELSE %]
+ <p>Nenhum aviso.</p>
+ [% END # /IF warnRequireChoosingExistingAuthority... %]
+ [% END # /WRAPPER tab_item sysinfo %]
+
+ [% WRAPPER tab_panel tabname= "team" %]
+ <h2>Obrigado especial às seguintes organizações</h2>
+ <ul>
+ <li>
+ <a href="http://library.org.nz">Horowhenua Library Trust</a>, Nova Zelândia, e Rosalie Blake, Directora da Bibliotecas, (Koha 1.0) </li>
+ <li>
+ O <a href="http://www.myacpl.org/">Athens County Public Libraries</a>, Ohio, EUA (MARC, documentação, manutenção de formulários)</li>
+ <li>
+ <a href="http://www.emn.fr">EMN (Ecole des Mines de Nantes)</a>, França (Sugestões, módulo de estatísticas e apoio LDAP melhorado) </li>
+ <li>
+ <a href="http://www.mines-paristech.fr">Mines Paristech (antes designada por Ecole Nationale Supérieure des Mines de Paris)</a>, França (modelos de catalogação, autoridades MARC, carrinho do OPAC, periódicos) </li>
+ <li>
+ <a href="http://www.mediathequeouestprovence.fr/">SAN-Ouest Provence</a>, França (Melhorias do módulo leitores e reservas no Koha 3.0) </li>
+ <li>
+ O <a href="http://ccfls.org">Crawford County Federated Library System</a>, PA, EUA (Integração Zebra no Koha 3.0)</li>
+ <li>
+ O <a href="http://www.geauga.lib.oh.us/">Geauga County Public Library</a>, OH, EUA (Koha 3.0 beta testing)</li>
+ <li>
+ O <a href="http://library.neu.edu.tr">Near East University</a>, Chipre</li>
+ <li>
+ OPUS International Consultants, Wellington, Nova Zelândia (Módulo de gestão de periódicos)</li>
+ <li>
+ <a href="http://www.famfamfam.com/">famfamfam.com</a> Mark James, de Birmingham (UK) responsável pelo conjunto de ícones famfamfam Silk. </li>
+ <li>
+ <a href="http://www.ashs.school.nz/">Albany Senior High School</a>, Auckland, New Zealand (OPAC 'star-ratings' sponsorship) </li>
+ </ul>
+
+ <h2>Equipas de lançamento do Koha</h2>
+ [% IF maintenance_team %]
+ <div class="row">
+ <div class="col-md-6">
+ <h3>Equipa de lançamento do Koha [% short_version | html %][% IF kohaCodename %] ([% kohaCodename | html %])[% END %]</h3>
+ [% IF development_version %]
+ <p>Esta a correr uma versão do Koha em desenvolvimento</p>
+ [% ELSE %]
+ [% INCLUDE team t=release_team v='release' %]
+ [% END %]
+ </div>
+
+ <div class="col-md-6">
+ <h3>Equipe de manutenção atual</h3>
+ [% INCLUDE team t=maintenance_team v=short_version %]
+ </div>
+ </div>
+ [% ELSE %]
+ <div class="dialog alert">
+ Não foi possível ler o ficheiro teams.yaml. Por favor verifique que &lt;docdir&gt; está bem definido em koha-conf.xml. </div>
+ [% END # /maintenance_team %]
+
+ <h2>Equipa de desenvolvimento do Koha</h2>
+ [% IF contributors.size %]
+ <ul class="columns-4">
+ [% FOREACH contributor IN contributors %]
+ <li>[% INCLUDE person p=contributor %][% INCLUDE contributions p=contributor %]</li>
+ [% END %]
+ </ul>
+ [% ELSE %]
+ <div class="dialog alert">
+ Não foi possível ler o ficheiro contributors.yaml. Por favor verifique que &lt;docdir&gt; está bem definido em koha-conf.xml. </div>
+ [% END # /IF contributors.size %]
+ <hr>
+
+ <h2>Empresas contribuintes e instituições</h2>
+ <ul class="columns-4">
+ <li>Allen Ginsberg Library, EUA</li>
+ <li>Alingsås Public Library, Suécia</li>
+ <li>American Numismatic Society, EUA</li>
+ <li>Arcadia Public Library, EUA</li>
+ <li>Athens County Public Libraries, EUA</li>
+ <li>BdP de la Meuse, França</li>
+ <li>BibLibre, França</li>
+ <li>Biblioteca Provincial Fr. Mamerto Esquiú (Provincia Franciscana de la Asunción), Argentina</li>
+ <li>Bibliotheksservice-Zentrum Baden-Württemberg (BSZ), Alemanha</li>
+ <li>Briar Cliff University, EUA</li>
+ <li>Brimbank City Council, Austrália</li>
+ <li>Brooklyn Law School Library, EUA</li>
+ <li>Bibliothèque Universitaire des Langues et Civilisations (<a href="https://www.bulac.fr">BULAC</a>), França</li>
+ <li>ByWater Solutions, EUA</li>
+ <li>California College of the Arts, EUA</li>
+ <li>Camden County, EUA</li>
+ <li>Carnegie Stout Library, EUA</li>
+ <li>Calyx, Austrália</li>
+ <li>Catalyst IT, Nova Zelândia</li>
+ <li>Central Kansas Library System (CKLS), EUA</li>
+ <li>Centre Collégial des Services Regroupés (CCSR), Canadá</li>
+ <li>Cheshire Libraries, Reino Unido</li>
+ <li>Coeur d'Alene Public Library, EUA</li>
+ <li>Corpus Christi Public Libraries, EUA</li>
+ <li>C &amp; P Bibliography Services, EUA</li>
+ <li>Dataly Tech, Greece</li>
+ <li>Devinim, Turkey</li>
+ <li>Do Space, EUA</li>
+ <li>DoverNet, EUA</li>
+ <li>doXulting</li>
+ <li>Duchesne County Library, EUA</li>
+ <li>Escuela de Orientacion Lacaniana, Argentina</li>
+ <li>Fenway Library Organization, EUA</li>
+ <li>Fargo Public Library, EUA</li>
+ <li>Farmington Public Library, EUA</li>
+ <li>FIT</li>
+ <li>Foundations Bible College &amp; Seminary, EUA</li>
+ <li>Goethe-Institut, Alemanha</li>
+ <li>Gothenburg University Library, Suécia</li>
+ <li>Halland County Library, Suécia</li>
+ <li>Harrison Carmel Public Library, EUA</li>
+ <li>Hauraki District Libraries, Nova Zelândia</li>
+ <li>Higher Education Libraries of Massachusetts, EUA</li>
+ <li>Hochschule für Gesundheit (hsg), Alemanha</li>
+ <li>Hotchkiss School, EUA</li>
+ <li>Katipo Communications, Nova Zelândia</li>
+ <li>KEEP SOLUTIONS, Portugal</li>
+ <li>KohaAloha, Nova Zelândia</li>
+ <li>Koha-Suomi Oy, Finlândia</li>
+ <li>LibLime, EUA</li>
+ <li>Library of the Józef Piłsudski Institute of America, EUA</li>
+ <li>Libriotech, Noruega</li>
+ <li>Los Gatos Public Library, EUA</li>
+ <li>Lund University Library, Suécia</li>
+ <li>MassCat, EUA</li>
+ <li>Middletown Township Public Library, EUA</li>
+ <li>Biblioteca Nacional da Finlândia, Finlândia</li>
+ <li>Newcastle City Council, Reino Unido</li>
+ <li>New Zealand Central Agencies Library, Nova Zelândia</li>
+ <li>New Zealand Ministry of Education Library, Nova Zelândia</li>
+ <li>North Central Regional Library (NCRL), EUA</li>
+ <li>Northeast Kansas Library System (NEKLS), EUA</li>
+ <li>OPUS</li>
+ <li>Orex Digital, Espanha</li>
+ <li>Oslo Public Library, Noruega</li>
+ <li>Plano Independent School, EUA</li>
+ <li>Plant and Food Research Limited, Nova Zelândia</li>
+ <li>Prosentient Systems, Austrália</li>
+ <li>PTFS, Maryland, EUA</li>
+ <li>PTFS Europe Ltd, Reino Unido</li>
+ <li>Rijksmuseum, Amesterdão, Holanda</li>
+ <li>Rolling Hills Consolidated Libraries, EUA</li>
+ <li>Round Rock Public Library, EUA</li>
+ <li>SAN-Ouest Provence, França</li>
+ <li>Sefton Council, Reino Unido</li>
+ <li>software.coop, Reino Unido</li>
+ <li>South-East Kansas Library System (SEKLS), EUA</li>
+ <li>South Taranaki District Council, Nova Zelândia</li>
+ <li>Stockholm University Library, Suécia</li>
+ <li>SWITCH Library Consortium, EUA</li>
+ <li>Talking Tech, Global</li>
+ <li>Tamil, França</li>
+ <li>Theke Solutions, Argentina</li>
+ <li>Tulong Aklatan, Filipinas</li>
+ <li>Uintah Library System, EUA</li>
+ <li>Universidad de El Salvador, El Salvador</li>
+ <li>Universidad Empresarial Siglo 21, Argentina</li>
+ <li>Universidad Nacional de Córdoba, Argentina</li>
+ <li>Universidad ORT Uruguay</li>
+ <li>Université d'Aix-Marseille, França</li>
+ <li>Université de Lyon 3, França</li>
+ <li>Université de Rennes 2, França</li>
+ <li>Université de St Etienne, França</li>
+ <li>University of the Arts London, Reino Unido</li>
+ <li>Vaara-kirjastot, Finlândia</li>
+ <li>Vanier College, Canadá</li>
+ <li>Vermont Organization of Koha Automated Libraries (VOKAL), EUA</li>
+ <li>Ville de Victoriaville, Canadá</li>
+ <li>Virginia Tech, EUA</li>
+ <li>Washoe County Library System, EUA</li>
+ <li>Xercode, Espanha</li>
+ </ul>
+
+ <h2>Agradecimentos adicionais a...</h2>
+ <ul>
+ <li>Irma Birchall</li>
+ <li>Rachel Hamilton-Williams (Kaitiaki de 2004 até ao presente)</li>
+ <li>Stephen Hedges (Gestor de Documentação)</li>
+ <li>Brooke Johnson</li>
+ <li>Jo Ransom</li>
+ <li>Nicholas Rosasco (Documentation Compiler)</li>
+ <li>Regula Sebastiao</li>
+ </ul>
+ [% END # /WRAPPER tab_item team %]
+
+ [% WRAPPER tab_panel tabname= "licenses" %]
+ <h2>Koha</h2>
+ <p>
+ <a href="http://www.gnu.org/licenses/gpl-3.0.html">O Koha é um programa livre; pode distribuir-lo e/ou modificar-lo de acordo com os termos da GNU General Public License publicada pela Free Software Foundation; tanto a versão 3 da Licença, ou (a seu critério) qualquer versão posterior.</a>
+ </p>
+ <h2>jQuery e jQueryUI</h2>
+ <p>
+ <a href="http://jquery.com/">jQuery</a> e <a href="http://jqueryui.com/">jQueryUI</a> é licenciado sobre <a href="http://github.com/jquery/jquery/blob/master/MIT-LICENSE.txt">Licença MIT</a>
+ </p>
+
+ <h2>Bootstrap</h2>
+ <p>
+ <a href="https://getbootstrap.com/">Bootstrap</a> código e <a href="http://glyphicons.com">Glyphicons Free</a> é licenciado sobre <a href="https://github.com/twbs/bootstrap/blob/master/LICENSE">Licença MIT</a>.
+ </p>
+
+ <h2>Ícones do Bootstrap</h2>
+ <p>
+ <a href="https://icons.getbootstrap.com/">Ícones do Bootstrap</a> é licenciado sobre <a href="https://github.com/twbs/icons/blob/main/LICENSE.md">Licença MIT</a>.
+ </p>
+
+ <h2>Conjunto de ícones famfamfam</h2>
+ <ul>
+ <li>
+ <a href="http://www.famfamfam.com/lab/icons/silk/">Site FamFamFam</a>
+ </li>
+ <li>
+ <a href="http://creativecommons.org/licenses/by/2.5/">Creative Commons Attribution 2.5 License</a>
+ </li>
+ </ul>
+ <h2>O conjunto de ícones Bridge Material Type</h2>
+ <ul>
+ <li>
+ <a href="http://apps.carleton.edu/campus/library/bridge_icons/">Projeto de ícone Bridge Material</a>
+ </li>
+ <li>O conjunto de ícones Bridge Material Type é licenciado sobre a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 License</a>
+ pela Bridge Consortium of Carleton College e St. Olaf College.</li>
+ </ul>
+
+ <h2>jQuery Bar Rating Plugin</h2>
+ <p>
+ jQuery Bar Rating Plugin v1.22 por <a href="http://antenna.io/demo/jquery-bar-rating/examples/">Antenna.io</a> é licenciado sobre <a href="http://en.wikipedia.org/wiki/MIT_License">Licença MIT</a>.
+ </p>
+ <p>
+ Copyright &copy; 2012-2016 <a href="http://antenna.io">Kazik Pietruszewski</a>
+ </p>
+
+ <h2>jQuery insertAtCaret Plugin</h2>
+ <p>
+ jQuery insertAtCaret Plugin v1.0 pela equipa de desenvolvimento do phpMyAdmin é licenciada sobre <a href="http://www.gnu.org/licenses/gpl.html">Licença GPL</a>.
+ </p>
+ <p>
+ Copyright &copy; 2003-2010 phpMyAdmin devel team </p>
+
+ <h2>jQuery treetable Plugin</h2>
+ <p>
+ O <a href="http://ludo.cubicphuse.nl/jquery-treetable/">jQuery treetable Plugin 3.1.0</a> é lançado sobre a licença MIT de Ludo van den Boom. </p>
+
+ <h2>OpenJS Keyboard Shortcuts Library</h2>
+ <p>
+ O <a href="http://www.openjs.com/scripts/events/keyboard_shortcuts/">OpenJS keyboard shortcuts library</a> por Binny V A é licenciado sobre a licença BSD. </p>
+
+ <h2>jquery.dataTables.grouping.js</h2>
+ <p>
+ O <a href="https://code.google.com/p/jquery-datatables-row-grouping/">jquery.dataTables.grouping.js</a> plugin por Jovan Popovic é licenciado sobre a licença BSD e GPL v2.</p>
+
+ <h2>plugin jQuery Colvis</h2>
+ <p>
+ O <a href="http://datatables.net/extensions/colvis/">controlos para a visibilidade da coluna nas DataTables</a>
+ por Allan Jardine é licenciado sobre a licença BSD 3 e GPL v2. </p>
+
+ <h2>jQuery Multiple Select Plugin</h2>
+ <p>
+ O <a href="https://multiple-select.wenzhixin.net.cn/">jQuery Multiple Select plugin</a> por Zhixin Wen é licenciado sobre a licença MIT. </p>
+
+ <h2>Javascript Diff Algorithm</h2>
+ <p>
+ O <a href="http://ejohn.org/projects/javascript-diff-algorithm/">Javascript Diff Algorithm</a> plugin por John Resig é licenciado sobre a <a href="http://opensource.org/licenses/mit-license.php">Licença MIT</a>.
+ </p>
+
+ <h2>jQuery Validation Plugin</h2>
+ <p>
+ O <a href="http://jqueryvalidation.org/">jQuery Validation Plugin</a> escrito e mantido por Jörn Zaefferer e licenciado por <a href="http://opensource.org/licenses/mit-license.php">Licença MIT</a>.
+ </p>
+
+ <h2>TinyMCE WYSIWYG editor</h2>
+ <p>
+ O <a href="https://www.tiny.cloud/">TinyMCE WYSIWYG editor v5.9.2 </a> por Tiny Technologies, Inc. e é licenciado sobre <a href="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt">LGPL v2.1</a>.
+ </p>
+
+ <h2>Font Awesome</h2>
+ <p>
+ <a href="http://fontawesome.com/v4/">Font Awesome 4.7.0</a> por Dave Gandy e é licenciado sobre <a href="http://scripts.sil.org/OFL">SIL OFL 1.1</a> e o <a href="http://opensource.org/licenses/mit-license.html">Licença MIT</a>.
+ </p>
+
+ <h2>Biblioteca de edição CodeMirror</h2>
+ <p>
+ O <a href="http://codemirror.net/">Biblioteca de edição CodeMirror</a> por Marijn Haverbeke é licenciado sobre <a href="http://codemirror.net/LICENSE">Licença MIT</a>.
+ </p>
+
+ <h2>Biblioteca FileSaver</h2>
+ <p>
+ O <a href="https://github.com/eligrey/FileSaver.js/">Biblioteca FileSaver</a> por Eli Grey é licenciado sobre <a href="https://github.com/eligrey/FileSaver.js/blob/master/LICENSE.md">Licença MIT</a>.
+ </p>
+
+ <h2>Require.js JS module system</h2>
+ <p>
+ O <a href="http://requirejs.org/">Require.js JS module system</a> por The Dojo Foundation e é licenciado sobre <a href="https://github.com/jrburke/requirejs/blob/master/LICENSE">Licença MIT</a>.
+ </p>
+
+ <h2>OAI xslt stylesheet</h2>
+ <p>
+ O ficheiro OAI.xslt incluído pelo <a href="http://dspace.org/">Projeto DSpace</a> é licenciado sobre <a href="http://www.dspace.org/license/">Licença BSD</a>.
+ </p>
+
+ <h2>Esquema OpenAPI 2.0</h2>
+ <p>
+ O ficheiro incluído <a href="https://github.com/OAI/OpenAPI-Specification/blob/master/schemas/v2.0/schema.json">api/swagger-v2-schema.json</a> é licenciado sobre <a href="https://github.com/OAI/OpenAPI-Specification/tree/master/schemas/v2.0">Licença Apache, Versão 2.0</a>, pelo <a href="https://www.openapis.org/about">OpenAPI Initiative (OAI)</a>.
+ </p>
+
+ <h2>Select2</h2>
+ <p>
+ O <a href="http://select2.github.io/select2/">Select2</a> é licenciado sobre <a href="https://github.com/select2/select2/blob/stable/3.5/LICENSE">a licença Apache, versão 2.0 ("Apache License") ou a licença GNU General Public License versão 2 ("GPL License")</a>.
+ </p>
+
+ <h2>jquery.tablednd.js</h2>
+ <p>
+ O <a href="https://github.com/isocra/TableDnD">TableDnD plug-in para o jQuery</a> por Denis Howlett e é licenciado sobre <a href="http://opensource.org/licenses/mit-license.php">Licença MIT</a>.
+ </p>
+
+ <h2>Leaflet</h2>
+ <p>
+ O <a href="http://leafletjs.com">Leaflet</a> biblioteca Javascript do Vladimir Agafonkinis é licenciada sobre a <a href="https://github.com/Leaflet/Leaflet/blob/master/LICENSE">Licença BSD</a>.
+ </p>
+
+ <h2>jquery.emojiarea.js</h2>
+ <p>
+ O <a href="https://github.com/diy/jquery-emojiarea">Emojiarea plug-in para o jQuery</a> por DIY Co é licenciado sobre <a href="http://www.apache.org/licenses/LICENSE-2.0">Licença Apache, Version 2.0</a>.
+ </p>
+
+ <h2>JSZip</h2>
+ <p>
+ O <a href="https://stuk.github.io/jszip/">JSZip</a> A biblioteca Javascript é licenciada sobre a <a href="https://github.com/Stuk/jszip/blob/master/LICENSE.markdown">Licenças MIT e GPLv3</a>.
+ </p>
+
+ <h2>D3.js</h2>
+ <p>
+ <a href="https://d3js.org/">D3.js v3.5.17</a> é uma biblioteca Javascript para manipulação de documentos. É licenciada sobre a <a href="https://github.com/d3/d3/blob/master/LICENSE">Licença BSD 3-clause</a>
+ </p>
+
+ <h2>C3.js</h2>
+ <p>
+ <a href="http://c3js.org/">C3.js v0.4.11</a> é uma biblioteca de gráficos D3-based reutilizável sobre a <a href="https://opensource.org/licenses/mit-license.php">Licença MIT</a>
+ </p>
+
+ <h2>Font Face Observer</h2>
+ <p>
+ <a href="https://github.com/bramstein/fontfaceobserver">Font Face Observer</a> é uma biblioteca Javascript do Bram Stein e licenciada sobre a <a href="https://github.com/bramstein/fontfaceobserver/blob/master/LICENSE">Licença BSD</a>.
+ </p>
+
+ <h2>Fontes Noto</h2>
+ <p>
+ <a href="https://github.com/googlei18n/noto-fonts">Noto</a> da Google é uma família de fontes licencias sobre a <a href="http://scripts.sil.org/OFL">SIL Open Font License (OFL) v1.1</a>.
+ </p>
+
+ <h2>HC Sticky</h2>
+ <p>
+ <a href="http://somewebmedia.com/hc-sticky/">HC Sticky</a> pela Some Web Media é uma biblioteca Javascript que torna qualquer elemento visível na sua página enquanto faz scroll, licenciado sobre a <a href="https://github.com/somewebmedia/hc-sticky/blob/master/LICENSE">Licença MIT</a>.
+ </p>
+
+ <h2>kjua</h2>
+ <p>
+ <a href="https://larsjung.de/kjua/">kjua</a> Desenvolvido pelo Lar Jung, é uma biblioteca JavaSCript que gera códigos QR, licenciado sobre a <a href="https://github.com/lrsjng/kjua/blob/master/README.md">Licença MIT</a>.
+ </p>
+
+ <h2>Verovio</h2>
+ <p>
+ <a href="https://www.verovio.org/index.xhtml">Verovio</a> é desenvolvido pelo Swiss RISM com o suporta da Fundação Swiss National Science, licenciado sobre a <a href="http://www.gnu.org/licenses/lgpl-3.0.html">LGPL v3.0</a>.
+ </p>
+
+ <h2>JavaScript Cookie</h2>
+ <p>
+ <a href="https://github.com/js-cookie/js-cookie">JavaScript Cookie</a> é uma "API JavaScript simples e leve para gerir as cookis", licenciado sobre a <a href="https://github.com/js-cookie/js-cookie/blob/master/LICENSE">Licença MIT</a>.
+ </p>
+
+ <h2>Day.js</h2>
+ <p>
+ <a href="https://day.js.org/">Day.js</a> é licenciado sobre <a href="https://github.com/iamkun/dayjs/blob/dev/LICENSE">Licença MIT</a>.
+ </p>
+
+ <h2>Chocolat.js</h2>
+ <p>
+ <a href="http://chocolat.insipi.de">Chocolat.js</a> é licenciado sobre <a href="https://github.com/nicolas-t/Chocolat/blob/master/LICENSE">Licença GPL v3</a>.
+ </p>
+
+ <h2>Enquire.js</h2>
+ <p>
+ <a href="https://wicky.nillia.ms/enquire.js">Enquire.js</a> é licenciado sobre <a href="https://github.com/WickyNilliams/enquire.js/blob/master/LICENSE">Licença MIT</a>.
+ </p>
+
+ [% END # /WRAPPER tab_item licenses %]
+
+ [% WRAPPER tab_panel tabname= "translations" %]
+ <h2>Tradução</h2>
+ <ul>
+ <li>العربية (Árabe) Versão 3.2 a 3.4, 3.16 & 3.18 por KnowledgeWare Technologies; Versões 3.6 a 3.14 pela equipa de suporte Árabe: Karam Qubsi, Kouider Bounama, Sham Bajaa, Ghofran Alshami, Chrestian Aboud, Fatema Salem e Duaa Bazzazi. <li>&#4768;&#4635;&#4653;&#4763; (Amharic) Getway II Ethiopia Co. (Yohannes Mulugeta (Team Leader), Tegene Assefa, Abiyot Bayou)</li>
+ <li>Armenian Tigran Zargaryan</li>
+ <li>&#1041;&#1098;&#1083;&#1075;&#1072;&#1088;&#1089;&#1082;&#1080; (Búlgaro) Radoslav Kolev</li>
+ <li>euskara (Basco) Fernando Berrizbeitia, técnicos do Eima Katalogoa, Tabakalera International Contemporary Culture Centre e Nere Erkiaga</li>
+ <li>&#2476;&#2494;&#2434;&#2482;&#2494; (Bengali) Parthasarathi Mukhopadhyay</li>
+ <li>&#20013;&#25991; (Chinês)</li>
+ <li>Hrvatski (Croácia)</li>
+ <li>&#x010D;e&#353;tina (Checo)</li>
+ <li>D&aelig;nsk (Dinamarquês)</li>
+ <li>Nederlands-Nederland (Dutch-The Netherlands) Ronald Wijlens, Saxion University</li>
+ <li>Nederlands-Belgi&euml; (Dutch-Belgium)</li>
+ <li>Inglês</li>
+ <li>suomi, suomen kieli (Finlandês) Pasi Korkalo</li>
+ <li>Francês (Francês) <a href="http://www.koha-fr.org/content/lassociation-kohala">Kohala</a>, Pascale Nalon (ENSMP) e muitos mais </li>
+ <li>Galego (Galícia) Ignacio Javier</li>
+ <li>Deutsch (Alemão) Friedrich zur Hellen, Robert Hillig, Katrin Fischer, Beda Szukics, Mirko Tietgen e Marc Véron</li>
+ <li>&#949;&#955;&#955;&#951;&#957;&#953;&#954;&#940; (Grego, Moderno [1453- ]) Grupo de utilizadores do Koha Helênico (Georgia Katsarou, Dimitris Antonakis, Eugenios Papadopoulos), Theodoros Theodoropoulos, Panoraia Gaitanou e Kiriaki Roditi</li>
+ <li>&#1506;&#1489;&#1512;&#1497;&#1514; (Hebreu)</li>
+ <li>&#2361;&#2367;&#2344;&#2381;&#2342;&#2368; (Hindi)</li>
+ <li>Magyar (Húngaro) Agnes Imecs</li>
+ <li>Norsk Bokmål (Norueguês) Axel Bojer e Thomas Gramstad</li>
+ <li>Norsk Nynorsk (Norueguês) Unni Knutsen e Marit Kristine Ådland</li>
+ <li>(Indonésio)</li>
+ <li>Italiano (Italian) para 3.2: Zeno Tajoli, Pietro Gozzetti e Paolo Pozzan; para 3.4 e superior: Zeno Tajoli, Stefano Bargioni, Paolo Bizzarri</li>
+ <li>&#26085;&#26412;&#35486; (Japonês)</li>
+ <li>&#54620;&#44397;&#50612; (Coreano)</li>
+ <li>&#3221;&#3240;&#3277;&#3240;&#3233; (kanna&#7693;a)</li>
+ <li>Latina (Latim)</li>
+ <li>Lao Anousak Anthony Souphavanh</li>
+ <li>M&#257;ori</li>
+ <li>&#3374;&#3378;&#3375;&#3390;&#3379;&#3330; (Malayalam)</li>
+ <li>&#1601;&#1575;&#1585;&#1587;&#1609; (Persa)</li>
+ <li>&#2835;&#2908;&#2879;&#2822; (&#x014D;&#7771;iy&#257;)</li>
+ <li>Polaco</li>
+ <li>Português</li>
+ <li>Rom&acirc;n&#259; (Romeno)</li>
+ <li>&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081; (Russo) Victor Titarchuk e Serhij Dubyk</li>
+ <li>Espa&ntilde;ol (Spanish) Bernardo González Kriegel, Héctor Castro e Tomás Cohen Araz, com ajuda da comunidade koha-es.</li>
+ <li>Svenska (Sueco)</li>
+ <li>Tétum (Tétum) Karen Myers</li>
+ <li>&#3616;&#3634;&#3625;&#3634;&#3652;&#3607;&#3618; (Thai)</li>
+ <li>T&uuml;rk&ccedil;e (Turco) pré-3.8: elma Aslan; para 3.8+, Suleyman Demirel University (Ugur Bulgan, Onur Erdem, Kemal Caner Bayrakci, e Alper Tutunsatar)</li>
+ <li>&#1575;&#1585;&#1583;&#1608;(Urdu) Ata ur Rehman</li>
+ <li>&#1059;&#1082;&#1088;&#1072;&#1111;&#1085;&#1089;&#1100;&#1082;&#1072; (Ucraniano) Victor Titarchuk e Serhij Dubyk</li>
+ </ul>
+ [% END # /WRAPPER tab_item translations %]
+
+ [% WRAPPER tab_panel tabname= "history" %]
+ <h2>História do Koha</h2>
+ [% IF ! timeline_read_error %]
+ <table style="cursor:pointer">
+ <thead>
+ <tr>
+ <td  style="font-weight:bold;" >Data</td>
+ <td  style="font-weight:bold;" >Descrição</td>
+ </tr>
+ </thead>
+ [% FOREACH tabl IN table2 %]
+ <tr class="[% loop.parity | html %]">
+ [% FOREACH ro IN tabl.row2 %]
+ <td>[% ro.date | html %]</td>
+ <td>[% ro.desc | html %]</td>
+ [% END %]
+ </tr>
+ [% END %]
+ </table>
+ [% ELSE %]
+ <div class="dialog alert">
+ Não foi possível ler o ficheiro history.txt. Por favor verifique que &lt;docdir&gt; está bem definido em koha-conf.xml. </div>
+ [% END %]
+ [% END # /WRAPPER tab_item history %]
+
+ [% WRAPPER tab_panel tabname= "dedications" %]
+ <h2>22.11</h2>
+ <p>
+ A Comunidade do Koha deseja dedicar o lançamento do Koha 22.11 à Rosalie Blake. </p>
+ <p>
+ A Rosalie era a Bibliotecária-Chefe da Horowhenua Library Trust quando Koha foi iniciado e sem ela Koha não existiria. Ela era uma líder inspiradora e inovadora e assumiu o risco da sua carreira confiando em Chris, Joanne, Rachel e Simon para entregar o projeto original que se tornou a sensação internacional que todos conhecemos e amamos. </p>
+ <p>
+ Ela também era uma Juíza de Paz praticante, uma fiel do Levin Pottery Club e mãe muito amada de Simon e Jeremy, e avó de Ben, Toby, Anna, Charlotte e Billy. </p>
+ [% END # /WRAPPER tab_item dedications %]
+ [% END %]
+ [% END # /WRAPPER abouttabs %]
+ </div> <!-- /.col-md-12 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ <script>
+        $(document).ready(function(){
+            selectBsTabByHash( "abouttabs" );
+        });
+    </script>
+[% END %]
+
+<!-- the main div is closed in intranet-bottom.inc -->
+[% INCLUDE 'intranet-bottom.inc' %]

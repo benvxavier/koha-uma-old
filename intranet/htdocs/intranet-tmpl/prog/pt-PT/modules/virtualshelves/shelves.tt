@@ -1,0 +1,985 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Koha %]
+[% USE KohaDates %]
+[% USE AuthorisedValues %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>
+ [% IF op == 'view' %] Conteúdos de [% shelf.shelfname | html %] &rsaquo; [% END %] [% IF op == 'add_form' %] Criar nova lista &rsaquo; [% END %] [% IF op == 'edit_form' %] Editar lista [% shelf.shelfname | html %] &rsaquo; [% END %] Listas &rsaquo; Koha </title>
+[% INCLUDE 'doc-head-close.inc' %]
+<style>textarea { width: 100%; }</style>
+
+[% BLOCK list_permissions %]
+ <li>
+ <label for="allow_changes_from">Permitir alterações ao conteúdo a: </label>
+ <select name="allow_changes_from" id="allow_changes_from" onchange="AdjustRemark()">
+
+ [% IF shelf.allow_change_from_owner %]
+ <option value="0">Ninguém</option>
+ [% ELSE %]
+ <option value="0" selected="selected">Ninguém</option>
+ [% END %]
+
+ [% IF shelf.allow_change_from_owner && (( !shelf.is_public && !shelf.is_shared ) || !shelf.allow_change_from_others ) %]
+ <option value="1" selected="selected">Apenas para o dono</option>
+ [% ELSE %]
+ <option value="1">Apenas para o dono</option>
+ [% END %]
+
+ [% IF shelf.allow_change_from_permitted_staff %]
+ <option value="4" selected="selected">Apenas staff com permissões</option>
+ [% ELSE %]
+ <option value="4">Apenas staff com permissões</option>
+ [% END %]
+ [% IF shelf.allow_change_from_staff %]
+ <option value="3" selected="selected">Apenas staff</option>
+ [% ELSE %]
+ <option value="3">Apenas staff</option>
+ [% END %]
+
+ [% IF shelf.allow_change_from_others %]
+ <option value="2" selected="selected">Todos que visualizem a lista</option>
+ [% ELSE %]
+ <option value="2">Todos que visualizem a lista</option>
+ [% END %]
+
+ </select>
+ &emsp; <span id="permitted_staff_remark" style="display:none;color:red;">A permissão Apenas Staff com permissões não tem efeito enquanto esta lista é privada.</span>
+ &emsp; <span id="staff_remark" style="display:none;color:red;">A permissão Apenas Staff não tem efeito enquanto esta lista é privada.</span>
+ &emsp; <span id="anyone_remark" style="display:none;color:red;">A permissão Todos não tem efeito se a lista estiver como privada.</span>
+ </li>
+[% END %]
+</head>
+
+<body id="lists_shelves" class="lists">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% IF op != 'list' %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/virtualshelves/shelves.pl">Listas</a>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Listas</span>
+ [% END %]
+ [% END %]
+
+ [% IF shelf AND shelf.is_private %]
+ [% IF op == 'view' OR op == 'edit_form' %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/virtualshelves/shelves.pl?op=list&amp;public=0">Minhas listas</a>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Minhas listas</span>
+ [% END %]
+ [% END %]
+
+ [% ELSIF shelf AND shelf.is_public %]
+ [% IF op == 'view' %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/virtualshelves/shelves.pl?op=list&amp;public=1">Listas públicas</a>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Listas públicas</span>
+ [% END %]
+ [% END %]
+ [% END %]
+
+ [% IF op == 'view' %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Conteúdos de <em>[% shelf.shelfname | html %]</em></span>
+ [% END %]
+ [% END %]
+
+ [% IF op == 'add_form' %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Criar nova lista</span>
+ [% END %]
+ [% END %]
+
+ [% IF op == 'edit_form' %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Editar lista <em>[% shelf.shelfname | html %]</em></span>
+ [% END %]
+ [% END %]
+
+ [% IF op == 'transfer' %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Transferir lista <em>[% shelf.shelfname | html %]</em></span>
+ [% END %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-1">
+ <main>
+
+ [% IF op != 'transfer' %][% INCLUDE 'virtualshelves-toolbar.inc' %][% END %]
+
+ [% FOR m IN messages %]
+ <div class="dialog [% m.type | html %]">
+ [% SWITCH m.code %]
+ [% CASE 'error_on_update' %]
+ <span>Ocorreu um erro ao atualizar a lista.</span>
+ [% CASE 'error_on_insert' %]
+ <span>Ocorreu um erro ao criar a lista.</span>
+ [% CASE 'error_on_delete' %]
+ <span>Ocorreu um erro ao eliminar a lista.</span>
+ [% CASE 'error_on_add_biblio' %]
+ [% IF m.item_barcode %]
+ <span>O item ([% m.item_barcode | html %]) não foi adicionado à lista. Por favor verifique se já não está na mesma.</span>
+ [% ELSE %]
+ <span>O registo ([% m.bibnum | html %]) não foi adicionado à lista. Por favor verifique se já não está na mesma.</span>
+ [% END %]
+ [% CASE 'success_on_update' %]
+ <span>Lista atualizada.</span>
+ [% CASE 'success_on_insert' %]
+ <span>Lista criada.</span>
+ [% CASE 'success_on_delete' %]
+ <span>Lista eliminada.</span>
+ [% CASE 'success_on_add_biblio' %]
+ [% IF m.item_barcode %]
+ <span>O item ([% m.item_barcode | html %]) foi adicionado à lista.</span>
+ [% ELSE %]
+ <span>O registo ([% m.bibnum | html %]) foi adicionado à lista.</span>
+ [% END %]
+ [% CASE 'success_on_remove_biblios' %]
+ <span>O item foi removido da lista.</span>
+ [% CASE 'does_not_exist' %]
+ <span>Esta lista não existe.</span>
+ [% CASE 'item_does_not_exist' %]
+ [% IF m.item_barcode %]
+ <span>O exemplar ([% m.item_barcode | html %]) não existe.</span>
+ [% ELSE %]
+ <span>O registo ([% m.bibnum | html %]) não existe.</span>
+ [% END %]
+ [% CASE 'unauthorized_on_view' %]
+ <span>Não tem permissão adequada para ver esta lista.</span>
+ [% CASE 'unauthorized_on_update' %]
+ <span>Não tem permissão adequada para atualizar esta lista.</span>
+ [% CASE 'unauthorized_on_delete' %]
+ <span>Não tem permissão adequada para eliminar esta lista.</span>
+ [% CASE 'unauthorized_on_add_biblio' %]
+ <span>Não tem permissão adequada para adicionar um registo a esta lista.</span>
+ [% CASE 'unauthorized_transfer' %]
+ <span>Não tem permissão adequada para transferir a propriedade desta lista.</span>
+ [% CASE 'new_owner_not_found' %]
+ <span>Não foi possível encontrar o novo dono.</span>
+ [% CASE 'no_biblio_removed' %]
+ <span>Nenhum registo foi removido.</span>
+
+ [% CASE 'Koha::Exceptions::Virtualshelf::DuplicateObject' %]
+ <span>Ocorreu um erro ao criar esta lista. O nome [% shelfname | html %] já existe.</span>
+ [% CASE 'Koha::Exceptions::Virtualshelf::UseDbAdminAccount' %]
+ <span>Não foi possível criar a lista. (Não utilize a conta de administração da base de dados.)</span>
+ [% CASE 'DBIx::Class::Exception' %]
+ [% m.msg | html %]
+
+ [% CASE %]
+ [% m.code | html %] [% m.msg | html %]
+ [% END # /SWITCH %]
+ </div>
+ [% END # /FOR m IN messages %]
+
+ [% IF op == 'transfer' %]
+ <h1>Transferir propriedade da lista pública [% shelf.shelfname | html %]</h1>
+
+ <form action="/cgi-bin/koha/virtualshelves/shelves.pl" id="transferform" method="post">
+ [% INCLUDE 'csrf-token.inc' %]
+ <fieldset>
+ <input type="hidden" name="op" value="transfer" />
+ <input type="hidden" name="public" value="1" />
+ <input type="hidden" name="shelfnumber" value="[% shelf.shelfnumber | html %]" />
+
+ <div>
+ <label for="find_patron">Pesquisar pelo novo dono: </label>
+ <input autocomplete="off" id="find_patron" type="text" style="width:150px" class="noEnterSubmit" />
+ </div>
+
+ <br/>
+ <div>
+ <label for="find_patron">Novo dono: </label>
+ <span id="new_owner_name"></span>
+ <input type="hidden" id="new_owner" name="new_owner" value="" />
+ </div>
+
+ <br/>
+ <fieldset class="action">
+ <input class="btn btn-primary" type="submit" value="Transferência" />
+ <a href="/cgi-bin/koha/virtualshelves/shelves.pl?op=list&amp;public=1" class="cancel">Anular</a>
+ </fieldset>
+
+ </fieldset>
+ </form>
+ [% END # /IF op == transfer %]
+
+ [% IF op == 'view' %]
+ <h1>Conteúdos de <em>[% shelf.shelfname | html %]</em></h1>
+ [% IF itemsloop %]
+ [% SET contents = shelf.get_contents %]
+ [% IF ( contents.count ) %]<p>Esta lista contem [% contents.count | html %] títulos</p>[% END %]
+ <div class="pages">[% pagination_bar | $raw %]</div>
+ <form action="/cgi-bin/koha/virtualshelves/shelves.pl" id="listform" method="post">
+ [% INCLUDE 'csrf-token.inc' %]
+ <input type="hidden" name="op" value="remove_biblios" />
+ <input type="hidden" name="referer" value="view" />
+ <input type="hidden" name="shelfnumber" value="[% shelf.shelfnumber | html %]" />
+
+ [% IF direction == 'asc' %]
+ [% SET new_direction = 'desc' %]
+ [% ELSE %]
+ [% SET direction = 'desc' %]
+ [% SET new_direction = 'asc' %]
+ [% END %]
+
+ [% IF itemsloop %]
+ <div id="searchheader" class="searchheader noprint">
+ <div id="selection_ops">
+ <span class="checkall"></span> |
+ <span class="clearall"></span>
+
+ <span class="addto">| </span>
+ &nbsp;
+ [% IF CAN_user_reserveforothers && Koha.Preference('DisplayMultiPlaceHold') %]
+ <div class="btn-group"><button class="btn btn-default btn-xs placehold"><i class="fa fa-sticky-note-o"></i> Reservar</button></div>
+ [% END %]
+ [% IF can_remove_biblios %]
+ <div class="btn-group"><button type="submit" class="btn btn-default btn-xs list-remove"><i class="fa fa-trash"></i> Eliminar seleccionados</button></div>
+ [% END %]
+ [% IF ( CAN_user_editcatalogue_edit_catalogue ) %]
+ <div class="btn-group"><button type="submit" class="btn btn-default btn-xs merge-items"><i class="fa fa-compress"></i> Unificar registos seleccionados</button></div>
+ [% END %]
+ </div>
+ </div>
+ [% END %]
+
+ <div class="page-section">
+ <table id="searchresults" class="dataTable">
+ <thead>
+ <tr>
+ [% IF ( itemsloop ) %]
+ <th class="checkall">&nbsp;</th>
+ [% END %]
+ [% UNLESS ( item_level_itypes ) %]
+ <th>Tipo de documento</th>
+ [% END %]
+ [% IF sortfield == 'title' %]
+ <th class="sorting_[% direction | html %]">
+ [% ELSE %]
+ <th class="sorting">
+ [% END %]
+ <a href="/cgi-bin/koha/virtualshelves/shelves.pl?op=view&amp;shelfnumber=[% shelf.shelfnumber | uri %]&amp;sortfield=title&amp;direction=[% IF sortfield != 'title' %]asc[% ELSE %][% new_direction | uri %][% END %]">Título</a>
+ </th>
+ [% IF sortfield == 'author' %]
+ <th class="sorting_[% direction | html %]">
+ [% ELSE %]
+ <th class="sorting">
+ [% END %]
+ <a href="/cgi-bin/koha/virtualshelves/shelves.pl?op=view&amp;shelfnumber=[% shelf.shelfnumber | uri %]&amp;sortfield=author&amp;direction=[% IF sortfield != 'author' %]asc[% ELSE %][% new_direction | uri %][% END %]">Autor</a>
+ </th>
+ [% IF sortfield == 'dateadded' %]
+ <th class="sorting_[% direction | html %]">
+ [% ELSE %]
+ <th class="sorting">
+ [% END %]
+ <a href="/cgi-bin/koha/virtualshelves/shelves.pl?op=view&amp;shelfnumber=[% shelf.shelfnumber | uri %]&amp;sortfield=dateadded&amp;direction=[% IF sortfield != 'dateadded' %]asc[% ELSE %][% new_direction | uri %][% END %]">Data adicionada</a>
+ </th>
+ [% IF sortfield == 'itemcallnumber' %]
+ <th class="sorting_[% direction | html %]">
+ [% ELSE %]
+ <th class="sorting">
+ [% END %]
+ <a href="/cgi-bin/koha/virtualshelves/shelves.pl?op=view&amp;shelfnumber=[% shelf.shelfnumber | uri %]&amp;sortfield=itemcallnumber&amp;direction=[% IF sortfield != 'itemcallnumber' %]asc[% ELSE %][% new_direction | uri %][% END %]">Cota</a>
+ </th>
+ </tr>
+ </thead>
+ [% FOREACH itemsloo IN itemsloop %]
+ <tr>
+ [% IF itemsloop %]
+ <td>
+ <input type="checkbox" class="selection" value="[% itemsloo.biblionumber | html %]" name="biblionumber" />
+ </td>
+ [% END %]
+ [% UNLESS ( item_level_itypes ) %]
+ <td>
+ [% UNLESS ( noItemTypeImages || !itemsloo.imageurl ) %]
+ <img src="[% itemsloo.imageurl | html %]" alt="[% itemsloo.description | html %]" title="[% itemsloo.description | html %]" />
+ [% END %]
+ <span class="itypetext">[% itemsloo.description | html %]</span>
+ </td>
+ [% END %]
+ <td>
+ [% IF ( itemsloo.XSLTBloc ) %]
+ [% itemsloo.XSLTBloc | $raw %]
+ [% ELSE %]
+ [% INCLUDE 'biblio-title.inc' biblio=itemsloo link = 1 %]
+ </a>
+ [% END %]
+ <p class="hold">
+ [% IF ( itemsloo.notforloan ) %]
+ <span class="noholdstext">Reservas não permitidas</span>
+ [% ELSE %]
+ [% IF ( itemsloo.ITEM_RESULTS.count ) %]
+ <a id="reserve_[% itemsloo.biblionumber | html %]" href="/cgi-bin/koha/reserve/request.pl?biblionumber=[% itemsloo.biblionumber | html %]">Reservas</a>
+ [% IF ( holdfor ) %]
+ <span class="holdforlink">| <a href="/cgi-bin/koha/reserve/request.pl?biblionumber=[% itemsloo.biblionumber | uri %]&amp;findborrower=[% holdfor_patron.cardnumber | uri %]">Reservar [% INCLUDE 'patron-title.inc' patron => holdfor_patron no_title => 1 %]</a></span>
+ [% END %]
+ [% ELSE %]
+ <span class="noholdstext">Reservas não permitidas</span>
+ [% END %]
+ [% END %]
+ [% IF ( CAN_user_editcatalogue_edit_catalogue ) %]
+ | <a href="/cgi-bin/koha/cataloguing/addbiblio.pl?biblionumber=[% itemsloo.biblionumber | uri %]">Modificar o registo</a>
+ [% END %]
+ [% IF ( CAN_user_editcatalogue_edit_items ) %]
+ | <a href="/cgi-bin/koha/cataloguing/additem.pl?biblionumber=[% itemsloo.biblionumber | uri %]">Editar exemplares</a>
+ [% END %]
+ </p>
+ </td>
+ <td>
+ [% itemsloo.author | html %]
+ </td>
+ <td>
+ [% itemsloo.dateadded | $KohaDates%]
+ </td>
+ <td>
+ <ul>
+ [% FOREACH item IN itemsloo.ITEM_RESULTS %]
+ <li>
+ [% Branches.GetName(item.holdingbranch) | html %]
+ [% IF ( item.location ) %]
+ <span class="shelvingloc">
+ [% AuthorisedValues.GetDescriptionByKohaField( kohafield => 'items.location', authorised_value => item.location ) | html %]
+ </span>
+ [% END %]
+ [% IF ( item.itemcallnumber ) %]
+ [<a href="/cgi-bin/koha/catalogue/search.pl?idx=callnum&amp;q=%22[% item.itemcallnumber | uri %]%22">[% item.itemcallnumber | html %]</a>]
+ [% END %]
+ </li>
+ [% END # /FOREACH item %]
+ </ul>
+ </td>
+ </tr>
+ [% END #/FOREACH itemsloo %]
+ </table> <!-- /#searchresults -->
+ </div> <!-- /.page-section -->
+
+ <div class="pages">[% pagination_bar | $raw %]</div>
+ </form>
+ [% END # /IF itemsloop %]
+ [% END # /IF op == 'view' %]
+
+ [% IF op == 'add_form' OR op == 'edit_form' %]
+
+ <form method="post" action="/cgi-bin/koha/virtualshelves/shelves.pl" class="validated">
+ [% INCLUDE 'csrf-token.inc' %]
+ <fieldset class="rows">
+ [% IF op == 'add_form' %]
+ <legend><h1>Criar uma nova lista</h1></legend>
+ <input type="hidden" name="op" value="add" />
+ [% ELSE %]
+ <legend><h1>Editar lista <em>[% shelf.shelfname | html %]</em></h1></legend>
+ <input type="hidden" name="op" value="edit" />
+ [% END %]
+ <input type="hidden" name="referer" value="[% referer | html %]" />
+ <input type="hidden" name="shelfnumber" value="[% shelf.shelfnumber | html %]" />
+ <ol>
+ <li>
+ <label for="shelfname" class="required">Nome: </label><input type="text" id="shelfname" name="shelfname" size="25" value="[% shelf.shelfname | html %]" required="required" class="focus required" />
+ <span class="required">Obrigatório</span>
+ </li>
+ <li>
+ <span class="label">Dono: </span>
+ [% IF op == 'add_form' %]
+ <input type="hidden" name="owner" id="owner" value="[% loggedinusernumber | html %]" />[% logged_in_user.userid | html %]
+ [% ELSE %]
+ [% IF owner %]
+ <input type="hidden" id="owner" name="owner" value="[% owner.borrowernumber | html %]" />[% owner.firstname _ ' ' _ owner.surname | html %]
+ [% ELSE %]
+ <input type="hidden" id="owner" name="owner" value="[% loggedinusernumber | html %]" />[% logged_in_user.userid | html %]
+ [% END %]
+ [% END %]
+ </li>
+ <li>
+ <label for="sortfield" >Ordenar lista por: </label>
+ <select name="sortfield">
+ [% IF shelf.sortfield == "title" %]
+ <option value="title" selected="selected">Título</option>
+ [% ELSE %]
+ <option value="title">Título</option>
+ [% END %]
+ [% IF shelf.sortfield == "author" %]
+ <option value="author" selected="selected">Autor</option>
+ [% ELSE %]
+ <option value="author">Autor</option>
+ [% END %]
+ [% IF shelf.sortfield == "copyrightdate" %]
+ <option value="copyrightdate" selected="selected">Data direitos de autor</option>
+ [% ELSE %]
+ <option value="copyrightdate">Data direitos de autor</option>
+ [% END %]
+ [% IF shelf.sortfield == "itemcallnumber" %]
+ <option value="itemcallnumber" selected="selected">Cota</option>
+ [% ELSE %]
+ <option value="itemcallnumber">Cota</option>
+ [% END %]
+ [% IF shelf.sortfield == "dateadded" %]
+ <option value="dateadded" selected="selected">Data adicionada</option>
+ [% ELSE %]
+ <option value="dateadded">Data adicionada</option>
+ [% END %]
+ </select>
+ </li>
+ <li>
+ <label for="public">Público: </label>
+ <select id="public" name="public" onchange="AdjustRemark()">
+ [% IF shelf.is_private %]
+ <option value="0" selected="selected">Privada</option>
+ [% ELSE %]
+ <option value="0">Privada</option>
+ [% END %]
+ [% IF shelf.is_public %]
+ <option value="1" selected="selected">Público</option>
+ [% ELSE %]
+ <option value="1">Público</option>
+ [% END %]
+ </select>
+ </li>
+ [% INCLUDE list_permissions %]
+ </ol>
+ </fieldset>
+
+ <fieldset class="action">
+ <input class="btn btn-primary" type="submit" value="Guardar" />
+ [% IF referer == 'view' %]
+ <a href="/cgi-bin/koha/virtualshelves/shelves.pl?op=view&amp;shelfnumber=[% shelf.shelfnumber | uri %]" class="cancel">Anular</a>
+ [% ELSE %]
+ [% IF public %]
+ <a href="/cgi-bin/koha/virtualshelves/shelves.pl?op=list&amp;public=1" class="cancel">Anular</a>
+ [% ELSE %]
+ <a href="/cgi-bin/koha/virtualshelves/shelves.pl?op=list&amp;public=0" class="cancel">Anular</a>
+ [% END %]
+ [% END %]
+ </fieldset>
+ </form>
+ [% END # /IF op == 'add_form'... %]
+
+ [% IF op == 'list' %]
+ <h1>Listas</h1>
+
+ [% WRAPPER tabs id= "tabs" %]
+ [% WRAPPER tabs_nav %]
+ [% WRAPPER tab_item tabname= "privateshelves_tab" bt_active= 1 %] <span>Minhas listas</span> [% END %]
+ [% WRAPPER tab_item tabname= "publicshelves_tab" %] <span>Listas públicas</span> [% END %]
+ [% END # /WRAPPER tabs_nav %]
+
+ [% WRAPPER tab_panels %]
+ [% WRAPPER tab_panel tabname="shelves_tab" bt_active= 1 %]
+ <table id="listresultst">
+ <thead>
+ <tr>
+ <th class="NoVisible">Tipo</th>
+ <th>Nome da lista</th>
+ <th>Conteúdos</th>
+ <th>Tipo</th>
+ <th>Dono</th>
+ <th>Ordenar por</th>
+ <th>Data de criação</th>
+ <th>Data de modificação</th>
+ <th class="noExport">Ações</th>
+ </tr>
+ <tr class="filters_row">
+ <th></th>
+ <th><input class="filter text_filter" id="searchshelfname_filter" placeholder="Nome da lista"></th>
+ <th></th>
+ <th></th>
+ <th><input class="filter text_filter" id="searchowner_filter" placeholder="Dono"></th>
+ <th>
+ <select class="filter text_filter" id="searchsortby_filter">
+ <option value=""></option>
+ <option value="title">Título</option>
+ <option value="author">Autor</option>
+ <option value="copyrightdate">Data direitos de autor</option>
+ <option value="itemcallnumber">Cota</option>
+ <option value="dateadded">Data adicionada</option>
+ </select>
+ </th>
+ <th></th>
+ <th></th>
+ <th></th>
+ </tr>
+ </thead>
+ <tbody></tbody>
+ </table> <!-- /#listresultst -->
+ [% END %]
+ [% END # /WRAPPER tab_panels %]
+ [% END # /WRAPPER tabs %]
+
+ [% END # /IF op == 'list' %]
+
+ <form id="hold_form" method="get" action="/cgi-bin/koha/reserve/request.pl">
+ <!-- Values will be set here by placeHold() -->
+ </form>
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+</div> <!-- /.row -->
+
+[% IF ( can_add_biblios ) %]
+ <!-- Modal -->
+ <div class="modal" id="addToList" tabindex="-1" role="dialog" aria-labelledby="addToListLabel">
+ <div class="modal-dialog" role="document">
+ <form action="/cgi-bin/koha/virtualshelves/shelves.pl" method="post">
+ [% INCLUDE 'csrf-token.inc' %]
+ <div class="modal-content">
+ <div class="modal-header">
+ <button aria-label="Fechar" class="closebtn" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+ <h4 class="modal-title" id="addToListLabel">Adicionar itens</h4>
+ </div>
+ <div class="modal-body">
+ <fieldset class="brief">
+ <ol>
+ <li>
+ <label for="barcodes">Códigos de barras:</label>
+ <textarea name="barcodes" id="barcodes" rows="5"></textarea>
+ <input type="hidden" name="op" value="add_biblio" />
+ <input type="hidden" name="referer" value="view" />
+ <input type="hidden" name="shelfnumber" value="[% shelf.shelfnumber | html %]" />
+ </li>
+ <li>
+ <label for="biblionumbers">Números de registo:</label>
+ <textarea name="biblionumbers" id="biblionumbers" rows="5"></textarea>
+ <input type="hidden" name="op" value="add_biblio" />
+ <input type="hidden" name="referer" value="view" />
+ <input type="hidden" name="shelfnumber" value="[% shelf.shelfnumber | html %]" />
+ </li>
+ </ol>
+ </fieldset>
+ </div> <!-- /.modal-body -->
+ <div class="modal-footer">
+ <button type="submit" class="btn btn-default">Guardar</button>
+ <a href="#" data-dismiss="modal" class="cancel">Anular</a>
+ </div>
+ </div>
+ </form>
+ </div> <!-- /.modal-dialog -->
+ </div> <!-- /#addToList -->
+[% END # IF /( can_add_biblios ) %]
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'datatables.inc' %]
+ [% Asset.js("lib/jquery/plugins/jquery.dataTables.columnFilter.js") | $raw %]
+ [% IF print %]
+ <script>
+            $( document ).ready(function() {
+                window.print();
+                window.onafterprint = function () {
+                    window.close();
+                }
+                setTimeout('window.close()', 1000); // Hack for Chrome < 63
+            });
+        </script>
+ [% END #/print %]
+
+ [% IF op == 'view' %]
+ [% Asset.js("lib/hc-sticky.js") | $raw %]
+ [% END %]
+ <script>
+        var MSG_NO_ITEM_SELECTED = _("Nada seleccionado.");
+        var MSG_REMOVE_FROM_LIST = _("Tem a certeza que pretende remover estes itens da lista?");
+        var MSG_CONFIRM_DELETE_LIST = _("Tem a certeza que pretende eliminar esta lista?");
+
+        [% IF op == 'list' %]
+            $(document).ready(function(){
+                var public = [% public | html %];
+
+                var dtListResults = $("#listresultst").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "aaSorting": [[ 5, "asc" ]],
+                    'bServerSide': true,
+                    'sAjaxSource': "/cgi-bin/koha/svc/virtualshelves/search",
+                    'fnServerData': function(sSource, aoData, fnCallback) {
+                        aoData.push({
+                            'name': 'public',
+                            'value': public,
+                        },{
+                            'name': 'shelfname',
+                            'value': $("#searchshelfname_filter").val(),
+                        },{
+                            'name': 'owner',
+                            'value': $("#searchowner_filter").val(),
+                        },{
+                            'name': 'sortby',
+                            'value': $("#searchsortby_filter").val(),
+                        },{
+                            'name': 'template_path',
+                            'value': 'virtualshelves/tables/shelves_results.tt',
+                        },{
+                            'name': 'allow_transfer',
+                            'value': '[% allow_transfer | html %]',
+                        },{
+                            'name': 'shelfname_sorton',
+                            'value': 'vs.shelfname',
+                        },{
+                            'name': 'is_shared_sorton',
+                            'value': 'vs.public',
+                        },{
+                            'name': 'owner_sorton',
+                            'value': 'vs.owner',
+                        },{
+                            'name': 'sortby_sorton',
+                            'value': 'vs.sortfield',
+                        },{
+                            'name': 'created_on_sorton',
+                            'value': 'vs.created_on',
+                        },{
+                            'name': 'modification_time_sorton',
+                            'value': 'vs.lastmodified',
+                        });
+                        $.ajax({
+                            'dataType': 'json',
+                            'type': 'POST',
+                            'url': sSource,
+                            'data': aoData,
+                            'success': function(json){
+                                fnCallback(json);
+                            }
+                        });
+                    },
+                    'aoColumns':[
+                        { 'mDataProp': 'dt_public' },
+                        { 'mDataProp': 'dt_shelfname' },
+                        { 'mDataProp': 'dt_count' },
+                        { 'mDataProp': 'dt_is_shared' },
+                        { 'mDataProp': 'dt_owner' },
+                        { 'mDataProp': 'dt_sortby' },
+                        { 'mDataProp': 'dt_created_on' },
+                        { 'mDataProp': 'dt_modification_time' },
+                        { 'mDataProp': 'dt_action', 'bSortable': false, 'sClass': 'actions' }
+                    ],
+                    "aoColumnDefs": [
+                        { "bVisible": false, "aTargets": [ 'NoVisible' ] }
+                    ],
+                    'bAutoWidth': false,
+                    'sPaginationType': 'full_numbers',
+                    'bFilter': false,
+                    "bProcessing": true,
+                    "bSortCellsTop": true
+                }));
+
+                dtListResults.fnAddFilters("filter", 750);
+
+                /* Select correct tab based on URL parameter */
+                if( public == 0 ){
+                    $('a[href="#privateshelves_tab_panel"]').tab('show');
+                } else {
+                    $('a[href="#publicshelves_tab_panel"]').tab("show");
+                }
+
+                $('a[data-toggle="tab"]').on("click", function(e){
+                    let target = $(this).attr("href");
+                    if( target == "#publicshelves_tab_panel" ){
+                        public = 1;
+                    } else {
+                        public = 0;
+                    }
+                })
+                .on('shown.bs.tab', function (e) {
+                    dtListResults.fnDraw();
+                });
+
+                $("body").on("click", ".deleteshelf", function(){
+                    return confirmDelete(MSG_CONFIRM_DELETE_LIST);
+                });
+            });
+        [% END # /IF op == 'list' %]
+
+        [% IF shelf AND op == 'view' %]
+            var Sticky;
+            $(document).ready(function(){
+                Sticky = $("#searchheader");
+                Sticky.hcSticky({
+                    stickTo: "#listform",
+                    stickyClass: "floating"
+                });
+                $("span.clearall").html("<a id=\"CheckNone\" href=\"/cgi-bin/koha/shelves.pl\"><i class=\"fa fa-remove\"></i>"+_(" Limpar todos")+"<\/a>");
+                $("span.checkall").html("<a id=\"CheckAll\" href=\"/cgi-bin/koha/shelves.pl\"><i class=\"fa fa-check\"></i>"+_(" Seleccionar todos")+"<\/a>");
+                $("#CheckAll").click(function(e){
+                    e.preventDefault();
+                    $(".selection").each(function(){
+                        $(this).prop("checked", true);
+                    });
+                });
+
+                $("#CheckNone").click(function(e){
+                    e.preventDefault();
+                    $(".selection").each(function(){
+                        $(this).prop("checked", false);
+                    });
+                });
+                $(".placehold").on("click",function(e){
+                    placeHold();
+                    e.preventDefault();
+                });
+                $(".addtocart").show();
+                var param1 = "| <label for=\"addto\">"+_("Adicionar a:")+"<\/label><select name=\"addto\" id=\"addto\"><option value=\"\"><\/option>";
+                [% IF (Koha.Preference("intranetbookbag")) %]
+                     param1 += "<option value=\"addtocart\">"+_("Carrinho")+"<\/option>";
+                [% END %]
+                [% IF Koha.Preference('virtualshelves') %]
+                    [% IF add_to_some_private_shelves.count %]
+                        param1 += "<optgroup label=\""+_("Minhas listas:")+"\">";
+                        [% SET number_of_private_shelves = 0 %]
+                        [% FOREACH s IN add_to_some_private_shelves %]
+                            [% IF shelfnumber != s.shelfnumber %]
+                                param1 += "<option id=\"s[% s.shelfnumber | html %]\" value=\"addtolist\">[% s.shelfname | html %]<\/option>";
+                                [% SET number_of_private_shelves = number_of_private_shelves + 1 %]
+                                [% IF number_of_private_shelves == 10 %][% LAST %][% END %]
+                            [% END %]
+                        [% END %]
+                        param1 += "<\/optgroup>";
+                    [% END %]
+                    [% IF add_to_some_public_shelves.count %]
+                        param1 += "<optgroup label=\""+_("Listas públicas:")+"\">";
+                        [% SET number_of_public_shelves = 0 %]
+                        [% FOREACH s IN add_to_some_public_shelves %]
+                            [% IF shelfnumber != s.shelfnumber %]
+                                param1 += "<option id=\"s[% s.shelfnumber | html %]\" value=\"addtolist\">[% s.shelfname | html %]<\/option>";
+                                [% SET number_of_public_shelves = number_of_public_shelves + 1 %]
+                                [% IF number_of_public_shelves == 10 %][% LAST %][% END %]
+                            [% END %]
+                        [% END %]
+                        param1 += "<\/optgroup>";
+                    [% END %]
+                    [% IF add_to_some_private_shelves.count > 10 or add_to_some_public_shelves.count > 10 %]
+                        param1 += "<option value=\"morelists\">[ "+_("Mais listas")+" ]<\/option>";
+                    [% END %]
+                    param1 +="<option value=\"newlist\">"+_("[ Nova lista ]")+"<\/option>"
+                [% END %]
+                param1 += "<\/select> <button id=\"cartsubmit\" type=\"submit\" class=\"btn btn-default btn-xs\">"+_("Guardar")+"</button>";
+                $("span.addto").html(param1);
+                $("#cartsubmit").on("click",function(e){
+                    cartList();
+                    e.preventDefault();
+                });
+                $("#addto").change(function(){
+                    cartList();
+                });
+                $(".addto").find("input:submit").click(function(e){
+                    e.preventDefault();
+                    cartList();
+                });
+                $("#selection_ops").show();
+                $(".merge-items").on("click",function(e){
+                    e.preventDefault();
+                    MergeItems();
+                });
+                $("#listform").on("submit",function(e){
+
+                });
+                $(".list-remove").on("click",function(e){
+                    if($(".selection").filter(":checked").length > 0){
+                        return confirm(MSG_REMOVE_FROM_LIST);
+                    } else {
+                        alert(MSG_NO_ITEM_SELECTED);
+                        e.preventDefault();
+                    }
+                });
+                $("#addToList").on("shown.bs.modal", function(e){
+                    $("#barcodes").focus();
+                });
+            });
+        [% END # /IF shelf %]
+
+        [% IF shelf AND op == 'edit_form' %]
+            $(document).ready(function(){
+                AdjustRemark();
+            });
+        [% END %]
+
+        /**
+         * This function checks if the adequate number of records are checked for merging
+         */
+        function MergeItems() {
+            var checkboxes = $("input:checkbox:checked");
+            if (checkboxes.length < 2) {
+                alert(_("Pelo menos dois registos devem ser selecionados para a unificação."));
+            } else {
+                var params = [];
+                $(checkboxes).each(function() {
+                    params.push('biblionumber=' + $(this).val());
+                });
+                var url = '/cgi-bin/koha/cataloguing/merge.pl?' + params.join('&');
+                location.href = url;
+            }
+            return false;
+        }
+
+        /**
+         * This function checks all checkboxes if all are empty,
+         * or unchecks all if any already checked.
+         */
+        function CheckAll(){
+            var checkboxes = document.getElementsByTagName('input');
+            var nbCheckbox = checkboxes.length;
+            var check = areAllChecked();
+            for(var i=0;i<nbCheckbox;i++){
+                if(checkboxes[i].getAttribute('type') == "checkbox" ){
+                    checkboxes[i].checked = (check) ? 0 : 1;
+                }
+            }
+        }
+        /**
+         * This function returns true if ALL checkboxes are checked
+         */
+        function areAllChecked(){
+            var checkboxes = document.getElementsByTagName('input');
+            var nbCheckbox = checkboxes.length;
+            for(var i=0;i<nbCheckbox;i++){
+                if(checkboxes[i].getAttribute('type') == "checkbox" ){
+                    if(checkboxes[i].checked == 0){
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function placeHold () {
+            var checkedItems = $(".selection:checked");
+            if ($(checkedItems).size() == 0) {
+                alert(MSG_NO_ITEM_SELECTED);
+                return false;
+            }
+            $(checkedItems).each(function() {
+                var bib_param = $("<input>").attr("type", "hidden").attr("name", "biblionumber").val($(this).val());
+                $('#hold_form').append(bib_param);
+            });
+            $("#hold_form").submit();
+            return false;
+        }
+
+        function cartList(){
+            var checkboxes = $("#searchresults").find(":checkbox");
+            var vshelf = vShelfAdd(checkboxes);
+            if($("#addto").find("option:selected").val() == "addtolist"){
+                var shelfnumber = $("#addto").find("option:selected").attr("id").replace("s","");
+                if (vshelf) {
+                     openWindow('/cgi-bin/koha/virtualshelves/addbybiblionumber.pl?shelfnumber='+shelfnumber+'&confirm=1&' + vshelf,'popup',500,500);
+                }
+                return false;
+            } else if($("#addto").find("option:selected").val() == "newlist"){
+                if (vshelf) {
+                    openWindow('/cgi-bin/koha/virtualshelves/addbybiblionumber.pl?newshelf=1&' + vshelf,'popup',500,500);
+                }
+                return false;
+            } else if($("#addto").find("option:selected").val() == "morelists"){
+                if (vshelf) {
+                    openWindow('/cgi-bin/koha/virtualshelves/addbybiblionumber.pl?' + vshelf,'popup',500,500);
+                }
+                return false;
+            }
+            if($("#addto").find("option:selected").val() == "addtocart"){
+                addMultiple(checkboxes);
+                return false;
+            }
+        }
+
+        function AdjustRemark() {
+            var public = $("#public").val();
+            var perms = $("#allow_changes_from").val();
+
+            if( perms < 2 ) {
+                $("#anyone_remark").hide();
+                $("#staff_remark").hide();
+                $("#permitted_staff_remark").hide();
+            } else if( public==0 ) {
+                // If we move to Private (without shares), show Anyone remark
+                // Note: the number of shares is not tested real-time
+                [% IF !shelf.is_shared %]
+                    if( perms== 2) {
+                        $("#anyone_remark").show();
+                        $("#staff_remark").hide();
+                        $("#permitted_staff_remark").hide();
+                    } else if ( perms==3 ) {
+                        $("#anyone_remark").hide();
+                        $("#staff_remark").show();
+                        $("#permitted_staff_remark").hide();
+                    } else if ( perms==4 ) {
+                        $("#anyone_remark").hide();
+                        $("#staff_remark").hide();
+                        $("#permitted_staff_remark").show();
+                    }
+                [% ELSE %]
+                    $("#anyone_remark").hide();
+                    $("#staff_remark").hide();
+                    $("#permitted_staff_remark").hide();
+                [% END %]
+            } else { // public==1
+                $("#anyone_remark").hide();
+                $("#staff_remark").hide();
+                $("#permitted_staff_remark").hide();
+            }
+        }
+        [% IF op == 'view' %]
+
+            function sendList(){
+                open(CGIBIN+'virtualshelves/sendshelf.pl?shelfid=[% shelf.shelfnumber | html %]','win_form','scrollbars=no,resizable=no,height=300,width=450,top=50,left=100');
+             }
+
+             $(document).ready(function() {
+                $("#sendlist").click(function(){
+                    sendList();
+                    return false;
+                });
+                $("#deleteshelf").click(function(e){
+                    if(confirm(_("Tem a certeza que pretende eliminar esta lista?"))){
+                        return true;
+                    } else {
+                        e.preventDefault();
+                    }
+                });
+                $("#deleteshelf_toolbar").on('click',function(e){
+                    if(confirm(_("Tem a certeza que pretende eliminar esta lista?"))){
+                        $("#deleteshelf_toolbar_form").submit();
+                        return false;
+                    } else {
+                        e.preventDefault();
+                    }
+                });
+             });
+
+        [% END %]
+
+        [% IF op == 'transfer' %]
+            $(document).ready(function() {
+                patron_autocomplete( $("#find_patron"), { 'on-select-callback': function( event, ui ) {
+                    $('#new_owner_name').html( ui.item.firstname + " " + ui.item.surname );
+                    $('#new_owner').val( ui.item.patron_id );
+                    $('#find_patron').val('').focus();
+                    return false;
+                }});
+
+                $('#transferform').submit(function() {
+                    if( $('#new_owner').val() == '' ) {
+                        alert( _("Selecione primeiro um novo dono") );
+                        return false;
+                    }
+                    return true;
+                });
+             });
+        [% END %]
+
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

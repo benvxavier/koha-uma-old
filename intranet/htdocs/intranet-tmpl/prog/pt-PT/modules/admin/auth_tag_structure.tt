@@ -1,0 +1,278 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE AuthorisedValues %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>
+ [% IF ( add_form ) %] [% IF ( use_heading_flags_p ) %] [% IF ( heading_modify_tag_p ) %] Modificar a etiqueta &rsaquo; [% IF ( authtypecode ) %] [% authtypecode | html %] Modelo [% ELSE %] Modelo por omissão [% END %] &rsaquo; [% END %] [% IF ( heading_add_tag_p ) %] Nova etiqueta &rsaquo; [% IF ( authtypecode ) %] [% authtypecode | html %] Modelo [% ELSE %] Modelo por omissão [% END %] &rsaquo; [% END %] [% ELSE %] [% action | html %] &rsaquo; [% END %] [% END %] [% IF ( delete_confirm ) %] Confirmar eliminação &rsaquo; [% IF ( authtypecode ) %] [% authtypecode | html %] Modelo [% ELSE %]Modelo por omissão [% END %] &rsaquo; [% END %] [% IF ( delete_confirmed ) %] Dados eliminados &rsaquo; [% IF ( authtypecode ) %] [% authtypecode | html %] Modelo [% ELSE %]Modelo por omissão [% END %] &rsaquo; [% END %] Modelo MARC de autoridades &rsaquo; Administração &rsaquo; Koha </title>
+[% INCLUDE 'doc-head-close.inc' %]
+
+</head>
+
+<body id="admin_auth_tag_structure" class="admin">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'prefs-admin-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/admin-home.pl">Administração</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/authtypes.pl">Tipos de autoridade</a>
+ [% END %]
+
+ [% IF ( add_form || delete_confirm || delete_confirmed ) %]
+ [% IF ( authtypecode ) %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/auth_tag_structure.pl?authtypecode=[% authtypecode | uri %]">[% authtypecode | html %] Framework</a>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/auth_tag_structure.pl">Modelo geral</a>
+ [% END %]
+ [% END %]
+ [% END %]
+
+ [% IF ( add_form ) %]
+ [% IF ( use_heading_flags_p ) %]
+ [% IF ( heading_modify_tag_p ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Modificar campo</span>
+ [% END %]
+ [% END %]
+
+ [% IF ( heading_add_tag_p ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Nova etiqueta</span>
+ [% END %]
+ [% END %]
+
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ [% action | html %]
+ [% END %]
+ [% END %]
+
+ [% ELSE %]
+ [% IF ( delete_confirm ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Confirmar a eliminação</span>
+ [% END %]
+ [% ELSE %]
+ [% IF ( delete_confirmed ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Dados eliminados</span>
+ [% END %] [% ELSE %] [% IF ( authtypecode ) %] [% WRAPPER breadcrumb_item bc_active= 1 %] [% authtypecode | html %] Modelo [% END %] [% ELSE %] [% WRAPPER breadcrumb_item bc_active= 1 %] <span>Modelo geral</span>
+ [% END %]
+ [% END %]
+ [% END %]
+
+ [% END %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+<h1>Modelo MARC de autoridades para [% IF ( authtypecode ) %][% authtypecode | html %][% ELSE %]modelo por omissão[% END %]</h1>
+
+
+[% IF ( add_form ) %]
+
+ <h2>
+ [% IF ( heading_modify_tag_p ) %]
+ <span>Modificar campo</span>
+ [% END %]
+ [% IF ( heading_add_tag_p ) %]
+ <span>Nova etiqueta</span>
+ [% END %]
+ </h2>
+ <form action="[% script_name | html %]" name="Aform" method="post" class="validated">
+ <input type="hidden" name="op" value="add_validate" />
+ [% IF ( heading_modify_tag_p ) %]<input type="hidden" name="modif" value="1" />[% END %]
+ <input type="hidden" name="authtypecode" value="[% authtypecode | html %]" />
+ <fieldset class="rows">
+ <ol>
+ [% IF ( heading_modify_tag_p ) %]
+ <li>
+ <span class="label">Campo: </span>
+ <input type="hidden" name="tagfield" value="[% searchfield | html %]" />
+ [% searchfield | html %]
+ </li>
+ [% ELSE %]
+ <li>
+ <label for="tagfield" class="required">Campo: </label><input type="text" id="tagfield" name="tagfield" size="5" maxlength="3" required="required" class="required" />
+ <span class="required">Obrigatório</span>
+ </li>
+ [% END %]
+
+ <li><label for="liblibrarian">Texto para os técnicos: </label><input type="text" name="liblibrarian" id="liblibrarian" value="[% liblibrarian | html %]" size="40" maxlength="100" /></li>
+ <li><label for="libopac">Texto no OPAC: </label><input type="text" name="libopac" id="libopac" value="[% libopac | html %]" size="40" maxlength="100" /></li>
+ <li><label for="repeatable">Repetível: </label>
+ [% IF ( repeatable ) %]
+ <input type="checkbox" name="repeatable" id="repeatable" value="1" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" name="repeatable" id="repeatable" value="1" />
+ [% END %]
+ </li>
+ <li><label for="mandatory">Obrigatório: </label>
+ [% IF ( mandatory ) %]
+ <input type="checkbox" name="mandatory" id="mandatory" value="1" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" name="mandatory" id="mandatory" value="1" />
+ [% END %]
+ </li>
+ <li><label for="authorised_value">Valor autorizado: </label>
+ <select name="authorised_value" id="authorised_value">
+ <option value=""></option>
+ [% PROCESS options_for_authorised_value_categories authorised_value_categories => AuthorisedValues.GetCategories( selected => authorised_value ) %]
+ </select>
+ <div class="hint">Se selecionar um valor, os indicadores serão limitados pela lista de valores autorizados</div>
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input class="btn btn-primary" type="submit" value="Submeter" />
+ <a href="/cgi-bin/koha/admin/auth_tag_structure.pl?authtypecode=[% authtypecode | uri %]" class="cancel">Anular</a>
+ </fieldset>
+ </form>
+[% END %]
+
+
+[% IF ( delete_confirm ) %]
+ <div class="dialog alert">
+ <h3>Confirmar a eliminação</h3>
+ <form action="[% script_name | html %]" method="post">
+ <table>
+ <tr><th scope="row">Campo: </th><td>[% searchfield | html %] [% liblibrarian | html %]</td></tr>
+ </table>
+ <input type="hidden" name="op" value="delete_confirmed" />
+ <input type="hidden" name="authtypecode" value="[% authtypecode | html %]" />
+ <input type="hidden" name="searchfield" value="[% searchfield | html %]" />
+ <button type="submit" class="approve"><i class="fa fa-fw fa-check"></i> Sim, eliminar</button>
+ </form>
+ <form action="[% script_name | html %]" method="get">
+ <button type="submit" class="deny"><i class="fa fa-fw fa-remove"></i> Não, não eliminar</button>
+ </form>
+ </div>
+[% END %]
+
+[% IF ( delete_confirmed ) %]
+
+ <div class="dialog message"> <h3>Dados eliminados</h3>
+ <form action="[% script_name | html %]" method="post">
+ <input type="hidden" name="authtypecode" value="[% authtypecode | html %]" />
+ <input type="hidden" name="searchfield" value="[% searchfield | html %]" />
+ <input type="submit" value="OK" class="btn btn-primary" />
+ </form></div>
+[% END %]
+[% IF ( authtype_create ) %]
+
+ <form action="[% script_name | html %]" method="post">
+ <input type="hidden" name="op" value="authtype_create_confirm" />
+ <input type="hidden" name="authtypecode" value="[% authtypecode | html %]" />
+ Criar um modelo de autoridade para [% authtypecode | html %] utilizando <select name="existingauthtypecode">
+ [% FOREACH existingauthtypeloo IN existingauthtypeloop %]
+ [% IF existingauthtypeloo.value == "" %]
+ <option value="" selected="selected">[% existingauthtypeloo.authtypetext | html %]</option>
+ [% ELSE %]
+ <option value="[% existingauthtypeloo.value | html %]">[% existingauthtypeloo.authtypetext | html %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ <input type="submit" value="OK" class="btn btn-primary" />
+ </form>
+[% END %]
+
+
+[% IF ( else ) %]
+
+<div id="toolbar" class="btn-toolbar">
+ <div class="btn-group"><a class="btn btn-default" id="newtag" href="/cgi-bin/koha/admin/auth_tag_structure.pl?op=add_form&amp;authtypecode=[% authtypecode | uri %]"><i class="fa fa-plus"></i> Nova etiqueta</a></div>
+</div>
+
+<h2>Seleccionar um modelo de autoridade</h2>
+<form action="[% script_name | html %]" method="post">
+ <select name="authtypecode">
+ [% FOREACH authority_type IN authority_types%]
+ [% IF authority_type.authtypecode == authtypecode%]
+ <option value="[% authority_type.authtypecode | html %]" selected="selected">[% authority_type.authtypetext | html %]</option>
+ [% ELSE %]
+ <option value="[% authority_type.authtypecode | html %]">[% authority_type.authtypetext | html %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ <input type="text" name="searchfield" value="[% searchfield | html %]" />
+ <input type="submit" value="OK" class="btn btn-primary" />
+</form><br />
+<div id="pagertable_authtagstructure">
+</div>
+
+<div class="page-section">
+<table id="table_authtagstructure">
+ <thead>
+ <tr>
+ <th>Campo</th>
+ <th>Lib</th>
+ <th>Repetível</th>
+ <th>Obrigatório</th>
+ <th>Autorizado<br />valor</th>
+ <th>&nbsp;</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH loo IN loop %]
+ <tr>
+ <td><strong>[% loo.tagfield | html %]</strong></td>
+ <td>[% loo.liblibrarian | html %]</td>
+ <td>[% IF ( loo.repeatable ) %]Sim[% ELSE %]Não[% END %]</td>
+ <td>[% IF ( loo.mandatory ) %]Sim[% ELSE %]Não[% END %]</td>
+ <td>[% loo.authorised_value | html %]</td>
+ <td>
+ <div class="btn-group dropup">
+ <a class="btn btn-default btn-xs dropdown-toggle" id="authtagactions[% loo.tagfield | html %]" role="button" data-toggle="dropdown" href="#">
+ Ações <b class="caret"></b></a>
+ <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="authtagactions[% loo.tagfield | html %]">
+ <li><a href="auth_subfields_structure.pl?tagfield=[% loo.tagfield | uri %]&amp;authtypecode=[% authtypecode | uri %]"><i class="fa fa-eye"></i> Subcampos</a></li>
+ <li><a href="?op=add_form&amp;searchfield=[% loo.tagfield | uri %]&amp;authtypecode=[% authtypecode | uri %]"><i class="fa fa-pencil"></i> Alterar</a></li>
+ <li><a href="?op=delete_confirm&amp;searchfield=[% loo.tagfield | uri %]&amp;authtypecode=[% authtypecode | uri %]"><i class="fa fa-trash"></i> Apagar</a></li>
+ </ul>
+ </div>
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+</div> <!-- /.page-section -->
+[% END %]
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'admin-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'datatables.inc' %]
+ [% Asset.js("js/admin-menu.js") | $raw %]
+ <script>
+        $(document).ready(function() {
+            $("#table_authtagstructure").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "aoColumnDefs": [
+                    { "aTargets": [ -1 ], "bSortable": false, "bSearchable": false },
+                ],
+                "sPaginationType": "full"
+            }));
+        });
+    </script>
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

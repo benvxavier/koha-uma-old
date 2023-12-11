@@ -1,0 +1,2430 @@
+---
+description:
+- Sample notices
+tables:
+- letter:
+    multiline:
+    - content
+    rows:
+    - branchcode: ''
+      code: ACQ_NOTIF_ON_RECEIV
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - ' A encomenda <<aqorders.ordernumber>> (<<biblio.title>>) foi recebida.'
+      - ''
+      - A sua biblioteca.
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: acquisition
+      name: Notification on receiving
+      title: Order received
+    - branchcode: ''
+      code: TICKET_ACKNOWLEDGE
+      content:
+      - '[%- PROCESS ''html_helpers.inc'' -%]'
+      - Caro [%- INCLUDE 'patron-title.inc' patron => ticket.reporter -%],<br>
+      - <br>
+      - Obrigado por reportar o problema [%- INCLUDE 'biblio-title.inc' biblio=ticket.biblio
+        link = 0 -%]. <br>
+      - <br>
+      - 'You reported: <br>'
+      - '[%- ticket.body -%]<br>'
+      - <br>
+      - Thank you
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: catalogue
+      name: Reconhecimento de problema
+      title: Reconhecimento de problema do catálogo
+    - branchcode: ''
+      code: TICKET_RESOLVE
+      content:
+      - '[%- PROCESS ''html_helpers.inc'' -%]'
+      - Caro [%- INCLUDE 'patron-title.inc' patron => ticket_update.ticket.reporter
+        -%],<br>
+      - <br>
+      - The library has now marked your concern with [%- INCLUDE 'biblio-title.inc'
+        biblio=ticket_update.ticket.biblio link = 0 -%] as resolved.<br>
+      - <br>
+      - 'The following comment was left: <br>'
+      - '[%- ticket_update.message -%]<br>'
+      - <br>
+      - Thank you
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: catalogue
+      name: Problema resolvido
+      title: Problema do catálogo resolvido
+    - branchcode: ''
+      code: TICKET_UPDATE
+      content:
+      - '[%- PROCESS ''html_helpers.inc'' -%]'
+      - Caro [%- INCLUDE 'patron-title.inc' patron => ticket_update.ticket.reporter
+        -%],<br>
+      - <br>
+      - The library has added an update to the concern you reported against [%- INCLUDE
+        'biblio-title.inc' biblio=ticket_update.ticket.biblio link = 0 -%].<br>
+      - <br>
+      - 'The following comment was left: <br>'
+      - '[%- ticket_update.message -%]<br>'
+      - <br>
+      - Thank you
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: catalogue
+      name: Problema atualizado
+      title: Problema de catálogo atualizado
+    - branchcode: ''
+      code: TICKET_NOTIFY
+      content:
+      - '[%- PROCESS ''html_helpers.inc'' -%]'
+      - '[%- USE Koha -%]'
+      - Caro catalogador,<br>
+      - '[%- INCLUDE ''patron-title.inc'' patron => ticket.reporter -%] reportou o
+        seguinte problema com <a href=''[%- Koha.Preference(''staffClientBaseURL'')
+        -%]/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% ticket.biblio.biblionumber
+        %]'' >[%- INCLUDE ''biblio-title.inc'' biblio=ticket.biblio link = 0 -%]</a><br>'
+      - <br>
+      - '[%- ticket.body -%]<br>'
+      - <br>
+      - You can mark this concern as resolved from the <a href='[%- Koha.Preference('staffClientBaseURL')
+        -%]/cgi-bin/koha/cataloguing/concerns.pl'>concern management page</a>.
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: catalogue
+      name: Notificação de problema
+      title: Problema do catálogo reportado
+    - branchcode: ''
+      code: ACCOUNT_CREDIT
+      content:
+      - '[%- USE AuthorisedValues -%]'
+      - '[%- USE KohaDates -%]'
+      - '[%- USE Price -%]'
+      - '[%- PROCESS "accounts.inc" -%]'
+      - <table>
+      - '    [% IF ( LibraryName ) %]'
+      - '    <tr>'
+      - '      <th colspan="2" class="centerednames">'
+      - '        <h3>[% LibraryName | html %]</h3>'
+      - '      </th>'
+      - '    </tr>'
+      - '    [% END %]'
+      - '    [% IF credit.library %]'
+      - '    <tr>'
+      - '      <th colspan="2" class="centerednames">'
+      - '        <h2>[% credit.library.branchname | html %]</h2>'
+      - '      </th>'
+      - '    </tr>'
+      - '    [% END %]'
+      - '    <tr>'
+      - '      <th colspan="2" class="centerednames">'
+      - '        <h3>[% today | $KohaDates %]</h3>'
+      - '      </th>'
+      - '    </tr>'
+      - '    <tr>'
+      - '      <td>Identificador da transação: </td>'
+      - '      <td>[% credit.accountlines_id %]</td>'
+      - '    </tr>'
+      - '    <tr>'
+      - '      <td>Identificador do operador: </td>'
+      - '      <td>[% credit.manager_id %]</td>'
+      - '    </tr>'
+      - '    [% IF credit.payment_type %]'
+      - '    <tr>'
+      - '      <td>Tipo de pagamento: </td>'
+      - '      <td>[% AuthorisedValues.GetByCode(''PAYMENT_TYPE'', credit.payment_type)
+        %]</td>'
+      - '    </tr>'
+      - '    [% END %]'
+      - '    <tr>'
+      - '      <th colspan="2" class="centerednames">'
+      - '        <h2><u>[%- PROCESS credit_type_description credit_type = credit.credit_type
+        -%] recibo</u></h2>'
+      - '      </th>'
+      - '    </tr>'
+      - '    [% IF ( credit.credit_type_code == ''PAYMENT'' ) %]'
+      - '    <tr>'
+      - '      <th colspan="2">'
+      - '        Recebido com agradecimentos de  [% credit.patron.firstname | html
+        %] [% credit.patron.surname | html %] <br />'
+      - '        Número de cartão: [% credit.patron.cardnumber | html %]<br />'
+      - '      </th>'
+      - '    </tr>'
+      - '    [% ELSIF ( credit.credit_type_code == ''CREDIT'' ) %]'
+      - '    <tr>'
+      - '      <th colspan="2">'
+      - '        Crédito adicionado à conta de [% credit.patron.firstname | html %]
+        [% credit.patron.surname | html %] <br />'
+      - '        Número de cartão: [% credit.patron.cardnumber | html %]<br />'
+      - '      </th>'
+      - '    </tr>'
+      - '    [% ELSIF ( credit.credit_type_code == ''WRITEOFF'' ) %]'
+      - '    <tr>'
+      - '      <th colspan="2">'
+      - '        Perdão adicionado à conta de [% credit.patron.firstname | html %]
+        [% credit.patron.surname | html %] <br />'
+      - '        Número de cartão: [% credit.patron.cardnumber | html %]<br />'
+      - '      </th>'
+      - '    </tr>'
+      - '    [% END %]'
+      - '    [% IF credit.amountoutstanding + 0 != 0 %]'
+      - '    <tr>'
+      - '      <th>Descrição do crédito</th>'
+      - '      <th>Montante</th>'
+      - '    </tr>'
+      - '    <tr>'
+      - '      <td>[%- PROCESS credit_type_description credit_type = credit.credit_type
+        -%]</td>'
+      - '      <td>[% credit.amount * -1 | $Price %]</td>'
+      - '    </tr>'
+      - '    <tr>'
+      - '      <th style="text-align:right;">Total disponível:</th>'
+      - '      <td>[% credit.amountoutstanding * -1 | $Price %]</td>'
+      - '    </tr>'
+      - '    [% END %]'
+      - '    [% IF credit.amount != credit.amountoutstanding %]'
+      - '    <tr>'
+      - '      <th>Descrição das multas</th>'
+      - '      <th>Montante</th>'
+      - '    </tr>'
+      - '    [% FOREACH offset IN credit.credit_offsets %]'
+      - '    <tr>'
+      - '      <td>[% PROCESS account_type_description account=offset.debit %][% IF
+        ( offset.debit.itemnumber ) %] - [% offset.debit.item.biblio.title %][% END
+        %]</td>'
+      - '      <td>[% offset.amount * -1 | $Price %]</td>'
+      - '    </tr>'
+      - '    [% END %]'
+      - '    [% END %]'
+      - '  <tfoot>'
+      - '    <tr class="highlight">'
+      - '      <td>Total:</td>'
+      - '      <td>[% credit.amount * -1 | $Price %]</td>'
+      - '    </tr>'
+      - '    [% IF change.defined %]'
+      - '    <tr>'
+      - '      <td>Troco dado: </td>'
+      - '      <td>[% change | $Price %]</td>'
+      - '    </tr>'
+      - '    [% END %]'
+      - '    <tr>'
+      - '      <td colspan="2"></td>'
+      - '    </tr>'
+      - '    <tr>'
+      - '      <td>Balanço da conta até à data:</td>'
+      - '      <td>[% credit.patron.account.balance * -1 | $Price %]</td>'
+      - '    </tr>'
+      - '  </tfoot>'
+      - </table>
+      is_html: 1
+      lang: default
+      message_transport_type: print
+      module: circulation
+      name: Pagamento de conta
+      title: Pagamento de conta
+    - branchcode: ''
+      code: ACCOUNT_DEBIT
+      content:
+      - '[% USE Price %]'
+      - '[% USE KohaDates %]'
+      - '[% PROCESS "accounts.inc" %]'
+      - <table>
+      - '    [% IF ( LibraryName ) %]'
+      - '    <tr>'
+      - '      <th colspan="3" class="centerednames">'
+      - '        <h3>[% LibraryName | html %]</h3>'
+      - '      </th>'
+      - '    </tr>'
+      - '    [% END %]'
+      - '    [% IF debit.library %]'
+      - '    <tr>'
+      - '      <th colspan="3" class="centerednames">'
+      - '        <h2>[% debit.library.branchname | html %]</h2>'
+      - '      </th>'
+      - '    </tr>'
+      - '    [% END %]'
+      - '    <tr>'
+      - '      <td colspan="2" style="text-align:right;">Identificador da multa: </td>'
+      - '      <td>[% debit.accountlines_id %]</td>'
+      - '    </tr>'
+      - '    [% IF credit.manager_id %]'
+      - '    <tr>'
+      - '      <td colspan="2" style="text-align:right;">Identificador do operador:
+        </td>'
+      - '      <td>[% credit.manager_id %]</td>'
+      - '    </tr>'
+      - '    [% END %]'
+      - '    <tr>'
+      - '      <th colspan="3" class="centerednames">'
+      - '        <h2><u>Fatura</u></h2>'
+      - '      </th>'
+      - '    </tr>'
+      - '    <tr>'
+      - '      <th colspan="3" >'
+      - '        Factura para: [% debit.patron.firstname | html %] [% debit.patron.surname
+        | html %] <br />'
+      - '        Número de cartão: [% debit.patron.cardnumber | html %]<br />'
+      - '      </th>'
+      - '    </tr>'
+      - '    [% IF debit.amountoutstanding != 0 %]'
+      - '    <tr>'
+      - '      <th>Data</th>'
+      - '      <th>Descrição das multas</th>'
+      - '      <th>Montante</th>'
+      - '    </tr>'
+      - '    <tr>'
+      - '      <td>[% debit.date | $KohaDates %]</td>'
+      - '      <td>[% PROCESS account_type_description account=debit %]</td>'
+      - '      <td>[% debit.amount | $Price %]</td>'
+      - '    </tr>'
+      - '    <tr>'
+      - '      <td colspan="2" style="text-align:right;">Total devido:</td>'
+      - '      <td>[% debit.amount | $Price %]</td>'
+      - '    </tr>'
+      - '    [% END %]'
+      - '    [% IF debit.amount != debit.amountoutstanding %]'
+      - '    <tr>'
+      - '      <th>Data</th>'
+      - '      <th>Descrição dos pagamentos</th>'
+      - '      <th>Montante</th>'
+      - '    </tr>'
+      - '    [% FOREACH offset IN debit.debit_offsets %]'
+      - '    <tr>'
+      - '      <td>[% offset.credit.date | $KohaDates %]</td>'
+      - '      <td>[% PROCESS account_type_description account=offset.credit %]</td>'
+      - '      <td>[% offset.amount * -1 | $Price %]</td>'
+      - '    </tr>'
+      - '    [% END %]'
+      - '    <tr class="highlight">'
+      - '      <td colspan="2" style="text-align:right;">Total pago:</td>'
+      - '      <td>[% debit.amount - debit.amountoutstanding | $Price %]</td>'
+      - '    </tr>'
+      - '    [% END %]'
+      - '    </tr>'
+      - '      <td colspan="3"></td>'
+      - '    <tr>'
+      - '  <tfoot>'
+      - '    <tr>'
+      - '      <th colspan="2" style="text-align:right;">Total devido:</th>'
+      - '      <td>[% debit.amountoutstanding | $Price %]</td>'
+      - '    </tr>'
+      - '  </tfoot>'
+      - </table>
+      is_html: 1
+      lang: default
+      message_transport_type: print
+      module: circulation
+      name: Multa
+      title: Multa
+    - branchcode: ''
+      code: ACCOUNT_PAYMENT
+      content:
+      - '[%- USE Price -%]'
+      - O pagamento de [% credit.amount * -1 | $Price %] foi aplicado à sua conta.
+      - ''
+      - 'Este pagamento afeta as seguintes multas:'
+      - '[%- FOREACH o IN offsets %]'
+      - 'Descrição: [% o.debit.description %]'
+      - 'Valor pago: [% o.amount * -1 | $Price %]'
+      - 'Valor restante: [% o.debit.amountoutstanding | $Price %]'
+      - '[% END %]'
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Pagamento de conta
+      title: Pagamento de conta
+    - branchcode: ''
+      code: ACCOUNT_WRITEOFF
+      content:
+      - '[%- USE Price -%]'
+      - Foi aplicado um perdão de [% credit.amount * -1 | $Price %] à sua conta.
+      - ''
+      - 'Este perdão afeta as seguintes multas:'
+      - '[%- FOREACH o IN offsets %]'
+      - 'Descrição: [% o.debit.description %]'
+      - 'Valor pago: [% o.amount * -1 | $Price %]'
+      - 'Valor restante: [% o.debit.amountoutstanding | $Price %]'
+      - '[% END %]'
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Perdão de multa
+      title: Perdão de multa
+    - branchcode: ''
+      code: AR_CANCELED
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>> (<<borrowers.cardnumber>>),
+      - ''
+      - 'O seu pedido de artigo para <<biblio.title>> (<<items.barcode>>) foi cancelado
+        pela seguinte razão:'
+      - ''
+      - <<reason>>
+      - ''
+      - 'Artigo pedido:'
+      - 'Título: <<article_requests.title>>'
+      - 'Autor: <<article_requests.author>>'
+      - 'Volume: <<article_requests.volume>>'
+      - 'Número: <<article_requests.issue>>'
+      - 'Data: <<article_requests.date>>'
+      - 'TOC: [% IF article_request.toc_request %]Yes[% ELSE %]No[% END %]'
+      - 'Pages: <<article_requests.pages>>'
+      - 'Capítulos: <<article_requests.chapters>>'
+      - 'Notas: <<article_requests.patron_notes>>'
+      - 'Formato: [% IF article_request.format == ''PHOTOCOPY'' %]Fotocópia[% ELSIF
+        article_request.format == ''SCAN'' %]Digitalização[% END %]'
+      - ''
+      - A sua biblioteca
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Pedido de artigo - cancelado
+      title: Pedido de artigo cancelado
+    - branchcode: ''
+      code: AR_COMPLETED
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>> (<<borrowers.cardnumber>>),
+      - ''
+      - O seu pedido para o artigo para <<biblio.title>> (<<items.barcode>>) encontra-se
+        completo.
+      - ''
+      - 'Artigo pedido:'
+      - 'Título: <<article_requests.title>>'
+      - 'Autor: <<article_requests.author>>'
+      - 'Volume: <<article_requests.volume>>'
+      - 'Número: <<article_requests.issue>>'
+      - 'Data: <<article_requests.date>>'
+      - 'TOC: [% IF article_request.toc_request %]Yes[% ELSE %]No[% END %]'
+      - 'Pages: <<article_requests.pages>>'
+      - 'Capítulos: <<article_requests.chapters>>'
+      - 'Notas: <<article_requests.patron_notes>>'
+      - 'Formato: [% IF article_request.format == ''PHOTOCOPY'' %]Fotocópia[% ELSIF
+        article_request.format == ''SCAN'' %]Digitalização[% END %]'
+      - ''
+      - '[% IF article_request.format == ''PHOTOCOPY'' %]Pode proceder ao levantamento
+        do artigo em [% branch.branchname %].[% ELSIF article_request.format == ''SCAN''
+        %]Pode descarregar os materiais digitalizados a partir do(s) seguinte(s) endereço(s):
+        [% article_request.urls %].[% END %]'
+      - ''
+      - Obrigado!
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Pedido de artigo - completo
+      title: Pedido de artigo completo
+    - branchcode: ''
+      code: AR_PENDING
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>> (<<borrowers.cardnumber>>)
+      - ''
+      - O seu pedido de artigo para <<biblio.title>> (<<items.barcode>>) está agora
+        num estado pendente.
+      - ''
+      - 'Artigo pedido:'
+      - 'Título: <<article_requests.title>>'
+      - 'Autor: <<article_requests.author>>'
+      - 'Volume: <<article_requests.volume>>'
+      - 'Número: <<article_requests.issue>>'
+      - 'Data: <<article_requests.date>>'
+      - 'TOC: [% IF article_request.toc_request %]Yes[% ELSE %]No[% END %]'
+      - 'Pages: <<article_requests.pages>>'
+      - 'Capítulos: <<article_requests.chapters>>'
+      - 'Notas: <<article_requests.patron_notes>>'
+      - ''
+      - ''
+      - Obrigado!
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Pedido de artigo - pendente
+      title: Pending article request
+    - branchcode: ''
+      code: AR_REQUESTED
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>> (<<borrowers.cardnumber>>)
+      - ''
+      - Recebemos o seu pedido de atrigo para <<biblio.title>> (<<items.barcode>>).
+      - ''
+      - 'Artigo pedido:'
+      - 'Título: <<article_requests.title>>'
+      - 'Autor: <<article_requests.author>>'
+      - 'Volume: <<article_requests.volume>>'
+      - 'Número: <<article_requests.issue>>'
+      - 'Data: <<article_requests.date>>'
+      - 'TOC: [% IF article_request.toc_request %]Yes[% ELSE %]No[% END %]'
+      - 'Pages: <<article_requests.pages>>'
+      - 'Capítulos: <<article_requests.chapters>>'
+      - 'Notas: <<article_requests.patron_notes>>'
+      - 'Formato: [% IF article_request.format == ''PHOTOCOPY'' %]Fotocópia[% ELSIF
+        article_request.format == ''SCAN'' %]Digitalização[% END %]'
+      - ''
+      - Obrigado!
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Pedido de artigo - novo
+      title: Pedido de artigo recebido
+    - branchcode: ''
+      code: AR_PROCESSING
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>> (<<borrowers.cardnumber>>),
+      - ''
+      - Estamos a processar o seu pedido para o artigo para <<biblio.title>> (<<items.barcode>>).
+      - ''
+      - 'Artigo pedido:'
+      - 'Título: <<article_requests.title>>'
+      - 'Autor: <<article_requests.author>>'
+      - 'Volume: <<article_requests.volume>>'
+      - 'Número: <<article_requests.issue>>'
+      - 'Data: <<article_requests.date>>'
+      - 'TOC: [% IF article_request.toc_request %]Yes[% ELSE %]No[% END %]'
+      - 'Pages: <<article_requests.pages>>'
+      - 'Capítulos: <<article_requests.chapters>>'
+      - 'Notas: <<article_requests.patron_notes>>'
+      - 'Formato: [% IF article_request.format == ''PHOTOCOPY'' %]Fotocópia[% ELSIF
+        article_request.format == ''SCAN'' %]Digitalização[% END %]'
+      - ''
+      - Obrigado!
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Pedido de artigo - em processamento
+      title: Pedido de artigo em processamento
+    - branchcode: ''
+      code: AR_SLIP
+      content:
+      - 'Pedido de artigo:'
+      - ''
+      - <<borrowers.firstname>> <<borrowers.surname>> (<<borrowers.cardnumber>>),
+      - ''
+      - 'Título: <<biblio.title>>'
+      - 'Código de barras: <<items.barcode>>'
+      - ''
+      - 'Artigo pedido:'
+      - 'Título: <<article_requests.title>>'
+      - 'Autor: <<article_requests.author>>'
+      - 'Volume: <<article_requests.volume>>'
+      - 'Número: <<article_requests.issue>>'
+      - 'Data: <<article_requests.date>>'
+      - 'TOC: [% IF article_request.toc_request %]Yes[% ELSE %]No[% END %]'
+      - 'Pages: <<article_requests.pages>>'
+      - 'Capítulos: <<article_requests.chapters>>'
+      - 'Notas: <<article_requests.patron_notes>>'
+      - 'Formato: [% IF article_request.format == ''PHOTOCOPY'' %]Fotocópia[% ELSIF
+        article_request.format == ''SCAN'' %]Digitalização[% END %]'
+      - ''
+      is_html: 0
+      lang: default
+      message_transport_type: print
+      module: circulation
+      name: Pedido de artigo - recibo
+      title: Pedido de artigo
+    - branchcode: ''
+      code: CHECKIN
+      content:
+      - 'Os seguintes exemplares foram devolvidos:'
+      - '----'
+      - '[% biblio.title %]'
+      - '----'
+      - Obrigado.
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Item check-in (digest)
+      title: Devoluções
+    - branchcode: ''
+      code: CHECKIN
+      content:
+      - 'Os seguintes exemplares foram devolvidos:'
+      - '----'
+      - '[% biblio.title %]'
+      - '----'
+      - Obrigado.
+      is_html: 0
+      lang: default
+      message_transport_type: sms
+      module: circulation
+      name: Item check-in (digest)
+      title: Devoluções
+    - branchcode: ''
+      code: CHECKOUT
+      content:
+      - 'Os seguintes exemplares foram emprestados:'
+      - '----'
+      - '[% biblio.title %]'
+      - '----'
+      - Obrigado pela sua visita a [% branch.branchname %].
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Item check-out (digest)
+      title: Empréstimo(s)
+    - branchcode: ''
+      code: CHECKOUT
+      content:
+      - 'Os seguintes exemplares foram emprestados:'
+      - '----'
+      - '[% biblio.title %]'
+      - '----'
+      - Obrigado pela sua visita a [% branch.branchname %].
+      is_html: 0
+      lang: default
+      message_transport_type: sms
+      module: circulation
+      name: Item check-out (digest)
+      title: Empréstimo(s)
+    - branchcode: ''
+      code: CHECKOUT_NOTE
+      content:
+      - <<borrowers.firstname>> <<borrowers.surname>> adicionou uma nota ao exemplar
+        <<biblio.title>> - <<biblio.author>> (<<biblio.biblionumber>>).
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Nota de empréstimo no exemplar definida pela leitor
+      title: Nota de empréstimo
+    - branchcode: ''
+      code: DUE
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - 'O seguinte exemplar encontra-se em atraso:'
+      - ''
+      - <<biblio.title>>, <<biblio.author>> (<<items.barcode>>)
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Item due reminder
+      title: Item due reminder
+    - branchcode: ''
+      code: DUE
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - 'O seguinte exemplar encontra-se em atraso:'
+      - ''
+      - <<biblio.title>>
+      is_html: 0
+      lang: default
+      message_transport_type: sms
+      module: circulation
+      name: Item due reminder
+      title: Item due reminder
+    - branchcode: ''
+      code: DUEDGST
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - 'O(s) seguinte(s) documento(s) está(ão) em atraso:'
+      - ''
+      - <<items.content>>
+      - ''
+      - Obrigado.
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Item due reminder (digest)
+      title: Item due reminder
+    - branchcode: ''
+      code: DUEDGST
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - You have <<count>> item(s) that are now due
+      - ''
+      - Obrigado.
+      is_html: 0
+      lang: default
+      message_transport_type: sms
+      module: circulation
+      name: Item due reminder (digest)
+      title: Item due reminder
+    - branchcode: ''
+      code: HOLD_SLIP
+      content:
+      - '<h5>Data: <<today>></h5>'
+      - ''
+      - <h3> Transferir para/Reservar <<branches.branchname>></h3>
+      - ''
+      - <h3><<borrowers.surname>>, <<borrowers.firstname>></h3>
+      - ''
+      - <ul>
+      - '    <li><<borrowers.cardnumber>></li>'
+      - '    <li><<borrowers.phone>></li>'
+      - '    <li> <<borrowers.address>><br />'
+      - '         <<borrowers.address2>><br />'
+      - '         <<borrowers.city >>  <<borrowers.zipcode>>'
+      - '    </li>'
+      - '    <li><<borrowers.email>></li>'
+      - </ul>
+      - <br />
+      - <h3>EXEMPLAR RESERVADO</h3>
+      - <h4><<biblio.title>></h4>
+      - <h5><<biblio.author>></h5>
+      - <ul>
+      - '   <li><<items.barcode>></li>'
+      - '   <li><<items.itemcallnumber>></li>'
+      - '   <li><<reserves.waitingdate>></li>'
+      - </ul>
+      - '<p>Notas:'
+      - <pre><<reserves.reservenotes>></pre>
+      - </p>
+      - ''
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Hold slip
+      title: Hold slip
+    - branchcode: ''
+      code: ISSUEQSLIP
+      content:
+      - <h3><<branches.branchname>></h3>
+      - Emprestado a <<borrowers.title>> <<borrowers.firstname>> <<borrowers.initials>>
+        <<borrowers.surname>> <br />
+      - (<<borrowers.cardnumber>>) <br />
+      - ''
+      - <<today>><br />
+      - ''
+      - <h4>Emprestado hoje</h4>
+      - <checkedout>
+      - <p>
+      - <<biblio.title>> <br />
+      - 'Código de barras: <<items.barcode>><br />'
+      - 'Data de devolução: <<issues.date_due>><br />'
+      - </p>
+      - </checkedout>
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Issue quick slip
+      title: Issue quick slip
+    - branchcode: ''
+      code: ISSUESLIP
+      content:
+      - <h3><<branches.branchname>></h3>
+      - Emprestado a <<borrowers.title>> <<borrowers.firstname>> <<borrowers.initials>>
+        <<borrowers.surname>> <br />
+      - (<<borrowers.cardnumber>>) <br />
+      - ''
+      - <<today>><br />
+      - ''
+      - <h4>Emprestado</h4>
+      - <checkedout>
+      - <p>
+      - <<biblio.title>> <br />
+      - 'Código de barras: <<items.barcode>><br />'
+      - 'Data de devolução: <<issues.date_due>><br />'
+      - </p>
+      - </checkedout>
+      - ''
+      - <h4>Atrasos</h4>
+      - <overdue>
+      - <p>
+      - <<biblio.title>> <br />
+      - 'Código de barras: <<items.barcode>><br />'
+      - 'Data de devolução: <<issues.date_due>><br />'
+      - </p>
+      - </overdue>
+      - ''
+      - <hr>
+      - ''
+      - '<h4 style="text-align: center; font-style:italic;">Notícias</h4>'
+      - <news>
+      - <div class="newsitem">
+      - '<h5 style="margin-bottom: 1px; margin-top: 1px"><b><<additional_contents.title>></b></h5>'
+      - '<p style="margin-bottom: 1px; margin-top: 1px"><<additional_contents.content>></p>'
+      - '<p class="newsfooter" style="font-size: 8pt; font-style:italic; margin-bottom:
+        1px; margin-top: 1px">Publicado em <<additional_contents.published_on>></p>'
+      - <hr />
+      - </div>
+      - </news>
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Issue slip
+      title: Issue slip
+    - branchcode: ''
+      code: ODUE
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - De acordo com nossos registos, tem empréstimos em atraso. A sua biblioteca
+        não cobra multas por atrasos, mas, por favor, devolva ou renove os empréstimos
+        na biblioteca assim que possível.
+      - ''
+      - <<branches.branchname>>
+      - <<branches.branchaddress1>>
+      - <<branches.branchaddress2>> <<branches.branchaddress3>>
+      - 'Telefone: <<branches.branchphone>>'
+      - 'Fax: <<branches.branchfax>>'
+      - 'Email: <<branches.branchemail>>'
+      - ''
+      - If you have registered a password with the library, and you have a renewal
+        available, you may renew online. If an item becomes more than 30 days overdue,
+        you will be unable to use your library card until the item is returned.
+      - ''
+      - 'Os seguintes documentos estão em atraso:'
+      - ''
+      - '<item>"<<biblio.title>>" by <<biblio.author>>, <<items.itemcallnumber>>,
+        Barcode: <<items.barcode>> Fine: <<items.fine>></item>'
+      - ''
+      - Obrigado por sua pronta atenção a este assunto.
+      - ''
+      - <<branches.branchname>> Técnicos
+      - ''
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Overdue notice
+      title: Item overdue
+    - branchcode: ''
+      code: OVERDUES_SLIP
+      content:
+      - 'Os seguintes documentos estão em atraso:'
+      - ''
+      - '<item>"<<biblio.title>>" by <<biblio.author>>, <<items.itemcallnumber>>,
+        Barcode: <<items.barcode>> Fine: <<items.fine>></item>'
+      - ''
+      is_html: 0
+      lang: default
+      message_transport_type: print
+      module: circulation
+      name: Overdues slip
+      title: Overdues slip
+    - branchcode: ''
+      code: PREDUE
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - 'O seguinte exemplar vai ficar em atraso brevemente:'
+      - ''
+      - <<biblio.title>>, <<biblio.author>> (<<items.barcode>>)
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Pré-aviso de atraso
+      title: Pré-aviso de atraso
+    - branchcode: ''
+      code: PREDUE
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - 'O seguinte exemplar vai ficar em atraso brevemente:'
+      - ''
+      - <<biblio.title>>
+      is_html: 0
+      lang: default
+      message_transport_type: sms
+      module: circulation
+      name: Pré-aviso de atraso
+      title: Pré-aviso de atraso
+    - branchcode: ''
+      code: PREDUEDGST
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - 'O(s) seguinte(s) documento(s) vai(vão) ficar em atraso brevemente:'
+      - ''
+      - <<items.content>>
+      - ''
+      - Obrigado.
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Pré-aviso de atraso (resumo)
+      title: Pré-aviso de atraso
+    - branchcode: ''
+      code: PREDUEDGST
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - You have <<count>> item(s) that will be due soon.
+      - ''
+      - Obrigado.
+      is_html: 0
+      lang: default
+      message_transport_type: sms
+      module: circulation
+      name: Pré-aviso de atraso (resumo)
+      title: Pré-aviso de atraso
+    - branchcode: ''
+      code: RENEWAL
+      content:
+      - 'Os seguintes exemplares foram renovados:'
+      - '----'
+      - <<biblio.title>>
+      - '----'
+      - Obrigado pela sua visita a <<branches.branchname>>.
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Item renewals
+      title: Item renewals
+    - branchcode: ''
+      code: SR_SLIP
+      content:
+      - 'Stock rotation report for [% branch.name %]:'
+      - ''
+      - '[% IF branch.items.size %][% branch.items.size %] exemplares a serem processados
+        por esta biblioteca.'
+      - '[% ELSE %]Sem exemplares a serem processados por esta biblioteca'
+      - '[% END %][% FOREACH item IN branch.items %][% IF item.reason != ''in-demand''
+        %]Título: [% item.title %]'
+      - 'Autor: [% item.author %]'
+      - 'Cota: [% item.callnumber %]'
+      - 'Localização: [% item.location %]'
+      - 'Código de barras: [% item.barcode %]'
+      - 'Emprestado?: [% item.onloan %]'
+      - 'Estado: [% item.reason %]'
+      - 'Biblioteca: [% item.branch.branchname %] [% item.branch.branchcode %]'
+      - ''
+      - '[% END %][% END %]'
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Stock rotation slip
+      title: Stock rotation report
+    - branchcode: ''
+      code: TRANSFERSLIP
+      content:
+      - '<h5>Data: <<today>></h5>'
+      - ''
+      - <h3>Transferir para <<branches.branchname>></h3>
+      - ''
+      - <h3>EXEMPLAR</h3>
+      - <h4><<biblio.title>></h4>
+      - <h5><<biblio.author>></h5>
+      - <ul>
+      - '   <li><<items.barcode>></li>'
+      - '   <li><<items.itemcallnumber>></li>'
+      - </ul>
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Transfer slip
+      title: Transfer slip
+    - branchcode: ''
+      code: ACQCLAIM
+      content:
+      - <<aqbooksellers.name>>
+      - <<aqbooksellers.address1>>
+      - <<aqbooksellers.address2>>
+      - <<aqbooksellers.address3>>
+      - <<aqbooksellers.address4>>
+      - <<aqbooksellers.phone>>
+      - ''
+      - <order>Número de encomenda <<aqorders.ordernumber>> (<<biblio.title>>) (<<aqorders.quantity>>
+        encomendado) ($<<aqorders.listprice>> cada) ainda não foi recebida.</order>
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: claimacquisition
+      name: Reclamação de aquisição
+      title: Item not received
+    - branchcode: ''
+      code: ILL_PICKUP_READY
+      content:
+      - Caro [% borrower.firstname %] [% borrower.surname %],
+      - ''
+      - 'O pedido de empréstimo inter-bibliotecas com o número [% illrequest.illrequest_id
+        %] que efetuou para:'
+      - ''
+      - '- [% ill_bib_title %] - [% ill_bib_author %]'
+      - ''
+      - está pronto para levantamento em [% branch.branchname %].
+      - ''
+      - Kind regards
+      - ''
+      - '[% branch.branchname %]'
+      - '[% branch.branchaddress1 %]'
+      - '[% branch.branchaddress2 %]'
+      - '[% branch.branchaddress3 %]'
+      - '[% branch.branchcity %]'
+      - '[% branch.branchstate %]'
+      - '[% branch.branchzip %]'
+      - '[% branch.branchphone %]'
+      - '[% branch.branchillemail %]'
+      - '[% branch.branchemail %]'
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: ill
+      name: Empréstimo inter-bibliotecas pronto para levantamento
+      title: Interlibrary loan request ready for pickup
+    - branchcode: ''
+      code: ILL_REQUEST_UNAVAIL
+      content:
+      - Caro [% borrower.firstname %] [% borrower.surname %],
+      - ''
+      - O pedido de empréstimo inter-bibliotecas com o número [% illrequest.illrequest_id
+        %] que efetuou para
+      - ''
+      - '- [% ill_bib_title %] - [% ill_bib_author %]'
+      - ''
+      - não está disponível, infelizmente.
+      - ''
+      - Kind regards
+      - ''
+      - '[% branch.branchname %]'
+      - '[% branch.branchaddress1 %]'
+      - '[% branch.branchaddress2 %]'
+      - '[% branch.branchaddress3 %]'
+      - '[% branch.branchcity %]'
+      - '[% branch.branchstate %]'
+      - '[% branch.branchzip %]'
+      - '[% branch.branchphone %]'
+      - '[% branch.branchillemail %]'
+      - '[% branch.branchemail %]'
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: ill
+      name: Empréstimo inter-bibliotecas indisponível
+      title: Interlibrary loan request unavailable
+    - branchcode: ''
+      code: ILL_REQUEST_CANCEL
+      content:
+      - 'O leitor do empréstimo inter-bibliotecas [% illrequest.illrequest_id %],
+        com os seguintes detalhes, pediu o cancelamento do pedido:'
+      - ''
+      - '[% ill_full_metadata %]'
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: ill
+      name: ILL request cancelled
+      title: Interlibrary loan request cancelled
+    - branchcode: ''
+      code: ILL_REQUEST_MODIFIED
+      content:
+      - 'O leitor do empréstimo inter-bibliotecas [% illrequest.illrequest_id %],
+        com os seguintes detalhes, modificou o pedido:'
+      - ''
+      - '[% ill_full_metadata %]'
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: ill
+      name: ILL request modified
+      title: Interlibrary loan request modified
+    - branchcode: ''
+      code: ILL_PARTNER_REQ
+      content:
+      - Caro(a),
+      - ''
+      - 'Gostaríamos de solicitar um empréstimo inter-bibliotecas para um título que
+        corresponda à seguinte descrição:'
+      - ''
+      - '[% ill_full_metadata %]'
+      - ''
+      - Please let us know if you are able to supply this to us.
+      - ''
+      - Kind regards
+      - ''
+      - '[% branch.branchname %]'
+      - '[% branch.branchaddress1 %]'
+      - '[% branch.branchaddress2 %]'
+      - '[% branch.branchaddress3 %]'
+      - '[% branch.branchcity %]'
+      - '[% branch.branchstate %]'
+      - '[% branch.branchzip %]'
+      - '[% branch.branchphone %]'
+      - '[% branch.branchillemail %]'
+      - '[% branch.branchemail %]'
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: ill
+      name: ILL request to partners
+      title: Interlibrary loan request to partners
+    - branchcode: ''
+      code: ILL_REQUEST_UPDATE
+      content:
+      - Caro [% borrower.firstname %] [% borrower.surname %],
+      - ''
+      - O pedido de empréstimo inter-bibliotecas com o número [% illrequest.illrequest_id
+        %] que efetuou para
+      - ''
+      - '- [% ill_bib_title %] - [% ill_bib_author %]'
+      - ''
+      - foi atualizado.
+      - ''
+      - 'Os detalhes da atualização estão abaixo:'
+      - ''
+      - '[% additional_text %]'
+      - ''
+      - Kind regards
+      - ''
+      - '[% branch.branchname %]'
+      - '[% branch.branchaddress1 %]'
+      - '[% branch.branchaddress2 %]'
+      - '[% branch.branchaddress3 %]'
+      - '[% branch.branchcity %]'
+      - '[% branch.branchstate %]'
+      - '[% branch.branchzip %]'
+      - '[% branch.branchphone %]'
+      - '[% branch.branchillemail %]'
+      - '[% branch.branchemail %]'
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: ill
+      name: ILL request update
+      title: Interlibrary loan request update
+    - branchcode: ''
+      code: ILL_PICKUP_READY
+      content:
+      - Caro [% borrower.firstname %] [% borrower.surname %],
+      - ''
+      - 'O pedido de empréstimo inter-bibliotecas com o número [% illrequest.illrequest_id
+        %] que efetuou para:'
+      - ''
+      - '- [% ill_bib_title %] - [% ill_bib_author %]'
+      - ''
+      - está pronto para levantamento em [% branch.branchname %].
+      - ''
+      - Kind regards
+      - ''
+      - '[% branch.branchname %]'
+      - '[% branch.branchaddress1 %]'
+      - '[% branch.branchaddress2 %]'
+      - '[% branch.branchaddress3 %]'
+      - '[% branch.branchcity %]'
+      - '[% branch.branchstate %]'
+      - '[% branch.branchzip %]'
+      - '[% branch.branchphone %]'
+      - '[% branch.branchillemail %]'
+      - '[% branch.branchemail %]'
+      is_html: 0
+      lang: default
+      message_transport_type: sms
+      module: ill
+      name: Empréstimo inter-bibliotecas pronto para levantamento
+      title: Interlibrary loan request ready for pickup
+    - branchcode: ''
+      code: ILL_REQUEST_UNAVAIL
+      content:
+      - Caro [% borrower.firstname %] [% borrower.surname %],
+      - ''
+      - O pedido de empréstimo inter-bibliotecas com o número [% illrequest.illrequest_id
+        %] que efetuou para
+      - ''
+      - '- [% ill_bib_title %] - [% ill_bib_author %]'
+      - ''
+      - não está disponível, infelizmente.
+      - ''
+      - Kind regards
+      - ''
+      - '[% branch.branchname %]'
+      - '[% branch.branchaddress1 %]'
+      - '[% branch.branchaddress2 %]'
+      - '[% branch.branchaddress3 %]'
+      - '[% branch.branchcity %]'
+      - '[% branch.branchstate %]'
+      - '[% branch.branchzip %]'
+      - '[% branch.branchphone %]'
+      - '[% branch.branchillemail %]'
+      - '[% branch.branchemail %]'
+      is_html: 0
+      lang: default
+      message_transport_type: sms
+      module: ill
+      name: Empréstimo inter-bibliotecas indisponível
+      title: Interlibrary loan request unavailable
+    - branchcode: ''
+      code: ILL_REQUEST_CANCEL
+      content:
+      - 'O leitor do empréstimo inter-bibliotecas [% illrequest.illrequest_id %],
+        com os seguintes detalhes, pediu o cancelamento do pedido:'
+      - ''
+      - '[% ill_full_metadata %]'
+      is_html: 0
+      lang: default
+      message_transport_type: sms
+      module: ill
+      name: ILL request cancelled
+      title: Interlibrary loan request cancelled
+    - branchcode: ''
+      code: ILL_REQUEST_MODIFIED
+      content:
+      - 'O leitor do empréstimo inter-bibliotecas [% illrequest.illrequest_id %],
+        com os seguintes detalhes, modificou o pedido:'
+      - ''
+      - '[% ill_full_metadata %]'
+      is_html: 0
+      lang: default
+      message_transport_type: sms
+      module: ill
+      name: ILL request modified
+      title: Interlibrary loan request modified
+    - branchcode: ''
+      code: ILL_PARTNER_REQ
+      content:
+      - Caro(a),
+      - ''
+      - 'Gostaríamos de solicitar um empréstimo inter-bibliotecas para um título que
+        corresponda à seguinte descrição:'
+      - ''
+      - '[% ill_full_metadata %]'
+      - ''
+      - Please let us know if you are able to supply this to us.
+      - ''
+      - Kind regards
+      - ''
+      - '[% branch.branchname %]'
+      - '[% branch.branchaddress1 %]'
+      - '[% branch.branchaddress2 %]'
+      - '[% branch.branchaddress3 %]'
+      - '[% branch.branchcity %]'
+      - '[% branch.branchstate %]'
+      - '[% branch.branchzip %]'
+      - '[% branch.branchphone %]'
+      - '[% branch.branchillemail %]'
+      - '[% branch.branchemail %]'
+      is_html: 0
+      lang: default
+      message_transport_type: sms
+      module: ill
+      name: ILL request to partners
+      title: Interlibrary loan request to partners
+    - branchcode: ''
+      code: ILL_REQUEST_UPDATE
+      content:
+      - Caro [% borrower.firstname %] [% borrower.surname %],
+      - ''
+      - O pedido de empréstimo inter-bibliotecas com o número [% illrequest.illrequest_id
+        %] que efetuou para
+      - ''
+      - '- [% ill_bib_title %] - [% ill_bib_author %]'
+      - ''
+      - foi atualizado.
+      - ''
+      - 'Os detalhes da atualização estão abaixo:'
+      - ''
+      - '[% additional_text %]'
+      - ''
+      - Kind regards
+      - ''
+      - '[% branch.branchname %]'
+      - '[% branch.branchaddress1 %]'
+      - '[% branch.branchaddress2 %]'
+      - '[% branch.branchaddress3 %]'
+      - '[% branch.branchcity %]'
+      - '[% branch.branchstate %]'
+      - '[% branch.branchzip %]'
+      - '[% branch.branchphone %]'
+      - '[% branch.branchillemail %]'
+      - '[% branch.branchemail %]'
+      is_html: 0
+      lang: default
+      message_transport_type: sms
+      module: ill
+      name: ILL request update
+      title: Interlibrary loan request update
+    - branchcode: ''
+      code: DISCHARGE
+      content:
+      - ''
+      - <<today>>
+      - <h1>Confirmação de quitação</h1>
+      - <p><<branches.branchname>> certifica que o seguinte leitor:<br>
+      - '<<borrowers.firstname>> <<borrowers.surname>> (número de cartão: <<borrowers.cardnumber>>)<br>'
+      - devolveu todos os exemplares.</p>
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: members
+      name: Confirmação de quitação
+      title: Quitação para <<borrowers.firstname>> <<borrowers.surname>>
+    - branchcode: ''
+      code: MEMBERSHIP_EXPIRY
+      content:
+      - Caro <<borrowers.title>> <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - 'O seu cartão de biblioteca vai expirar brevemente, em:'
+      - ''
+      - <<borrowers.dateexpiry>>
+      - ''
+      - Obrigado,
+      - ''
+      - Técnico
+      - ''
+      - <<branches.branchname>>
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: members
+      name: Expiração de conta
+      title: Expiração de conta
+    - branchcode: ''
+      code: OPAC_REG_VERIFY
+      content:
+      - Hello!
+      - ''
+      - 'A sua conta na biblioteca foi criada. Por favor confirme o seu email por
+        clicar neste link e completar o processo de registo:'
+      - ''
+      - <<OPACBaseURL>>/cgi-bin/koha/opac-registration-verify.pl?token=<<borrower_modifications.verification_token>>
+      - ''
+      - If you did not initiate this request, you may safely ignore this one-time
+        message. The request will expire shortly.
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: members
+      name: OPAC self-registration verification email
+      title: Verify your account
+    - branchcode: ''
+      code: PASSWORD_CHANGE
+      content:
+      - Caro [% borrower.firstname %] [% borrower.surname %],
+      - ''
+      - Queremos notificá-lo de que sua palavra-passe foi alterada. Se não alterou
+        (ou solicitou essa alteração), entre em contato com a equipa da biblioteca.
+      - ''
+      - A sua biblioteca.
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: members
+      name: Notification of password change
+      title: Library account password change notification
+    - branchcode: ''
+      code: PASSWORD_RESET
+      content:
+      - <html>
+      - <p>Este email foi enviado em resposta ao seu pedido para recuperar a palavra-passe
+        da conta <strong><<user>></strong>.
+      - </p>
+      - <p>
+      - 'You can now create your new password using the following link:'
+      - <br/><a href="<<passwordreseturl>>"><<passwordreseturl>></a>
+      - </p>
+      - <p>Este endereço é válido por 2 dias a partir da recepção deste email, deve
+        responder caso não deseje alterar a palavra-passe.</p>
+      - <p>Obrigado.</p>
+      - </html>
+      - ''
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: members
+      name: Online password reset
+      title: Koha password recovery
+    - branchcode: ''
+      code: STAFF_PASSWORD_RESET
+      content:
+      - <html>
+      - <p>Um bibliotecário efetuou a recuperação da palavara-passe para esta conta
+        <strong><<user>></strong>.
+      - </p>
+      - <p>
+      - 'Please create your new password using the following link:'
+      - <br/><a href="<<passwordreseturl>>"><<passwordreseturl>></a>
+      - </p>
+      - <p>Este endereço é válido por 5 dias a partir da recepção deste email, deve
+        responder caso não deseje alterar a palavra-passe.</p>
+      - <p>Obrigado.</p>
+      - </html>
+      - ''
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: members
+      name: Online password reset
+      title: Koha password reset
+    - branchcode: ''
+      code: SHARE_ACCEPT
+      content:
+      - Caro leitor,
+      - ''
+      - Queremos informar que <<borrowers.firstname>> <<borrowers.surname>> aceitou
+        o seu convite para compartilhar a sua lista <<listname>> no catálogo de nossa
+        biblioteca.
+      - ''
+      - Obrigado.
+      - ''
+      - A sua biblioteca.
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: members
+      name: Notification about an accepted share
+      title: Share on list <<listname>> accepted
+    - branchcode: ''
+      code: SHARE_INVITE
+      content:
+      - Caro leitor,
+      - ''
+      - One of our patrons, <<borrowers.firstname>> <<borrowers.surname>>, invites
+        you to share a list <<listname>> in our library catalog.
+      - ''
+      - Para aceder a esta lista partilhada, deve clicar no seguinte endereço ou copiar
+        e colar o mesmo na barra de endereços do seu browser.
+      - ''
+      - <<shareurl>>
+      - ''
+      - In case you are not a patron in our library or do not want to accept this
+        invitation, please ignore this mail. Note also that this invitation expires
+        within two weeks.
+      - ''
+      - Obrigado.
+      - ''
+      - A sua biblioteca.
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: members
+      name: Invitation for sharing a list
+      title: Partilhar a lista <<listname>>
+    - branchcode: ''
+      code: WELCOME
+      content:
+      - '[% USE Koha %]'
+      - Olá [% borrower.title %] [% borrower.firstname %] [% borrower.surname %].
+      - ''
+      - Obrigado por se juntar à [% IF Koha.Preference('LibraryName') %][% Koha.Preference('LibraryName')
+        %][% ELSE %]biblioteca[% END %]
+      - ''
+      - You can search for all our materials in our <a href='[% Koha.Preference('OPACBaseURL')
+        %]'>catalog</a>.
+      - ''
+      - O seu número de cartão na biblioteca é o [% borrower.cardnumber %]
+      - ''
+      - Se tiver algum problema ou alguma questão acerca da sua conta, por favor contacte
+        a sua biblioteca.
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: members
+      name: 'Aviso de boas vindas '
+      title: '[% USE Koha %][% IF Koha.Preference(''LibraryName'') %]Bem vindo a [%
+        Koha.Preference(''LibraryName'') %][% ELSE %]Bem vindo à biblioteca[% END
+        %]'
+    - branchcode: ''
+      code: 2FA_OTP_TOKEN
+      content:
+      - Caro [% borrower.firstname %] [% borrower.surname %] ([% borrower.cardnumber
+        %])
+      - ''
+      - O seu token de autenticação é o [% otp_token %].
+      - It is valid one minute.
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: members
+      name: token autenticação dois fatores
+      title: Two-authentication token
+    - branchcode: ''
+      code: ACCOUNTS_SUMMARY
+      content:
+      - '[% USE Branches %]'
+      - '[% USE Koha %]'
+      - '[% USE KohaDates %]'
+      - '[% USE Price %]'
+      - '[% PROCESS ''accounts.inc'' %]'
+      - <table>
+      - '  [% IF ( Koha.Preference(''LibraryName'') ) %]'
+      - '    <tr>'
+      - '      <th colspan=''4'' class=''centerednames''>'
+      - '        <h1>[% Koha.Preference(''LibraryName'') | html %]</h1>'
+      - '      </th>'
+      - '    </tr>'
+      - '  [% END %]'
+      - ''
+      - '  <tr>'
+      - '    <th colspan=''4'' class=''centerednames''>'
+      - '      <h2>[% Branches.GetName( borrower.branchcode ) | html %]</h2>'
+      - '    </th>'
+      - '  </tr>'
+      - ''
+      - '  <tr>'
+      - '    <th colspan=''4'' class=''centerednames''>'
+      - '      <h3>Contas pendentes</h3>'
+      - '    </th>'
+      - '  </tr>'
+      - ''
+      - '  <tr>'
+      - '    <th colspan=''4'' class=''centerednames''>'
+      - '      <h4>Débitos</h4>'
+      - '    </th>'
+      - '  </tr>'
+      - '  [% IF borrower.account.outstanding_debits.total_outstanding %]'
+      - '  <tr>'
+      - '    <th>Data</th>'
+      - '    <th>Taxa</th>'
+      - '    <th>Montante</th>'
+      - '    <th>Devido</th>'
+      - '  </tr>'
+      - '  [% FOREACH debit IN borrower.account.outstanding_debits %]'
+      - '  <tr>'
+      - '    <td>[% debit.date | $KohaDates %]</td>'
+      - '    <td>'
+      - '      [% PROCESS account_type_description account=debit %]'
+      - '      [%- IF debit.description %], [% debit.description | html %][% END %]'
+      - '    </td>'
+      - '    <td class=''debit''>[% debit.amount | $Price %]</td>'
+      - '    <td class=''debit''>[% debit.amountoutstanding | $Price %]</td>'
+      - '  </tr>'
+      - '  [% END %]'
+      - '  [% ELSE %]'
+      - '  <tr>'
+      - '    <td colspan=''4''>Não existem débitos pendentes na sua conta</td>'
+      - '  </tr>'
+      - '  [% END %]'
+      - ''
+      - '  <tr>'
+      - '    <th colspan=''4'' class=''centerednames''>'
+      - '      <h4>Créditos</h4>'
+      - '    </th>'
+      - '  </tr>'
+      - '  [% IF borrower.account.outstanding_credits.total_outstanding %]'
+      - '  <tr>'
+      - '    <th>Data</th>'
+      - '    <th>Crédito</th>'
+      - '    <th>Montante</th>'
+      - '    <th>Devido</th>'
+      - '  </tr>'
+      - '  [% FOREACH credit IN borrower.account.outstanding_credits %]'
+      - '  <tr>'
+      - '    <td>[% credit.date | $KohaDates%]</td>'
+      - '    <td>'
+      - '      [% PROCESS account_type_description account=credit %]'
+      - '      [%- IF credit.description %], [% credit.description | html %][% END
+        %]'
+      - '    </td>'
+      - '    <td class=''credit''>[% credit.amount *-1 | $Price %]</td>'
+      - '    <td class=''credit''>[% credit.amountoutstanding *-1 | $Price %]</td>'
+      - '  </tr>'
+      - '  [% END %]'
+      - '  [% ELSE %]'
+      - '  <tr>'
+      - '    <td colspan=''4''>Não existem créditos pendentes na sua conta</td>'
+      - '  </tr>'
+      - '  [% END %]'
+      - ''
+      - '  <tfoot>'
+      - '    <td colspan=''3''>'
+      - '      [% IF borrower.account.balance < 0 %]'
+      - '        Crédito total em [% today | $KohaDates %]:'
+      - '      [% ELSE %]'
+      - '        Montante total devido até [% today | $KohaDates %]:'
+      - '      [% END %]'
+      - '    </td>'
+      - '    [% IF ( borrower.account.balance <= 0 ) %]<td class=''credit''>[% borrower.account.balance
+        * -1 | $Price %]</td>'
+      - '    [% ELSE %]<td class=''debit''>[% borrower.account.balance | $Price %]</td>[%
+        END %]'
+      - '  </tfoot>'
+      - </table>
+      is_html: 1
+      lang: default
+      message_transport_type: print
+      module: members
+      name: Recibo de balanço de conta
+      title: Sumário de conta de [% borrower.firstname %] [% borrower.surname %]
+    - branchcode: ''
+      code: ACQORDER
+      content:
+      - <<aqbooksellers.name>>
+      - <<aqbooksellers.address1>>
+      - <<aqbooksellers.address2>>
+      - <<aqbooksellers.address3>>
+      - <<aqbooksellers.address4>>
+      - <<aqbooksellers.phone>>
+      - ''
+      - 'Por favor, encomende para a biblioteca:'
+      - ''
+      - '<order>Número de encomenda <<aqorders.ordernumber>> (<<biblio.title>>) (quantidade:
+        <<aqorders.quantity>>) ($<<aqorders.listprice>> cada).</order>'
+      - ''
+      - Obrigado,
+      - ''
+      - <<branches.branchname>>
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: orderacquisition
+      name: Encomenda
+      title: Encomenda
+    - branchcode: ''
+      code: RECEIPT
+      content:
+      - '[% USE KohaDates %]'
+      - '[% USE Branches %]'
+      - '[% USE Price %]'
+      - '[% PROCESS "accounts.inc" %]'
+      - <table>
+      - '[% IF ( LibraryName ) %]'
+      - ' <tr>'
+      - '    <th colspan="2" class="centerednames">'
+      - '        <h3>[% LibraryName | html %]</h3>'
+      - '    </th>'
+      - ' </tr>'
+      - '[% END %]'
+      - ' <tr>'
+      - '    <th colspan="2" class="centerednames">'
+      - '        <h2>[% Branches.GetName( credit.branchcode ) | html %]</h2>'
+      - '    </th>'
+      - ' </tr>'
+      - <tr>
+      - '    <th colspan="2" class="centerednames">'
+      - '        <h3>[% credit.date | $KohaDates %]</h3>'
+      - </tr>
+      - <tr>
+      - '  <td>Identificador da transação: </td>'
+      - '  <td>[% credit.accountlines_id %]</td>'
+      - </tr>
+      - <tr>
+      - '  <td>Identificador do operador: </td>'
+      - '  <td>[% credit.manager_id %]</td>'
+      - </tr>
+      - <tr>
+      - '  <td>Tipo de pagamento: </td>'
+      - '  <td>[% credit.payment_type %]</td>'
+      - </tr>
+      - ' <tr></tr>'
+      - ' <tr>'
+      - '    <th colspan="2" class="centerednames">'
+      - '        <h2><u>Recibo de multa</u></h2>'
+      - '    </th>'
+      - ' </tr>'
+      - ' <tr></tr>'
+      - ' <tr>'
+      - '    <th>Descrição das multas</th>'
+      - '    <th>Montante</th>'
+      - '  </tr>'
+      - ''
+      - '  [% FOREACH debit IN credit.debits %]'
+      - '    <tr>'
+      - '        <td>[% PROCESS account_type_description account=debit %]</td>'
+      - '        <td>[% debit.amount * -1 | $Price %]</td>'
+      - '    </tr>'
+      - '  [% END %]'
+      - ''
+      - <tfoot>
+      - '  <tr class="highlight">'
+      - '    <td>Total: </td>'
+      - '    <td>[% credit.amount * -1| $Price %]</td>'
+      - '  </tr>'
+      - '  <tr>'
+      - '    <td>Fornecido: </td>'
+      - '    <td>[% collected | $Price %]</td>'
+      - '  </tr>'
+      - '  <tr>'
+      - '    <td>Troco: </td>'
+      - '    <td>[% change | $Price %]</td>'
+      - '    </tr>'
+      - </tfoot>
+      - </table>
+      is_html: 1
+      lang: default
+      message_transport_type: print
+      module: pos
+      name: Point of sale receipt
+      title: Receipt
+    - branchcode: ''
+      code: RECEIPT
+      content:
+      - '[% USE KohaDates %]'
+      - '[% USE Branches %]'
+      - '[% USE Price %]'
+      - '[% PROCESS "accounts.inc" %]'
+      - <table>
+      - '    [% IF ( LibraryName ) %]'
+      - '    <tr>'
+      - '      <th colspan="2" class="centerednames">'
+      - '        <h3>[% LibraryName | html %]</h3>'
+      - '      </th>'
+      - '    </tr>'
+      - '    [% END %]'
+      - '    [% IF credit.library %]'
+      - '    <tr>'
+      - '      <th colspan="2" class="centerednames">'
+      - '        <h2>[% payment.library.branchname | html %]</h2>'
+      - '      </th>'
+      - '    </tr>'
+      - '    [% END %]'
+      - '    <tr>'
+      - '      <th colspan="2" class="centerednames">'
+      - '        <h3>[% payment.date | $KohaDates %]</h3>'
+      - '      </th>'
+      - '    </tr>'
+      - '    <tr>'
+      - '      <td>Identificador da transação: </td>'
+      - '      <td>[% payment.accountlines_id %]</td>'
+      - '    </tr>'
+      - '    <tr>'
+      - '      <td>Identificador do operador: </td>'
+      - '      <td>[% payment.manager_id %]</td>'
+      - '    </tr>'
+      - '    <tr>'
+      - '      <td>Tipo de pagamento: </td>'
+      - '      <td>[% payment.payment_type %]</td>'
+      - '    </tr>'
+      - '    <tr>'
+      - '      <th colspan="2" class="centerednames">'
+      - '        <h2><u>Recibo de pagamento</u></h2>'
+      - '      </th>'
+      - '    </tr>'
+      - '    <tr>'
+      - '      <th>Descrição das multas</th>'
+      - '      <th>Montante</th>'
+      - '    </tr>'
+      - '    [% FOREACH offset IN payment.credit_offsets %]'
+      - '    <tr>'
+      - '        <td>[% PROCESS account_type_description account=debit %]</td>'
+      - '        <td>[% debit.amount * -1 | $Price %]</td>'
+      - '    </tr>'
+      - '    [% END %]'
+      - '  <tfoot>'
+      - '    <tr class="highlight">'
+      - '      <td>Total:</td>'
+      - '      <td>[% payment.amount * -1 | $Price %]</td>'
+      - '    </tr>'
+      - '    <tr>'
+      - '      <td>Fornecido: </td>'
+      - '      <td>[% collected | $Price %]</td>'
+      - '    </tr>'
+      - '    <tr>'
+      - '      <td>Troco dado:</td>'
+      - '      <td>[% change | $Price %]</td>'
+      - '    </tr>'
+      - '  </tfoot>'
+      - </table>
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: pos
+      name: Point of sale receipt
+      title: Receipt
+    - branchcode: ''
+      code: CANCEL_HOLD_ON_LOST
+      content:
+      - Caro [% borrower.firstname %] [% borrower.surname %],
+      - ''
+      - Lamentamos informar que o seguinte exemplar não pode ser disponibilizado devido
+        à sua falta. Sua reserva foi cancelada.
+      - ''
+      - 'Título: [% biblio.title %]'
+      - 'Autor: [% biblio.author %]'
+      - 'Cópia: [% item.copynumber %]'
+      - 'Localização: [% branch.branchname %]'
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: reserves
+      name: Hold has been cancelled
+      title: Hold has been cancelled
+    - branchcode: ''
+      code: HOLD
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - 'Tem uma reserva disponível para levantamento desde <<reserves.waitingdate>>:'
+      - ''
+      - 'Título: <<biblio.title>>'
+      - 'Autor: <<biblio.author>>'
+      - 'Cópia: <<items.copynumber>>'
+      - 'Localização: <<branches.branchname>>'
+      - <<branches.branchaddress1>>
+      - <<branches.branchaddress2>>
+      - <<branches.branchaddress3>>
+      - <<branches.branchcity>> <<branches.branchzip>>
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: reserves
+      name: Hold available for pickup
+      title: Hold available for pickup at <<branches.branchname>>
+    - branchcode: ''
+      code: HOLD
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - Your hold for <<biblio.title>> is available for pickup.
+      is_html: 0
+      lang: default
+      message_transport_type: sms
+      module: reserves
+      name: Hold available for pickup
+      title: Hold available for pickup at <<branches.branchname>>
+    - branchcode: ''
+      code: HOLD
+      content:
+      - <<branches.branchname>>
+      - <<branches.branchaddress1>>
+      - <<branches.branchaddress2>>
+      - ''
+      - ''
+      - Change service requested
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - <<borrowers.firstname>> <<borrowers.surname>>
+      - <<borrowers.address>>
+      - <<borrowers.city>> <<borrowers.zipcode>>
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - ''
+      - <<borrowers.firstname>> <<borrowers.surname>> <<borrowers.cardnumber>>
+      - ''
+      - 'Tem uma reserva disponível para levantamento desde <<reserves.waitingdate>>:'
+      - ''
+      - 'Título: <<biblio.title>>'
+      - 'Autor: <<biblio.author>>'
+      - 'Cópia: <<items.copynumber>>'
+      - ''
+      is_html: 0
+      lang: default
+      message_transport_type: print
+      module: reserves
+      name: Hold available for pickup
+      title: Hold available for pickup (print notice)
+    - branchcode: ''
+      code: HOLDPLACED
+      content:
+      - 'Foi feita uma reserva no seguinte exemplar : <<biblio.title>> (<<biblio.biblionumber>>)
+        pelo utilizador <<borrowers.firstname>> <<borrowers.surname>> (<<borrowers.cardnumber>>).'
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: reserves
+      name: Hold placed on item
+      title: Hold placed on item
+    - branchcode: ''
+      code: HOLD_CHANGED
+      content:
+      - O leitor a levantar <<biblio.title>> (<<items.barcode>>) foi alterado para
+        <<borrowers.firstname>> <<borrowers.surname>> (<<borrowers.cardnumber>>).
+      - Please update the hold information for this item.
+      - 'Título: <<biblio.title>>'
+      - 'Autor: <<biblio.author>>'
+      - 'Item: <<items.itemcallnumber>>'
+      - 'Pickup location: <<branches.branchname>>'
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: reserves
+      name: Reserva disponível cancelada para outro leitor
+      title: Reserva disponível cancelada para outro leitor
+    - branchcode: ''
+      code: HOLD_REMINDER
+      content:
+      - |-
+        Dear [% borrower.firstname %] [% borrower.surname %],
+
+        The following holds are waiting at [% branch.branchname %]:
+
+        [% FOREACH hold IN holds %]
+            [% hold.biblio.title %] : waiting since [% hold.waitingdate | $KohaDates %]
+        [% END %]
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: reserves
+      name: Lembrete de reserva em espera
+      title: Você tem reservas à espera.
+    - branchcode: ''
+      code: NEW_CURBSIDE_PICKUP
+      content:
+      - '[%- USE KohaDates -%]'
+      - '[%- SET cp = curbside_pickup -%]'
+      - ''
+      - You have a curbside pickup scheduled for [% cp.scheduled_pickup_datetime |
+        $KohaDates with_hours => 1 %] at [% cp.library.branchname %].
+      - |-
+        Any holds waiting for you at the pickup time will be included in this pickup. At this time, that list includes:
+        [%- FOREACH h IN cp.patron.holds %]
+        [%- IF h.branchcode == cp.branchcode && h.found == 'W' %]
+        * [% h.biblio.title %], [% h.biblio.author %] ([% h.item.barcode %])
+        [%- END %]
+        [%- END %]
+      - ''
+      - Once you have arrived, please call your library or log into your account and
+        click the "Alert staff of your arrival" button to let them know you are there.
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: reserves
+      name: New curbside pickup
+      title: Você agendou um levantamento de rua para [% branch.branchname %]
+    - branchcode: ''
+      code: SERIAL_ALERT
+      content:
+      - <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - 'O seguinte número está agora disponível:'
+      - ''
+      - <<biblio.title>>, <<biblio.author>> (<<items.barcode>>)
+      - ''
+      - Please pick it up at your convenience.
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: serial
+      name: New serial issue
+      title: New serial issue is now available
+    - branchcode: ''
+      code: ACCEPTED
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - Você sugeriu que a biblioteca adquirisse <<suggestions.title>> por <<suggestions.author>>.
+      - ''
+      - A biblioteca analisou sua sugestão hoje. O exemplar será encomendado o mais
+        rápido possível. Você será notificado por e-mail quando o pedido for concluído
+        e novamente quando o exemplar chegar à biblioteca.
+      - ''
+      - If you have any questions, please email us at <<branches.branchemail>>.
+      - ''
+      - Obrigado,
+      - ''
+      - <<branches.branchname>>
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: suggestions
+      name: Sugestão aceite
+      title: Purchase suggestion accepted
+    - branchcode: ''
+      code: AVAILABLE
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - Você sugeriu que a biblioteca adquirisse <<suggestions.title>> por <<suggestions.author>>.
+      - ''
+      - Temos o prazer de o informar que o exemplar que pediu já foi adicionado ao
+        catálogo.
+      - ''
+      - If you have any questions, please email us at <<branches.branchemail>>.
+      - ''
+      - Obrigado,
+      - ''
+      - <<branches.branchname>>
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: suggestions
+      name: Suggestion available
+      title: Suggested purchase available
+    - branchcode: ''
+      code: NEW_SUGGESTION
+      content:
+      - <h3>Sugestão à espera de aprovação</h3>
+      - '    <p><h4>Sugerido por</h4>'
+      - '    <ul>'
+      - '    <li><<borrowers.firstname>> <<borrowers.surname>></li>'
+      - '    <li><<borrowers.cardnumber>></li>'
+      - '    <li><<borrowers.phone>></li>'
+      - '    <li><<borrowers.email>></li>'
+      - '    </ul>'
+      - '    </p>'
+      - '    <p><h4>Título sugerido</h4>'
+      - '    <ul>'
+      - '    <li><b>Biblioteca:</b> <<branches.branchname>></li>'
+      - '    <li><b>Título:</b> <<suggestions.title>></li>'
+      - '    <li><b>Autor:</b> <<suggestions.author>></li>'
+      - '    <li><b>Data de direitos de autor:</b> <<suggestions.copyrightdate>></li>'
+      - '    <li><b>Número controlado (ISBN, ISSN or other):</b> <<suggestions.isbn>></li>'
+      - '    <li><b>Editor:</b> <<suggestions.publishercode>></li>'
+      - '    <li><b>Título da coleção:</b> <<suggestions.collectiontitle>></li>'
+      - '    <li><b>Local de publicação:</b> <<suggestions.place>></li>'
+      - '    <li><b>Quantidade:</b> <<suggestions.quantity>></li>'
+      - '    <li><b>Tipo de documento:</b>  <<suggestions.itemtype>></li>'
+      - '    <li><b>Motivo para a sugestão:</b> <<suggestions.patronreason>></li>'
+      - '    <li><b>Notas:</b> <<suggestions.note>></li>'
+      - '    </ul>'
+      - '    </p>'
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: suggestions
+      name: New suggestion
+      title: New suggestion
+    - branchcode: ''
+      code: ORDERED
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - Você sugeriu que a biblioteca adquirisse <<suggestions.title>> por <<suggestions.author>>.
+      - ''
+      - Temos o prazer de o informar que o exemplar que pediu foi encomendado. Deverá
+        chegar brevemente, e nesse momento será processado e adicionado ao catálogo.
+      - ''
+      - Você será notificado novamente quando o livro estiver disponível.
+      - ''
+      - If you have any questions, please email us at <<branches.branchemail>>
+      - ''
+      - Obrigado,
+      - ''
+      - <<branches.branchname>>
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: suggestions
+      name: Suggestion ordered
+      title: Suggested item ordered
+    - branchcode: ''
+      code: REJECTED
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - Você sugeriu que a biblioteca adquirisse <<suggestions.title>> por <<suggestions.author>>.
+      - ''
+      - A biblioteca analisou sua sugestão hoje, e decidiu não aceitar a sugestão
+        no momento.
+      - ''
+      - 'Razão: <<suggestions.reason>>'
+      - ''
+      - If you have any questions, please email us at <<branches.branchemail>>.
+      - ''
+      - Obrigado,
+      - ''
+      - <<branches.branchname>>
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: suggestions
+      name: Suggestion rejected
+      title: Purchase suggestion declined
+    - branchcode: ''
+      code: TO_PROCESS
+      content:
+      - Caro <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - 'Uma nova sugestão está pronta para ser processada: <<suggestions.title>>
+        por <<suggestions.author>>'
+      - ''
+      - Obrigado,
+      - ''
+      - <<branches.branchname>>
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: suggestions
+      name: Notify fund owner
+      title: A sugestão está pronta para ser processada
+    - branchcode: ''
+      code: NOTIFY_MANAGER
+      content:
+      - Caro [% borrower.firstname %] [% borrower.surname %],
+      - ''
+      - 'Uma nova sugestão foi atribuída a si: [% suggestion.title %].'
+      - ''
+      - Obrigado,
+      - ''
+      - '[% branch.branchname %]'
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: suggestions
+      name: Notify manager of a suggestion
+      title: A sugestão foi atribuída a si
+    - branchcode: ''
+      code: PROBLEM_REPORT
+      content:
+      - 'Nome do utilizador: <<problem_reports.username>>'
+      - ''
+      - 'Página do problema: <<problem_reports.problempage>>'
+      - ''
+      - 'Título: <<problem_reports.title>>'
+      - ''
+      - 'Mensagem: <<problem_reports.content>>'
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: members
+      name: OPAC problem report
+      title: OPAC problem report
+    - branchcode: ''
+      code: AUTO_RENEWALS
+      content:
+      - Caro [% borrower.firstname %] [% borrower.surname %],
+      - '[% IF checkout.auto_renew_error %]'
+      - 'O seguinte exemplar, [% biblio.title %], não foi renovado porque:'
+      - '[% IF checkout.auto_renew_error == ''too_many'' %]'
+      - You have reached the maximum number of renewals possible.
+      - '[% ELSIF checkout.auto_renew_error == ''on_reserve'' %]'
+      - O exemplar encontra-se em reservado para outro leitor.
+      - '[% ELSIF checkout.auto_renew_error == ''restriction'' %]'
+      - You are currently restricted.
+      - '[% ELSIF checkout.auto_renew_error == ''overdue'' %]'
+      - Você tem empréstimos em atraso.
+      - '[% ELSIF checkout.auto_renew_error == ''auto_too_late'' %]'
+      - It's too late to renew this item.
+      - '[% ELSIF checkout.auto_renew_error == ''auto_too_much_oweing'' %]'
+      - Você tem multas por pagar demasiado elevadas.
+      - '[% ELSIF checkout.auto_renew_error == ''too_unseen'' %]'
+      - Este exemplar tem que ser renovado na biblioteca.
+      - '[% ELSIF checkout.auto_renew_error == ''auto_account_expired'' %]'
+      - A sua conta expirou.
+      - '[% END %]'
+      - '[% ELSE %]'
+      - O seguinte exemplar, [% biblio.title %], foi renovado com sucesso e deve ser
+        retornado até [% checkout.date_due | $KohaDates as_due_date => 1 %]
+      - '[% END %]'
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Notification of automatic renewal
+      title: Aviso de renovação automática
+    - branchcode: ''
+      code: CHECKINSLIP
+      content:
+      - <h3>[% branch.branchname %]</h3>
+      - Devoluções para [% borrower.title %] [% borrower.firstname %] [% borrower.initials
+        %] [% borrower.surname %] <br />
+      - ([% borrower.cardnumber %]) <br />
+      - ''
+      - '[% today | $KohaDates %]<br />'
+      - ''
+      - <h4>Devolvido hoje</h4>
+      - '[% FOREACH checkin IN old_checkouts %]'
+      - '[% SET item = checkin.item %]'
+      - <p>
+      - '[% item.biblio.title %] <br />'
+      - 'Código de barras: [% item.barcode %] <br />'
+      - </p>
+      - '[% END %]'
+      is_html: 1
+      lang: default
+      message_transport_type: print
+      module: circulation
+      name: Recibo de devolução
+      title: Recibo de devolução
+    - branchcode: ''
+      code: OVERDUE_FINE_DESC
+      content:
+      - '[% item.biblio.title %] [% checkout.date_due | $KohaDates %]'
+      is_html: 0
+      lang: default
+      message_transport_type: print
+      module: circulation
+      name: Overdue item fine description
+      title: Overdue item fine description
+    - branchcode: ''
+      code: AUTO_RENEWALS_DGST
+      content:
+      - Caro [% borrower.firstname %] [% borrower.surname %],
+      - '[% IF error %]'
+      - Existem [% error %] exemplares que não foram renovados.
+      - '[% END %]'
+      - '[% IF success %]'
+      - Existem [% success %] exemplares que foram renovados.
+      - '[% END %]'
+      - '[% FOREACH checkout IN checkouts %]'
+      - '[% checkout.item.biblio.title %] : [% checkout.item.barcode %]'
+      - '[% IF !checkout.auto_renew_error %]'
+      - foi renovado até [% checkout.date_due | $KohaDates as_due_date => 1%]
+      - '[% ELSIF checkout.auto_renew_error == ''too_many'' %]'
+      - You have reached the maximum number of renewals possible.
+      - '[% ELSIF checkout.auto_renew_error == ''on_reserve'' %]'
+      - O exemplar encontra-se em reservado para outro leitor.
+      - '[% ELSIF checkout.auto_renew_error == ''restriction'' %]'
+      - You are currently restricted.
+      - '[% ELSIF checkout.auto_renew_error == ''overdue'' %]'
+      - Você tem empréstimos em atraso.
+      - '[% ELSIF checkout.auto_renew_error == ''auto_too_late'' %]'
+      - It's too late to renew this item.
+      - '[% ELSIF checkout.auto_renew_error == ''auto_too_much_oweing'' %]'
+      - Você tem multas por pagar demasiado elevadas.
+      - '[% ELSIF checkout.auto_renew_error == ''too_unseen'' %]'
+      - Este exemplar tem que ser renovado na biblioteca.
+      - '[% END %]'
+      - '[% END %]'
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Notification on auto renewals
+      title: Renovação automática (resumo)
+    - branchcode: ''
+      code: RETURN_RECALLED_ITEM
+      content:
+      - 'Data: <<today>>'
+      - ''
+      - <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - 'Foi feita uma reclamação para o seguinte exemplar: <<biblio.title>> / <<biblio.author>>
+        (<<items.barcode>>). A data de término foi atualizada para <<issues.date_due>>.
+        Por favor, retorne o exemplar antes dessa data.'
+      - ''
+      - Obrigado!
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Notification to return a recalled item
+      title: Notification to return a recalled item
+    - branchcode: ''
+      code: PICKUP_RECALLED_ITEM
+      content:
+      - 'Data: <<today>>'
+      - ''
+      - <<borrowers.firstname>> <<borrowers.surname>>,
+      - ''
+      - 'A reclamação que pediu para o seguinte exemplar: <<biblio.title>> / <<biblio.author>>
+        (<<items.barcode>>) está pronta para levantamento em <<recalls.pickup_library_id>>.
+        Por favor, levante o exemplar até à data <<recalls.expiration_date>>.'
+      - ''
+      - Obrigado!
+      is_html: 0
+      lang: default
+      message_transport_type: email
+      module: circulation
+      name: Recalled item awaiting pickup
+      title: Recalled item awaiting pickup
+    - branchcode: ''
+      code: RECALL_REQUESTER_DET
+      content:
+      - 'Data: <<today>>'
+      - ''
+      - Recall for pickup at <<branches.branchname>>
+      - <<borrowers.surname>>, <<borrowers.firstname>> (<<borrowers.cardnumber>>)
+      - <<borrowers.phone>>
+      - <<borrowers.streetnumber>> <<borrowers.address>>, <<borrowers.address2>>,
+        <<borrowers.city>> <<borrowers.zipcode>>
+      - <<borrowers.email>>
+      - ''
+      - ITEM RECALLED
+      - <<biblio.title>> por <<biblio.author>>
+      - 'Código de barras: <<items.barcode>>'
+      - 'Cota: <<items.itemcallnumber>>'
+      - 'Em espera desde: <<recalls.waiting_date>>'
+      - 'Notas: <<recalls.notes>>'
+      is_html: 0
+      lang: default
+      message_transport_type: print
+      module: circulation
+      name: Detalhes do leitor que reclamou o exemplar
+      title: Detalhes do leitor que reclamou o exemplar
+    - branchcode: ''
+      code: 2FA_DISABLE
+      content:
+      - <p>Caro [% borrower.firstname %] [% borrower.surname %],</p>
+      - <p>Esta mensagem serve para confirmar que alguém desativou a autenticação
+        dois fatores para a sua conta.</p>
+      - <p>Se não fez este pedido, alguém pode estar a usar a sua conta. Por favor,
+        contacte o apoio técnico.</p>
+      - <p>A sua biblioteca</p>
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: members
+      name: Confirmação da desativação da autenticação por dois fatores
+      title: Confirmação da desativação da autenticação por dois fatores
+    - branchcode: ''
+      code: 2FA_ENABLE
+      content:
+      - <p>Caro [% borrower.firstname %] [% borrower.surname %],</p>
+      - <p>Esta mensagem serve para confirmar que alguém ativou a autenticação dois
+        fatores para a sua conta.</p>
+      - <p>Se não fez este pedido, alguém pode estar a usar a sua conta. Por favor,
+        contacte o apoio técnico.</p>
+      - <p>A sua biblioteca</p>
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: members
+      name: Confirmação da ativação da autenticação por dois fatores
+      title: Confirmação da ativação da autenticação por dois fatores
+    - branchcode: ''
+      code: OPAC_REG
+      content:
+      - <h3>Novo auto-registo no OPAC</h3>
+      - <p><h4>Auto-registo feito:</h4>
+      - <ul>
+      - <li> [% borrower.firstname %] [% borrower.surname %]</li>
+      - '[% IF borrower.cardnumber %]<li>Número de cartão: [% borrower.cardnumber
+        %]</li>[% END %]'
+      - '[% IF borrower.email %]<li>Email: [% borrower.email %]</li>[% END %]'
+      - '[% IF borrower.phone %]<li>Telefone: [% borrower.phone %]</li>[% END %]'
+      - '[% IF borrower.mobile %]<li>Telemóvel: [% borrower.mobile %]</li>[% END %]'
+      - '[% IF borrower.fax %]<li>Fax: [% borrower.fax %]</li>[% END %]'
+      - '[% IF borrower.emailpro %]<li>Email secundário: [% borrower.emailpro %]</li>[%
+        END %]'
+      - '[% IF borrower.phonepro %]<li>Telefone secundário: [% borrower.phonepro %]</li>[%
+        END %]'
+      - '[% IF borrower.branchcode %]<li>Biblioteca: [% borrower.branchcode %]</li>[%
+        END %]'
+      - '[% IF borrower.categorycode %]<li>Categproa de leitor temporária: [% borrower.categorycode
+        %]</li>[% END %]'
+      - </ul>
+      - </p>
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: members
+      name: New OPAC self-registration submitted
+      title: New OPAC self-registration
+    - branchcode: ''
+      code: LIST
+      content:
+      - '[%- USE Branches -%]'
+      - '[%- USE AuthorisedValues -%]'
+      - '[%- USE Koha -%]'
+      - '[%- PROCESS ''html_helpers.inc'' -%]'
+      - Hi,<br><br>
+      - '[% borrower.firstname | html %] [% borrower.surname | html %] enviou uma
+        lista do nosso catálogo online chamada: [% listname | html %].<br>'
+      - Please note that the attached file is a MARC bibliographic records file which
+        can be imported into personal bibliographic software like EndNote, Reference
+        Manager or ProCite.<br>
+      - '[% IF ( comment ) %]<hr><br>[% comment | html | html_line_break %]<br><br>[%
+        END %]<hr>'
+      - <ol>[% FOREACH biblio IN biblios %]<li>
+      - '[% biblio.title | html %]'
+      - '[% IF ( biblio.subtitle ) %][% FOREACH subtitle IN biblio.subtitle.split(''
+        | '') %][% subtitle | html %][% END %][% END %][% biblio.part_number | html
+        %] [% biblio.part_name | html %]<br>'
+      - '[% IF ( biblio.author || biblio.get_marc_contributors.size ) %]Autor(es):
+        [% IF ( biblio.author ) %][% biblio.author | html %][% END %][% IF ( biblio.get_marc_contributors
+        ) %][% IF ( biblio.author ) %]; [% END %][% FOREACH author IN biblio.get_marc_contributors
+        %][% FOREACH subfield IN author.MARCAUTHOR_SUBFIELDS_LOOP %][% subfield.separator
+        | html %][% subfield.value | html %][% END %][% UNLESS ( loop.last ) %];[%
+        END %][% END %][% END %]<br>[% END %]'
+      - '[% SET biblioitem = biblio.biblioitem %][% IF ( biblioitem.isbn ) %]ISBN:
+        [% FOREACH isbn IN biblioitem.isbn %][% isbn | html %][% UNLESS ( loop.last
+        ) %]; [% END %][% END %]<br>[% END %]'
+      - '[% IF ( biblioitem.publishercode ) %]Publicado por: [% biblioitem.publishercode
+        | html %][% IF ( biblioitem.publicationyear ) %] em [% biblioitem.publicationyear
+        | html %][% END %][% IF ( biblioitem.pages ) %], [% biblioitem.pages | html
+        %][% END %]<br>[% END %]'
+      - '[% IF ( biblio.seriestitle ) %]Coleção: [% biblio.seriestitle | html %]<br>[%
+        END %]'
+      - '[% IF ( biblio.copyrightdate ) %]Ano dos direitos de autor: [% biblio.copyrightdate
+        | html %]<br>[% END %]'
+      - '[% IF ( biblio.notes ) %]Notas: [% biblio.notes | html %]<br>[% END %]'
+      - '[% IF ( biblio.unititle ) %]Título unificado: [% biblio.unititle | html %]<br>[%
+        END %]'
+      - '[% IF ( biblio.serial ) %]Periódico: [% biblio.serial | html %]<br>[% END
+        %]'
+      - '[% IF ( biblioitem.lccn ) %]LCCN: [% biblioitem.lccn | html %]<br>[% END
+        %]'
+      - '[% IF ( biblio.get_marc_host_only || biblio.get_marc_hostinfo_only ) %]Em:
+        [% IF biblio.get_marc_host_only.biblionumber %][% INCLUDE ''biblio-title.inc''  biblio=biblio.get_marc_host_only
+        %] [% biblio.get_marc_relatedparts_only %][% ELSE %][% biblio.get_marc_hostinfo_only
+        %][% END %]<br>[% END %]'
+      - '[% IF ( biblioitem.url ) %]URL: [% biblioitem.url | html %]<br>[% END %]'
+      - '[<a href=''[% Koha.Preference(''OpacBaseUrl'') %]/cgi-bin/koha/opac-detail.pl?biblionumber=[%
+        biblio.biblionumber | html %]''>View in online catalog</a>'
+      - '[% IF ( biblio.items.count > 0 ) %]<br>Itens: <ul>[% FOREACH item IN biblio.items
+        %]<li>[% Branches.GetName( item.holdingbranch ) | html %]'
+      - '[% IF ( item.location ) %], [% AuthorisedValues.GetDescriptionByKohaField(
+        kohafield => ''items.location'', authorised_value => item.location ) | html
+        %][% END %][% IF item.itemcallnumber %]([% item.itemcallnumber | html %])[%
+        END %][% item.barcode | html %]</li>[% END %]</ul>[% END %]'
+      - <hr></li>[% END %]</ol>
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: catalogue
+      name: Send list
+      title: 'Your list: [% listname | html %]'
+    - branchcode: ''
+      code: CART
+      content:
+      - '[%- USE Branches -%]'
+      - '[%- USE AuthorisedValues -%]'
+      - '[%- USE Koha -%]'
+      - '[%- PROCESS ''html_helpers.inc'' -%]'
+      - Hi,<br><br>
+      - '[% borrower.firstname | html %] [% borrower.surname | html %] enviou um carrinho
+        do nosso catálogo online.<br>'
+      - Please note that the attached file is a MARC bibliographic records file which
+        can be imported into personal bibliographic software like EndNote, Reference
+        Manager or ProCite.<br>
+      - '[% IF ( comment ) %]<hr><br>[% comment | html | html_line_break %]<br><br>[%
+        END %]<hr>'
+      - <ol>[% FOREACH biblio IN biblios %]<li>
+      - '[% biblio.title | html %]'
+      - '[% IF ( biblio.subtitle ) %][% FOREACH subtitle IN biblio.subtitle.split(''
+        | '') %][% subtitle | html %][% END %][% END %][% biblio.part_number | html
+        %] [% biblio.part_name | html %]<br>'
+      - '[% IF ( biblio.author || biblio.get_marc_contributors.size ) %]Autor(es):
+        [% IF ( biblio.author ) %][% biblio.author | html %][% END %][% IF ( biblio.get_marc_contributors
+        ) %][% IF ( biblio.author ) %]; [% END %][% FOREACH author IN biblio.get_marc_contributors
+        %][% FOREACH subfield IN author.MARCAUTHOR_SUBFIELDS_LOOP %][% subfield.separator
+        | html %][% subfield.value | html %][% END %][% UNLESS ( loop.last ) %];[%
+        END %][% END %][% END %]<br>[% END %]'
+      - '[% SET biblioitem = biblio.biblioitem %][% IF ( biblioitem.isbn ) %]ISBN:
+        [% FOREACH isbn IN biblioitem.isbn %][% isbn | html %][% UNLESS ( loop.last
+        ) %]; [% END %][% END %]<br>[% END %]'
+      - '[% IF ( biblioitem.publishercode ) %]Publicado por: [% biblioitem.publishercode
+        | html %][% IF ( biblioitem.publicationyear ) %] em [% biblioitem.publicationyear
+        | html %][% END %][% IF ( biblioitem.pages ) %], [% biblioitem.pages | html
+        %][% END %]<br>[% END %]'
+      - '[% IF ( biblio.seriestitle ) %]Coleção: [% biblio.seriestitle | html %]<br>[%
+        END %]'
+      - '[% IF ( biblio.copyrightdate ) %]Ano dos direitos de autor: [% biblio.copyrightdate
+        | html %]<br>[% END %]'
+      - '[% IF ( biblio.notes ) %]Notas: [% biblio.notes | html %]<br>[% END %]'
+      - '[% IF ( biblio.unititle ) %]Título unificado: [% biblio.unititle | html %]<br>[%
+        END %]'
+      - '[% IF ( biblio.serial ) %]Periódico: [% biblio.serial | html %]<br>[% END
+        %]'
+      - '[% IF ( biblioitem.lccn ) %]LCCN: [% biblioitem.lccn | html %]<br>[% END
+        %]'
+      - '[% IF ( biblio.get_marc_host_only || biblio.get_marc_hostinfo_only ) %]Em:
+        [% IF biblio.get_marc_host_only.biblionumber %][% INCLUDE ''biblio-title.inc''  biblio=biblio.get_marc_host_only
+        %] [% biblio.get_marc_relatedparts_only %][% ELSE %][% biblio.get_marc_hostinfo_only
+        %][% END %]<br>[% END %]'
+      - '[% IF ( biblioitem.url ) %]URL: [% biblioitem.url | html %]<br>[% END %]'
+      - <a href='[% Koha.Preference('OpacBaseUrl') %]/cgi-bin/koha/opac-detail.pl?biblionumber=[%
+        biblio.biblionumber | html %]'>Ver no catálogo online</a>
+      - '[% IF ( biblio.items.count > 0 ) %]<br>Itens: <ul>[% FOREACH item IN biblio.items
+        %]<li>[% Branches.GetName( item.holdingbranch ) | html %]'
+      - '[% IF ( item.location ) %], [% AuthorisedValues.GetDescriptionByKohaField(
+        kohafield => ''items.location'', authorised_value => item.location ) | html
+        %][% END %][% IF item.itemcallnumber %]([% item.itemcallnumber | html %])[%
+        END %][% item.barcode | html %]</li>[% END %]</ul>[% END %]'
+      - <hr></li>[% END %]</ol>
+      is_html: 1
+      lang: default
+      message_transport_type: email
+      module: catalogue
+      name: Send cart
+      title: Your cart
+    translatable:
+    - name
+    - title
+    - content

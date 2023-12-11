@@ -1,0 +1,325 @@
+---
+Pesquisa:
+  Características:
+  - - Realizar pesquisa wildcard (quando, por exemplo, <cite>Har</cite> corresponde
+      a <cite>Harry</cite> e <cite>harp</cite>)
+    - choices:
+        '0': apenas se * é adicionado.
+        '1': automaticamente.
+      pref: QueryAutoTruncate
+      type: boolean
+    - '<br />(O caracter * é usado do tipo: <cite>Har*</cite> ou <cite>*logging</cite>.)'
+  - - choices:
+        '0': Não tentar
+        '1': Tentar
+      pref: QueryFuzzy
+      type: boolean
+    - corresponder palavras com grafia semelhante numa pesquisa (por exemplo, uma
+      pesquisa por <cite>flang</cite> irá corresponder também por <cite>flange</cite>
+      e <cite>fang</cite>; Actualmente afecta apenas as pesquisas do Zebra. Qualquer
+      termo do Elasticsearch pode ser aproximado adicionando-se um ~ directamente
+      após o termo.).
+  - - choices:
+        '0': Não tentar
+        '1': Tentar
+      pref: QueryStemming
+      type: boolean
+    - corresponder palavras com a mesma base numa pesquisa (por exemplo, a pesquisa
+      por <cite>enabling</cite> irá corresponder também por <cite>enable</cite> e
+      <cite>enabled</cite>; NECESSITA DO ZEBRA).
+  - - choices:
+        '0': Desactivar
+        '1': Activar
+      pref: QueryWeightFields
+      type: boolean
+    - o ranking de resultados de pesquisa por relevância (REQUER ZEBRA).
+  - - choices:
+        dont_escape: Não tratar
+        escape: Tratar
+        unescape_escaped: Remover as alterações
+      default: escape
+      pref: QueryRegexEscapeOptions
+    - as expressões regulares nas frases de pesquisa. Se o valor da preferência é
+      "Tratar" as ocorrências de "/" nos termos de pesquisa serão automaticamente
+      tratadas (escaped) e as expressões regulares serão interpretadas como frases
+      normais. Se a opção é "Remover as alterações", vai permitir escrever expressões
+      regulares como "\/like this\/", enquanto as frases "/this/" e "or/this" serão
+      tratadas e interpretadas como frases normais. (Apenas para ElasticSearch).
+  - - choices:
+        '0': Não forçar
+        '1': Forçar
+      default: 0
+      pref: TraceCompleteSubfields
+    - rastreamentos de assunto nos interfaces OPAC e dos técnicos para pesquisar apenas
+      correspondências completas nos subcampos.
+  - - choices:
+        '0': Não incluir
+        '1': Incluir
+      default: 0
+      pref: TraceSubjectSubdivisions
+    - subdivisões para pesquisa geradas ao clicar nos traçados de assunto.
+  - - choices:
+        '0': Não usar
+        '1': Usar
+      default: 0
+      pref: UseICUStyleQuotes
+    - as citações de estilo ICU ({}) ao rastrear assuntos. O padrão por omissão é
+      usar aspas ("").
+  - - choices:
+        '0': Não incluir
+        '1': Incluir
+      default: 0
+      pref: IncludeSeeFromInSearches
+    - 'cabeçalhos <em>ver de</em> (forma não preferencial) nas pesquisas bibliográficas.
+      Por favor note: terá que reindexar a sua base de dados bibliográfica se alterar
+      esta preferência.'
+  - - choices:
+        '0': Não manter
+        '1': Manter
+      default: 0
+      pref: EnableSearchHistory
+    - o histórico de pesquisas dos leitores no interface dos técnicos.
+  - - choices:
+        '0': Desativar
+        '1': Ativar
+      default: 0
+      pref: BrowseResultSelection
+    - a navegação nos resultados de pesquisa a partir da página de detalhe do registo
+      bibliográfico no interface dos técnicos.
+  - - choices:
+        '0': Desactivar
+        '1': Activar
+      default: 0
+      pref: ElasticsearchCrossFields
+    - a opção cross_fields para as pesquisas Elasticsearch, suportada no Elasticsearch
+      6.X e superior.
+    - Ver documentação em https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-multi-match-query.html#type-cross-fields
+  - - choices:
+        '0': Desativar
+        '1': Ativar
+      default: 0
+      pref: SavedSearchFilters
+    - a opção dos técnicos com permissões para tal consigam criar/editar filtros de
+      pesquisa personalizáveis.
+  Formulário de pesquisa:
+  - - choices:
+        '0': Não adicionar
+        '1': Adicionar
+      default: 0
+      pref: LoadSearchHistoryToTheFirstLoggedUser
+    - histórico de pesquisas do utilizador não autenticado no próximo leitor a se
+      autenticar.
+  - - Mostrar separadores na pesquisa avançada dos técnicos para limitar as pesquisas
+      no
+    - class: long
+      pref: AdvancedSearchTypes
+    - (valores separados por |). Os separadores aparecem na ordem da lista.<br/>
+    - '<em>Valores suportados atualmente</em>: Tipos de documento (<strong>itemtypes</strong>),
+      Coleção (<strong>ccode</strong>) e Localização na prateleira (<strong>loc</strong>).'
+  - - Limitar os idiomas apresentados na pesquisa avançada a
+    - class: long
+      pref: AdvancedSearchLanguages
+    - ', códigos de idioma ISO 639-2 (valores separados por | ou ,).'
+    - Por exemplo, para limitar a lista a Francês e Italiano, inserir <em>ita|fre</em>.
+  - - Por omissão,
+    - choices:
+        '0': não mostrar
+        '1': mostrar
+      pref: expandedSearchOption
+      type: boolean
+    - '"Mais opções" nas páginas de pesquisa avançada no OPAC e no interface dos técnicos.'
+  - - Por omissão,
+    - choices:
+        '0': não usar
+        '1': usar
+      pref: OPACNumbersPreferPhrase
+      type: boolean
+    - o operador "phr" nas pesquisas por cota e número normalizado do OPAC.
+  - - Por omissão,
+    - choices:
+        '0': não usar
+        '1': usar
+      pref: IntranetNumbersPreferPhrase
+      type: boolean
+    - o operador "phr" nas pesquisas por cota e número normalizado no interface dos
+      técnicos.
+  Quis dizer/verificação ortográfica:
+  - - Serviço sueco para verificação ortográfica.<br/>
+    - Chave LIBRIS Spellchecking API
+    - pref: LibrisKey
+    - Pode ser obtida no endereço http://api.libris.kb.se/bibspell.
+  - - URL base da LIBRIS
+    - class: url
+      pref: LibrisURL
+    - Por favor apenas modifique esta configuração se tiver a certeza que deve ser
+      alterada.
+  Visualização dos resultados:
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      default: no
+      pref: numSearchResultsDropdown
+      type: boolean
+    - a caixa de selecção dos resultados por página nos resultados de pesquisa do
+      interface dos técnicos.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      default: no
+      pref: OPACnumSearchResultsDropdown
+      type: boolean
+    - a lista suspensa de resultados por página nos resultados de pesquisa do OPAC.
+  - - Por omissão, ordenar os resultados de pesquisa no interface dos técnicos por
+    - choices:
+        acqdate: data de adição
+        author: autor
+        call_number: cota
+        popularity: número total de empréstimos
+        pubdate: data de publicação
+        relevance: relevância
+        title: título
+      default: relevance
+      pref: defaultSortField
+    - ','
+    - choices:
+        asc: ascendente.
+        az: de A a Z.
+        dsc: descendente.
+        za: de Z a A.
+      pref: defaultSortOrder
+  - - Quanto limitar os resultados de pesquisa por uma biblioteca ou por um grupo
+      de bibliotecas, limitar pelos os exemplares da
+    - choices:
+        both: biblioteca de origem e de empréstimo.
+        holdingbranch: biblioteca de empréstimo.
+        homebranch: biblioteca de origem.
+      pref: SearchLimitLibrary
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      default: no
+      pref: displayFacetCount
+      type: boolean
+    - a contagem dos facets. A relevância destes número depende bastante do valor
+      da preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=maxRecordsForFacets">maxRecordsForFacets</a>.
+      Aplicado ao OPAC e ao interface dos técnicos.
+  - - Por omissão, mostrar
+    - class: integer
+      pref: numSearchResults
+    - resultados por página no interface dos técnicos.
+  - - Para registos com muitos exemplares, apenas verificar o estado de disponibilidade
+      para os
+    - class: integer
+      pref: MaxSearchResultsItemsPerRecordStatusCheck
+    - primeiros exemplares.
+    - <br/>Os estados de disponibilidade podem não ser mostrados corretamente nos
+      resultados de pesquisa se um registo tiver mais exemplares que o limite definido.
+      Os estados serão mostrados corretamente nos detalhes do registo.
+    - <br/>Deixar vazio para não haver limite.
+  - - Por omissão, ordenar os resultados da pesquisa no OPAC por
+    - choices:
+        acqdate: data de adição
+        author: autor
+        call_number: cota
+        popularity: número total de empréstimos
+        pubdate: data de publicação
+        relevance: relevância
+        title: título
+      default: relevance
+      pref: OPACdefaultSortField
+    - ','
+    - choices:
+        asc: ascendente.
+        az: de A a Z.
+        dsc: descendente.
+        za: de Z a A.
+      pref: OPACdefaultSortOrder
+    - ''
+  - - Mostrar até
+    - class: integer
+      pref: maxItemsInSearchResults
+    - exemplares por registo nos resultados de pesquisa
+  - - Construir os facets baseados em
+    - class: integer
+      default: 20
+      pref: maxRecordsForFacets
+    - registos dos resultados de pesquisa.
+  - - Mostrar até
+    - class: integer
+      default: 20
+      pref: FacetMaxCount
+    - facets para cada categoria.
+  - - Mostrar os filtros
+    - choices:
+        Alphabetical: alfabeticamente
+        Usage: por contagem de uso
+      default: Alphabetical
+      pref: FacetOrder
+      type: choice
+    - para cada categoria.
+  - - Por omissão, mostrar
+    - class: integer
+      pref: OPACnumSearchResults
+    - resultados por página no OPAC.
+  - - Mostrar facets para
+    - choices:
+        both: biblioteca de origem e de empréstimo
+        holding: biblioteca de empréstimo
+        home: biblioteca de origem
+      pref: DisplayLibraryFacets
+      type: choice
+  - - Truncar o tamanho dos facets a
+    - class: integer
+      pref: FacetLabelTruncationLength
+    - caracteres, no OPAC/interface dos técnicos (APENAS USANDO ZEBRA).
+  - - Usar o seguinte texto como separador para os facets de autores UNIMARC
+    - class: short
+      pref: UNIMARCAuthorsFacetsSeparator
+  - - Quando pesquisar o índice ISBN,
+    - choices:
+        '0': não pesquisar
+        '1': pesquisar
+      pref: SearchWithISBNVariations
+    - em todas as variações do ISBN.
+  - - Quando pesquisar o índice ISSN,
+    - choices:
+        '0': não pesquisar
+        '1': pesquisar
+      pref: SearchWithISSNVariations
+    - em todas as variações do ISSN.
+  - - choices:
+        '0': Não manter
+        '1': Manter
+      pref: RetainCatalogSearchTerms
+    - os termos pesquisados entre pesquisas quando usar o separador 'Pesquisar no
+      catálogo' no cabeçalho do interface dos técnicos.
+  - - choices:
+        '0': Não manter
+        '1': Manter
+      pref: RetainPatronsSearchTerms
+    - os termos pesquisados entre pesquisas quando usar os separadores 'Empréstimo'
+      e 'Pesquisar leitores' no cabeçalho do interface dos técnicos.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: BiblioItemtypeInfo
+    - ' Informações do tipo de documento de nível de registo Koha nas páginas de detalhes
+      e resultados no OPAC e na interface dos técnicos. Esta informação também é exibida
+      se a preferência do sistema <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=item-level_itypes">item-level_itypes</a>
+      estiver definida como registo bibliográfico.'
+  - - choices:
+        '0': Não disponibilizar
+        '1': Disponibilizar
+      pref: PassItemMarcToXSLT
+      type: boolean
+    - os campos MARC relativos a exemplares (MARC21 952, UNIMARC 995) nas folhas de
+      estilo XSLT.
+    - <br/>Por omissão é "Não disponibilizar", pois os exemplares são mostrados usando
+      outros métodos.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: ShowHeadingUse
+    - se um registo de autoridade contém um cabeçalho estabelecido que está em conformidade
+      com as regras de catalogação descritiva e pode, portanto, ser usado como entrada
+      principal/adicional, assunto ou título de série.

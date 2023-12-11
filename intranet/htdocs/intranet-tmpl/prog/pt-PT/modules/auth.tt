@@ -1,0 +1,291 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Koha %]
+[% USE Branches %]
+[% USE Desks %]
+[% USE Categories %]
+[% USE Registers %]
+[% USE AuthClient %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>
+ [% IF TwoFA_prompt %]Autenticação dois fatores[% END %] [% IF TwoFA_setup %]Configuração da autenticação dois fatores[% END %] [% IF ( loginprompt ) %]Entrar no Koha[% END %] [% IF too_many_login_attempts %]Conta bloqueada. [% ELSIF invalid_username_or_password %]Nome de utilizador ou palavra-passe inválidos[% END %] [% IF ( different_ip ) %]O endereço IP mudou[% END %] [% IF ( timed_out ) %]A sessão expirou[% END %] [% IF ( nopermission ) %]Acesso negado[% END %] [% IF ( auth_error ) %]Erro ao autenticar no fornecedor externo[% END %] &rsaquo; Koha </title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% PROCESS 'auth-two-factor.inc' %]
+</head>
+<body id="main_auth" class="main_main-auth">
+
+<div class="main container-fluid">
+
+<div id="login">
+<h1><a href="http://koha-community.org">Koha</a></h1>
+[% IF (Koha.Preference('StaffLoginInstructions')) %]<div id="login_instructions">[% Koha.Preference('StaffLoginInstructions') | $raw %]</div>[% END %]
+[% IF ( nopermission ) %]
+<div id="login_error">
+ <strong>Erro:</strong>
+ Não possui permissões para aceder a esta página. </div>
+<p><strong>Inicie sessão como um utilizador diferente</strong></p></h2>
+[% END %]
+
+[% IF ( timed_out ) %]
+<div id="login_error"><strong>Erro: </strong>Sessão expirou.<br /> Por favor autentique-se de novo</div>
+[% END %]
+
+[% IF ( different_ip ) %]
+<div id="login_error"><strong>Erro: </strong>Endereço IP foi alterado, por favor autentique-se de novo </div>
+[% END %]
+
+[% IF ( wrongip ) %]
+<div id="login_error"><strong>Erro: </strong>A localização automática (Autolocation) está ligada e está a autenticar-se com um endereço IP que não corresponde à sua biblioteca. </div>
+[% END %]
+
+[% IF too_many_login_attempts %]
+ <div id="login_error"><strong>Erro: </strong>Esta conta está bloqueada!</div>
+ [% IF Categories.can_any_reset_password && Koha.Preference('OpacBaseURL') %]
+ <a href="[% Koha.Preference('OpacBaseURL') | url %]/cgi-bin/koha/opac-password-recovery.pl">Deve repor a sua palavra-passe</a>.
+ [% END %]
+[% ELSIF password_has_expired %]
+ <div id="login_error"><strong>Erro: </strong>A sua palavra-passe expirou!</div>
+ [% IF Koha.Preference('EnableExpiredPasswordReset') && Koha.Preference('OpacBaseURL') %]
+ <a href="[% Koha.Preference('OpacBaseURL') | url %]/cgi-bin/koha/opac-reset-password.pl">Deve repor a sua palavra-passe</a>.
+ [% ELSIF Categories.can_any_reset_password && Koha.Preference('OpacBaseURL') %]
+ <a href="[% Koha.Preference('OpacBaseURL') | url %]/cgi-bin/koha/opac-password-recovery.pl">Deve repor a sua palavra-passe</a>.
+ [% ELSE %]
+ <p>Deve contactar a biblioteca para redefinir a sua palavra-passe</p>
+ [% END %]
+[% ELSIF invalid_username_or_password %]
+<div id="login_error"><strong>Erro: </strong>Nome do utilizador ou palavra-passe inválida</div>
+[% END %]
+
+[% IF auth_error %]
+ <div id="login_error" class="alert alert-danger">
+ <p>Ocorreu um problema ao autenticar numa entidade externa</p>
+ <p>[% auth_error | html %]</p>
+ </div>
+[% END %]
+
+[% IF (shibbolethAuthentication) %]
+<!-- This is what is displayed if shib login has failed -->
+[% IF (invalidShibLogin ) %]
+<div id="login_error"><Strong>Erro: </strong>a autenticação Shibboleth falhou</div>
+[% END %]
+<p><a href="[% shibbolethLoginUrl | $raw %]">Entrar com uma conta Shibboleth</a>.</p>
+[% END %]
+
+[% IF !TwoFA_prompt && !TwoFA_setup && !Koha.Preference('staffShibOnly') %]
+ <!-- login prompt time-->
+ [% SET identity_providers = AuthClient.get_providers('staff') %]
+ [% IF ( ! identity_providers.empty ) %]
+ [% FOREACH provider IN identity_providers %]
+ <p class="clearfix">
+ <a href="[% provider.url | url %]" class="btn btn-light col-xs-12" id="provider_[% provider.code | html %]">
+ [% IF provider.icon_url %]
+ <img src="[% provider.icon_url | url %]"  style="max-height: 20px; max-width: 20px;"/>
+ [% ELSE %]
+ <i class="fa fa-user" aria-hidden="true"></i>
+ [% END %] Autenticar com [% provider.description | html %] </a>
+ </p>
+ [% END %]
+ <hr/>
+ <p>Se você não tem uma conta externa, mas tem uma conta local, pode entrar em: </p>
+ [% END # /IF  identity_providers.size %]
+
+ <form action="[% script_name | html %]" method="post" name="loginform" id="loginform">
+ <input type="hidden" name="koha_login_context" value="intranet" />
+ [% FOREACH INPUT IN INPUTS %]
+ <input type="hidden" name="[% INPUT.name | html %]" value="[% INPUT.value | html %]" />
+ [% END %]
+ <p><label for="userid">Nome do utilizador:</label>
+ <input type="text" name="userid" id="userid" class="input focus" value="[% userid | html %]" size="20" tabindex="1" autocomplete="off" />
+ </p>
+ <p><label for="password">Palavra-passe:</label>
+ <input type="password" name="password" id="password" class="input" value="" size="20" tabindex="2" autocomplete="off" />
+ </p>
+
+ [% UNLESS IndependentBranches %]
+ <p>
+ <label for="branch">Biblioteca:</label>
+ <select name="branch" id="branch" class="input" tabindex="3">
+ <option value="">Biblioteca</option>
+ [% FOREACH l IN Branches.all( unfiltered => 1 ) %]
+ <option value="[% l.branchcode | html %]">[% l.branchname | html %]</option>
+ [% END %]
+ </select>
+ </p>
+
+ [% IF Koha.Preference('UseCirculationDesks') && Desks.all %]
+ <p>
+ <label for="desk">Balcão:</label>
+ <select name="desk_id" id="desk_id" class="input" tabindex="3">
+ <option id="nodesk" value="">---</option>
+ [% FOREACH d IN Desks.all %]
+ <option class="[% d.branchcode | html %]" value="[% d.desk_id | html %]" disabled >[% d.desk_name | html %]</option>
+ [% END %]
+ </select>
+ </p>
+ [% END %]
+
+ [% IF Koha.Preference('UseCashRegisters') && Registers.all().size %]
+ <p>
+ <label for="register_id">Caixa registadora:</label>
+ <select name="register_id" id="register_id" class="input" tabindex="4">
+ <option id="noregister" value="" selected="selected">Biblioteca por omissão</option>
+ [% PROCESS options_for_registers registers => Registers.all() %]
+ </select>
+ </p>
+ [% END %]
+
+ [% END %]
+
+ <!-- <p><label><input name="rememberme" type="checkbox" id="rememberme" value="forever" tabindex="3" />Remember me</label></p> -->
+
+ <p class="submit"><input class="btn btn-primary" id="submit-button" tabindex="4" type="submit" value="Iniciar sessão" /></p>
+ </form>
+
+ [% IF ( casAuthentication ) %]
+ <h4>Autenticação CAS</h4>
+
+ [% IF ( invalidCasLogin ) %]
+ <!-- This is what is displayed if cas login has failed -->
+ <p>Desculpe, a autenticação CAS falhou.</p>
+ [% END %]
+
+ [% IF ( casServerUrl ) %]
+ <p><a href="[% casServerUrl | $raw %]">Se tem uma conta CAS, clique aqui para se autenticar</a>.<p>
+ [% END %]
+
+ [% IF ( casServersLoop ) %]
+ <p>Se tem uma conta CAS, por favor escolha um dos sistema no qual deseja se autenticar:</p>
+ <ul>
+ [% FOREACH casServer IN casServersLoop %]
+ <li><a href="[% casServer.value | $raw %]">[% casServer.name | html %]</a></li>
+ [% END %]
+ [% END %]
+ [% END %]
+[% ELSIF TwoFA_prompt %]
+ <form action="[% script_name | html %]" method="post" name="loginform" id="loginform" autocomplete="off">
+ <input type="hidden" name="koha_login_context" value="intranet" />
+ [% FOREACH INPUT IN INPUTS %]
+ <input type="hidden" name="[% INPUT.name | html %]" value="[% INPUT.value | html %]" />
+ [% END %]
+ [% IF invalid_otp_token %]
+ <div id="login_error">Códigos de dois-fatores inválido</div>
+ [% END %]
+
+ <div id="email_error" class="dialog alert" style="display: none;"></div>
+ <div id="email_success" class="dialog message" style="display: none;"></div>
+ <p>
+ <label for="otp_token">Código da autenticação dois fatores:</label>
+ <input type="text" name="otp_token" id="otp_token" class="input focus" value="" size="20" tabindex="1" />
+ </p>
+ <p>
+ <input class="btn btn-primary" id="submit-button" type="submit" value="Verificar código" />
+ <a class="send_otp" id="send_otp" href="#">Enviar código por email</a>
+ <a class="cancel" id="logout" href="/cgi-bin/koha/mainpage.pl?logout.x=1">Anular</a>
+ </p>
+
+ </form>
+[% ELSIF TwoFA_setup %]
+ [% PROCESS registration_form %]
+[% END %]
+
+[% IF ( nopermission ) %]
+ <p><a id="previous_page" href="javascript:window.history.back()">[Página anterior]</a>
+ <a id="mainpage" href="/">[Página principal]</a></p>
+[% END %]
+
+
+<!--<ul> -->
+<!-- <li><a href="/cgi-bin/koha/lostpassword.pl" title="Password lost and found">Lost your password?</a></li> -->
+<!-- </ul> -->
+
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/desk_selection.js") | $raw %]
+ [% Asset.js("js/register_selection.js") | $raw %]
+ <script>
+        $(document).ready( function() {
+            if ( document.location.hash ) {
+                $( '#loginform' ).append( '<input name="auth_forwarded_hash" type="hidden" value="' + document.location.hash + '"/>' );
+            }
+            // Clear last borrowers, rememberd sql reports, carts, etc.
+            logOut();
+
+            $("#send_otp").on("click", function(e){
+                e.preventDefault();
+                [% UNLESS notice_email_address %]
+                    alert("Cannot send the notice, you don't have an email address defined.")
+                [% ELSE %]
+                $("#email_success").hide();
+                $("#email_error").hide();
+                    $.ajax({
+                        url: '/api/v1/auth/otp/token_delivery',
+                        type: 'POST',
+                        success: function(data){
+                            let message = _("O código foi enviado por email, verifique a sua caixa de entrada.")
+                            $("#email_success").show().html(message);
+                        },
+                        error: function(data){
+                            let error = data.responseJSON && data.responseJSON.error == "email_not_sent"
+                                ? _("Email não enviado, por favor contate o administrador do Koha")
+                                : _("Ocorreu um problema, por favor contacte o administrador do Koha");
+                            $("#email_error").show().html(error);
+                        }
+                    });
+                [% END %]
+            });
+
+            if( $("#registration-form").length ) {
+                $.ajax({
+                    data: {},
+                    type: 'POST',
+                    url: '/api/v1/auth/two-factor/registration',
+                    success: function (data) {
+                        $("#qr_code").attr('src', data.qr_code);
+                        $("#secret32").val(data.secret32);
+                        $("#issuer").html(data.issuer);
+                        $("#key_id").html(data.key_id);
+                        $("#key_secret").html(data.secret32);
+                        $("#registration-form").show();
+                    },
+                    error: function (data) {
+                        alert(data);
+                    },
+                });
+            };
+
+            $("#register-2FA").on("click", function(e){
+                e.preventDefault();
+                const data = {
+                    secret32: $("#secret32").val(),
+                    pin_code: $("#pin_code").val(),
+                };
+                if (!data.pin_code) return;
+
+                $.ajax({
+                    data: data,
+                    type: 'POST',
+                    url: '/api/v1/auth/two-factor/registration/verification',
+                    success: function (data) {
+                        return;
+                    },
+                    error: function (data) {
+                        const error = data.responseJSON.error;
+                        if ( error == 'Invalid pin' ) {
+                            $("#errors").html(_("Código PIN inválido")).show();
+                        } else {
+                            alert(error);
+                        }
+                    },
+                }).then(function(){
+                    alert(_("A autenticação de dois fatores encontra-se bem configurada. Vai ser redirecionado para a página de autenticação."));
+                    window.location = "/cgi-bin/koha/mainpage.pl";
+                });
+            });
+
+        });
+    </script>
+[% END %]
+<!-- the main div is closed in intranet-bottom.inc -->
+[% INCLUDE 'intranet-bottom.inc' %]

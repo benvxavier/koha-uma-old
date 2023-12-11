@@ -1,0 +1,369 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Koha %]
+[% USE AuthorisedValues %]
+[% USE Branches %]
+[% USE scalar %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>
+[% IF ( attribute_type_form ) %] [% IF ( edit_attribute_type ) %] Modificar atributo de leitor &rsaquo; [% ELSE %] Adicionar atributo de leitor &rsaquo; [% END %] [% END %] [% IF ( delete_attribute_type_form ) %] Confirmar eliminação de atributo de leitor &quot;[% code | html %]&quot; &rsaquo; [% END %] Tipos de atributo de leitor &rsaquo; Administração &rsaquo; Koha </title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="admin_patron-attr-types" class="admin">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'prefs-admin-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/admin-home.pl">Administração</a>
+ [% END %]
+
+ [% IF ( attribute_type_form || delete_attribute_type_form ) %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/patron-attr-types.pl">Tipos de atributos de leitor</a>
+ [% END %]
+ [% END %]
+
+ [% IF ( attribute_type_form ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ [% IF ( edit_attribute_type ) %]
+ <span>Modificar tipo atributo de leitor</span>
+ [% ELSE %]
+ <span>Adicionar tipo de atributo de leitor</span>
+ [% END %]
+ [% END %]
+
+ [% ELSIF ( delete_attribute_type_form ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Confirmar a eliminação do atributo do leitor '[% code | html %]'</span>
+ [% END %]
+
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Tipos de atributos de leitor</span>
+ [% END %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+[% IF ( WARNING_extended_attributes_off ) %]
+<div class="dialog message">A preferência do sistema 'ExtendedPatronAttributes' está atualmente inativa, por isso não é possível definir os atributos específicos dos leitores. <br/>Ir para <a href="/cgi-bin/koha/admin/preferences.pl?op=search&amp;searchfield=ExtendedPatronAttributes">ExtendedPatronAttributes</a> se deseja ativar esta funcionalidade.</div>
+[% END %]
+
+[% IF ( attribute_type_form ) %]
+ [% IF ( edit_attribute_type ) %]
+<h1>Modificar tipo atributo de leitor</h1>
+ [% ELSE %]
+<h1>Adicionar tipo de atributo de leitor</h1>
+ [% END %]
+[% IF ( duplicate_code_error ) %]
+<div class="dialog message">Não é possível adicionar o atributo do leitor &quot;[% duplicate_code_error | html %]&quot; &mdash; o código já existe. </div>
+[% END %]
+<form action="[% script_name | html %]" class="validated" method="post">
+ <input type="hidden" name="op" value="[% confirm_op | html %]" />
+ <fieldset class="rows">
+ <ol>
+ <li>
+ [% IF attribute_type %]
+ <span class="label">Código do tipo de atributo de leitor: </span>
+ <input type="hidden" name="code" value="[% attribute_type.code |html %]" />
+ [% attribute_type.code |html %]
+ [% ELSE %]
+ <label for="code" class="required">Código do tipo de atributo de leitor: </label>
+ <input type="text" id="code" name="code" required="required" class="required focus" size="10" maxlength="10" />
+ <span class="required">Obrigatório</span>
+ [% END %]
+ </li>
+ <li><label for="description" class="required">Descrição: </label>
+ <input type="text" id="description" name="description" required="required" class="required" size="50" maxlength="250" value="[% attribute_type.description |html %]" />
+ <span class="required">Obrigatório</span>
+ </li>
+
+ [% IF attribute_type AND attribute_type.repeatable AND NOT can_be_set_to_nonrepeatable %]
+ <li aria-disabled="true">
+ [% ELSE %]
+ <li>
+ [% END %]
+ <label for="repeatable">Repetível: </label>
+ [% IF attribute_type %]
+ [% IF attribute_type.repeatable AND NOT can_be_set_to_nonrepeatable %]
+ <input checked="checked" disabled="disabled" id="repeatable" name="repeatable" title="Pelo menos um leitor tem mais que um valor para este atributo" type="checkbox" />
+ <input type="hidden" name="repeatable" value="1" />
+ [% ELSIF attribute_type.repeatable %]
+ <input type="checkbox" id="repeatable" name="repeatable" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" id="repeatable" name="repeatable" />
+ [% END %]
+ [% ELSE %]
+ <input type="checkbox" id="repeatable" name="repeatable" />
+ [% END %]
+ <span class="hint">Marcar para permitir que um leitor tenha vários valores deste atributo.</span>
+ </li>
+
+ [% IF attribute_type AND not can_be_set_to_unique %]
+ <li aria-disabled="true">
+ [% ELSE %]
+ <li>
+ [% END %]
+ <label for="unique_id">Identificador único: </label>
+ [% IF attribute_type %]
+ [% IF attribute_type.unique_id %]
+ <input type="checkbox" id="unique_id" name="unique_id" checked="checked" />
+ [% ELSIF can_be_set_to_unique %]
+ <input type="checkbox" id="unique_id" name="unique_id" />
+ [% ELSE %]
+ <input disabled="disabled" id="unique_id" name="unique_id" title="Pelo menos dois leitores têm o mesmo valor para este atributo" type="checkbox" />
+ <input type="hidden" name="unique_id" value="0" />
+ [% END %]
+ [% ELSE %]
+ <input type="checkbox" id="unique_id" name="unique_id" />
+ [% END %]
+ <span class="hint">Se selecionado, o atributo será um identificador único. Se um valor é fornecido para um registo de leitor, o mesmo valor não pode ser dado a um registo diferente.</span>
+ </li>
+
+ <li><label for="opac_display">Mostrar no OPAC: </label>
+ [% IF attribute_type AND attribute_type.opac_display %]
+ <input type="checkbox" id="opac_display" name="opac_display" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" id="opac_display" name="opac_display" />
+ [% END %]
+ <span class="hint">Assinalar para mostrar este atributo na página de detalhe do OPAC.</span>
+ </li>
+ <li><label for="opac_editable">Alterável no OPAC: </label>
+ [% IF attribute_type AND attribute_type.opac_editable %]
+ <input type="checkbox" id="opac_editable" name="opac_editable" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" id="opac_editable" name="opac_editable" />
+ [% END %]
+ <span class="hint">Marque para permitir que os leitores editem este atributo na sua página de detalhes no OPAC. (Requer acima)</span>
+ </li>
+ <li><label for="staff_searchable">Pesquisável: </label>
+ [% IF attribute_type AND attribute_type.staff_searchable %]
+ <input type="checkbox" id="staff_searchable" name="staff_searchable" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" id="staff_searchable" name="staff_searchable" />
+ [% END %]
+ <span class="hint">Assinalar para tornar este atributo pesquisavel na interface dos técnicos, em procura de leitores.</span>
+ </li>
+ <li><label for="mandatory">Obrigatório: </label>
+ [% IF attribute_type AND attribute_type.mandatory %]
+ <input type="checkbox" id="mandatory" name="mandatory" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" id="mandatory" name="mandatory" />
+ [% END %]
+ <span class="hint">Marcar para tornar este atributo obrigatório ao criar ou editar um leitor.</span>
+ </li>
+ <li><label for="display_checkout">Mostrar na informação resumida do leitor: </label>
+ [% IF attribute_type AND attribute_type.display_checkout %]
+ <input type="checkbox" id="display_checkout" name="display_checkout" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" id="display_checkout" name="display_checkout" />
+ [% END %]
+ <span class="hint">Marcar para mostrar este atributo no painel de informações resumidas no registro do leitor (interface dos técnicos).</span>
+ </li>
+
+ [% IF Koha.Preference('Pseudonymization') %]
+ <li>
+ <label for="keep_for_pseudonymization">Manter para pseudo-anominização: </label>
+ [% IF attribute_type AND attribute_type.keep_for_pseudonymization %]
+ <input type="checkbox" id="keep_for_pseudonymization" name="keep_for_pseudonymization" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" id="keep_for_pseudonymization" name="keep_for_pseudonymization" />
+ [% END %]
+ <span class="hint">Marcar para que este atributo seja copiado para os atributos do leitor anonimizado.</span>
+ </li>
+ [% END %]
+
+ <li><label for="authorised_value_category">Categoria de valor autorizado: </label>
+ <select name="authorised_value_category" id="authorised_value_category">
+ <option value=""></option>
+ [% PROCESS options_for_authorised_value_categories authorised_value_categories => AuthorisedValues.GetCategories( selected => attribute_type.authorised_value_category ) %]
+ </select>
+ <div class="hint">Se um estiver selecionado, o página de entrada de registo de leitor só irá permitir valores a serem escolhidos da lista de valores autorizados. No entanto, uma lista de valores autorizados não é aplicada durante a importação de um lote de leitores.</div>
+ </li>
+ <li><label for="branches">Limitação de biblioteca: </label>
+ <select id="branches" name="branches" multiple size="10">
+ <option value="">Todas as bibliotecas</option>
+ [% PROCESS options_for_libraries libraries => Branches.all( selected => attribute_type.library_limits ) %]
+ </select>
+ <div class="hint">Selecione "Todas as bibliotecas" se este atributo deve ser sempre mostrado. Caso contrário, seleciona as bibliotecas onde deseja associar este valor. </div>
+ </li>
+ <li>
+ <label for="category">Categoria: </label>
+ <select name="category_code" id="category">
+ <option value=""></option>
+ [% FOREACH cat IN categories %]
+ [% IF ( cat.categorycode == attribute_type.category_code ) %]<option value="[% cat.categorycode | html %]" selected="selected">[% cat.description |html %]</option>[% ELSE %]<option value="[% cat.categorycode | html %]">[% cat.description |html %]</option>[% END %]
+ [% END %]
+ </select>
+ <div class="hint">Escolha um para limitar este atributo a um tipo de leitor. Por favor deixe em branco se deseja que estes atributos estejam disponíveis para todos os tipos de leitor.</div>
+ </li>
+ <li>
+ <label for="class">Classe: </label>
+ [% PROCESS 'av-build-dropbox.inc' name="class", category="PA_CLASS" default=attribute_type.class empty=1 %]
+ <div class="hint">
+ [% IF ( CAN_user_parameters_manage_auth_values ) %] Tipos de atributos de grupo com um título de bloco (baseado nos <a target="_blank" href="/cgi-bin/koha/admin/authorised_values.pl?searchfield=PA_CLASS">valores autorizados da categoria 'PA_CLASS'</a>) [% ELSE %] Tipos de atributos de grupo com um título de bloco (baseado nos valores autorizados 'PA_CLASS') [% END %] </div>
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input class="btn btn-primary" type="submit" value="Guardar" />
+ <a class="cancel" href="/cgi-bin/koha/admin/patron-attr-types.pl">Anular</a>
+ </fieldset>
+</form>
+[% END %]
+
+[% IF ( delete_attribute_type_form ) %]
+ <div class="dialog alert">
+ <h1>Confirmar a eliminação do atributo do leitor <span class="ex">'[% code | html %]' ([% description | html %])</span>?</h1>
+ <form action="[% script_name | html %]" name="Aform" method="post">
+ <input type="hidden" name="op" value="[% confirm_op | html %]" />
+ <input type="hidden" name="code" value="[% code | html %]" />
+ <button type="submit" class="approve"><i class="fa fa-fw fa-check"></i> Sim, eliminar tipo de atributo de leitor</button>
+ </form>
+ <form action="[% script_name | html %]" method="get">
+ <button type="submit" class="deny"><i class="fa fa-fw fa-remove"></i> Não, não eliminar</button>
+ </form>
+ </div>
+[% END %]
+
+[% IF ( display_list ) %]
+
+<div id="toolbar" class="btn-toolbar">
+ <a class="btn btn-default" id="newrule" href="[% script_name | url %]?op=add_attribute_type"><i class="fa fa-plus"></i> Novo tipo de atributo de leitor</a>
+</div>
+
+<h1>Tipos de atributos de leitor</h1>
+[% IF ( added_attribute_type ) %]
+<div class="dialog message">Adicionado tipo de atributo de leitor &quot;[% added_attribute_type | html %]&quot;</div>
+[% END %]
+[% IF ( edited_attribute_type ) %]
+<div class="dialog message">Tipo de atributo de leitor &quot;[% edited_attribute_type | html %]&quot; modificado</div>
+[% END %]
+[% IF ( deleted_attribute_type ) %]
+<div class="dialog message">Eliminar tipo de atributo de leitor &quot;[% deleted_attribute_type | html %]&quot;</div>
+[% END %]
+[% IF ( ERROR_delete_in_use ) %]
+<div class="dialog message">Não é possível eliminar este atributo do leitor &quot;[% ERROR_delete_in_use | html %]&quot; &mdash; porque é utilizado em [% ERROR_num_patrons | html %] fichas de inscrição</div>
+[% END %]
+[% IF ( ERROR_delete_not_found ) %]
+<div class="dialog message">Não é possível eliminar o atributo do leitor &quot;[% ERROR_delete_not_found | html %]&quot; &mdash; porque já não existe.</div>
+[% END %]
+[% IF ( available_attribute_types ) %]
+ [% FOREACH attribute IN available_attribute_types %]
+ <div class="page-section">
+ [% IF attribute.class %]
+ <h2>[% attribute.lib | html %]</h2>
+ [% ELSE %]
+ <h2>Tipos não classificados</h2>
+ [% END %]
+ <table class="patron_attributes_types" id="patron_attr[% attribute.class | html %]">
+ <thead>
+ <tr>
+ <th>Código</th>
+ <th>Descrição</th>
+ <th>Limitação das bibliotecas</th>
+ <th>Categoria de valor autorizado</th>
+ <th>Obrigatório</th>
+ <th class="NoSort noExport">Ações</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH item IN attribute.items %]
+ <tr>
+ <td>[% item.code | html %]</td>
+ <td>[% item.description | html %]</td>
+ <td>
+ [% SET libraries = item.library_limits %]
+ [% IF ( libraries && libraries.count > 0 ) %]
+ [% branches_str = "" %]
+ [% FOREACH branch IN libraries %]
+ [% branches_str = branches_str _ " " _ branch.branchname _ "(" _ branch.branchcode _ ")" %]
+ [% END %]
+ <span title="[% branches_str | html %]">
+ [% IF libraries.count > 1 %]
+ <span>[% libraries.count | html %] limitações de biblioteca</span>
+ [% ELSE %]
+ <span>[% libraries.count | html %] limitaçao de biblioteca</span>
+ [% END %]
+ </span>
+ [% ELSE %] Sem limitação [% END %] </td>
+ <td>
+ [% IF ( CAN_user_parameters_manage_auth_values ) %]
+ <a href="/cgi-bin/koha/admin/authorised_values.pl?searchfield=[% item.authorised_value_category | uri %]">[% item.authorised_value_category | html %]</a></td>
+ [% ELSE %]
+ [% item.authorised_value_category | html %]
+ [% END %]
+ <td>
+ [% IF ( item.mandatory ) -%]
+ <span>Sim</span>
+ [% ELSE -%]
+ <span>Não</span>
+ [% END %]
+ </td>
+ <td class="actions">
+ <a class="btn btn-default btn-xs" href="[% script_name | url %]?op=edit_attribute_type&amp;code=[% item.code | uri %]"><i class="fa fa-pencil"></i> Alterar</a>
+ <a class="btn btn-default btn-xs" href="[% script_name | url %]?op=delete_attribute_type&amp;code=[% item.code | uri %]"><i class="fa fa-trash"></i> Apagar</a>
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div><!-- ./page-section -->
+ [% END %]
+[% ELSE %]
+ <p>Não existe tipos de atributos de leitor guardados.</p>
+[% END %]
+
+<div class="pages">[% pagination_bar | $raw %]</div>
+
+[% END %]
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'admin-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/admin-menu.js") | $raw %]
+ [% INCLUDE 'datatables.inc' %]
+ [% INCLUDE 'columns_settings.inc' %]
+ <script>
+        $(document).ready(function() {
+            if ( $("#branches option:selected").length < 1 ) {
+                $("#branches option:first").attr("selected", "selected");
+            }
+
+            $("#opac_display").change( function() {
+                if ( this.checked ) {
+                    $("#opac_editable").removeAttr('disabled').parent().removeAttr('aria-disabled');
+                } else {
+                    $("#opac_editable").attr('disabled', true).parent().attr('aria-disabled', 'true');
+                }
+            } ).change();
+
+            $(".patron_attributes_types").each(function(){
+                var tableid = $(this).attr("id");
+                KohaTable( tableid, {
+                    "bPaginate": false,
+                    'autoWidth': false,
+                }, null );
+            });
+        });
+    </script>
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

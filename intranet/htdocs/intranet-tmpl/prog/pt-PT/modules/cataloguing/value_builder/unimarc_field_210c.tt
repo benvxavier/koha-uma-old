@@ -1,0 +1,140 @@
+[% USE raw %]
+[% PROCESS 'authorities-search-results.inc' %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Construtor do campo 210c UNIMARC</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="cat_unimarc_field_210c" class="cat" style="padding:1em;">
+<h1>Construtor do campo 210c UNIMARC</h1>
+ <h4>Pesquisar por tipo de autoridade: EDITORS</h4>
+ <form name="f" method="post" action="plugin_launcher.pl">
+ <fieldset class="rows">
+ <input type="hidden" name="plugin_name" value="unimarc_field_210c.pl" />
+ <input type="hidden" name="op" value="do_search" />
+ <input type="hidden" name="type" value="intranet" />
+ <input type="hidden" name="nbstatements" value="[% nbstatements | html %]" />
+ <input type="hidden" name="index" value="[% index | html %]" />
+ <input type="hidden" name="authtypecode" value="EDITORS" />
+ <input type="hidden" name="q" value="[% index | html %]" />
+ <input type="hidden" name="marclist" value="all" />
+ <input type="hidden" name="and_or" value="and" />
+ <input type="hidden" name="excluding" value="" />
+ <ol>
+ <li>
+ <select name="orderby" id="orderby">
+ <option value="">Nenhum</option>
+ <option value="HeadingAsc" selected="selected">Entradas A-Z</option>
+ <option value="HeadingDsc">Entradas Z-A</option>
+ </select>
+ <select name="operator" id="operator">
+ <option value="contains">contem</option>
+ <option value="start">começa por</option>
+ <option value="is">é exactamente</option>
+ </select>
+ <input type="text" id="value" name="value" value="[% resultstring | html %]" />
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input class="btn btn-primary" type="submit" value="Pesquisar" />
+ </fieldset>
+ </form>
+ [% IF ( total ) %]
+ <h3>Resultados da pesquisa de Autoridade</h3>
+ <div class="pages">
+ [% pagination_bar | $raw %]
+ </div>[% END %]
+ <p>
+ [% IF ( total ) %]
+ &nbsp;<strong>Resultados [% from | html %] a [% to | html %] de [% total | html %]</strong><br /><br />
+ [% ELSE %]
+ &nbsp; <span>Nenhum resultado encontrado</span><br />
+ [% END %]
+ </p>
+[% IF ( total ) %]
+ <div id="resultlist">
+ <table>
+ <tr>
+ <th>Sumário</th>
+ <th>Tipo de cabeçalho</th>
+ <th>Utilizado</th>
+ <th>Obtenha!</th>
+ </tr>
+ [% FOREACH resul IN result %]
+ <tr>
+ <td>[% PROCESS authresult summary=resul.summary authid=resul.authid %]</td>
+ <td>[% resul.summary.label | html %]</td>
+ <td>[% resul.used | html %] vezes</td>
+ <td>
+ [% IF ( resul.to_report ) %]
+ <button class="choosebt">Escolher</button>
+ <p class="toreport" style="display:none">[% resul.to_report |replace('\n', '\\n') |replace('\r', '\\r') |html %]</p>
+ [% END %]
+ </td>
+ </tr>
+ [% END %]
+ </table>
+ </div>
+[% END %]
+
+ [% IF ( total ) %]<div class="pages">
+ [% pagination_bar | $raw %]
+ </div>
+ [% END %]
+
+<!-- Authority details modal -->
+<div class="modal" id="authorityDetail" tabindex="-1" role="dialog" aria-labelledby="authorityDetailLabel">
+ <div class="modal-dialog" role="document">
+ <div class="modal-content">
+ <div class="modal-header">
+ <button aria-label="Fechar" class="closebtn" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+ <h4 class="modal-title" id="authorityDetailLabel"></h4>
+ </div>
+ <div class="modal-body">
+ <img src="[% interface | html %]/[% theme | html %]/img/spinner-small.gif" alt="" />
+ </div>
+ <div class="modal-footer">
+ <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+ </div>
+ </div>
+ </div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ <script>
+        $(document).ready(function(){
+            $(".choosebt").on("click",function(){
+                var toreport = $(this).siblings(".toreport").text();
+                report(toreport);
+            });
+            $(".authorizedheading a").on("click", function(e){
+                e.preventDefault();
+                var authid = $(this).data("authid");
+
+                $.get("/cgi-bin/koha/authorities/detail.pl", { authid : authid }, function( data ){
+                    var auth_detail = $(data).find("#authoritiestabs");
+                    auth_detail.find("ul").remove();
+                    $("#authorityDetail .modal-title").html(_("Autoridade") + " " + authid );
+                    $("#authorityDetail .modal-body").html( auth_detail );
+                });
+
+                $("#authorityDetail").modal("show");
+            });
+            $("#authorityDetail").on("hidden.bs.modal", function(){
+                $("#authorityDetail .modal-body, #authorityDetail .modal-title").html("");
+                $("#authorityDetail .modal-body").html("<div id=\"loading\"><img src=\"[% interface | html %]/[% theme | html %]/img/spinner-small.gif\" alt=\"\" /></div>");
+            });
+        });
+        function report(summary){
+            var doc   = opener.document;
+            var field = doc.getElementById('[% index | html %]');
+
+            field.value = summary;
+            self.close();
+        }
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' popup_window=1 %]

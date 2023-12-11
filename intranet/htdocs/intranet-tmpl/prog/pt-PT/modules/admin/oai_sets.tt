@@ -1,0 +1,195 @@
+[% USE raw %]
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>
+ [% IF ( op_new ) %] Adicionar novo conjunto OAI &rsaquo; [% END %] Configuração de conjuntos OAI &rsaquo; Administração &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="admin_oai_sets" class="admin">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'prefs-admin-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/admin-home.pl">Administração</a>
+ [% END %]
+
+ [% IF ( op_new || op_mod ) %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/oai_sets.pl">Configuração dos conjuntos OAI</a>
+ [% END %]
+ [% END %]
+
+ [% IF ( op_new ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Adicionar um novo conjunto OAI</span>
+ [% END %]
+
+ [% ELSIF ( op_mod ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Editar conjunto OAI '[% spec | html %]'</span>
+ [% END %]
+
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Configuração dos conjuntos OAI</span>
+ [% END %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ [% IF ( op_new || op_mod ) %]
+ <form method="post" action="/cgi-bin/koha/admin/oai_sets.pl" class="validated">
+ [% IF ( op_new ) %]
+ <h1>Adicionar um novo conjunto OAI</h1>
+ <input type="hidden" name="op" value="savenew" />
+ [% ELSIF ( op_mod ) %]
+ <h1>Editar conjunto OAI '[% spec | html %]'</h1>
+ <input type="hidden" name="op" value="savemod" />
+ <input type="hidden" name="id" value="[% id | html %]" />
+ [% END %]
+ <fieldset id="oaidetails" class="rows">
+ <ol>
+ <li>
+ <label for="spec" class="required">setSpec: </label>
+ [% IF ( spec == "" ) %]
+ <input type="text" id="spec" class="focus" name="spec" value="[% spec | html %]" required="required" class="required" />
+ [% ELSE %]
+ <input type="text" id="spec" name="spec" value="[% spec | html %]" required="required" class="required" />
+ [% END %]
+ <span class="required">Obrigatório</span>
+ </li>
+ <li>
+ <label for="name" class="required">setName: </label>
+ <input type="text" id="name" name="name" value="[% name | html %]" required="required" class="required" />
+ <span class="required">Obrigatório</span>
+ </li>
+ [% FOREACH desc IN descriptions %]
+ <li>
+ <label>setDescriptions: </label>
+ <textarea style="vertical-align:middle" rows="2" cols="30" name="description">[% desc.description | html %]</textarea>
+ <a class="remove_description" href="#"><i class="fa fa-fw fa-trash"></i> Remover</a>
+ </li>
+ [% END %]
+ <li id="adddescription"><span class="label">&nbsp;</span><a href="#" class="add_description"><i class="fa fa-fw fa-plus"></i> Adicionar descrição</a></li>
+
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input class="btn btn-primary" type="submit" value="Guardar" /> <a class="cancel" href="/cgi-bin/koha/admin/oai_sets.pl">Anular</a>
+ </fieldset>
+ </form>
+ [% ELSE %]
+
+ <div id="toolbar" class="btn-toolbar">
+ <a class="btn btn-default" id="newoaiset" href="/cgi-bin/koha/admin/oai_sets.pl?op=new"><i class="fa fa-plus"></i> Novo conjunto</a>
+ </div>
+
+ <h1>Conjuntos OAI</h1>
+ [% IF sets_loop %]
+ <div class="page-section">
+ <table>
+ <thead>
+ <tr>
+ <th>setSpec</th>
+ <th>setName</th>
+ <th>setDescriptions</th>
+ <th>&nbsp;</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH set IN sets_loop %]
+ <tr>
+ <td>[% set.spec | html %]</td>
+ <td>[% set.name | html %]</td>
+ <td>
+ [% IF set.descriptions %]
+ <ul>
+ [% FOREACH desc IN set.descriptions %]
+ <li>[% desc.description | html %]</li>
+ [% END %]
+ </ul>
+ [% ELSE %]
+ <em>Nenhuma descrição</em>
+ [% END %]
+ </td>
+ <td>
+ <div class="btn-group dropup">
+ <a class="btn btn-default btn-xs dropdown-toggle" id="oaisetsactions[% set.id | html %]" role="button" data-toggle="dropdown" href="#">
+ Ações <b class="caret"></b></a>
+ <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="oaisetsactions[% set.id | html %]">
+ <li><a href="/cgi-bin/koha/admin/oai_sets.pl?op=mod&amp;id=[% set.id | uri %]"><i class="fa fa-fw fa-pencil"></i> Alterar</a></li>
+ <li><a class="delete_oai_set" href="/cgi-bin/koha/admin/oai_sets.pl?op=del&amp;id=[% set.id | html %]"><i class="fa fa-fw fa-trash"></i> Apagar</a></li>
+ <li><a href="/cgi-bin/koha/admin/oai_set_mappings.pl?id=[% set.id | uri %]"><i class="fa fa-fw fa-info"></i> Definir mapeamentos</a></li>
+ </ul>
+ </div>
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div> <!-- /.page-section -->
+ [% ELSE %]
+ <div class="dialog message"><p>Não existe nenhum conjunto definido.</p></div>
+ [% END %]
+ [% END %]
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'admin-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/admin-menu.js") | $raw %]
+ <script>
+        function newDescField() {
+            $("#adddescription").before(
+                '<li><label>' + _("setDescriptions: ") + '</label>' +
+                '<textarea style="vertical-align:middle" rows="2" cols="30" name="description"></textarea>' +
+                '<a class="remove_description" href="#"><i class="fa fa-fw fa-trash"></i>' + _(" Remover") + '</a>' +
+                '</li>'
+            );
+        }
+
+        function delDescField(minusButton) {
+            var li = minusButton.parent('li');
+            $(li).remove();
+        }
+
+        function confirmDelete() {
+          return confirm(_("Tem a certeza que pretende eliminar este conjunto OAI?"));
+        }
+
+        $(document).ready(function() {
+            $(".delete_oai_set").on("click",function(){
+                return confirmDelete();
+            });
+
+            $("body").on("click", ".remove_description", function(e){
+                e.preventDefault();
+                delDescField($(this));
+            });
+
+            $(".add_description").on("click", function(e){
+                e.preventDefault();
+                newDescField();
+            });
+
+        });
+    </script>
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

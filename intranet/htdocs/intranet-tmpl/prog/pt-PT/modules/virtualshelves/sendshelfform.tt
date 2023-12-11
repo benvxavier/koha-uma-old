@@ -1,0 +1,40 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Enviar a sua lista &rsaquo; Listas &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="lists_sendshelfform" class="lists" style="padding: 1em;">
+[% INCLUDE 'blocking_errors.inc' %]
+<div class="container">[% IF ( email ) %]
+
+ [% IF ( SENT ) %]
+ <h3>Mensagem enviada</h3>
+ <p>A lista foi enviada para: [% email | html %]</p>
+ <p><a class="close focus" href="#">Fechar a janela</a></p>
+ [% END %]
+ [% IF ( error ) %]
+ <p>Problema ao enviar lista...</p>
+ [% END %]
+ 
+[% ELSE %]
+
+<form action="/cgi-bin/koha/virtualshelves/sendshelf.pl" method="post">
+
+<fieldset class="rows"> 
+ <legend><h1>Enviar lista</h1></legend>
+<ol> <li>
+ <label for="email">Email:</label>
+ <input type="text" id="email" name="email" size="43" class="focus" />
+ </li>
+ <li>
+ <label for="comment">Comentário:</label>
+ <textarea id="comment" name="comment" rows="4" cols="40"></textarea>
+ </li>
+ <li>
+ <input type="hidden" name="shelfid" value="[% shelfid | html %]" />
+ </li></ol></fieldset>
+ <fieldset class="action"> <input class="btn btn-primary" type="submit" value="Enviar" /> <a class="cancel close" href="#">Anular</a> </fieldset>
+</form>
+
+[% END %]</div>
+</body>
+</html>

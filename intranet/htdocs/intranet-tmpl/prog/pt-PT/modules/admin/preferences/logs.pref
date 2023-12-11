@@ -1,0 +1,122 @@
+---
+Logs -:
+  Depuração:
+  - - Ao registar ações, armazenar uma pilha de rastreamento que vá no máximo
+    - class: integer
+      pref: ActionLogsTraceDepth
+    - níveis.
+  - - choices:
+        '0': Não efetuar
+        '1': Efetuar
+      pref: DumpTemplateVarsIntranet
+    - a escrever todas as variáveis do Template Toolkit num comentário na fonte HTML
+      do interface dos técnicos.
+  - - choices:
+        '0': Não efetuar
+        '1': Efetuar
+      pref: DumpTemplateVarsOpac
+    - a escrever todas as variáveis do Template Toolkit num comentário na fonte HTML
+      do OPAC.
+  - - choices:
+        '0': Não despejar
+        '1': Despejar
+      pref: DumpSearchQueryTemplate
+    - a query da pesquisa para uma variável no código HTML no OPAC e no interface
+      dos técnicos.
+  Registo:
+  - - choices:
+        '0': Não registar
+        '1': Registar
+      pref: ClaimsLog
+    - as reclamações de aquisição ou o envio do aviso de reclamação de periódicos.
+  - - choices:
+        '0': Não registar
+        '1': Registar
+      pref: BorrowersLog
+    - alterações nos registos de leitor.
+  - - choices:
+        '0': Não registar
+        '1': Registar
+      pref: CataloguingLog
+    - qualquer alteração aos registos bibliográficos e de exemplares.
+  - - choices:
+        '0': Não registar
+        '1': Registar
+      pref: AuthoritiesLog
+    - alterações aos registos de autoridade.
+  - - choices:
+        '0': Não registar
+        '1': Registar
+      pref: FinesLog
+    - quando as multas são cobradas, pagas, ou perdoadas.
+  - - choices:
+        '0': Não registar
+        '1': Registar
+      pref: HoldsLog
+    - qualquer ação sobre reservas (criar, cancelar, suspender, resumir, etc).
+  - - choices:
+        '0': Não registar
+        '1': Registar
+      pref: IllLog
+    - quando os pedidos de empréstimos inter-bibliotecas são modificados.
+  - - choices:
+        '0': Não registar
+        '1': Registar
+      pref: AcquisitionLog
+    - as ações de aquisição.
+  - - choices:
+        '0': Não registar
+        '1': Registar
+      pref: IssueLog
+    - quando os exemplares são emprestados.
+  - - choices:
+        '0': Não registar
+        '1': Registar
+      pref: ReturnLog
+    - quando os exemplares são devolvidos.
+  - - choices:
+        '0': Não registar
+        '1': Registar
+      pref: RenewalLog
+    - quando os exemplares forem renovados.
+  - - choices:
+        '0': Não registar
+        '1': Registar
+      pref: SubscriptionLog
+    - quando os periódicos são acrescentados, apagados ou alterados.
+  - - choices:
+        '0': Não guardar
+        '1': Guardar
+      pref: CronjobLog
+    - informação sobre as tarefas agendadas.
+  - - choices:
+        '0': Não registar
+        '1': Registar
+      pref: ReportsLog
+    - quando os relatórios são adicionados, eliminados ou alterados.
+  - - choices:
+        '0': Não registar
+        '1': Registar
+      pref: AuthFailureLog
+    - ' as falhas de autenticação.'
+  - - choices:
+        '0': Não registar
+        '1': Registar
+      pref: AuthSuccessLog
+    - ' as autenticações bem sucedidas.'
+  - - choices:
+        '0': Não registar
+        '1': Registar
+      pref: NoticesLog
+    - alterações aos modelos das notificações.
+  - - choices:
+        '0': Não registar
+        '1': Registar
+      pref: NewsLog
+    - as alterações as entradas das notícias e de outros conteúdos geridos na ferramenta
+      de notícias.
+  - - choices:
+        '0': Não registar
+        '1': Registar
+      pref: RecallsLog
+    - qualquer ação sobre reclamações (criar, cancelar, suspender, resumir, etc).

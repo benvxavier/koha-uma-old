@@ -1,0 +1,226 @@
+---
+Interface dos técnicos -:
+  Aparência:
+  - - 'Mostrar resultados de autoridades no interface dos técnicos usando o stylesheet
+      XSLT em: '
+    - class: file
+      pref: AuthorityXSLTResultsDisplay
+    - <br />Opções:<ul><li>Insira o caminho para um ficheiro XSLT</li><li>Insira um
+      endereço URL para uma folha de estilo específica externa.</li></ul>{langcode}
+      será substituído pelo idioma da interface
+  - - 'Mostrar a selecção de idioma no '
+    - choices:
+        both: no topo e no rodapé
+        footer: apenas no rodapé
+        top: topo
+      pref: StaffLangSelectorMode
+  - - Usar o
+    - choices: staff-templates
+      pref: template
+    - tema no interface dos técnicos.
+  - - O interface dos técnicos encontra-se em
+    - class: url
+      pref: staffClientBaseURL
+    - Deve incluir um URL completo, começando por http:// ou https://. Não deve incluir
+      a barra final no URL. (Deve ser preenchido para o correcto funcionamento do
+      CAS, svc e do load_testing.)
+  - - Usar o stylesheet CSS
+    - class: url
+      pref: intranetstylesheet
+    - para sobrepor configurações específicas do stylesheet por omissão (deixe em
+      branco para desactivar a preferência). Insira o nome do ficheiro, o caminho
+      completo ou um URL começado por <code>http://</code> (se o ficheiro estiver
+      num servidor remoto). Por favor note que se apenas inserir o nome do ficheiro,
+      o ficheiro deve estar na subdirectoria css de cada tema activo e em cada idioma
+      da directoria de tema dos Koha. Um caminho completo é esperado a começar do
+      documento inicial HTTP.
+  - - 'Usar o seguinte Javascript para a impressão de talões. Veja a descrição detalhe
+      na <a href=''https://wiki.koha-community.org/wiki/Setting_up_slip_printer_to_print_silently''>Wiki
+      do Koha</a> e eventualmente a documentação do <a href=''https://github.com/edabg/jsprintsetup/wiki''>plugin
+      jsPrintSetup do Firefox</a>:'
+    - class: code
+      pref: IntranetSlipPrinterJS
+      syntax: javascript
+      type: textarea
+  - - 'Incluir o seguinte CSS em todas as páginas do interface dos técnicos:'
+    - class: code
+      pref: IntranetUserCSS
+      syntax: css
+      type: textarea
+  - - Incluir o stylesheet CSS adicional
+    - class: file
+      pref: intranetcolorstylesheet
+    - para sobrepor configurações específicas do stylesheet por omissão (deixe em
+      branco para desactivar a preferência). Insira o nome do ficheiro, o caminho
+      completo ou um URL começado por <code>http://</code> (se o ficheiro estiver
+      num servidor remoto). Por favor note que se apenas inserir o nome do ficheiro,
+      o ficheiro deve estar na subdirectoria css de cada tema activo e em cada idioma
+      da directoria de tema dos Koha. Um caminho completo é esperado a começar do
+      documento inicial HTTP.
+  - - Usar os ficheiros include da
+    - class: file
+      pref: intranet_includes
+    - directoria na directoria template, em vez de <code>includes/</code>. (Deixar
+      em branco para desactivar)
+  - - 'Mostrar o seguinte HTML na sua própria coluna, na página principal do interface
+      dos técnicos:'
+    - class: code
+      pref: IntranetmainUserblock
+      syntax: text/html
+      type: textarea
+  - - 'Mostrar o seguinte HTML à esquerda do menu Mais no topo de cada página do interface
+      dos técnicos (deve ser uma lista de ligações ou vazio):'
+    - class: code
+      pref: IntranetNav
+      syntax: html
+      type: textarea
+  - - 'Incluir o seguinte JavaScript em todas as páginas do interface dos técnicos:'
+    - class: code
+      pref: IntranetUserJS
+      syntax: javascript
+      type: textarea
+  - - Usar a imagem em
+    - class: url
+      pref: IntranetFavicon
+    - como favicon do interface do técnicos. (Deve ser um URL completo, começando
+      por <code>http://</code>.)
+  - - 'Mostrar as listas no interface dos técnicos usando o stylesheet XSLT em: '
+    - class: file
+      pref: XSLTListsDisplay
+    - <br />Opções:<ul><li>Insira "<a href="#" class="set_syspref" data-syspref="XSLTListsDisplay"
+      data-value="default">default</a>" para usar o por omissão</li><li>Coloque o
+      caminho para um ficheiro xslt</li><li>Coloque um URL para uma stylesheet externa
+      específica</li></ul>Se tiver folhas de estilo distintas para idiomas distintos
+      o atributo {langcode} será substituído pelo idioma actual da interface.
+  - - 'Mostrar resultados no interface dos técnicos usando o stylesheet XSLT em: '
+    - class: file
+      pref: XSLTResultsDisplay
+    - '<br />Opções:<ul><li>Insira "<a href="#" class="set_syspref" data-syspref="XSLTResultsDisplay"
+      data-value="default">default</a>" para usar o por omissão</li><li>Coloque o
+      caminho para um ficheiro xslt</li><li>Coloque um URL para uma stylesheet externa
+      específica</li><li>NOTA: A preferência de sistema <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=PassItemMarcToXSLT">PassItemMarcToXSLT</a>
+      deve estar ativa se as suas folhas de estilo usam dados dos exemplares</li></ul>Se
+      tiver folhas de estilo distintas para idiomas distintos o atributo {langcode}
+      será substituído pelo idioma actual da interface.'
+  - - 'Mostrar os detalhes no interface dos técnicos usando o stylesheet XSLT em: '
+    - class: file
+      pref: XSLTDetailsDisplay
+    - <br />Opções:<ul><li>Insira "<a href="#" class="set_syspref" data-syspref="XSLTDetailsDisplay"
+      data-value="default">default</a>" para usar o por omissão</li><li>Coloque o
+      caminho para um ficheiro xslt</li><li>Coloque um URL para uma stylesheet externa
+      específica</li></ul>Se tiver folhas de estilo distintas para idiomas distintos
+      o atributo {langcode} será substituído pelo idioma actual da interface.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: DisplayIconsXSLT
+    - o formato, audiência e ícones de tipo de material e descrições nas páginas de
+      resultados e detalhes em XSLT MARC21 no interface dos técnicos.
+  - - 'Mostrar o URI do campo 856u como imagem em: '
+    - choices:
+        Both: Página de resultados e detalhes
+        Details: Apenas página de detalhes
+        OFF: Nem nos resultados nem nos detalhes
+        Results: Página de resultados
+      pref: Display856uAsImage
+    - '. Nota: A opção XSLT correspondente tem de estar ligada.'
+  - - Incluir a stylesheet em
+    - class: url
+      pref: SlipCSS
+    - nos recibos de Empréstimo e de Reserva. (Deve ser um URL completo, começado
+      por <code>http://</code>.)
+  - - 'Mostrar o seguinte HTML na sua própria div no final da página principal do
+      módulo de circulação:'
+    - class: code
+      pref: IntranetCirculationHomeHTML
+      syntax: text/html
+      type: textarea
+  - - 'Mostrar o seguinte HTML na sua própria div no final da página principal do
+      módulo de relatórios:'
+    - class: code
+      pref: IntranetReportsHomeHTML
+      syntax: text/html
+      type: textarea
+  - - Mostrar o seguinte HTML na página de autenticação no interface dos técnicos
+    - class: code
+      pref: StaffLoginInstructions
+      syntax: text/html
+      type: textarea
+  - - choices:
+        '0': Não realçar
+        '1': Realçar
+      pref: StaffHighlightedWords
+      type: boolean
+    - as palavras pesquisas nas páginas de resultados de pesquisa no interface dos
+      técnicos.
+  Autenticação:
+  - - choices:
+        '0': Permitir
+        '1': Não permitir
+      pref: staffShibOnly
+    - os técnicos para fazer a autenticação por meios diferentes do shibboleth.
+  - - choices:
+        disabled: Não ativar
+        enabled: Ativar
+        enforced: Forçar
+      pref: TwoFactorAuthentication
+    - a autenticação por dois fatores (2FA) para os técnicos.
+  Opções:
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: viewMARC
+    - que os técnicos vejam os registos na forma MARC simples no interface dos técnicos.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: viewLabeledMARC
+    - que os técnicos vejam os registos na forma MARC etiquetada no interface dos
+      técnicos.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: viewISBD
+    - que os técnicos vejam os registos na forma ISBD no interface dos técnicos.
+  - - choices:
+        '0': Mostrar
+        '1': Não mostrar
+      pref: HidePatronName
+    - os nomes dos leitores que têm exemplares emprestados ou reservados na página
+      de detalhes ou na página de reserva.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: showLastPatron
+    - um link no interface dos técnicos para o último leitor pesquisado.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: intranetbookbag
+    - a opção carrinho no interface dos técnicos.
+  - - choices:
+        '0': Não activar
+        '1': Activar
+      pref: StaffDetailItemSelection
+    - a selecção de exemplares na página de detalhes de um registo.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: UseWYSIWYGinSystemPreferences
+    - o editor WYSIWYG quando editar determinadas preferências de sistema HTML.
+  - - choices:
+        '0': Não activar
+        '1': Activar
+      pref: AudioAlerts
+    - os alertas de áudio para os eventos definidos na secção de <a href="/cgi-bin/koha/admin/audio_alerts.pl">alertas
+      de áudio</a> na administração.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: IntranetAddMastheadLibraryPulldown
+    - um menu de seleção de biblioteca no cabeçalho de pesquisa do interface dos técnicos.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: IntranetCatalogSearchPulldown
+    - uma caixa de selecção de campo de pesquisa para as caixas 'Pesquisar no catálogo'.

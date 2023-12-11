@@ -1,0 +1,87 @@
+[% USE raw %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Aviso de duplicado &rsaquo; Cesto [% basketno | html %] &rsaquo; Aquisições &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="acq_neworderempty_duplicate" class="acq">
+
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'acquisitions-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/acqui/acqui-home.pl">Aquisições</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/acqui/basket.pl?basketno=[% basketno | uri %]">Cesto [% basketno | html %]</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Aviso de duplicação</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+<div class="dialog alert">
+<h1>Aviso de duplicação</h1>
+<p>Seleccionou um registo de uma fonte externa que corresponde a um registo existente no catálogo: <a href="[% PROCESS biblio_a_href biblionumber => biblionumber %]" target="_blank" title="Abrir numa nova janela"><i class="fa fa-window-restore"></i> [% duplicatetitle | html %]</a></p>
+</div>
+
+<div class="row">
+<div class="col-sm-4">
+<div style="border: 1px solid #DDD; padding:1em;">
+<form action="/cgi-bin/koha/acqui/neworderempty.pl">
+<h4>Usar registo existente</h4>
+<p>Não crie um duplicado do registo. Adicione a encomenda a partir do registo existente no catálogo.</p>
+<input type="hidden" name="booksellerid" value="[% booksellerid | html %]" />
+<input type="hidden" name="basketno" value="[% basketno | html %]" />
+<input type="hidden" name="biblionumber" value="[% biblionumber | html %]" />
+<input class="btn btn-primary" type="submit" value="Usar existente" />
+</form>
+</div>
+</div>
+
+<div class="col-sm-4">
+<div style="border: 1px solid #DDD; padding:1em;">
+<form action="/cgi-bin/koha/acqui/basket.pl">
+<h4>Anular e voltar à encomenda</h4>
+<p>Voltar ao cesto sem criar uma nova encomenda.</p>
+<input type="hidden" name="basketno" value="[% basketno | html %]" />
+<input class="btn btn-primary" type="submit" value="Anular" />
+</form>
+</div>
+</div>
+
+<div class="col-sm-4">
+<div style="border: 1px solid #DDD; padding:1em;">
+<form action="/cgi-bin/koha/acqui/neworderempty.pl">
+<h4>Criar novo registo</h4>
+<p>Criar um novo registo importando um registo (duplicado) externo.</p>
+<input type="hidden" name="booksellerid" value="[% booksellerid | html %]" />
+<input type="hidden" name="basketno" value="[% basketno | html %]" />
+<input type="hidden" name="breedingid" value="[% breedingid | html %]" />
+<input type="hidden" name="use_external_source" value="1" />
+<input class="btn btn-primary" type="submit" value="Criar" />
+</form>
+</div>
+</div>
+
+</div>
+
+</main>
+</div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+<div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'acquisitions-menu.inc' %]
+ </aside>
+</div> <!-- /.col-sm-2.col-sm-pull-10 -->
+</div> <!-- /.row -->
+
+[% INCLUDE 'intranet-bottom.inc' %]

@@ -1,0 +1,504 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE AuthorisedValues %]
+[% USE KohaDates %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Inventário &rsaquo; Catalogação &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="tools_inventory" class="tools">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/cataloguing/cataloging-home.pl">Catalogar</a>
+ [% END %]
+
+ [% IF (loop) %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/tools/inventory.pl">Inventário</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Resultados</span>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Inventário</span>
+ [% END %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ <h1>Inventário</h1>
+ [% IF (moddatecount) %]<div class="dialog message">[% moddatecount | html %] exemplar(es) modificado(s) : a data de ultimo acesso é [% date | $KohaDates with_hours => 1 %]</div>
+ <div class="dialog alert">Número de códigos de barras a ler: [% LinesRead | html %]</div>[% END %]
+ [% IF (errorfile) %]<div class="dialog alert">[% errorfile | html %] não pode ser aberto</div>[% END %]
+ [% IF (err_length && err_length==1) %]<div class="dialog alert">Existe um código de barras que é demasiado longo.</div>[% END %]
+ [% IF (err_length && err_length>1) %]<div class="dialog alert">Existiam [% err_length | html %] códigos de barras demasiado longos.</div>[% END %]
+ [% IF (err_data && err_data==1) %]<div class="dialog alert">Existe um código de barras que contém pelo menos um caractere não imprimível.</div>[% END %]
+ [% IF (err_data && err_data>1) %]<div class="dialog alert">Existem [% err_data | html %] códigos de barras que contêm pelo menos um caractere não imprimível.</div>[% END %]
+ [% FOREACH error IN errorloop %]
+ <div class="dialog alert">
+ [% error.barcode | html %]
+ [% IF (error.ERR_BARCODE) %]: <span>Código de barras não encontrado.</span>[% END %]
+ [% IF (error.ERR_WTHDRAWN) %]: <span>Exemplar retirado.</span>[% END %]
+ [% IF (error.ERR_ONLOAN_RET) %]: <span>Exemplar emprestado. Foi devolvido antes de ser marcado como visto.</span>[% END %]
+ [% IF (error.ERR_ONLOAN_NOT_RET) %]: <span>Exemplar estava emprestado e não pode ser ser devolvido.</span>[% END %]
+ </div>
+ [% END %]
+ [% UNLESS op %]
+
+ <form method="post" id="inventory_form" action="/cgi-bin/koha/tools/inventory.pl" enctype="multipart/form-data">
+ <fieldset class="rows">
+ <legend>Usar um ficheiro de código de barras</legend>
+ <ol>
+ <li><label for="uploadbarcodes">Ficheiro de códigos de barras: </label> <input type="file" id="uploadbarcodes" name="uploadbarcodes" />
+ <input id="resetuploadbarcodes" name="resetuploadbarcodes" type="button" value="Repor" /></li>
+ </ol>
+ </fieldset>
+ <fieldset class="rows">
+ <legend>Ou introduzir códigos um a um</legend>
+ <ol>
+ <li>
+ <label for="barcodelist">Lista de códigos de barra (um código de barras por linha): </label>
+ <textarea rows="10" cols="30" id="barcodelist" name="barcodelist"></textarea>
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="rows">
+ <legend>Parâmetros</legend>
+ <ol>
+ <li><label for="setdate">Definir a data de inventário :</label> <input type="text" id="setdate" name="setdate" value="[% today | html %]" class="flatpickr" /></li>
+ <li><label for="compareinv2barcd">Compare lista de códigos de barras para os resultados: </label><input type="checkbox" name="compareinv2barcd" id="compareinv2barcd" disabled /></li>
+ <li><label for="dont_checkin">Não devolver os exemplares lidos durante o inventário: </label><input type="checkbox" name="dont_checkin" id="dont_checkin" disabled /></li>
+ <li><label for="out_of_order">Verificar na lista de códigos de barras por exemplares retirados de circulação: </label><input type="checkbox" name="out_of_order" id="out_of_order" disabled /></li>
+ </ol>
+ </fieldset>
+ <fieldset class="rows">
+ <legend>Filtros de localização de exemplares</legend>
+ <ol><li>
+ <label for="branch">Localização: </label>
+ <input type="radio" name="branch" value="homebranch"> Biblioteca de inscrição</input>
+ <input type="radio" name="branch" value="holdingbranch"> Biblioteca</input>
+ </li><li>
+ <label for="branchloop">Biblioteca: </label><select id="branchloop" name="branchcode" style="width:12em;">
+ <option value="">Todas as bibliotecas</option>
+ [% PROCESS options_for_libraries libraries => Branches.all( selected => branchcode, unfiltered => 1, ) %]
+ </select>
+ </li>
+ [% IF (authorised_values) %]
+ <li>
+ <label for="locationloop">Localização na prateleira (items.location) é: </label>
+ <select id="locationloop" name="location">
+ <option value="">Filtrar localização</option>
+ [% FOREACH value IN authorised_values %]
+ [% IF (value.selected) %]
+ <option value="[% value.authorised_value | html %]" selected="selected">[% value.lib | html %]</option>
+ [% ELSE %]
+ <option value="[% value.authorised_value | html %]">[% value.lib | html %]</option>
+ [% END %]
+ [% END %]
+ </select> </li>
+ [% END %]
+ [% SET ccodes = AuthorisedValues.GetAuthValueDropbox('CCODE') %]
+ [% IF ( ccodes.count > 0 ) %]
+ <li>
+ <label for="ccode">Código de coleção: </label>
+ <select id="ccodeloop" name="ccode">
+ <option value="">Filtrar coleção</option>
+ [% FOREACH cc IN ccodes %]
+ [% IF (ccode == cc.authorised_value) %]
+ <option value="[% cc.authorised_value | html %]" selected="selected">[% cc.lib | html %]</option>
+ [% ELSE %]
+ <option value="[% cc.authorised_value | html %]">[% cc.lib | html %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+ [% END %]
+ <li>
+ <label for="minlocation">Cota do exemplar entre: </label>
+ <input type="text" name="minlocation" id="minlocation" value="[% minlocation | html %]" /> (items.itemcallnumber) </li>
+ <li><label for="maxlocation">...e: </label>
+ <input type="text" name="maxlocation" id="maxlocation" value="[% maxlocation | html %]" />
+ <li>
+ <label for="class_source">Fonte de classificação da cota</label>
+ <select name="class_source">
+ [% FOREACH class_source IN class_sources %]
+ [% IF class_source.cn_source == pref_class %]
+ <option value="[% class_source.cn_source | html %]" selected="selected">[% class_source.description | html %] (padrão)</option>
+ [% ELSE %]
+ <option value="[% class_source.cn_source | html %]">[% class_source.description | html %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+ </ol>
+ </fieldset>
+
+ <fieldset class="rows" id="optionalfilters">
+ <legend>Filtros adicionais para a lista de inventário e para comparar códigos de barras</legend>
+ <br/>
+ <div id="statuses" style="display: block;">
+ [% FOREACH status IN statuses %]
+ [% IF (status.values) %]
+ <fieldset style="float: left; padding: 5px; margin: 5px;text-align:right">
+ <legend>[% status.fieldname | html %]</legend>
+ <ul id="statuses-[% fieldname | html %]" style="display: inline;">
+ [% FOREACH value IN status.values %]
+ [% IF (value.lib) %]
+ <li style="list-style: none;">
+ <label for="[% value.id | html %]">
+ [% IF ( status.fieldname == 'items.notforloan' && value.authorised_value == 0 && value.lib == '__IGNORE__' ) %] Para empréstimo [% ELSE %] [% value.lib | html %] [% END %] </label>
+ <input type="checkbox" name="status-[% status.fieldname | html %]-[% value.authorised_value | html %]" id="[% value.authorised_value | html %]" />
+ </li>
+ [% END %]
+ [% END %]
+ </ul>
+ </fieldset>
+ [% END %]
+ [% END %]
+ </div>
+ <ol>
+ <li>
+ <br/>
+ <label for="datelastseen">Última data de inventário:</label>
+ <input type="text" id="datelastseen" name="datelastseen" value="[% datelastseen | html %]" class="flatpickr" />
+ (Saltar os registos marcados como vistos nesta ou após esta data.) </li>
+ <li>
+ <label for="ignoreissued">Ignorar exemplares emprestados: </label>
+ [% IF (ignoreissued) %]
+ <input type="checkbox" id="ignoreissued" name="ignoreissued" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" id="ignoreissued" name="ignoreissued" />
+ [% END %]
+ </li>
+ <li>
+ <label for="ignore_waiting_holds">Ignorar exemplares com reservas em levantamento: </label>
+ <input type="checkbox" id="ignore_waiting_holds" name="ignore_waiting_holds" />
+ </li>
+ <li>
+ <label>Tipos de documento: </label>
+ <div class="branchselector">
+ <p><a href="#" id="checkallitemtypes"> <i class="fa fa-check"></i> Seleccionar todos</a> | <a href="#" id="checknoneitemtypes"> <i class="fa fa-remove"></i> Limpar todos</a></p>
+ <div class="branchgridrow">
+ [% FOREACH itemtype IN itemtypes %]
+ <div class="branchgriditem">
+ <input id="itemtype-[% itemtype.itemtype | html %]" class="branch_select" type="checkbox" name="itemtype-[% itemtype.itemtype | html %]" value="[% itemtype.itemtype | html %]" />
+ <label for="itemtype-[% itemtype.itemtype | html %]">[% itemtype.description | html %]</label>
+ </div>
+ [% IF loop.count() % 4 == 0 && !loop.last() %]
+ </div>
+ <div class="branchgridrow">
+ [% END %]
+ [% END %]
+ </div>
+ </div>
+ </li>
+
+ </ol>
+
+ </fieldset>
+
+ <fieldset class="rows">
+ <legend>Opções adicionais</legend>
+ <ol>
+
+ <li>
+ <label for="CSVexport">Exportar para CSV: </label>
+ <input type="checkbox" name="CSVexport" id="CSVexport" />
+ </li>
+ </ol>
+ <input type="hidden" name="op" value="do_it" />
+ </fieldset>
+
+ <fieldset class="action"><input class="btn btn-primary" type="submit" value="Submeter" /></fieldset>
+ </form>
+
+ [% END %]
+ [% IF (op) %]
+ <form method="post" action="/cgi-bin/koha/tools/inventory.pl">
+ <input type="hidden" name="minlocation" value="[% minlocation | html %]" />
+ <input type="hidden" name="maxlocation" value="[% maxlocation | html %]" />
+ <input type="hidden" name="location" value="[% location | html %]" />
+ <input type="hidden" name="branchcode" value="[% branchcode | html %]" />
+ <input type="hidden" name="datelastseen" value="[% datelastseen | html %]" />
+ <input type="hidden" name="ccode" value="[% ccode | html %]" />
+
+ [% UNLESS uploadedbarcodesflag %]
+ <div><a href="#" class="checkall"><i class="fa fa-check"></i> Seleccionar todos</a> <a href="#" class="clearall"><i class="fa fa-remove"></i> Limpar todos</a></div>
+ [% END %]
+
+ <div class="page-section">
+ <table id="inventoryt">
+ <thead>
+ <tr>
+ [% UNLESS uploadedbarcodesflag %]<th>Visto</th>[% END %]
+ <th>Código de barras</th>
+ <th>Cota</th>
+ <th>Biblioteca</th>
+ <th>Código de coleção</th>
+ <th class="anti-the">Título</th>
+ <th>Não é para empréstimo</th>
+ <th>Perdido</th>
+ <th>Danificado</th>
+ <th>Retirado</th>
+ <th>Último acesso</th>
+ <th>Problemas</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH result IN loop %]
+ <tr>
+ [% UNLESS uploadedbarcodesflag %]
+ <td>
+ <input type="checkbox" name="SEEN-[% result.itemnumber | html %]" value="1" />
+ </td>
+ [% END %]
+ <td>
+ [% result.barcode | html %]
+ </td>
+ <td data-order="[% result.cn_sort | html %]">
+ [% result.itemcallnumber | html %]
+ </td>
+ <td>
+ [% Branches.GetName( result.homebranch ) | html %]
+ <span class="shelvingloc">[% result.location | html %]</span>
+ </td>
+ <td>
+ <span class="ccode">[% result.ccode | html %]</span>
+ </td>
+ <td>
+ <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% result.biblionumber | uri %]" class="openWin">[% result.title | html %]</a>
+ [% IF ( result.author ) %] por <span class="author">[% result.author | html %]</span>
+ [% END %]
+ </td>
+ <td>
+ [% result.notforloan | html %]
+ </td>
+ <td>
+ [% result.itemlost | html %]
+ </td>
+ <td>
+ [% result.damaged | html %]
+ </td>
+ <td>
+ [% result.withdrawn | html %]
+ </td>
+ <td data-order="[% result.datelastseen | html %]">
+ [% result.datelastseen | $KohaDates with_hours => 1 %]
+ </td>
+ <td>
+ [% FOREACH problem IN result.problems %]
+ [% IF problem.key == 'wrongplace' %]
+ <span>Encontrado no lugar errado</span><br/>
+ [% ELSIF problem.key == 'changestatus' %]
+ <span>Estado não emprestável desconhecido</span><br/>
+ [% ELSIF problem.key == 'not_scanned' %]
+ <span>Em falta (não lido)</span><br/>
+ [% ELSIF problem.key == 'checkedout' %]
+ <span>Ainda emprestado</span><br/>
+ [% ELSIF problem.key == 'no_barcode' %]
+ <span>Sem código de barras</span><br/>
+ [% ELSIF problem.key == 'out_of_order' %]
+ <span>Exemplar retirado de circulação</span><br/>
+ [% END %]
+ [% END %]
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div>
+
+ <div class="spacer"></div>
+ [% UNLESS uploadedbarcodesflag %]
+ <div style="padding : .3em 0"><a href="#" class="checkall"><i class="fa fa-check"></i> Seleccionar todos</a> <a href="#" class="clearall"><i class="fa fa-remove"></i> Limpar todos</a></div>
+ <input class="btn btn-primary" id="markseenandquit" type="submit" value="Marcar como visto e sair" />
+ <input id="markseenandcontinuebutton" type="submit" value="Marcar como visto e continuar >>" />
+ <input class="submit" id="continuewithoutmarkingbutton" type="submit" value="Continuar sem marcar >>" />
+ [% END %]
+ </form>
+
+
+ [% END %]
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'cat-menu.inc' %]
+ </aside>
+ </div> <!-- .col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'datatables.inc' %]
+ [% INCLUDE 'calendar.inc' %]
+ <script>
+        function checkForm() {
+            if ( $('#uploadbarcodes').val() && $('#barcodelist').val() ) {
+                alert(_("Carregou um ficheiro com códigos de barras e digitou códigos de barras ao mesmo tempo. Por favor, escolha uma das duas opções."));
+                return false;
+            }
+            if ( $('#uploadbarcodes').val() || $('#barcodelist').val() ) {
+                if ( !(
+                    $('#branchloop').val()   ||
+                    $('#locationloop').val() ||
+                    $('#minlocation').val()  ||
+                    $('#maxlocation').val()  ||
+                    $('#statuses input:checked').length
+                ) ) {
+                    return confirm(
+                        _("Não selecionou qualquer filtro de catálogo e está prestes a comprar um ficheiro de código de barras com todo o catálogo.") + "\n\n" +
+                        _("Para catálogos de grande dimensão pode resultar num comportamento inesperado") + "\n\n" +
+                        _("Tem certeza que quer fazer isto?")
+                    );
+                }
+            }
+
+            return true;
+        }
+
+        function barcodesProvided() {
+            if( $("#uploadbarcodes").val() || $("#barcodelist").val() ) {
+                $("#setdate").prop('disabled',false);
+                $("#compareinv2barcd").prop('disabled',false);
+                $("#compareinv2barcd").attr('checked',true); // default
+                $("#dont_checkin").prop('disabled',false);
+                $("#out_of_order").prop('disabled',false);
+                if( $("#compareinv2barcd").attr('checked') ) {
+                    $("fieldset#optionalfilters").show();
+                    $("#ignoreissued").attr('checked',true); // default
+                } else {
+                    $("fieldset#optionalfilters").hide();
+                    $("#ignoreissued").attr('checked',false);
+                }
+            } else {
+                $("#setdate").prop('disabled',true);
+                $("#compareinv2barcd").prop('disabled',true);
+                $("#compareinv2barcd").attr('checked',false);
+                $("#dont_checkin").prop('disabled',true);
+                $("#dont_checkin").attr('checked',false);
+                $("#out_of_order").prop('disabled',true);
+                $("#out_of_order").attr('checked',false);
+                $("fieldset#optionalfilters").show();
+            }
+        }
+
+        $(document).ready(function(){
+            inventorydt = $('#inventoryt').dataTable($.extend(true, {}, dataTablesDefaults, {
+                'sPaginationType': 'full_numbers',
+                [% IF compareinv2barcd %]
+                    // sort on callnumber
+                    "aaSorting": [[ 1, "asc" ]],
+                [% ELSE %]
+                    // first column contains checkboxes
+                    "aoColumnDefs": [
+                        { "sType": "anti-the", "aTargets" : [ "anti-the" ] },
+                        { "bSortable": false, "bSearchable": false, "aTargets": [ 0 ] }
+                    ],
+                    // 3rd column is callnumber
+                    "aaSorting": [[ 2, "asc" ]],
+                [% END %]
+                'fnDrawCallback': function() {
+                    //bind the click handler script to the newly created elements held in the table
+                    $('.openWin').bind('click',function(e){
+                        e.preventDefault();
+                        openWindow(this.href,'marcview',800,600);
+                    });
+                }
+            } ));
+
+
+            $("#continuewithoutmarkingbutton").click(function(){
+                inventorydt.fnPageChange( 'next' );
+                return false;
+            });
+
+            $("#markseenandcontinuebutton").click(function(){
+                var param = '';
+                $("input:checked").each(function() {
+                    param += "|" + $(this).attr('name');
+                });
+                $.post('/cgi-bin/koha/tools/ajax-inventory.pl', { seen: param });
+                inventorydt.fnPageChange( 'next' );
+                return false;
+            });
+
+            $("#markseenandquit").click(function(){
+                var param = '';
+                $("input:checked").each(function() {
+                    param += "|" + $(this).attr('name');
+                });
+                $.ajax({
+                  type: 'POST',
+                  url: '/cgi-bin/koha/tools/ajax-inventory.pl',
+                  data: { seen: param},
+                  async: false
+                });
+                document.location.href = '/cgi-bin/koha/tools/inventory.pl';
+                return false;
+            });
+
+            $(".checkall").click(function(e){
+                e.preventDefault();
+                $("#inventoryt input:checkbox").each(function(){
+                    $(this).prop("checked", true);
+                });
+            });
+            $(".clearall").click(function(e){
+                e.preventDefault();
+                $("#inventoryt input:checkbox").each(function(){
+                    $(this).prop("checked", false);
+                });
+            });
+            $("#inventory_form").on("submit",function(){
+                return checkForm();
+            });
+
+            $("#resetuploadbarcodes").click(function() {
+                $("#uploadbarcodes").val("");
+                barcodesProvided();
+            });
+
+            // #uploadbarcodes and #compareinv2barcd determine the behavior of
+            // the controls within the barcode fieldset and the optional filters
+            $("#uploadbarcodes").change(barcodesProvided);
+            $("#barcodelist").on("change keyup paste", barcodesProvided);
+
+            $("#compareinv2barcd").click(function() {
+                if( $("#compareinv2barcd").attr('checked') ) {
+                    $("fieldset#optionalfilters").show();
+                    $("#ignoreissued").attr('checked',true); // default
+                } else {
+                    $("#ignoreissued").attr('checked',false);
+                    $("fieldset#optionalfilters").hide();
+                }
+            });
+
+            $("#checkallitemtypes").on("click",function(e){
+                e.preventDefault();
+                $(".branch_select").prop("checked",1);
+            });
+            $("#checknoneitemtypes").on("click",function(e){
+                e.preventDefault();
+                $(".branch_select").prop("checked",0);
+            });
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

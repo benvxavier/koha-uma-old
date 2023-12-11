@@ -1,0 +1,163 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE KohaDates %]
+[% SET footerjs = 1 %]
+ [% INCLUDE "doc-head-open.inc" %]
+ <title>Circulação offline &rsaquo; Empréstimo &rsaquo; Koha</title>
+ [% INCLUDE "doc-head-close.inc" %]
+</head>
+
+<body id="ocirc_list" class="circ ocirc">
+ [% WRAPPER 'header.inc' %]
+ [% INCLUDE 'circ-search.inc' %]
+[% END %]
+
+ [% WRAPPER 'sub-header.inc' %]
+ <nav aria-label="Caminho de navegação" class="breadcrumb" id="breadcrumbs">
+ <ol>
+ <li>
+ <a href="/cgi-bin/koha/mainpage.pl">Início</a>
+ </li>
+ <li>
+ <a href="/cgi-bin/koha/circ/circulation-home.pl">Empréstimo</a>
+ </li>
+ <li>
+ <a href="#" aria-current="page">
+ Circulação offline </a>
+ </li>
+ </ol>
+ </nav>
+ [% END %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+
+ <h1>Circulação offline</h1>
+
+ [% IF ( pending_operations ) %]
+
+ <form>
+ <p>
+ <a id="CheckAll" href="#"><i class="fa fa-check"></i> Marcar todos</a>
+ <a id="CheckNone" href="#"><i class="fa fa-remove"></i> Desmarcar todos</a>
+ </p>
+
+ <div class="page-section">
+ <table id="operations">
+ <thead>
+ <tr>
+ <th>&nbsp;</th>
+ <th>Data</th>
+ <th>Ação</th>
+ <th>Código de barras</th>
+ <th>Número de cartão</th>
+ <th>Montante</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH operation IN pending_operations %]
+ <tr class="oc-[% operation.action | html %]">
+ <td><input type="checkbox" name="operationid" id="operationid[% operation.operationid | html %]" value="[% operation.operationid | html %]" /></td>
+ <td>
+ <label for="operationid[% operation.operationid | html %]">[% operation.timestamp | $KohaDates with_hours=1 %]</label>
+ </td>
+ <td>
+ [% SWITCH ( operation.action ) -%]
+ [%   CASE "issue" -%]
+ <span>Emprestar</span>
+ [%   CASE "return" -%]
+ <span>Devolver</span>
+ [%   CASE "payment" -%]
+ <span>Pagamento</span>
+ [%   CASE # default case -%]
+ <span>[% operation.action | html %]</span>
+ [% END -%]
+ </td>
+ <td>
+ [% IF ( operation.biblionumber ) %]
+ <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% operation.biblionumber | uri %]" title="[% operation.bibliotitle | html %]">[% operation.barcode | html %]</a>
+ [% ELSE %]
+ <span class="error">[% operation.barcode | html %]</span>
+ [% END %]
+ </td>
+ <td>
+ [% IF ( operation.actionissue || operation.actionpayment) %]
+ [% IF ( operation.borrowernumber ) %]
+ <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% operation.borrowernumber | uri %]" title="[% operation.borrower | html %]">[% operation.cardnumber | html %]</a>
+ [% ELSE %]
+ <span class="error">[% operation.cardnumber | html %]</span>
+ [% END %]
+ [% END %]
+ </td>
+ <td>[% operation.amount | html %]</td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div> <!-- /.page-section -->
+
+ <p id="actions">Para as operações seleccionadas: <input id="process" type="button" value="Processar" />
+ <input id="delete" type="button" value="Apagar" /></p>
+
+ </form>
+
+ [% ELSE %]
+
+ <p>Não existem operações offline pendentes.</p>
+
+ [% END %]
+
+ </div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ <script>
+        $(document).ready(function() {
+
+            $('#CheckNone').click(function(e) {
+                e.preventDefault();
+                $("#operations input:checkbox").prop("checked", false );
+            });
+            $('#CheckAll').click(function(e) {
+                e.preventDefault();
+                $("#operations input:checkbox").prop("checked", true );
+            });
+            $('#process,#delete').click(function() {
+                var action = $(this).attr("id");
+                $(":checkbox[name=operationid]:checked").each(function() {
+                    var cb = $(this);
+                    $.ajax({
+                        url: "process.pl",
+                        data: { 'action': action, 'operationid': this.value },
+                        async: false,
+                        dataType: "text",
+                        success: function(data) {
+                            if( data == "Added." ){
+                                cb.replaceWith(_("Adicionado."));
+                            } else if ( data == "Deleted."){
+                                cb.replaceWith(_("Apagado."));
+                            } else if ( data == "Success."){
+                                cb.replaceWith(_("Sucesso."));
+                            } else if ( data == "Item not issued."){
+                                cb.replaceWith(_("Exemplar não emprestado."));
+                            } else if ( data == "Item not found."){
+                                cb.replaceWith(_("Exemplar não encontrado."));
+                            } else if ( data == "Barcode not found."){
+                                cb.replaceWith(_("Exemplar não encontrado."));
+                            } else if ( data == "Borrower not found."){
+                                cb.replaceWith(_("Leitor não encontrando."));
+                            } else {
+                                cb.replaceWith(data);
+                            }
+                        }});
+                });
+                if( $('#operations tbody :checkbox').size() == 0 ) {
+                    $('#actions').hide();
+                }
+            });
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

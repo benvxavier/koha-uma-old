@@ -1,0 +1,185 @@
+[% USE raw %]
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Mapeamentos do conjunto OAI &rsaquo; Conjuntos OAI &rsaquo; Administração &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="admin_oai_set_mappings" class="admin">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'prefs-admin-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/admin-home.pl">Administração</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/oai_sets.pl">Configuração dos conjuntos OAI</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Mapeamentos do conjunto OAI</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ [% IF ( mappings_saved ) %]
+ <div class="dialog message">
+ <h4>Mapeamentos guardados</h4>
+ <p><a href="/cgi-bin/koha/admin/oai_sets.pl">Voltar à gestão dos conjuntos</a></p>
+ </div>
+ [% END %]
+ <h1>Mapeamentos para o conjunto '[% setName | html %]' ([% setSpec | html %])</h1>
+ [% UNLESS ( mappings ) %]
+ <div class="dialog alert"><p><strong>Atenção:</strong> Não existem mapeamentos definidos para este conjunto</p></div>
+ [% END %]
+
+ <div class="page-section">
+ <form action="/cgi-bin/koha/admin/oai_set_mappings.pl" method="post" id="mappingform">
+ <table id="mappings">
+ <thead>
+ <tr>
+ <th>Regra</th>
+ <th>Campo</th>
+ <th>Subcampo</th>
+ <th>Operador</th>
+ <th>Valor</th>
+ <th>&nbsp;</th>
+ <th>&nbsp;</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% IF ( mappings ) %]
+ [% FOREACH mapping IN mappings %]
+ <tr>
+ <td>
+ <select name="rule_operator">
+ [% IF (mapping.rule_operator == 'and') %]
+ <option value="and" selected="selected">e</option>
+ [% ELSE %]
+ <option value="and">e</option>
+ [% END %]
+ [% IF (mapping.rule_operator == 'or') %]
+ <option value="or" selected="selected">ou</option>
+ [% ELSE %]
+ <option value="or">ou</option>
+ [% END %]
+ </select>
+ </td>
+ <td><input type="text" name="marcfield" size="3" value="[% mapping.marcfield | html %]" /></td>
+ <td><input type="text" name="marcsubfield" size="1" value="[% mapping.marcsubfield | html %]" /></td>
+ <td><select name=operator>
+ [% IF mapping.operator == 'equal' %]
+ <option value="equal" selected="selected">é igual a</option>
+ <option value="notequal">não é igual a</option>
+ [% ELSE %]
+ <option value="equal">é igual a</option>
+ <option value="notequal" selected="selected">não é igual a</option>
+ [% END %]
+ </select></td>
+ <td><input type="text" name="marcvalue" value="[% mapping.marcvalue | html %]" /></td>
+ <td>
+ [% IF ( loop.last ) %]
+ <button class="btn btn-default btn-xs" id="new_rule_button" title="Adicionar outra condição" type="button"><i class="fa fa-plus"></i> Adicionar</button>
+ [% END %]
+ </td>
+ <td><button class="btn btn-default btn-xs clear-field" type="button"><i class="fa fa-trash"></i> Apagar</button></td>
+ </tr>
+ [% END %]
+ [% ELSE %]
+ <tr>
+ <td>
+ <select name="rule_operator">
+ [% IF (mapping.rule_operator == 'and') %]
+ <option value="and" selected="selected">e</option>
+ [% ELSE %]
+ <option value="and">e</option>
+ [% END %]
+ [% IF (mapping.rule_operator == 'or') %]
+ <option value="or" selected="selected">ou</option>
+ [% ELSE %]
+ <option value="or">ou</option>
+ [% END %]
+ </select>
+ </td>
+ <td><input type="text" name="marcfield" size="3" /></td>
+ <td><input type="text" name="marcsubfield" size="1" /></td>
+ <td><select name=operator>
+ <option value="equal">é igual a</option>
+ <option value="notequal">não é igual a</option>
+ </select></td>
+ <td><input type="text" name="marcvalue" /></td>
+ <td>
+ <button class="btn btn-default btn-xs" id="new_rule_button" title="Adicionar outra condição" type="button"><i class="fa fa-plus"></i> Adicionar</button>
+ </td>
+ <td><button class="btn btn-default btn-xs clear-field" type="button"><i class="fa fa-trash"></i> Apagar</button></td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ <input type="hidden" name="id" value="[% id | html %]" />
+ <input type="hidden" name="op" value="save" />
+ <fieldset class="action">
+ <input class="btn btn-primary" type="submit" value="Guardar" /> <a class="cancel" href="/cgi-bin/koha/admin/oai_sets.pl">Anular</a>
+ </fieldset>
+ </form>
+ </div> <!-- /.page-section -->
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'admin-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/admin-menu.js") | $raw %]
+ <script>
+        $(document).ready(function() {
+            $("#mappingform").submit(function(){
+              hideDialogBox();
+            });
+            $("body").on("click","#new_rule_button", function(e){
+                e.preventDefault();
+                newCondition();
+            });
+            $("body").on("click",".clear-field",function(e){
+                e.preventDefault();
+                clearRow(e.target);
+            });
+            $("#mappings tbody tr:first-child td:first-child select").hide();
+        });
+
+        function newCondition() {
+            var tr = $('#new_rule_button').parents('tr');
+            var clone = $(tr).clone();
+            $("#new_rule_button").parent('td').find("#new_rule_button").remove();
+            $(clone).find("select").show();
+            $(tr).parent('tbody').append(clone);
+        }
+        function clearRow(link){
+            var tr = $(link).parent().parent();
+            var found = tr.find('#new_rule_button');
+            if( found.length ){
+              tr.find('input[type="text"]').attr("value","");
+            } else {
+              tr.remove();
+            }
+            $("#mappings tbody tr:first-child td:first-child select").hide();
+        }
+        function hideDialogBox() {
+            $('div.dialog').remove();
+        }
+    </script>
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

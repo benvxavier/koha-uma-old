@@ -1,0 +1,78 @@
+[% USE raw %]
+[% USE HtmlTags %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Associar exemplar a &rsaquo; Catalogação &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="catalog_linkitem" class="catalog">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/cataloguing/cataloging-home.pl">Catalogar</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Associar exemplar a [% bibliotitle | html %]</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="container-fluid">
+ <div class="row">
+ <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3">
+
+ <h1>Associar exemplar a [% bibliotitle | html %]</h1>
+
+[% IF ( error ) %]
+ <div class="dialog alert">
+ [% IF ( errornomodbiblio ) %]ERRO: Não foi possível alterar o registo bibliográfico.[% END %] [% IF ( errornohostitemnumber ) %]ERRO: Não foi possível obter o número do exemplar a partir deste código de barras.[% END %] </div>
+ <form action="/cgi-bin/koha/catalogue/MARCdetail.pl" method="post">
+ <input type="submit" class="btn btn-primary" value="OK" />
+ <input type="hidden" name="biblionumber" value="[% biblionumber | html %]" />
+ </form>
+[% ELSE %]
+ [% IF ( success ) %]
+ <div class="dialog message">O exemplar foi anexado com sucesso a <em>[% bibliotitle | html %]</em>.</div>
+ <form action="/cgi-bin/koha/catalogue/MARCdetail.pl" method="post">
+ <input type="submit" class="btn btn-primary" value="OK" />
+ <input type="hidden" name="biblionumber" value="[% biblionumber | html %]" />
+ </form>
+ [% ELSE %]
+ [% IF ( missingparameter ) %]
+ <form method="post" action="/cgi-bin/koha/cataloguing/linkitem.pl">
+ [% IF ( missingbiblionumber ) %]
+ <fieldset id="biblionumber_fieldset">
+ <label for="biblionumber_fieldset">Seleccionar o número de registo para anexar o exemplar</label>
+ <div class="hint">Inserir número de registo:</div>
+ <input type="text" name="biblionumber" id="biblionumber" class="focus" size="14" /> 
+ </fieldset>
+ [% ELSE %]
+ <input type="hidden" name="biblionumber" id="biblionumber" value="[% biblionumber | html %]" />
+ [% END %]
+
+ [% IF ( missingbarcode ) %]
+ <fieldset id="barcode_fieldset">
+ <label for="barcode_fieldset">
+ [% IF (bibliotitle ) %]
+ <span>Selecionar o registo de exemplar a ligar '[% bibliotitle | html %]'</span>
+ [% ELSE %]
+ <span>Seleccionar o registo de exemplar a ligar</span>
+ [% END %]
+ </label>
+ <div class="hint">Digitar o código de barras:</div>
+ <input type="text" name="barcode" id="barcode" class="barcode focus" size="14" /> 
+ </fieldset>
+ [% ELSE %]
+ <input type="hidden" name="barcode" id="barcode" value="[% barcode | html %]" />
+ [% END %]
+
+ <input class="btn btn-primary" type="submit" value="Seleccionar" />
+
+ </form>
+ [% END %]
+ [% END %]
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

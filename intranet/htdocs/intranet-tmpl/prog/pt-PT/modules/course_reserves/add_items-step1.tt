@@ -1,0 +1,88 @@
+[% USE raw %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Adicionar reserva &rsaquo; [% course.course_name | html %] &rsaquo; Reservas de curso &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="courses_add_items_step1" class="course">
+
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/course_reserves/course-reserves.pl">Reservas de curso</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/course_reserves/course-details.pl?course_id=[% course.course_id | uri %]">[% course.course_name | html %]</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Adicionar reservas</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-md-8 col-md-offset-2">
+ <h1>Adicionar reservas para <em>[% course.course_name | html %]</em></h1>
+
+ [% IF ERROR_ITEM_NOT_FOUND %]
+ [% IF UNKNOWN_BARCODE %]
+ <div class="dialog alert">Não existe nenhum exemplar com cód. barras [% UNKNOWN_BARCODE | html %]</div>
+ [% ELSIF UNKNOWN_BIBLIONUMBER %]
+ <div class="dialog alert">Nenhum registo bibliográfico encontrado com o número de registo [% UNKNOWN_BIBLIONUMBER | html %]</div>
+ [% ELSE %]
+ <div class="dialog alert">Nenhum exemplar ou registo bibliográfico encontrado</div>
+ [% END %]
+ [% END %]
+
+ <form method="post" action="/cgi-bin/koha/course_reserves/add_items.pl">
+ <input type="hidden" name="course_id" value="[% course.course_id | html %]" />
+ <input type="hidden" name="action" value="lookup" />
+
+ <fieldset class="rows">
+ <legend>Adicionar exemplares: ler código de barras</legend>
+ <ol>
+ <li>
+ <label class="required" for="barcode">Código de barras:</label>
+ <input id="barcode" name="barcode" class="focus" type="text" />
+ </li>
+ </ol>
+ </fieldset>
+
+ <fieldset class="rows">
+ <legend>Ou usar o número de registo de um registo bibliográfico</legend>
+ <ol>
+ <li>
+ <label class="required" for="biblionumber">Número do registo:</label>
+ <input id="biblionumber" name="biblionumber" type="text" />
+ </li>
+ </ol>
+ </fieldset>
+
+ <fieldset class="action">
+ <input class="btn btn-primary" type="submit" value="Submeter" />
+
+ <a href="/cgi-bin/koha/course_reserves/course-details.pl?course_id=[% course.course_id | uri %]" class="cancel">Anular</a>
+ </fieldset>
+ </form>
+ </div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ <script>
+        $(document).ready(function(){
+            $("input[type='submit']").click(function(e){
+                if ( $("#biblionumber").val().length > 0 && $("#barcode").val().length > 0 ) {
+                    e.preventDefault();
+                    alert(_("Por favor introduza um código de barras ou um número de registo."));
+                }
+            });
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

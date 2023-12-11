@@ -1,0 +1,386 @@
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Construtor do campo 141 UNIMARC</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="cat_unimarc_field_141" class="cat" style="padding:1em;">
+ <h1>Construtor do campo 141 UNIMARC</h1>
+ <div class="page-section">
+ <form name="f_pop" action="">
+ <table>
+ <tr>
+ <td><label for="f1">Código de material de encadernação 1:</label></td>
+ <td>
+ <select name="f1" id="f1">
+
+ [% IF ( f1 ) %]
+ <option value=" " selected="selected">valor não requerido</option>
+ [% ELSE %]
+ <option value=" ">valor não requerido</option>
+ [% END %]
+ [% IF ( f1a ) %]
+ <option value="a" selected="selected">pergaminho, velino</option>
+ [% ELSE %]
+ <option value="a">pergaminho, velino</option>
+ [% END %]
+ [% IF ( f1b ) %]
+ <option value="b" selected="selected">couro</option>
+ [% ELSE %]
+ <option value="b">couro</option>
+ [% END %]
+ [% IF ( f1c ) %]
+ <option value="c" selected="selected">madeira</option>
+ [% ELSE %]
+ <option value="c">madeira</option>
+ [% END %]
+ [% IF ( f1d ) %]
+ <option value="d" selected="selected">tecido</option>
+ [% ELSE %]
+ <option value="d">tecido</option>
+ [% END %]
+ [% IF ( f1e ) %]
+ <option value="e" selected="selected">sintéticos</option>
+ [% ELSE %]
+ <option value="e">sintéticos</option>
+ [% END %]
+ [% IF ( f1f ) %]
+ <option value="f" selected="selected">cartão, cartolina</option>
+ [% ELSE %]
+ <option value="f">cartão, cartolina</option>
+ [% END %]
+ [% IF ( f1g ) %]
+ <option value="g" selected="selected">papel</option>
+ [% ELSE %]
+ <option value="g">papel</option>
+ [% END %]
+ [% IF ( f1h ) %]
+ <option value="h" selected="selected">não encadernada</option>
+ [% ELSE %]
+ <option value="h">não encadernada</option>
+ [% END %]
+ [% IF ( f1z ) %]
+ <option value="z" selected="selected">outro</option>
+ [% ELSE %]
+ <option value="z">outro</option>
+ [% END %]
+ </select>
+ </td></tr><tr>
+ <td><label for="f2">Código de material de encadernação 2:</label></td>
+ <td>
+ <select name="f2" id="f2">
+
+ [% IF ( f2 ) %]
+ <option value=" " selected="selected">valor não requerido</option>
+ [% ELSE %]
+ <option value=" ">valor não requerido</option>
+ [% END %]
+ [% IF ( f2a ) %]
+ <option value="a" selected="selected">pergaminho, velino</option>
+ [% ELSE %]
+ <option value="a">pergaminho, velino</option>
+ [% END %]
+ [% IF ( f2b ) %]
+ <option value="b" selected="selected">couro</option>
+ [% ELSE %]
+ <option value="b">couro</option>
+ [% END %]
+ [% IF ( f2c ) %]
+ <option value="c" selected="selected">madeira</option>
+ [% ELSE %]
+ <option value="c">madeira</option>
+ [% END %]
+ [% IF ( f2d ) %]
+ <option value="d" selected="selected">tecido</option>
+ [% ELSE %]
+ <option value="d">tecido</option>
+ [% END %]
+ [% IF ( f2e ) %]
+ <option value="e" selected="selected">sintéticos</option>
+ [% ELSE %]
+ <option value="e">sintéticos</option>
+ [% END %]
+ [% IF ( f2f ) %]
+ <option value="f" selected="selected">cartão, cartolina</option>
+ [% ELSE %]
+ <option value="f">cartão, cartolina</option>
+ [% END %]
+ [% IF ( f2g ) %]
+ <option value="g" selected="selected">papel</option>
+ [% ELSE %]
+ <option value="g">papel</option>
+ [% END %]
+ [% IF ( f2h ) %]
+ <option value="h" selected="selected">não encadernada</option>
+ [% ELSE %]
+ <option value="h">não encadernada</option>
+ [% END %]
+ [% IF ( f2z ) %]
+ <option value="z" selected="selected">outro</option>
+ [% ELSE %]
+ <option value="z">outro</option>
+ [% END %]
+ </select>
+ </td></tr>
+ <tr>
+ <td><label for="f3">Código de material de encadernação 3:</label></td>
+ <td>
+ <select name="f3" id="f3">
+ [% IF ( f3 ) %]
+ <option value=" " selected="selected">valor não requerido</option>
+ [% ELSE %]
+ <option value=" ">valor não requerido</option>
+ [% END %]
+ [% IF ( f3a ) %]
+ <option value="a" selected="selected">pergaminho, velino</option>
+ [% ELSE %]
+ <option value="a">pergaminho, velino</option>
+ [% END %]
+ [% IF ( f3b ) %]
+ <option value="b" selected="selected">couro</option>
+ [% ELSE %]
+ <option value="b">couro</option>
+ [% END %]
+ [% IF ( f3c ) %]
+ <option value="c" selected="selected">madeira</option>
+ [% ELSE %]
+ <option value="c">madeira</option>
+ [% END %]
+ [% IF ( f3d ) %]
+ <option value="d" selected="selected">tecido</option>
+ [% ELSE %]
+ <option value="d">tecido</option>
+ [% END %]
+ [% IF ( f3e ) %]
+ <option value="e" selected="selected">sintéticos</option>
+ [% ELSE %]
+ <option value="e">sintéticos</option>
+ [% END %]
+ [% IF ( f3f ) %]
+ <option value="f" selected="selected">cartão, cartolina</option>
+ [% ELSE %]
+ <option value="f">cartão, cartolina</option>
+ [% END %]
+ [% IF ( f3g ) %]
+ <option value="g" selected="selected">papel</option>
+ [% ELSE %]
+ <option value="g">papel</option>
+ [% END %]
+ [% IF ( f3h ) %]
+ <option value="h" selected="selected">não encadernada</option>
+ [% ELSE %]
+ <option value="h">não encadernada</option>
+ [% END %]
+ [% IF ( f3z ) %]
+ <option value="z" selected="selected">outro</option>
+ [% ELSE %]
+ <option value="z">outro</option>
+ [% END %]
+ </select>
+ </td></tr>
+ <tr>
+ <td><label for="f4">Tipos de ligação:</label></td>
+ <td>
+ <select name="f4" id="f4">
+
+ [% IF ( f4a ) %]
+ <option value="a" selected="selected">original, primário</option>
+ [% ELSE %]
+ <option value="a">original, primário</option>
+ [% END %]
+ [% IF ( f4b ) %]
+ <option value="b" selected="selected">reencadernada</option>
+ [% ELSE %]
+ <option value="b">reencadernada</option>
+ [% END %]
+ [% IF ( f4c ) %]
+ <option value="c" selected="selected">moderno</option>
+ [% ELSE %]
+ <option value="c">moderno</option>
+ [% END %]
+ [% IF ( f4d ) %]
+ <option value="d" selected="selected">restaurada, fac-símile</option>
+ [% ELSE %]
+ <option value="d">restaurada, fac-símile</option>
+ [% END %]
+ [% IF ( f4e ) %]
+ <option value="e" selected="selected">restaurada, imitação</option>
+ [% ELSE %]
+ <option value="e">restaurada, imitação</option>
+ [% END %]
+ [% IF ( f4f ) %]
+ <option value="f" selected="selected">obra encadernada com outra</option>
+ [% ELSE %]
+ <option value="f">obra encadernada com outra</option>
+ [% END %]
+ [% IF ( f4h ) %]
+ <option value="h" selected="selected">não encadernada</option>
+ [% ELSE %]
+ <option value="h">não encadernada</option>
+ [% END %]
+ [% IF ( f4z ) %]
+ <option value="z" selected="selected">outro</option>
+ [% ELSE %]
+ <option value="z">outro</option>
+ [% END %]
+ </select>
+ </td></tr><tr>
+ <td><label for="f5">Encadernada com:</label></td>
+ <td>
+ <select name="f5" id="f5">
+
+ [% IF ( f50 ) %]
+ <option value="0" selected="selected">item único</option>
+ [% ELSE %]
+ <option value="0">item único</option>
+ [% END %]
+ [% IF ( f51 ) %]
+ <option value="1" selected="selected">item encadernado com um ou outro(s)</option>
+ [% ELSE %]
+ <option value="1">item encadernado com um ou outro(s)</option>
+ [% END %]
+ </select>
+ </td></tr><tr>
+ <td><label for="f6">Estado de preservação - Encadernação:</label></td>
+ <td>
+ <select name="f6" id="f6">
+
+ [% IF ( f6a ) %]
+ <option value="a" selected="selected">excelente</option>
+ [% ELSE %]
+ <option value="a">excelente</option>
+ [% END %]
+ [% IF ( f6b ) %]
+ <option value="b" selected="selected">boa</option>
+ [% ELSE %]
+ <option value="b">boa</option>
+ [% END %]
+ [% IF ( f6c ) %]
+ <option value="c" selected="selected">gasto</option>
+ [% ELSE %]
+ <option value="c">gasto</option>
+ [% END %]
+ [% IF ( f6d ) %]
+ <option value="d" selected="selected">danificado</option>
+ [% ELSE %]
+ <option value="d">danificado</option>
+ [% END %]
+ [% IF ( f6e ) %]
+ <option value="e" selected="selected">lombada danificada</option>
+ [% ELSE %]
+ <option value="e">lombada danificada</option>
+ [% END %]
+ [% IF ( f6f ) %]
+ <option value="f" selected="selected">em falta</option>
+ [% ELSE %]
+ <option value="f">em falta</option>
+ [% END %]
+ [% IF ( f6z ) %]
+ <option value="z" selected="selected">outro</option>
+ [% ELSE %]
+ <option value="z">outro</option>
+ [% END %]
+ </select>
+ </td></tr><tr>
+ <td><label for="f7">Estado de preservação - Corpo do exemplar 1 :</label></td>
+ <td>
+ <select name="f7" id="f7">
+
+ [% IF ( f7a ) %]
+ <option value="a" selected="selected">excelente</option>
+ [% ELSE %]
+ <option value="a">excelente</option>
+ [% END %]
+ [% IF ( f7b ) %]
+ <option value="b" selected="selected">boa</option>
+ [% ELSE %]
+ <option value="b">boa</option>
+ [% END %]
+ [% IF ( f7c ) %]
+ <option value="c" selected="selected">gasto</option>
+ [% ELSE %]
+ <option value="c">gasto</option>
+ [% END %]
+ [% IF ( f7d ) %]
+ <option value="d" selected="selected">danificado</option>
+ [% ELSE %]
+ <option value="d">danificado</option>
+ [% END %]
+ [% IF ( f7e ) %]
+ <option value="e" selected="selected">incompleto</option>
+ [% ELSE %]
+ <option value="e">incompleto</option>
+ [% END %]
+ [% IF ( f7g ) %]
+ <option value="g" selected="selected">restaurado</option>
+ [% ELSE %]
+ <option value="g">restaurado</option>
+ [% END %]
+ [% IF ( f7z ) %]
+ <option value="z" selected="selected">outro</option>
+ [% ELSE %]
+ <option value="z">outro</option>
+ [% END %]
+ </select>
+ </td></tr><tr>
+ <td><label for="f8">Código de estado de preservação - Corpo do exemplar 2 :</label></td>
+ <td>
+ <select name="f8" id="f8">
+
+ [% IF ( f8a ) %]
+ <option value="a" selected="selected">excelente</option>
+ [% ELSE %]
+ <option value="a">excelente</option>
+ [% END %]
+ [% IF ( f8b ) %]
+ <option value="b" selected="selected">boa</option>
+ [% ELSE %]
+ <option value="b">boa</option>
+ [% END %]
+ [% IF ( f8c ) %]
+ <option value="c" selected="selected">gasto</option>
+ [% ELSE %]
+ <option value="c">gasto</option>
+ [% END %]
+ [% IF ( f8d ) %]
+ <option value="d" selected="selected">danificado</option>
+ [% ELSE %]
+ <option value="d">danificado</option>
+ [% END %]
+ [% IF ( f8e ) %]
+ <option value="e" selected="selected">incompleto</option>
+ [% ELSE %]
+ <option value="e">incompleto</option>
+ [% END %]
+ [% IF ( f8g ) %]
+ <option value="g" selected="selected">restaurado</option>
+ [% ELSE %]
+ <option value="g">restaurado</option>
+ [% END %]
+ [% IF ( f8z ) %]
+ <option value="z" selected="selected">outro</option>
+ [% ELSE %]
+ <option value="z">outro</option>
+ [% END %]
+ </select>
+ </td></tr>
+ </table>
+ <fieldset class="action"><input type="button" class="btn btn-primary" value="OK" onclick="report();" /> <a href="#" class="cancel close">Anular</a></fieldset>
+ </form>
+ </div> <!-- /.page-section -->
+
+[% MACRO jsinclude BLOCK %]
+ <script>
+        var dateformat = "[% Koha.Preference('dateformat') | html %]";
+        function report() {
+            var doc = opener.document;
+            var field = doc.getElementById("[% index | html %]");
+
+            field.value = document.f_pop.f1.value+document.f_pop.f2.value+document.f_pop.f3.value+document.f_pop.f4.value+document.f_pop.f5.value+document.f_pop.f6.value+document.f_pop.f7.value+document.f_pop.f8.value;
+            self.close();
+            return false;
+        }
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' popup_window=1 %]

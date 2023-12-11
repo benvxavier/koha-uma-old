@@ -1,0 +1,68 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Criar um novo tipo de documento &rsaquo; Instalador Web &rsaquo; Koha</title>
+[% INCLUDE 'installer-doc-head-close.inc' %]
+</head>
+
+<body id="installer" class="installer">
+ <div class="container-fluid">
+ <div class="row">
+ <div id="onboarding-step4" class="installer-main col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
+ <div id="logo"><a href="#">Koha</a></div>
+ <h1>Instalador Web &rsaquo; Criar um novo tipo de documento</h1>
+
+ [% INCLUDE 'onboarding_messages.inc' %]
+
+ <div id="steps">
+ <ol>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Instalação</li>
+ <li class="current open"><i class="fa fa-square-o" aria-hidden="true"></i> Integração <ol>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Criar a biblioteca</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Criar uma categoria de leitor</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Criar leitor de administração do Koha</li>
+ <li class="current open"><i class="fa fa-square-o" aria-hidden="true"></i> Criar um novo tipo de documento</li>
+ <li class="open"><i class="fa fa-square-o" aria-hidden="true"></i> Criar uma nova regra de circulação</li>
+ </ol>
+ </li>
+ </ol>
+ </div>
+
+ <!--Create a item type screen 1-->
+
+ <p> Os tipos de documento são usados para agrupar exemplares. Exemplos de tipos de documento são os livros, os CDs e os DVDs.</p>
+ <p> Quando tiver a adicionar exemplares ao catálogo estará a criar um exemplar de um tipo de documento específico. </p>
+ <p> Importante: Os tipos de documento são usados nas regras de empréstimo. As regras de empréstimo definem como a sua instituição empresta os seus exemplares: duração do empréstimo, política de renovação, política de reserva, etc. Por exemplo uma regra de empréstimo aplicada ao tipo de documento DVD pode forçar ao pagamento de uma taxa de empréstimo por cada DVD.</p>
+
+ <form id="createitemform" method="post" action="onboarding.pl">
+ <fieldset class="rows">
+ <input type="hidden" name="step" value="4" />
+ <input type="hidden" name="op" value="add_validate_itemtype" />
+ <ol>
+ <li>
+ <label for="itemtype" class="required">Código do tipo de documento: </label>
+ <input type="text" name="itemtype" pattern="[0-9A-Za-z]{1,10}" id="itemtype" size="10" maxlength="10"  class="required" required="required" value="[% itemtype.itemtype | html %]" />
+ <span class="required">Obrigatório</span>
+ </li>
+
+ <li>
+ <label for="description" class="required">Descrição: </label>
+ <input type="text" name="description" id="description" size="42" value="[% itemtype.description | html %]" class="required" required="required">
+ <span class="required">Obrigatório</span>
+ </li>
+ </ol>
+
+ <p> Para adicionar outro tipo de documento e para outras configurações, vá a: <span class="breadcrumbs"> Administração &rsaquo; Tipos de documento </span>
+ </p>
+ <input class="btn btn-primary" type="submit" value="Submeter" />
+ </fieldset>
+ </form>
+ </div> <!-- / #onboarding-step4 -->
+ </div> <!-- / .row -->
+ </div><!-- / .container-fluid -->
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'validator-strings.inc' %]
+ [% INCLUDE 'installer-strings.inc' %]
+ <script src="[% interface | html %]/[% theme | html %]/js/onboarding.js"></script>
+[% END %]
+
+[% INCLUDE 'installer-intranet-bottom.inc' %]

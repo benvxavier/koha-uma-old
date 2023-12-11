@@ -1,0 +1,207 @@
+[% USE Koha %]
+[% USE AdditionalContents %]
+[% SET OpacNav = AdditionalContents.get( location => "OpacNav", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
+[% SET OpacNavBottom = AdditionalContents.get( location => "OpacNavBottom", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>A sua gestão de privacidade &rsaquo; [% IF ( LibraryNameTitle ) %][% LibraryNameTitle | html %][% ELSE %]Koha online[% END %] catálogo</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% BLOCK cssinclude %][% END %]
+</head>
+[% INCLUDE 'bodytag.inc' bodyid='opac-privacy' %]
+[% INCLUDE 'masthead.inc' %]
+
+<div class="main">
+ <nav aria-label="Caminho de navegação" class="breadcrumbs" id="breadcrumbs">
+ <ol class="breadcrumb">
+ <li class="breadcrumb-item">
+ <a href="/cgi-bin/koha/opac-main.pl">Início</a>
+ </li>
+ <li class="breadcrumb-item">
+ <a href="/cgi-bin/koha/opac-user.pl">[% INCLUDE 'patron-title.inc' patron = logged_in_user %]</a>
+ </li>
+ <li class="breadcrumb-item active">
+ <a href="#" aria-current="page">A sua gestão de privacidade</a>
+ </li>
+ </ol>
+ </nav> <!-- /#breadcrumbs -->
+
+ <div class="container-fluid">
+ <div class="row">
+ <div class="col col-lg-2 order-2 order-lg-1">
+ <div id="navigation">
+ [% INCLUDE 'navigation.inc' IsPatronPage=1 %]
+ </div>
+ </div>
+ <div class="col-md-12 col-lg-10 order-1">
+
+ <div id="userprivacy" class="maincontent">
+ <h1>A sua gestão de privacidade</h1>
+
+ [% IF delete_all_requested || delete_checkouts_requested || delete_holds_requested %]
+ [% IF delete_all_requested || delete_checkouts_requested %]
+ [% IF deleted_checkouts %]
+ <div class="alert alert-success">O seu histórico de empréstimos foi eliminado.</div>
+ [% ELSIF error_deleting_checkouts_history %]
+ <div class="alert alert-warning">A eliminação do seu histórico de empréstimos falhou, porque existe um problema com a configuração desta funcionalidade. Por favor ajude a corrigir o sistema informando a sua biblioteca deste erro</div>
+ [% ELSIF no_checkouts_to_delete %]
+ <div class="alert alert-warning">Não existe histórico de empréstimo para eliminar</div>
+ [% END %]
+ [% END %]
+
+ [% IF delete_all_requested || delete_holds_requested %]
+ [% IF deleted_holds %]
+ <div class="alert alert-success">O seu histórico de reservas foi eliminado.</div>
+ [% ELSIF error_deleting_holds_history %]
+ <div class="alert alert-warning">A eliminação do seu histórico falhou. Por favor ajude a corrigir o sistema informando a sua biblioteca deste erro</div>
+ [% ELSIF no_holds_to_delete %]
+ <div class="alert alert-warning">Não existe histórico de reservas para eliminar</div>
+ [% END %]
+ [% END %]
+ [% END %]
+
+ [% IF ( privacy_updated ) %]
+ <div class="alert alert-success">A sua regra de privacidade foi atualizada.</div>
+ [% END %]
+
+ [% IF ( Ask_data ) %]
+ <p>Preocupamo-nos em proteger a sua privacidade. Nesta página pode definir por quanto tempo quer guardar o seu histórico de empréstimos e de reservas.</p>
+ <p>As opções são: <p>
+ <ul id="opac-privacy-options-list">
+ <li class="privacy0">Sempre: manter o meu histórico sem limite. Esta é a opção para os leitores que desejam acompanhar o que estão a ler ou das reservas que efetuaram.</li>
+ <li class="privacy1">Omissão: Manter o meu histórico de acordo com as leis locais. Esta é a opção por omissão : a biblioteca vai manter o seu histórico durante o tempo permitido pelas leis locais.</li>
+ <li class="privacy2">Nunca: Eliminar o meu histórico imediatamente. Isto irá eliminar todos os registos do exemplar que foram emprestados e devolvidos, e todo o histórico de reservas preenchidas ou canceladas.</li>
+ </ul>
+ <p id="note1">Por favor, note que a informação sobre qualquer item emprestado ficará registada na biblioteca independentemente da opção de privacidade que escolher.</p>
+ <p id="note2">Por favor, note também que o pessoal da biblioteca não pode atualizar estes dados por si: é a sua privacidade!</p>
+ <form action="/cgi-bin/koha/opac-privacy.pl" method="post" id="opac-privacy-update-form">
+ <legend class="sr-only">Regra de privacidade</legend>
+ <input type="hidden" name="op" value="update_privacy" />
+ <fieldset>
+ <label for="privacy">Por favor escolha a regra de privacidade:</label>
+ <div class="form-group row">
+ <div class="col-6">
+ <select class="form-control" name="privacy" id="privacy">
+ [% IF ( privacy0 ) %]
+ <option value="0" selected="selected" class="privacy0">Sempre</option>
+ [% ELSE %]
+ <option value="0" class="privacy0">Sempre</option>
+ [% END %]
+ [% IF ( privacy1 ) %]
+ <option value="1" selected="selected" class="privacy1">Omissão</option>
+ [% ELSE %]
+ <option value="1" class="privacy1">Omissão</option>
+ [% END %]
+ [% IF ( privacy2 ) %]
+ <option value="2" selected="selected" class="privacy2">Nunca</option>
+ [% ELSE %]
+ <option value="2" class="privacy2">Nunca</option>
+ [% END %]
+ </select>
+ </div> <!-- /.col-6 -->
+ </div> <!-- /.form-group.row -->
+
+ [% IF has_guarantor_flag && (Koha.Preference('AllowPatronToSetCheckoutsVisibilityForGuarantor') || Koha.Preference('AllowPatronToSetFinesVisibilityForGuarantor') ) %]
+ [% IF Koha.Preference('AllowPatronToSetCheckoutsVisibilityForGuarantor') %]
+ <div class="form-group row">
+ <div class="col-6">
+ <label for="privacy_guarantor_checkouts">Permitir que o seu fiador veja os seus empréstimos ativos?</label>
+ <select class="form-control" name="privacy_guarantor_checkouts">
+ [% IF borrower.privacy_guarantor_checkouts %]
+ <option value="0">Não</option>
+ <option value="1" selected>Sim</option>
+ [% ELSE %]
+ <option value="0" selected>Não</option>
+ <option value="1">Sim</option>
+ [% END %]
+ </select>
+ </div> <!-- /.col-6 -->
+ </div> <!-- /.form-group.row -->
+ [% END # /IF Koha.Preference('AllowPatronToSetCheckoutsVisibilityForGuarantor') %]
+
+ [% IF Koha.Preference('AllowPatronToSetFinesVisibilityForGuarantor') %]
+ <div class="form-group row">
+ <div class="col-6">
+ <label for="privacy_guarantor_fines">Permitir que o seu fiador veja as suas multas correntes?</label>
+ <select class="form-control" name="privacy_guarantor_fines">
+ [% IF borrower.privacy_guarantor_fines %]
+ <option value="0">Não</option>
+ <option value="1" selected>Sim</option>
+ [% ELSE %]
+ <option value="0" selected>Não</option>
+ <option value="1">Sim</option>
+ [% END %]
+ </select>
+ </div> <!-- /.col-6 -->
+ </div> <!-- /.form-group.row -->
+ [% END %]
+
+ <span class="hint">
+ Garantido por [% FOREACH gr IN borrower.guarantor_relationships %] [% SET g = gr.guarantor %] [% g.firstname | html %] [% g.surname | html %] [%- IF ! loop.last %], [% END %] [% END %] </span>
+ [% END # /IF has_guarantor_flag.. %]
+ <fieldset class="action">
+ <button type="Submit" class="btn btn-primary">Guardar</button>
+ </fieldset>
+ </fieldset>
+ </form> <!-- /#opac-privacy-update-form -->
+
+ <hr />
+
+ <h2>Apagar imediatamente</h2>
+
+ <p>Pode eliminar imediatamente o seu histórico de empréstimos e de reservas clicando aqui. <strong>TENHA CUIDADO</strong>. Assim que tiver confirmado a remoção ninguém poderá recuperar a lista!</p>
+
+ <form action="/cgi-bin/koha/opac-privacy.pl" method="post" id="opac-privacy-delete-checkouts">
+ <input type="hidden" name="op" value="delete_record" />
+ <input type="hidden" name="checkouts" value="1" />
+ </form>
+
+ <form action="/cgi-bin/koha/opac-privacy.pl" method="post" id="opac-privacy-delete-holds">
+ <input type="hidden" name="op" value="delete_record" />
+ <input type="hidden" name="holds" value="1" />
+ </form>
+
+ <form action="/cgi-bin/koha/opac-privacy.pl" method="post" id="opac-privacy-delete-all">
+ <input type="hidden" name="op" value="delete_record" />
+ <input type="hidden" name="all" value="1" />
+ </form>
+ <table class="table table-bordered table-condensed table-striped">
+ <tr>
+ <td colspan=7>Eliminar imediatamente o meu histórico de empréstimo. Esta ação não pode ser refeita.</td>
+ <td colspan=1>
+ <fieldset class="action">
+ <input class="btn btn-danger btn-block privacy-confirm-delete" form="opac-privacy-delete-checkouts" type="submit" value="Eliminar histórico de empréstimo" />
+ </fieldset>
+ </td>
+ </tr>
+ <tr>
+ <td colspan=7>Eliminar imediatamente o meu histórico de reservas. Esta ação não pode ser refeita.</td>
+ <td colspan=1>
+ <fieldset class="action">
+ <input class="btn btn-danger btn-block privacy-confirm-delete" form="opac-privacy-delete-holds" type="submit" value="Eliminar histórico de reservas" />
+ </fieldset>
+ </td>
+ </tr>
+ <tr>
+ <td colspan=7>Eliminar imediatamente o meu histórico de empréstimo e de reservas. Esta ação não pode ser refeita.</td>
+ <td colspan=1>
+ <fieldset class="action">
+ <input class="btn btn-danger btn-block privacy-confirm-delete" form="opac-privacy-delete-all" type="submit" value="Eliminar histórico de empréstimo e de reservas" />
+ </fieldset>
+ </td>
+ </tr>
+ </table>
+
+ [% IF Koha.Preference('StoreLastBorrower') %]
+ <p id="store-last-borrower-msg">Por favor note, a última pessoa a devolver um exemplar é rastreado para a gestão de exemplares devolvidos danificados.</p>
+ [% END %]
+ [% END # / IF Ask_data %]
+ </div> <!-- / .userprivacy -->
+ </div> <!-- / .col-lg-10 -->
+ </div> <!-- / .row -->
+ </div> <!-- / .container-fluid -->
+</div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %]
+ [% Asset.js('js/privacy.js') | $raw %]
+[% END %]

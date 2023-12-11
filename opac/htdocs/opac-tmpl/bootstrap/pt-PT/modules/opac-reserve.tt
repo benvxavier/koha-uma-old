@@ -1,0 +1,698 @@
+[% USE Koha %]
+[% USE Branches %]
+[% USE KohaDates %]
+[% USE Price %]
+[% USE ItemTypes %]
+[% USE AuthorisedValues %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Reserva &rsaquo; [% IF ( LibraryNameTitle ) %][% LibraryNameTitle | html %][% ELSE %]Koha online[% END %] catálogo</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% BLOCK cssinclude %][% END %]
+</head>
+
+[% INCLUDE 'bodytag.inc' bodyid='opac-holds' %]
+[% INCLUDE 'masthead.inc' %]
+
+<div class="main">
+ <nav aria-label="Caminho de navegação" class="breadcrumbs" id="breadcrumbs">
+ <ol class="breadcrumb">
+ <li class="breadcrumb-item">
+ <a href="/cgi-bin/koha/opac-main.pl">Início</a>
+ </li>
+ <li class="breadcrumb-item active">
+ <a href="#" aria-current="page">Colocar reserva</a>
+ </li>
+ </ol>
+ </nav> <!-- /#breadcrumbs -->
+
+ <div class="container">
+ <div id="holds" class="maincontent">
+ <h1>Colocar reserva</h1>
+ [% IF ( message ) %]
+ <div id="holdmessages" class="alert">
+ <p>Desculpe, não pode fazer reservas.</p>
+ <ul>
+ [% IF ( GNA ) %]
+ <li id="gna">
+ De acordo com os nosso registos, não possuímos informação de contacto atualizada. Por favor contacte a biblioteca. <a href="/cgi-bin/koha/opac-memberentry.pl">[% IF ( Koha.Preference('OPACPatronDetails') ) %]<span>Atualizar as informações de contacto</span>[% ELSE %]<span>Ir para as informações de contacto</span>[% END %]</a>
+ [% IF ( Koha.Preference('OPACPatronDetails') ) %]<em>(Por favor note: poderá haver um atraso na recuperação da sua conta se submeter online.)</em>[% END %]
+ </li>
+ [% END %]
+
+ [% IF ( lost ) %]
+ <li id="lost">
+ O seu cartão da biblioteca foi dado como perdido ou roubado.<br />
+ <em>Se isto é um erro, por favor apresente o seu cartão no balcão da biblioteca e o erro será corrigido.</em>
+ </li>
+ [% END %]
+
+ [% IF ( debarred ) %]
+ <li id="debarred">
+ A sua conta está suspensa. [% IF debarred_comment %] Comentário: <span id="userdebarred_comment">
+ <strong>
+ [% IF debarred_comment.search('OVERDUES_PROCESS') %] Restrição adicionada pelo processo de atrasos [% debarred_comment.remove('OVERDUES_PROCESS ') | html_line_break %] [% ELSE %] [% debarred_comment | html_line_break %] [% END %] </strong>
+ </span>
+ [% END %] [% IF debarred_date && debarred_date != '9999-12-31' %] Data de término: <span id="userdebarred_date">[% debarred_date | $KohaDates %]</span>
+ [% END %]
+ <br /><em>Normalmente as razões para suspender uma conta são exemplares não devolvidos ou multas por pagar. Se a sua conta estiver limpa, por favor contacte a biblioteca.</em> <a href="/cgi-bin/koha/opac-account.pl">Ir para a minha conta</a>
+ </li>
+ [% END %]
+
+ [% IF ( too_much_oweing ) %]
+ <li id="too_much_oweing">
+ Possui multas por pagar. Montante: [% too_much_oweing | $Price %]. </li>
+ [% END %]
+
+ [% IF ( too_many_reserves ) %]
+ <li id="too_many_reserves">
+ Desculpe, não pode fazer mais do que [% too_many_reserves | html %] reservas. </li>
+ [% END %]
+
+ [% IF ( bad_biblionumber ) %]
+ <li id="bad_biblionumber">
+ ERRO: Não foi encontrado nenhum registo bibliográfico com o número [% bad_biblionumber | html %]. </li>
+ [% END %]
+
+ [% IF ( no_items_selected ) %]
+ <li id="no_items_selected">
+ Tem de escolher pelo menos um exemplar. </li>
+ [% END %]
+
+ [% IF ( no_branch_selected ) %]
+ <li id="no_branch_selected">
+ Tem de selecionar uma biblioteca para recolha. </li>
+ [% END %]
+
+ [% IF ( no_biblionumber ) %]
+ <li id="no_biblionumber">
+ ERRO: Não foi fornecido nenhum número de registo. </li>
+ [% END %]
+
+ [% IF ( bad_data ) %]
+ <li id="bad_data">
+ ERRO: Erro interno: pedido de reserva incompleto. </li>
+ [% END %]
+
+ [% IF ( expired_patron ) %]
+ <li id="expired_patron">
+ O seu cartão da biblioteca está expirado. Por favor contacte o bibliotecário se deseja renovar o seu cartão. </li>
+ [% END %]
+
+ [% IF ( no_pickup_locations ) %]
+ <li id="no_pickup_locations">
+ Nenhuma das bibliotecas está disponível como localização de levantamento. </li>
+ [% END %]
+ </ul>
+ </div> <!-- /.message -->
+ [% ELSE # /IF message %]
+
+ [% IF ( none_available && multi_hold ) %]
+ <div id="none_available" class="alert">
+ Desculpe, nenhum destes títulos pode ser reservado. </div>
+ [% END %]
+
+ [% END # / IF message %]
+
+ [% UNLESS ( message ) %]
+ [% UNLESS ( none_available ) %]
+ <h2>Confirmar reservas para: [% INCLUDE 'patron-title.inc' patron = logged_in_user %] ([% logged_in_user.cardnumber | html %])</h2>
+ [% END # / UNLESS none_available %]
+
+ [% IF ( new_reserves_allowed ) %]
+ <div id="new_reserves_allowed" class="alert">
+ <strong>Desculpe,</strong> apenas pode colocar mais [% new_reserves_allowed | html %] reservas. Por favor desmarque as caixas de seleção para os registos que não deseja reservar. </div>
+ [% END %]
+
+ <form action="/cgi-bin/koha/opac-reserve.pl" method="post" id="hold-request-form">
+ <legend class="sr-only">Pedidos de reserva</legend>
+ <input type="hidden" name="place_reserve" value="1"/>
+ <!-- These values are set dynamically by js -->
+ <input type="hidden" name="biblionumbers" id="biblionumbers"/>
+ <input type="hidden" name="selecteditems" id="selections"/>
+ <div id="bigloop">
+
+ [% FOREACH bibitemloo IN bibitemloop %]
+ <div class="holdrow">
+ [% IF bibitemloo.forced_hold_level %]
+ <div class="alert alert-info forced_hold_level">
+ [% IF bibitemloo.forced_hold_level == 'item' %]
+ <span>Já tem pelo menos uma reserva ao nível do exemplar para este título. Todas as outras reservas têm que ser ao nível do exemplar.</span>
+ [% ELSE %]
+ <span>Já tem pelo menos uma reserva ao nível do registo para este título. Todas as outras reservas têm de ser ao nível do registo.</span>
+ [% END %]
+ </div>
+ [% END %]
+
+ [% IF ( bibitemloo.reserve_charge ) %]
+ <div class="alert" id="reserve_fee">
+ [% IF Koha.Preference('HoldFeeMode') == 'any_time_is_collected' %]
+ <span>Será cobrada uma taxa de reserva de [% bibitemloo.reserve_charge | $Price %] quando levantar este exemplar</span>
+ [% ELSE %]
+ <span>Será cobrada uma taxa de reserva de [% bibitemloo.reserve_charge | $Price %] ao efetuar esta reserva</span>
+ [% END %]
+ </div>
+ [% END %]
+
+ <p>
+ [% IF ( bibitemloo.holdable ) %]
+ <input class="reserve_mode" name="reserve_mode" type="hidden" value="single"/>
+ <input class="single_bib" name="single_bib" type="hidden" value="[% bibitemloo.biblionumber | html %]"/>
+ <span class="confirmjs_hold" title="[% bibitemloo.biblionumber | html %]" style="padding:.3em"></span>
+ <span class="confirm_nonjs">
+ <input type="radio" class="confirmbox checkitem [% bibitemloo.biblionumber | html %]" name="[% bibitemloo.biblionumber | html %]" checked="checked" id="single_[% bibitemloo.biblionumber | html %]" value="any" />
+ <label class="confirm_label" for="single_[% bibitemloo.biblionumber | html %]">Colocar reserva </label>
+ </span>
+ [% END # / bibitemloo.holdable %] [% INCLUDE 'biblio-title.inc' biblio=bibitemloo link=> 1%] [% IF ( bibitemloo.author ) %], por [% bibitemloo.author | html %][% END %] </p>
+
+ [% UNLESS ( bibitemloo.holdable ) %]
+ [% IF ( bibitemloo.ageRestricted ) %]
+ <div class="alert alert-warning">Desculpe, é demasiado jovem para reservar este exemplar.</div>
+ [% END %]
+ [% IF ( bibitemloo.already_reserved ) %]
+ <div class="alert alert-warning">Já solicitou este título.</div>
+ [% ELSIF ( bibitemloo.recall ) %]
+ <div class="alert alert-warning">Já tinha adicionado uma reclamação a este título.</div>
+ [% ELSE %]
+ [% IF bibitemloo.alreadypossession %]
+ <div class="alert alert-warning">Este título não pode ser solicitado porque já se encontra em seu poder.</div>
+ [% ELSIF bibitemloo.tooManyReserves %]
+ <div class="alert alert-warning">Este título não pode ser solicitado porque chegou ao limite máximo de reservas permitidas.</div>
+ [% ELSIF bibitemloo.tooManyHoldsForThisRecord %]
+ <div class="alert alert-warning">Este título não pode ser solicitado porque excedeu o máximo de reservas por registo.</div>
+ [% ELSIF bibitemloo.tooManyReservesToday %]
+ <div class="alert alert-warning">Este título não pode ser solicitado porque chegou ao limite de reservas diárias.</div>
+ [% ELSIF bibitemloo.itemAlreadyOnHold %]
+ <div class="alert alert-warning">Este título não pode ser solicitado porque já tem uma reserva para este exemplar.</div>
+ [% ELSE %]
+ [% UNLESS ( bibitemloo.bib_available ) %]
+ <div class="alert">Não existem exemplares que possam ser reservados.</div>
+ [% ELSE %]
+ <div class="alert">Este título não pode ser solicitado.</div>
+ [% END %]
+ [% END # / UNLESS bibitemloo.already_patron_possession %]
+ [% END # / IF bibitemloo.already_reserved %]
+ [% END # / UNLESS bibitemloo.holdable %]
+
+ [% IF ( bibitemloo.holdable ) %]
+ <fieldset class="rows">
+ <ul>
+ <!-- HOLDABLE -->
+ [% UNLESS ( item_level_itypes ) %]
+ <li class="itype">
+ <span class="label">Tipo de documento: </span>
+ [% IF ( bibitemloo.imageurl ) %]<img src="[% bibitemloo.imageurl | html %]" alt="" />[% END %]
+ <span class="itypetext">[% bibitemloo.translated_description | html %]</span>
+ </li>
+ [% END %]
+
+ [% SET OPACShowHoldQueueDetails = Koha.Preference('OPACShowHoldQueueDetails') %]
+ [% IF OPACShowHoldQueueDetails == 'holds_priority' || OPACShowHoldQueueDetails == 'priority' %]
+ <li class="priority">
+ <span class="label">A sua prioridade: </span>
+ [% bibitemloo.rank | html %]
+ </li>
+ [% END %]
+
+ [% IF OPACShowHoldQueueDetails == 'holds_priority' || OPACShowHoldQueueDetails == 'holds' %]
+ <li class="holds-count">
+ <span class="label">Número de reservas: </span>
+ [% bibitemloo.reservecount | html %]
+ </li>
+ [% END %]
+
+ [% UNLESS ( singleBranchMode ) %]
+ [% IF ( bibitemloo.holdable && Koha.Preference('OPACAllowUserToChooseBranch')) %]
+ <li class="branch">
+ <label for="branch_[% bibitemloo.biblionumber | html %]">Biblioteca de levantamento:</label>
+ [% UNLESS ( bibitemloo.holdable ) %]
+ <select name="branch" id="branch_[% bibitemloo.biblionumber | html %]" disabled="disabled">
+ [% PROCESS options_for_libraries libraries => Branches.pickup_locations({ search_params => { biblio => bibitemloo.biblionumber, patron => logged_in_user }, selected => branch }) %]
+ </select>
+ [% ELSE %]
+ [% SET at_least_one_library_not_available_for_pickup = 0 %]
+ <select name="branch" id="branch_[% bibitemloo.biblionumber | html %]">
+ [% FOREACH library IN Branches.pickup_locations({ search_params => { biblio => bibitemloo.biblionumber, patron => logged_in_user }, selected => branch }) %]
+ [% SET pickup_available_at = bibitemloo.not_available_at.grep('^' _ library.branchcode _ '$').size ? 0 : 1 %]
+ [% IF library.selected AND pickup_available_at %]
+ <option value="[% library.branchcode | html %]" selected="selected" >[% library.branchname | html %]</option>
+ [% ELSIF pickup_available_at %]
+ <option value="[% library.branchcode | html %]">[% library.branchname | html %]</option>
+ [% ELSE %]
+ [% SET at_least_one_library_not_available_for_pickup = 1 %]
+ <option disabled="disabled" title="Pelo menos um exemplar está disponível nesta biblioteca" value="[% library.branchcode | html %]">[% library.branchname | html %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ [% IF at_least_one_library_not_available_for_pickup %]
+ <div class="at_least_one_library_not_available_note">Nota: A política da biblioteca não permite a reserva/levantamento de um exemplar disponível localmente. Por favor dirija-se à biblioteca para requisitar esses exemplares</div>
+ [% END %]
+ [% END # / UNLESS bibitemloo.holdable %]
+ </li>
+ [% END # / IF bibitemloo.holdable && Koha.Preference('OPACAllowUserToChooseBranch') %]
+ [% END # / UNLESS singleBranchMode %]
+ </ul>
+
+ <a class="toggle-hold-options" id="toggle-hold-options-[% bibitemloo.biblionumber | html %]" style="display:none;" href="#">Mostrar mais opções</a>
+
+ <div id="hold-options-[% bibitemloo.biblionumber | html %]" class="hold-options">
+
+ <ul>
+ [% IF ( reserve_in_future ) %]
+ <li>
+ <label for="from[% bibitemloo.biblionumber | html %]">Reserva começa na data:</label>
+ <input type="text" name="reserve_date_[% bibitemloo.biblionumber | html %]" id="from[% bibitemloo.biblionumber | html %]" data-start_for="to[% bibitemloo.biblionumber | html %]" size="10" class="flatpickr holddatefrom" />
+ <span class="date-format from" data-biblionumber="[% bibitemloo.biblionumber | html %]">[% INCLUDE 'date-format.inc' %]</span>
+ <div class="required_label" style="display:none;">Obrigatório</div>
+ </li>
+ [% END %]
+
+ <li>
+ <label for="to[% bibitemloo.biblionumber | html %]">Reserva não necessária depois de:</label>
+ <input type="text" name="expiration_date_[% bibitemloo.biblionumber | html %]" id="to[% bibitemloo.biblionumber | html %]" size="10" class="flatpickr futuredate" />
+ <span class="date-format to" data-biblionumber="[% bibitemloo.biblionumber | html %]">[% INCLUDE 'date-format.inc' %]</span>
+ <div class="required_label" style="display:none;">Obrigatório</div>
+ </li>
+
+ [% IF Koha.Preference('AllowHoldItemTypeSelection') %]
+ <li>
+ <label for="itemtype">Requisitar tipo de documento específico:</label>
+ <select name="itemtype" id="itemtype">
+ <option value="">Qualquer tipo de documento</option>
+ [% FOREACH i IN bibitemloo.allowed_item_types %]
+ <option value="[% i | html %]">[% ItemTypes.GetDescription( i ) | html %]</option>
+ [%- END %]
+ </select>
+ </li>
+ [% END %]
+
+ [% UNLESS bibitemloo.forced_hold_level && ( bibitemloo.forced_hold_level == 'item' || bibitemloo.forced_hold_level == 'record' ) %]
+ [% IF Koha.Preference('EnableItemGroupHolds') && bibitemloo.object.item_groups %]
+ <li>
+ <label for="itemtype">Requisitar um grupo específico:</label>
+ <select name="item_group_id_[% bibitemloo.biblionumber | html %]" id="item_group_id_[% bibitemloo.biblionumber | html %]">
+ <option value="">Qualquer grupo</option>
+ [% FOREACH g IN bibitemloo.object.item_groups.search({}, { order_by => ['display_order'] }) %]
+ <option value="[% g.id | html %]">[% g.description | html %]</option>
+ [% END %]
+ </select>
+ </li>
+ [% END %]
+ [% END %]
+
+ [% IF ( OpacHoldNotes ) %]
+ <li>
+ <div class="notesrow" id="notesrow_[% bibitemloo.biblionumber | html %]">
+ <label for="holdnotes_[% bibitemloo.biblionumber | html %]">Nota de reserva:</label>
+ <textarea id="holdnotes_[% bibitemloo.biblionumber | html %]" rows="2" cols="30" name="notes_[% bibitemloo.biblionumber | html %]" >[% bibitemloo.holdnotes | html %]</textarea>
+ </div>
+ </li>
+ [% END # / IF OpacHoldNotes %]
+
+ [% IF bibitemloo.itemholdable %]
+ <!-- ITEM HOLDS -->
+ <li class="lradio place_on_type" style="display:none;">
+ [% UNLESS bibitemloo.forced_hold_level == 'item' || bibitemloo.forced_hold_level == 'item_group' || bibitemloo.force_hold %]
+ <label class="radio inline" for="reqany_[% bibitemloo.biblionumber | html %]">Próximo exemplar disponível</label>
+ <input type="radio" name="reqtype_[% bibitemloo.biblionumber | html %]"
+                                                                    id="reqany_[% bibitemloo.biblionumber | html %]"
+                                                                    class="selectany"
+                                                                    value="Any"
+                                                                    checked="checked"
+                                                            />
+ [% END %]
+ <label class="radio inline" for="reqspecific_[% bibitemloo.biblionumber | html %]">Um item específico</label>
+ <input type="radio" name="reqtype_[% bibitemloo.biblionumber | html %]"
+                                                               id="reqspecific_[% bibitemloo.biblionumber | html %]"
+                                                               class="selectspecific"
+                                                               value="Specific"
+                                                        />
+ </li>
+ [% END # / IF bibitemloo.itemholdable %]
+ </ul>
+
+ [% IF bibitemloo.itemholdable %]
+ <div id="copiesrow_[% bibitemloo.biblionumber | html %]" class="copiesrow">
+ <table class="table table-bordered table-striped itemstable">
+ <caption>Selecionar uma cópia específica:</caption>
+ <thead>
+ <tr>
+ <th>Número de cópia</th>
+ [% IF ( item_level_itypes ) %]
+ <th>Tipo de documento</th>
+ [% END %]
+ <th>Código de barras</th>
+ [% UNLESS ( singleBranchMode ) %]
+ <th>Biblioteca de inscrição</th>
+ <th>Última localização</th>
+ [% END %]
+ [% IF ( itemdata_ccode ) %]
+ <th>Coleção</th>
+ [% END %]
+ <th>Cota</th>
+ [% IF ( itemdata_enumchron ) %]
+ <th>Informação volume</th>
+ [% END %]
+ <th>Notas</th>
+ <th>Informação</th>
+ </tr>
+ </thead>
+ <tbody>
+
+ [% SET unholdable_items = 0 %]
+ [% FOREACH itemLoo IN bibitemloo.itemLoop %]
+ [% IF ( itemLoo.available ) %]
+ [% IF ( itemLoo.checkout ) %]
+ <tr class="holdable onloan">
+ [% ELSE %]
+ <tr class="holdable">
+ [% END %]
+ <td class="copynumber" data-order="[% itemLoo.copynumber | html %]">
+ <input type="radio" class="checkitem checkitem_[% bibitemloo.biblionumber | html %]" name="checkitem_[% bibitemloo.biblionumber | html %]" value="[% itemLoo.itemnumber | html %]" />
+ [% ELSE %]
+ [% SET unholdable_items = 1 %]
+ [% IF ( itemLoo.checkout ) %]
+ <tr class="unholdable onloan" style="display:none;">
+ [% ELSE %]
+ <tr class="unholdable" style="display:none;">
+ [% END %]
+ <td class="copynumber">
+ <input aria-label="Não é possível reservar" class="checkitem" disabled="disabled" name="checkitem" style="display:none;" type="radio" value="[% itemLoo.itemnumber | html %]" />
+ <i aria-hidden="true" class="fa fa-remove danger" title="Não é possível reservar"></i>
+ [% END %]
+ [% IF ( itemLoo.copynumber ) %]
+ [% itemLoo.copynumber | html %]
+ [% END %]
+ </td> [%# copynumber %]
+
+ [% IF ( item_level_itypes ) %]
+ <td class="itype">
+ [% UNLESS ( Koha.Preference('OpacNoItemTypeImages') ) %]
+ [% IF ( itemLoo.imageurl ) %]
+ <img src="[% itemLoo.imageurl | html %]" alt="" />
+ [% END %]
+ [% END %]
+ <span class="itypetext">[% itemLoo.translated_description | html %]</span>
+ </td>
+ [% END %]
+
+ <td class="barcode">[% itemLoo.barcode | html %]</td>
+ [% UNLESS ( singleBranchMode ) %]
+ <td class="homebranch">[% Branches.GetName( itemLoo.homebranch) | html %]</td>
+ <td class="holdingbranch">[% Branches.GetName( itemLoo.holdingbranch ) | html %]</td>
+ [% END %]
+ [% IF ( itemdata_ccode ) %]
+ <td class="ccode"> [% IF ( itemLoo.ccode ) %][% AuthorisedValues.GetDescriptionByKohaField( kohafield => 'items.ccode', authorised_value => itemLoo.ccode, opac => 1 ) | html %][% END %]</td>
+ [% END %]
+ <td class="call_no">[% itemLoo.itemcallnumber | html %]</td>
+ [% IF ( itemdata_enumchron ) %]
+ <td class="vol_info">[% itemLoo.enumchron | html %]</td>
+ [% END %]
+ <td class="itemnotes">
+ [% itemLoo.itemnotes | html %]
+ </td>
+ <td class="information">
+ [% IF ( itemLoo.checkout.date_due) %]
+ <span class="checkedout">Data de devolução [% itemLoo.checkout.date_due| $KohaDates as_due_date => 1 %]</span>
+ [% ELSIF ( itemLoo.transfertwhen ) %]
+ <span class="intransit">Em trânsito de [% Branches.GetName( itemLoo.transfertfrom ) | html %] para [% Branches.GetName( itemLoo.transfertto ) | html %] desde [% itemLoo.transfertwhen | $KohaDates %]</span>
+ [% END %]
+
+ [% IF ( itemLoo.itemlost == 1 || itemLoo.itemlost == 2 ) %] [%# FIXME Why only for 1 or 2? Shouldn't we test for withdrawn as well? %]
+ <span class="lost">Indisponível (extraviado ou em falta)</span>
+ [% END %]
+
+ [% IF ( itemLoo.notforloan ) %]
+ <span class="notforloan">Não emprestável ([% AuthorisedValues.GetDescriptionByKohaField( kohafield => 'items.notforloan', authorised_value => itemLoo.notforloan ) %])</span>
+ [% END %]
+
+ [% IF ( itemLoo.first_hold ) %]
+ <span class="waiting">
+ [% IF ( itemLoo.waitingdate ) %]
+ <span>Em espera em [% Branches.GetName( itemLoo.ExpectedAtLibrary ) | html %] desde [% itemLoo.waitingdate | $KohaDates %]</span>
+ [% ELSIF ( itemLoo.reservedate ) %]
+ <span>Reserva em espera em [% Branches.GetName( itemLoo.ExpectedAtLibrary ) | html %] desde [% itemLoo.reservedate | $KohaDates %]</span>
+ [% ELSE %]
+ <span>Reserva em espera em [% Branches.GetName( itemLoo.ExpectedAtLibrary ) | html %]</span>
+ [% END %]
+ </span>
+ [% ELSE %]
+ <span class="notonhold">Não reservado</span>
+ [% END # / IF ( itemLoo.first_hold )%]
+ </td>
+ </tr>
+ [% END # / FOREACH itemLoo IN bibitemloo.itemLoop%]
+ </tbody>
+ </table> <!-- / #copiesrow_[% bibitemloo.biblionumber | html %] -->
+ [% IF unholdable_items %]
+ <button id="show_unholdable" class="btn btn-primary toggle_unholdable unholdable">Mostrar exemplares não reserváveis</button>
+ <button id="hide_unholdable" class="btn btn-primary toggle_unholdable unholdable" style="display:none;">Esconder exemplares não reserváveis</button>
+ [% END %]
+ </div>
+ [% END # / IF ( bibitemloo.itemholdable )%]
+ </div> <!-- / #hold-options-[% bibitemloo.biblionumber | html %] -->
+ </fieldset>
+ [% END # / IF ( bibitemloo.holdable ) %]
+ </div> <!-- / .holdrow -->
+ [% END # / FOREACH bibitemloo IN bibitemloop %]
+ </div><!-- #bigloop -->
+
+ [% UNLESS ( none_available ) %]
+ <input class="btn btn-primary placehold" type="submit" value="Confirmar reserva" />
+ [% END %]
+
+ </form>
+ [% END # / UNLESS message %]
+ </div> <!-- / #holds -->
+ </div> <!-- / .container -->
+</div> <!-- / .main -->
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %]
+[% INCLUDE 'calendar.inc' %]
+[% INCLUDE 'datatables.inc' %]
+<script>
+    var MSG_NO_ITEM_SELECTED = _("Esperando uma seleção de cópia específica.");
+    var MSG_EMPTY_START_DATE = _("A data de início da reserva deve ser preenchida.");
+    var MSG_EMPTY_END_DATE   = _("A data de expiração da reserva deve ser preenchida.");
+
+    $(document).ready(function() {
+
+        $(".toggle_unholdable").click(function(e){
+            e.preventDefault();
+            $(this).parent('div').find(".unholdable").toggle();
+        });
+
+        $("#hold-request-form").preventDoubleFormSubmit();
+        var copiesRowId = null;
+        var wasSpecific = false;
+        var lastCopiesRowId = null;
+
+        $(".toggle-hold-options").show();
+        $(".hold-options").hide();
+        var OPACMandatoryHoldDates = "[% Koha.Preference('OPACMandatoryHoldDates') | html %]";
+        if( OPACMandatoryHoldDates == "start" || OPACMandatoryHoldDates == "both" ) {
+            $(".holddatefrom").prop( 'required', true ).siblings(".required_label").addClass('required').show();
+        }
+        if( OPACMandatoryHoldDates == "end"   || OPACMandatoryHoldDates == "both" ) {
+            $(".futuredate").prop( 'required', true ).siblings(".required_label").addClass('required').show();
+        }
+
+        $(".checkitem").parent().click(function(e){
+            if(e.target.tagName.toLowerCase() == 'td'){
+                $(this).find("input.checkitem").each( function() {
+                    $(this).attr('checked', 'checked');
+                });
+            }
+        });
+
+        // click on a first td check the confirmjs checkbox
+        $("td.hold").click(function(e){
+          if(e.target.tagName.toLowerCase() == 'td'){
+            $(this).find("input.confirmjs").each( function() {
+               $(this).attr('checked', !$(this).attr('checked'));
+               $(this).change();
+            });
+          }
+        });
+
+        $(".toggle-hold-options").on("click",function(e){
+            e.preventDefault();
+            toggleLink = $(this);
+            var optionsID = this.id.replace("toggle-hold-options-","");
+            $("#hold-options-"+optionsID).toggle(0, function() {
+                toggleLink.text($(this).is(':visible') ? _("Esconder opções") : _("Mostrar mais opções"));
+            });
+        });
+        if( $(".holddatefrom").prop('required') || $(".futuredate").prop('required') ) $(".toggle-hold-options").click();
+
+        // Hides all 'specific copy' table rows on load.
+        $(".copiesrow").hide();
+
+        [% FOREACH bibitemloo IN bibitemloop %]
+          [% IF bibitemloo.force_hold %]
+            if( $("#to[% bibitemloo.biblionumber | html %]").parent(":hidden").length )
+                $("#toggle-hold-options-[% bibitemloo.biblionumber | html %]").click();
+            $("#reqspecific_[% bibitemloo.biblionumber | html %]").click();
+            $("#copiesrow_[% bibitemloo.biblionumber | html %]").show();
+          [% END %]
+        [% END %]
+
+        // Replace non-JS single-selection with multi-selection capability.
+        $(".reserve_mode").val("multi");
+        $(".confirm_nonjs").remove();
+        $(".confirmjs_hold").each(function(){
+            var bib = $(this).attr("title");
+            var html = "<label><input type =\"checkbox\" class=\"confirmjs\" checked=\"checked\"";
+            html += "value=\"" + bib + "\" id=\"" + bib + "\" /> " + _("Colocar reserva") + " </label> ";
+            $(this).html(html);
+        });
+        $(".confirmjs_nohold").each(function(){
+            var bib = $(this).attr("title");
+            var html = "<label><input type =\"checkbox\" class=\"confirmjs\" disabled=\"disabled\"";
+            html += "value=\"" + bib + "\" id=\"" + bib + "\" />" + _("Colocar reserva: ") + "</label>";
+            $(this).html(html);
+        });
+
+        // expand or collapse the copiesrow tr
+        function toggle_copiesrow(biblioNum) {
+            var checkbox = $("input:checkbox[value='"+biblioNum+"']");
+            newCopiesRowId = "#copiesrow_" + biblioNum;
+            var select_specific = $("#reqspecific_"+biblioNum).is(":checked");
+            // If the checkbox is checked AND we want a specific item, we display the items block
+            if ( $(checkbox).is(":checked") && select_specific ) {
+                if ( $(`#item_group_id_${biblioNum}`).length ) {
+                    $(`#item_group_id_${biblioNum}`).val("").attr('disabled', 'disabled');
+                }
+                $(newCopiesRowId).show();
+            } else {
+                if ( $(`#item_group_id_${biblioNum}`).length ) {
+                    $(`#item_group_id_${biblioNum}`).removeAttr('disabled');
+                }
+                $(newCopiesRowId).hide();
+            }
+        };
+
+        $("#place_on_hdr").show();
+
+        $(".place_on_type").show();
+        // onload, selectany is checked
+        $(".selectany").attr("checked", "checked");
+
+
+        // On confirmsjs change
+        $(".confirmjs").change(function(){
+            var id = suffixOf($(this).attr("id"), "_");
+            // If I m checked, I enable radio buttons
+            if ( $(this).is(":checked") ) {
+                $("#reqspecific_" + id).attr("disabled", false);
+                $("#reqany_" + id).attr("disabled", false);
+            }
+            // Else its are disabled
+            else {
+                $("#reqspecific_" + id).attr("disabled", "disabled");
+                $("#reqany_" + id).attr("disabled", "disabled");
+            }
+            // expand or collaspe the items block
+            toggle_copiesrow(id);
+        });
+
+        // When 'specific copy' or 'first available' radio button is clicked
+        $(".selectspecific, .selectany").click(function() {
+            var id = suffixOf($(this).attr("id"), "_");
+            toggle_copiesrow(id);
+        });
+
+        // Show or hide holds notes
+        $(".shownotes").click(function(){
+            biblioNum = suffixOf($(this).attr("id"), "_");
+            $("#notesrow_"+biblioNum).toggle();
+        });
+
+        // When 'Place Hold' button is clicked
+        $(".placehold").click(function(){
+            var biblionumbers = "";
+            var selections = "";
+
+            [% IF new_reserves_allowed %]
+                if ($(".confirmjs:checked").size() > [% new_reserves_allowed | html %] ) {
+                    alert(MSG_MAX_HOLDS_EXCEEDED);
+                    return false;
+                }
+            [% END %]
+
+            if ($(".confirmjs:checked").size() == 0) {
+                alert( _("Não seleccionou nenhum item") );
+                return false;
+            }
+
+            // Find the items with the 'Hold' box checked
+            var badBib = null;
+            $(".confirmjs:checked").each(function() {
+                var biblioNum = $(this).val();
+                biblionumbers += biblioNum + "/";
+                selections += biblioNum + "/";
+
+                // If required hold note is empty, make it visible
+                if( $("#holdnotes_"+biblioNum).attr( 'required' ) && $("#holdnotes_"+biblioNum).val() == '' ) {
+                    if( !$("#hold-options-"+biblioNum).is(':visible')) {
+                        $("#toggle-hold-options-"+biblioNum).click();
+                    }
+                }
+
+                if( $(".holddatefrom").prop('required') && $("#from"+ biblioNum).val() == '' ) {
+                    alert(MSG_EMPTY_START_DATE);
+                    badBib = biblioNum;
+                    if( $("#from"+biblioNum).parent(":hidden").length ) $("#toggle-hold-options-"+biblioNum).trigger('click');
+                    $("#from"+biblioNum).siblings('.flatpickr_wrapper').find('.flatpickr-input').trigger('focus');
+                    return false;
+                } else if( $(".futuredate").prop('required') && $("#to"+ biblioNum).val() == '' ) {
+                    alert(MSG_EMPTY_END_DATE);
+                    badBib = biblioNum;
+                    if( $("#to"+biblioNum).parent(":hidden").length ) $("#toggle-hold-options-"+biblioNum).trigger('click');
+                    $("#to"+biblioNum).siblings('.flatpickr_wrapper').find('.flatpickr-input').trigger('focus');
+                    return false;
+                }
+
+                // If the 'specific copy' radio button is checked
+                if ($("#reqspecific_" + biblioNum + ":checked").size() > 0) {
+                    // Find the selected copy
+                    var item = $(".checkitem_" + biblioNum + ":checked");
+                    if ($(item).size() == 0) {
+                        alert(MSG_NO_ITEM_SELECTED);
+                        badBib = biblioNum;
+                        return false;
+                    } else {
+                      selections += $(item).val();
+                    }
+                }
+                selections += "/";
+
+                // Add the pickup location
+                var branchSel = $("#branch_" + biblioNum);
+                if (branchSel.size() > 0) {
+                    selections += $(branchSel).val();
+                }
+                selections += "/";
+                return true;
+            });
+
+            if (badBib) { // alert has been raised already
+                return false;
+            }
+
+            $("#selections").val(selections);
+            $("#biblionumbers").val(biblionumbers);
+
+            return true;
+        });
+        $(".itemstable").each(function(){
+            $(this).DataTable({
+                dom: "t",
+                initComplete: function() {
+                    this.find("input:radio").first().prop("checked", true );
+                },
+                paging: false
+            });
+        });
+    });
+</script>
+[% END %]

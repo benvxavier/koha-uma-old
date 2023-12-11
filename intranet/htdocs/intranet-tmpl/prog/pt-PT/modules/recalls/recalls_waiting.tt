@@ -1,0 +1,177 @@
+[% USE raw %]
+[% USE Koha %]
+[% USE KohaDates %]
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Reclamações à espera de levantamento &rsaquo; Empréstimo &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="circ_recalls_awaiting_pickup" class="circ">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/circ/circulation-home.pl">Empréstimo</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Reclamações por levantar</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ [% IF Koha.Preference('CircSidebar') %]
+ <div class="col-sm-10 col-sm-push-2">
+ [% ELSE %]
+ <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+ [% END %]
+ <main>
+ <h1>Reclamações por levantar</h1>
+
+ [% IF Koha.Preference('UseRecalls') %]
+
+ [% WRAPPER tabs id= "results" %]
+ [% WRAPPER tabs_nav %]
+ [% WRAPPER tab_item tabname= "recallswaiting" bt_active= 1 %] <span>Reclamações em espera: [% recallscount | html %]</span> [% END %]
+ [% WRAPPER tab_item tabname= "recallsover" %] <span>Reclamações por levantar acima de [% Koha.Preference('RecallsMaxPickUpDelay') | html %] dia(s): [% overcount | html %]</span> [% END %]
+ [% END # /WRAPPER tabs_nav %]
+
+ [% WRAPPER tab_panels %]
+ [% WRAPPER tab_panel tabname="recallswaiting" bt_active= 1 %]
+ [% IF ( recalls ) %]
+ <table id="recallswaiting-table">
+ <thead><tr>
+ <th class="recall-waitingdate title-string">Disponível a partir de</th>
+ <th class="recall-title anti-the">Título</th>
+ <th class="recall-patron">Pedido por</th>
+ <th class="recall-library">Biblioteca de levantamento</th>
+ <th class="recall-action nosort">&nbsp;</th>
+ </tr></thead>
+ <tbody>
+ [% FOREACH recall IN recalls %]<tr>
+ <td class="recall-waitingdate">[% recall.waiting_date | $KohaDates %]</td>
+ <td class="recall-title">
+ <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% recall.biblio_id | uri %]">
+ [% recall.biblio.title | html %]
+ [% FOREACH s IN recall.biblio.subtitle %]
+ [% s | html %]
+ [% END %]
+ </a>
+ [% recall.biblio.author | html %]
+ <br><i>Código de barras: [% recall.item.barcode | html %]</i>
+ </td>
+ <td class="recall-patron">
+ <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% recall.patron_id | uri %]">[% recall.patron.firstname | html %] [% recall.patron.surname | html %]</a>
+ [% IF ( recall.patron.phone ) %]<br />[% recall.patron.phone | html %][% END %]
+ [% IF ( recall.patron.email ) %]<br /><a href="mailto:[% recall.patron.email | uri %]?subject=Recall waiting: [% recall.biblio.title | uri %]">[% recall.patron.email | html %]</a>[% END %]
+ </td>
+ <td class="recall-library">[% recall.library.branchname | html %]</td>
+ <td class="recall-action actions">
+ <form action="/cgi-bin/koha/recalls/recalls_waiting.pl" method="post">
+ <input type="hidden" name="recall_id" value="[% recall.id | html %]">
+ <input type="hidden" name="op" value="modify">
+ <fieldset class="action">
+ <button type="submit" name="revert" value="revert" class="btn btn-default btn-sm revert_recall"><i class="fa fa-undo"></i> Reverter estado de espera</button>
+ <button type="submit" name="expire" value="expire" class="btn btn-default btn-sm expire_recall"><i class="fa fa-undo"></i> Expirar reclamação</button>
+ </fieldset>
+ </form>
+ </td>
+ </tr>[% END %]
+ </tbody>
+ </table>
+ [% ELSE %]
+ <div class="dialog message">Não existem reclamações a mostrar.</div>
+ [% END %]
+ [% END # /tab_panel# %]
+ [% WRAPPER tab_panel tabname="recallsover" %]
+ <div id="recallsover" role="tabpanel" class="tab-pane">
+ [% IF ( over.size ) %]
+ [% IF ( Koha.Preference('RecallsMaxPickUpDelay') ) %]<p>Reclamações por levantar por mais de [% Koha.Preference('RecallsMaxPickUpDelay') | html %] dias.</p>[% END %]
+ <table id="recallsover-table">
+ <thead><tr>
+ <th class="recall-waitingdate title-string">Disponível a partir de</th>
+ <th class="recall-title anti-the">Título</th>
+ <th class="recall-patron">Pedido por</th>
+ <th class="recall-library">Biblioteca de levantamento</th>
+ <th class="recall-action nosort">&nbsp;</th>
+ </tr></thead>
+ <tbody>
+ [% FOREACH recall IN over %]<tr>
+ <td class="recall-waitingdate">[% recall.waiting_date | $KohaDates %]</td>
+ <td class="recall-title">
+ [% INCLUDE 'biblio-title.inc' biblio=recall.biblio link = 1 %] [% IF recall.biblio.author %] por [% recall.biblio.author | html %][% END %] [% recall.item.enumchron | html %] [% IF ( recall.item.barcode ) %]<br><em>Código de barras: [% recall.item.barcode | html %]</em>[% END %]
+ </td>
+ <td class="recall-patron">
+ <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% recall.patron_id | uri %]">[% recall.patron.firstname | html %] [% recall.patron.surname | html %]</a>
+ [% IF ( recall.patron.phone ) %]<br />[% recall.patron.phone | html %][% END %]
+ [% IF ( recall.patron.email ) %]<br /><a href="mailto:[% recall.patron.email | uri %]?subject=Recall waiting: [% recall.biblio.title | uri %]">[% recall.patron.email | html %]</a>[% END %]
+ </td>
+ <td class="recall-library">[% recall.library.branchname | html %]</td>
+ <td class="recall-action actions">
+ <form action="/cgi-bin/koha/recalls/recalls_waiting.pl" method="post">
+ <input type="hidden" name="recall_id" value="[% recall.id | html %]">
+ <input type="hidden" name="op" value="modify">
+ <fieldset class="action">
+ <button type="submit" name="revert" value="revert" class="btn btn-default btn-sm revert_recall"><i class="fa fa-undo"></i> Reverter estado de espera</button>
+ <button type="submit" name="expire" value="expire" class="btn btn-default btn-sm expire_recall"><i class="fa fa-undo"></i> Expirar reclamação</button>
+ </fieldset>
+ </form>
+ </td>
+ </tr>[% END %]
+ </tbody>
+ </table>
+ [% ELSE %]
+ <div class="dialog message">Não existem reclamações a mostrar.</div>
+ [% END %]
+ </div> <!-- recallsover -->
+ [% END # /tab_panel# %]
+ [% END # /WRAPPER tab_panels %]
+ [% END # /WRAPPER tabs %]
+
+ [% ELSE %]
+ <div class="dialog message">As reclamações não estão ativas. Ative a <a href="/cgi-bin/koha/admin/preferences.pl?tab=circulation">UseRecalls</a> para usar as reclamações.</div>
+ [% END %] <!-- Koha.Preference('UseRecalls') -->
+
+ </main>
+ </div> <!-- /.col-etc -->
+
+ [% IF Koha.Preference('CircSidebar') %]
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'circ-nav.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ [% END %]
+
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'datatables.inc' %]
+ [% INCLUDE 'columns_settings.inc' %]
+ <script>
+        $(document).ready(function() {
+            $("#recallswaiting-table, #recallsover-table").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "autoWidth": false,
+                "aoColumnDefs": [
+                    { 'bSortable': false, 'aTargets': [ 'nosort' ] },
+                ],
+                "sPaginationType": "full_numbers"
+            }));
+
+            $(".revert_recall").click(function(e) {
+                return confirmDelete(_("Tem a certeza que deseja reverter o estado em espera desta reclamação?"));
+            });
+
+            $(".expire_recall").click(function(e) {
+                return confirmDelete(_("Tem a certeza que pretende remover esta reclamação?"));
+            });
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

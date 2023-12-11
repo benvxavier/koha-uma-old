@@ -1,0 +1,78 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Pré-visualização do modelo de aviso &rsaquo; Ferramentas &rsaquo; Koha</title>
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ </head>
+ <body id="preview_letter" class="catalog">
+ <div class="main container-fluid">
+ <h1>Pré-visualizar modelo de aviso</h1>
+ [% FOR m IN messages %]
+ [%# FIXME The message block does not appear at the top of the modal! %]
+ <div class="dialog [% m.type | html %]">
+ [% SWITCH m.code %]
+ [% CASE 'no_data_for_preview' %]<span>Não especificou qualquer dado para a pré-visualização.</span>
+ [% CASE 'preview_not_available' %]<span>A pré-visualização não está disponível para avisos do tipo '[% m.letter_code | html %]'.</span>
+ [% CASE 'not_checked_in_yet' %]<span>Não se esqueça que o exemplar ainda não foi devolvido.</span>
+ [% CASE 'not_checked_out_yet' %]<span>Não se esqueça que o exemplar ainda não foi emprestado.</span>
+ [% CASE 'no_checkout' %]<span>Este exemplar não está emprestado.</span>
+ [% CASE 'no_item_or_no_patron' %]<span>O exemplar ou o leitor não existem.</span>
+ [% CASE 'no_hold' %]<span>Nenhuma reserva para este leitor neste registo bibliográfico.</span>
+ [% CASE %]<span>[% m.code | html %]</span>
+ [% END %]
+ </div>
+ [% END %]
+
+ [% IF rendered_tt_message %]
+ [% IF messages_are_similar %]
+ <div class="dialog message">Os avisos gerados são exactamente os mesmos!</div>
+ [% ELSE %]
+ <div class="dialog alert">Os avisos gerados são diferentes!</div>
+ [% END %]
+ [% END %]
+
+ [% IF rendered_message %]
+ <div class="row">
+ <div class="col-xs-6">
+ <h3>Versão original</h3>
+ <span style="font-family:monospace">
+ [% FILTER html_line_break %]
+ [% original_content | html %]
+ [% END %]
+ </span>
+ </div>
+ <div class="col-xs-6">
+ <h3>Mensagem original, renderizada:</h3>
+ <span style="font-family:monospace">
+ [% FILTER html_line_break %]
+ [% rendered_message.content | html %]
+ [% END %]
+ </span>
+ </div>
+ </div>
+ [% END %]
+
+
+ [% IF rendered_tt_message %]
+ <hr />
+ <div class="row">
+ <div class="col-xs-6">
+ <h3>Versão convertida</h3>
+ <span style="font-family:monospace">
+ [% FILTER html_line_break %]
+ [% tt_content | html %]
+ [% END %]
+ </span>
+ </div>
+ <div class="col-xs-6">
+ <h3>Mensagem convertida, renderizada:</h3>
+ <span style="font-family:monospace">
+ [% FILTER html_line_break %]
+ [% rendered_tt_message.content | html %]
+ [% END %]
+ </span>
+ </div>
+ </div>
+ [% END %]
+ </div> <!-- /.main -->
+
+ </body>
+</html>

@@ -1,0 +1,688 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Koha %]
+[% USE Branches %]
+[% USE KohaDates %]
+[% USE Price %]
+[% USE TablesSettings %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>[% FILTER collapse %] [% IF op == 'add_form' %] [% IF ( categorycode ) %] Modificar categoria '[% categorycode | html %]' [% ELSE %] Nova categoria[% END %] &rsaquo; [% END %] [% IF op == 'delete_confirm' %] [% IF ( patrons_in_category > 0 ) %] Não foi possível eliminar: categoria [% categorycode | html %] em uso [% ELSE %] Confirmar eliminação da categoria '[% categorycode | html %]' [% END %] &rsaquo; [% END %] Categorias de leitor &rsaquo; Administração &rsaquo; Koha [% END %]</title>
+[% INCLUDE 'doc-head-close.inc' %]
+<style>#enrolmentmessage.hint { display : none; }</style>
+</head>
+
+<body id="admin_categorie" class="admin">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'patrons-admin-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/admin-home.pl">Administração</a>
+ [% END %]
+
+ [% IF op == 'add_form' || op == 'delete_confirm' || op == 'delete_confirmed' %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/categories.pl">Categorias de Leitores</a>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Categorias de Leitores</span>
+ [% END %]
+ [% END %]
+
+ [% IF op == 'add_form' %]
+ [% IF ( categorycode ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Modificar categoria '[% categorycode | html %]'</span>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Nova Categoria</span>
+ [% END %]
+ [% END %]
+ [% END %]
+
+ [% IF op == 'delete_confirm' %]
+ [% IF ( patrons_in_category > 0 ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Não é possível eliminar: Categoria [% categorycode | html %] em uso</span>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Confirmar a eliminação da categoria '[% categorycode | html %]'</span>
+ [% END %]
+ [% END %]
+ [% END %]
+
+ [% IF op == 'delete_confirmed' %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Categoria eliminada</span>
+ [% END %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+[% FOR m IN messages %]
+ <div class="dialog [% m.type | html %]">
+ [% SWITCH m.code %]
+ [% CASE 'error_on_update' %]
+ <span>Ocorreu um erro ao atualizar esta categoria de leitor. Pode já existir no sistema.</span>
+ [% CASE 'error_on_insert' %]
+ <span>Ocorreu um erro ao inserir esta categoria de leitor. A categoria de leitor pode já existir no sistema.</span>
+ [% CASE 'error_on_delete' %]
+ <span>Ocorreu um erro ao eliminar esta categoria de leitor. Verifique os registos do sistema.</span>
+ [% CASE 'success_on_update' %]
+ <span>Categoria de leitor atualizada com sucesso.</span>
+ [% CASE 'success_on_insert' %]
+ <span>Categoria de leitor adicionada com sucesso.</span>
+ [% CASE 'success_on_delete' %]
+ <span>Categoria de leitor eliminada com sucesso.</span>
+ [% CASE 'already_exists' %]
+ <span>A categoria de leitor já existe.</span>
+ [% CASE %]
+ <span>[% m.code | html %]</span>
+ [% END %]
+ </div>
+[% END %]
+
+[% IF op == 'add_form' %]
+ <form id="category_form" action="/cgi-bin/koha/admin/categories.pl" method="post">
+ <input type="hidden" name="op" value="add_validate" />
+ <input type="hidden" name="checked" value="0" />
+ [% IF category %]
+ <h1>Modificar categoria [% categorycode | html %]</h1>
+ [% ELSE %]
+ <h1>Nova Categoria</h1>
+ [% END %]
+ <fieldset class="rows">
+ <ol>
+ [% IF category %]
+ <li>
+ <span class="label">Código de categoria: </span>[% categorycode | html %]
+ <input type="hidden" name="categorycode" value="[% category.categorycode | html %]" /><input type="hidden" name="is_a_modif" value="1" />
+ </li>
+ [% ELSE %]
+ <li>
+ <label for="categorycode" class="required">Código de categoria: </label>
+ <input type="text" name="categorycode" id="categorycode" size="10" maxlength="10" class="required focus" required="required" />
+ <span class="required">Obrigatório</span>
+ </li>
+ [% END %]
+ <li>
+ <label for="description" class="required">Descrição: </label>
+ <input type="text" name="description" id="description" size="40" maxlength="80" class="required" required="required" value="[% category.description | html %]" />
+ <span class="required">Obrigatório</span>
+ </li>
+ <li>
+ <span class="label">Período de inscrição: </span>
+ <fieldset>
+ <legend>Escolher uma</legend>
+ <ol>
+ <li>
+ <label for="enrolmentperiod">Nos meses: </label>
+ [% IF category.enrolmentperiod %]
+ <input type="text" class="enrollmentperiod" name="enrolmentperiod" id="enrolmentperiod" size="3" maxlength="3" value="[% category.enrolmentperiod | html %]" /> meses [% ELSE %] <input type="text" class="enrollmentperiod" name="enrolmentperiod" id="enrolmentperiod" size="3" maxlength="3" value="" /> meses [% END %] </li>
+ <li>
+ <label for="enrolmentperioddate">Até a data: </label>
+ <input type="text" class="enrollmentperiod flatpickr" data-flatpickr-futuredate="true" name="enrolmentperioddate" id="enrolmentperioddate" value="[% category.enrolmentperioddate | html %]" />
+ </li>
+ </ol>
+ </fieldset>
+ </li>
+ <li>
+ <label for="password_expiry_days">Expiração da palavra-passe: </label>
+ <input type="text" name="password_expiry_days" id="password_expiry_days" value="[% category.password_expiry_days | html %]" size="3" maxlength="5" /> dias </li>
+ <li>
+ <label for="dateofbirthrequired">Idade obrigatória: </label>
+ <input type="text" name="dateofbirthrequired" id="dateofbirthrequired" value="[% category.dateofbirthrequired | html %]" size="3" maxlength="3" /> anos </li>
+ <li>
+ <label for="upperagelimit">Limite de idade: </label>
+ <input type="text" name="upperagelimit" id="upperagelimit" size="3" maxlength="3" value="[% category.upperagelimit | html %]" /> anos </li>
+ <li>
+ <label for="enrolmentfee">Taxa de inscrição: </label>
+ <input type="text" name="enrolmentfee" id="enrolmentfee" size="6" value="[% category.enrolmentfee | $Price on_editing => 1 %]" />
+ </li>
+ <li>
+ <label for="overduenoticerequired">Aviso de atraso exigido: </label>
+ <select name="overduenoticerequired" id="overduenoticerequired">
+ [% IF category.overduenoticerequired %]
+ <option value="0">Não</option>
+ <option value="1" selected="selected">Sim</option>
+ [% ELSE %]
+ <option value="0" selected="selected">Não</option>
+ <option value="1">Sim</option>
+ [% END %]
+ </select>
+ </li>
+ <li>
+ <label for="hidelostitems">Exemplares perdidos no interface dos técnicos: </label>
+ <select name="hidelostitems" id="hidelostitems">
+ [% IF category.hidelostitems %]
+ <option value="0">Mostrado</option>
+ <option value="1" selected="selected">Escondida por omissão</option>
+ [% ELSE %]
+ <option value="0" selected="selected">Mostrado</option>
+ <option value="1">Escondida por omissão</option>
+ [% END %]
+ </select>
+ </li>
+ <li>
+ <label for="reservefee">Taxa de reserva: </label>
+ <input type="text" name="reservefee" id="reservefee" size="6" value="[% category.reservefee | $Price on_editing => 1 %]" />
+ </li>
+ <li>
+ <label for="category_type" class="required">Tipo da categoria: </label>
+ <select name="category_type" id="category_type">
+ [% UNLESS category %]<option value="" selected="selected">Seleccionar tipo de categoria</option>[% ELSE %]<option value="">Seleccionar tipo de categoria</option>[% END %]
+ [% IF category and category.category_type == 'A' %]<option value="A" selected="selected">Adulto</option>[% ELSE %]<option value="A">Adulto</option>[% END %]
+ [% IF category and category.category_type == 'C' %]<option value="C" selected="selected">Criança</option>[% ELSE %]<option value="C">Criança</option>[% END %]
+ [% IF category and category.category_type == 'S' %]<option value="S" selected="selected">Staff</option>[% ELSE %]<option value="S">Staff</option>[% END %]
+ [% IF category and category.category_type == 'I' %]<option value="I" selected="selected">Organização</option>[% ELSE %]<option value="I">Organização</option>[% END %]
+ [% IF category and category.category_type == 'P' %]<option value="P" selected="selected">Profissional</option>[% ELSE %]<option value="P">Profissional</option>[% END %]
+ [% IF category and category.category_type == 'X' %]<option value="X" selected="selected">Estatístico</option>[% ELSE %]<option value="X">Estatístico</option>[% END %]
+ </select>
+ <span class="required">Obrigatório</span>
+ </li>
+ <li>
+ <label for="can_be_guarantee">Pode ser assegurado:</label>
+ <select name="can_be_guarantee" id="can_be_guarantee">
+ [% IF category.can_be_guarantee %]
+ <option value="1" selected>Sim</option>
+ <option value="0">Não</option>
+ [% ELSE %]
+ <option value="1">Sim</option>
+ <option value="0" selected>Não</option>
+ [% END %]
+ <select>
+ </li>
+ <li><label for="branches">Limitações das bibliotecas: </label>
+ <select id="branches" name="branches" multiple size="10">
+ <option value="">Todas as bibliotecas</option>
+ [% PROCESS options_for_libraries libraries => Branches.all( selected => category.get_library_limits, unfiltered => 1, do_not_select_my_library => 1 ) %]
+ </select>
+ <div class="hint">Seleccionar <em>Todas as bibliotecas</em> se este tipo de categoria deve ser mostrado sempre. Senão seleccione as bibliotecas que deseja associar a este valor. </div>
+ </li>
+ <li>
+ <label for="reset_password">Repor a palavra-passe no OPAC: </label>
+ <select name="reset_password" id="reset_password">
+ [% IF category.reset_password.defined %]
+ [% IF category.reset_password %]
+ [% IF Koha.Preference('OpacResetPassword') %]
+ <option value="-1">Seguir a preferência de sistema OpacResetPassword (ativo)</option>
+ [% ELSE %]
+ <option value="-1">Seguir a preferência de sistema OpacResetPassword (desativo)</option>
+ [% END %]
+ <option value="1" selected="selected">Permitido</option>
+ <option value="0">Não permitido</option>
+ [% ELSE %]
+ [% IF Koha.Preference('OpacResetPassword') %]
+ <option value="-1">Seguir a preferência de sistema OpacResetPassword (ativo)</option>
+ [% ELSE %]
+ <option value="-1">Seguir a preferência de sistema OpacResetPassword (desativo)</option>
+ [% END %]
+ <option value="1">Permitido</option>
+ <option value="0" selected="selected">Não permitido</option>
+ [% END %]
+ [% ELSE %]
+ [% IF Koha.Preference('OpacResetPassword') %]
+ <option value="-1" selected="selected">Seguir a preferência de sistema OpacResetPassword (ativo)</option>
+ [% ELSE %]
+ <option value="-1" selected="selected">Seguir a preferência de sistema OpacResetPassword (desativo)</option>
+ [% END %]
+ <option value="1">Permitido</option>
+ <option value="0">Não permitido</option>
+ [% END %]
+ </select>
+ </li>
+ <li>
+ <label for="change_password">Alterar a palavra-passe no OPAC: </label>
+ <select name="change_password" id="change_password">
+ [% IF category.change_password.defined %]
+ [% IF category.change_password %]
+ [% IF Koha.Preference('OpacPasswordChange') %]
+ <option value="-1">Seguir a preferência de sistema OpacPasswordChange (ativo)</option>
+ [% ELSE %]
+ <option value="-1">Seguir a preferência de sistema OpacPasswordChange (desativo)</option>
+ [% END %]
+ <option value="1" selected="selected">Permitido</option>
+ <option value="0">Não permitido</option>
+ [% ELSE %]
+ [% IF Koha.Preference('OpacPasswordChange') %]
+ <option value="-1">Seguir a preferência de sistema OpacPasswordChange (ativo)</option>
+ [% ELSE %]
+ <option value="-1">Seguir a preferência de sistema OpacPasswordChange (desativo)</option>
+ [% END %]
+ <option value="1">Permitido</option>
+ <option value="0" selected="selected">Não permitido</option>
+ [% END %]
+ [% ELSE %]
+ [% IF Koha.Preference('OpacPasswordChange') %]
+ <option value="-1" selected="selected">Seguir a preferência de sistema OpacPasswordChange (ativo)</option>
+ [% ELSE %]
+ <option value="-1" selected="selected">Seguir a preferência de sistema OpacPasswordChange (desativo)</option>
+ [% END %]
+ <option value="1">Permitido</option>
+ <option value="0">Não permitido</option>
+ [% END %]
+ </select>
+ </li>
+ <li>
+ <label for="min_password_length">Tamanho mínimo da palavra-passe:</label>
+ <input id="min_password_length" type="text" inputmode="numeric" name="min_password_length" value="[% category.min_password_length | html %]"/>
+ <div class="hint">Deixe vazio para usar a omissão do sistema ([% Koha.Preference('minPasswordLength') | html %])</div>
+ </li>
+ <li class="pwd_setting_wrapper">
+ <label for="require_strong_password">Palavra-passe segura obrigatória:</label>
+ <select id="require_strong_password" name="require_strong_password">
+ [% IF category.require_strong_password.defined %]
+ [% IF category.require_strong_password %]
+ [% IF Koha.Preference('RequireStrongPassword') %]
+ <option value="-1">Seguir a preferência de sistema RequireStrongPassword (sim)</option>
+ [% ELSE %]
+ <option value="-1">Seguir a preferência de sistema RequireStrongPassword (não)</option>
+ [% END %]
+ <option value="1" selected="selected">Sim</option>
+ <option value="0">Não</option>
+ [% ELSE %]
+ [% IF Koha.Preference('RequireStrongPassword') %]
+ <option value="-1">Seguir a preferência de sistema RequireStrongPassword (sim)</option>
+ [% ELSE %]
+ <option value="-1">Seguir a preferência de sistema RequireStrongPassword (não)</option>
+ [% END %]
+ <option value="1">Sim</option>
+ <option value="0" selected="selected">Não</option>
+ [% END %]
+ [% ELSE %]
+ [% IF Koha.Preference('RequireStrongPassword') %]
+ <option value="-1">Seguir a preferência de sistema RequireStrongPassword (sim)</option>
+ [% ELSE %]
+ <option value="-1">Seguir a preferência de sistema RequireStrongPassword (não)</option>
+ [% END %]
+ <option value="1">Sim</option>
+ <option value="0">Não</option>
+ [% END %]
+ </select>
+ </li>
+ <li><label for="block_expired">Bloquear leitores expirados:</label>
+ <select name="BlockExpiredPatronOpacActions" id="block_expired">
+ [% IF not category or category.BlockExpiredPatronOpacActions == -1%]
+ <option value="-1" selected="selected"> Seguir a preferência do sistema BlockExpiredPatronOpacActions </option>
+ [% ELSE %]
+ <option value="-1"> Seguir a preferência do sistema BlockExpiredPatronOpacActions </option>
+ [% END %]
+
+ [% IF category and category.BlockExpiredPatronOpacActions == 1 %]
+ <option value="1" selected="selected"> Bloquear </option>
+ [% ELSE %]
+ <option value="1"> Bloquear </option>
+ [% END %]
+
+ [% IF category and category.BlockExpiredPatronOpacActions == 0 %]
+ <option value="0" selected="selected"> Não bloquear </option>
+ [% ELSE %]
+ <option value="0"> Não bloquear </option>
+ [% END %]
+ </select>
+ <div class="hint">
+ Escolher se os leitores desta categoria ficarem bloqueados das ações no catálogo público como renovar e colocar reservas quando a sua conta expirar. </div>
+ </li>
+ [% IF ( Koha.Preference('CheckPrevCheckout') == 'softyes' || Koha.Preference('CheckPrevCheckout') == 'softno' )  %]
+ <li><label for="checkprevcheckout">Verificar empréstimos anteriores: </label>
+ <select name="checkprevcheckout" id="checkprevcheckout">
+ [% IF category.checkprevcheckout == 'yes' %]
+ <option value="yes" selected="selected">Sim, tentar sobrepor as preferências de sistema</option>
+ <option value="no">Não, tentar sobrepor as preferências de sistema</option>
+ <option value="inherit">Herdado das preferências do sistema</option>
+ [% ELSIF category.checkprevcheckout == 'no' %]
+ <option value="yes">Sim, tentar sobrepor as preferências de sistema</option>
+ <option value="no" selected="selected">Não, tentar sobrepor as preferências de sistema</option>
+ <option value="inherit">Herdado das preferências do sistema</option>
+ [% ELSE %]
+ <option value="yes">Sim, tentar sobrepor as preferências de sistema</option>
+ <option value="no">Não, tentar sobrepor as preferências de sistema</option>
+ <option value="inherit" selected="selected">Herdado das preferências do sistema</option>
+ [% END %]
+ </select>
+ <div class="hint">
+ Escolha se deseja se os leitores desta categoria são avisados por omissão se tentam requisitar um exemplar que já requisitaram anteriormente. </div>
+ </li>
+ [% END %]
+ <li>
+ <label for="default_privacy">Privacidade por omissão: </label>
+ <select id="default_privacy" name="default_privacy">
+ [% SET default_privacy = 'default' %]
+ [% IF category %][% SET default_privacy = category.default_privacy %][% END %]
+ [% SWITCH default_privacy %]
+ [% CASE 'forever' %]
+ <option value="default">Omissão</option>
+ <option value="never">Nunca</option>
+ <option value="forever" selected="selected">Sempre</option>
+ [% CASE 'never' %]
+ <option value="default">Omissão</option>
+ <option value="never" selected="selected">Nunca</option>
+ <option value="forever">Sempre</option>
+ [% CASE %]
+ <option value="default" selected="selected">Omissão</option>
+ <option value="never">Nunca</option>
+ <option value="forever">Sempre</option>
+ [% END %]
+ </select>
+ <div class="hint">Controla durante quanto tempo o histórico de empréstimo dos leitores é mantido para novos leitores desta categoria. "Nunca" anonimiza os empréstimos na devolução e "Sempre" mantêm o histórico de empréstimo para sempre. Quando definido "Por omissão", o total de histórico é controlado pela tarefa <em>batch_anonymise.pl</em> que devem ser definidas pelo administrador do sistema.</div>
+ </li>
+ <li>
+ <label for="exclude_from_local_holds_priority">Excluir da prioridade de reservas locais:</label>
+ <select id="exclude_from_local_holds_priority" name="exclude_from_local_holds_priority">
+ [% IF category.exclude_from_local_holds_priority %]
+ <option value="1" selected>Sim</option>
+ <option value="0">Não</option>
+ [% ELSE %]
+ <option value="1">Sim</option>
+ <option value="0" selected>Não</option>
+ [% END %]
+ </select>
+ <div class="hint">Se <i>Sim</i>, reservas efectuadas por leitores desta categoria não terão prioridade</div>
+ </li>
+ </ol>
+ </fieldset>
+
+ [% IF ( EnhancedMessagingPreferences ) %]
+ <fieldset class="rows">
+ <legend>Preferências normais de mensagens para a categoria de cliente</legend>
+ [% INCLUDE 'messaging-preference-form.inc' %]
+ </fieldset>
+ [% END %]
+ <fieldset class="action">
+ <input class="btn btn-primary" type="submit" value="Guardar" />
+ <a href="/cgi-bin/koha/admin/categories.pl" class="cancel">Anular</a>
+ </fieldset>
+ </form>
+[% END %]
+
+[% IF op == 'delete_confirm' %]
+ <form action="/cgi-bin/koha/admin/categories.pl" method="post">
+ <fieldset>
+ <legend>
+ <h1>
+ [% IF patrons_in_category > 0 %]
+ <span>Categoria [% categorycode | html %] em uso. Não é possível eliminar!</span>
+ [% ELSE %]
+ <span>Confirmar a eliminação da categoria [% categorycode | html %]</span>
+ [% END %]
+ </h1>
+ </legend>
+
+ [% IF patrons_in_category > 0  %]
+ <div class="dialog alert">
+ <strong>Esta categoria é usada [% patrons_in_category | html %] vezes</strong>. Impossível eliminar </div>
+ [% END %]
+ <table>
+ <tr><th scope="row">Código de categoria: </th><td>[% category.categorycode | html %]</td></tr>
+ <tr><th scope="row">Descrição: </th><td>[% category.description | html %]</td></tr>
+ <tr><th scope="row">Período de inscrição: </th>
+ <td>
+ [% IF category.enrolmentperiod %] [% category.enrolmentperiod | html %] meses [% ELSE %] até [% category.enrolmentperioddate | $KohaDates %] [% END %] </td>
+ </tr>
+ <tr><th scope="row">Expiração da palavra-passe: </th><td>[% category.password_expiry_days | html %] dia(s)</td></tr>
+ <tr><th scope="row">Idade obrigatória: </th><td>[% category.dateofbirthrequired | html %] ano(s)</td></tr>
+ <tr><th scope="row">Limite de idade: </th><td>[% category.upperagelimit | html %] ano(s)</td></tr>
+ <tr><th scope="row">Taxa de inscrição: </th><td>[% category.enrolmentfee | $Price %]</td></tr>
+ <tr><th scope="row">Recebe avisos de atrasos: </th><td>[% IF category. overduenoticerequired %]Sim[% ELSE %]Não[% END %]</td></tr>
+ <tr><th scope="row">Exemplares perdidos no interface dos técnicos:</th><td>[% IF category.hidelostitems %]Oculto por omissão[% ELSE %]Visível[% END %]</td></tr>
+ <tr><th scope="row">Taxa de reserva: </th><td>[% category.reservefee | $Price %]</td></tr>
+
+ [% IF ( Koha.Preference('CheckPrevCheckout') == 'softyes' || Koha.Preference('CheckPrevCheckout') == 'softno' ) %]
+ <tr>
+ <th scope="row">Verificar empréstimos anteriores: </th>
+ <td>
+ [% SWITCH category.checkprevcheckout %]
+ [% CASE 'yes' %]
+ <span>Sim</span>
+ [% CASE 'no' %]
+ <span>Não</span>
+ [% CASE 'inherit' %]
+ <span>Herdar</span>
+ [% END %]
+ </td>
+ </tr>
+ [% END %]
+ <tr><th scope="row">Pode ser assegurado:</th><td>[% IF category.can_be_guarantee %]Sim[% ELSE %]Não[% END %]</td></tr>
+ <tr>
+ <th scope="row">Privacidade por omissão: </th>
+ <td>
+ [% SWITCH category.default_privacy %]
+ [% CASE 'default' %]
+ <span>Omissão</span>
+ [% CASE 'never' %]
+ <span>Nunca</span>
+ [% CASE 'forever' %]
+ <span>Sempre</span>
+ [% END %]
+ </td>
+ </tr>
+ </table>
+ <fieldset class="action">
+ [% IF patrons_in_category > 0 %]
+ <input type="submit" class="btn btn-primary" value="OK" />
+ [% ELSE %]
+ <input type="hidden" name="op" value="delete_confirmed" />
+ <input type="hidden" name="categorycode" value="[% categorycode | html %]" />
+ <input class="btn btn-primary" type="submit" value="Eliminar categoria" />
+ <a class="cancel" href="/cgi-bin/koha/admin/categories.pl">Anular</a>
+ [% END %]
+ </fieldset>
+ </fieldset>
+ </form>
+[% END %]
+
+[% IF op == 'list' %]
+
+ <div id="toolbar" class="btn-toolbar">
+ <a class="btn btn-default" id="newcategory" href="/cgi-bin/koha/admin/categories.pl?op=add_form"><i class="fa fa-plus"></i> Nova Categoria</a>
+ </div>
+
+ <h1>Categorias de Leitores</h1>
+ <div class="page-section">
+ [% IF searchfield %] Pesquisou [% searchfield | html %]</span>
+ [% END %]
+ [% IF categories %]
+ <table id="patron_categories">
+ <thead>
+ <tr>
+ <th scope="col">Código</th>
+ <th scope="col">Nome da Categoria</th>
+ <th scope="col">Tipo</th>
+ <th scope="col">Período de inscrição</th>
+ <th scope="col">Expiração da palavra-passe</th>
+ <th scope="col">Idade obrigatória</th>
+ <th scope="col">Limite de idade</th>
+ <th scope="col">Taxa de inscrição</th>
+ <th scope="col">Atraso</th>
+ <th scope="col">Exemplares perdidos</th>
+ <th scope="col">Taxa de reserva</th>
+ [% IF ( EnhancedMessagingPreferences ) %]
+ <th scope="col">Mensagens</th>
+ [% END %]
+ <th scope="col">Limitações das bibliotecas</th>
+ [% IF ( Koha.Preference('CheckPrevCheckout') == 'softyes' || Koha.Preference('CheckPrevCheckout') == 'softno' ) %]
+ <th scope="col">Verificar empréstimos anteriores?</th>
+ [% END %]
+ <th scope="col">Pode ser assegurado</th>
+ <th scope="col">Privacidade por omissão</th>
+ <th scope="col">Excluir da prioridade de reservas locais</th>
+ <th scope="col">Ações</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH category IN categories %]
+ <tr>
+ <td>[% category.categorycode | html %]</td>
+ <td>
+ <a href="/cgi-bin/koha/admin/categories.pl?op=add_form&amp;categorycode=[% category.categorycode |uri %]">[% category.description | html %]</a>
+ </td>
+ <td>
+ [% SWITCH category.category_type %]
+ [% CASE 'A' %]<span>Adulto</span>
+ [% CASE 'C' %]<span>Criança</span>
+ [% CASE 'P' %]<span>Prof.</span>
+ [% CASE 'I' %]<span>Org.</span>
+ [% CASE 'S' %]<span>Staff</span>
+ [% CASE 'X' %]<span>Estatístico</span>
+ [% END %]
+ </td>
+ <td>
+ [% IF ( category.enrolmentperiod ) %] [% category.enrolmentperiod | html %] meses [% ELSE %] até [% category.enrolmentperioddate | $KohaDates %] [% END %] </td>
+ [% IF (category.password_expiry_days) %]
+ <td>[% category.password_expiry_days | html %] dia(s)</td>
+ [% ELSE %]
+ <td>-</td>
+ [% END %]
+ [% IF (category.dateofbirthrequired) %]
+ <td>[% category.dateofbirthrequired | html %] ano(s)</td>
+ [% ELSE %]
+ <td>-</td>
+ [% END %]
+ [% IF (category.upperagelimit) %]
+ <td>[% category.upperagelimit | html %] ano(s)</td>
+ [% ELSE %]
+ <td>-</td>
+ [% END %]
+ [% IF (category.enrolmentfee > 0) %]
+ <td>[% category.enrolmentfee | $Price %]</td>
+ [% ELSE %]
+ <td>-</td>
+ [% END %]
+ <td>[% IF ( category.overduenoticerequired ) %]Sim[% ELSE %]Não[% END %]</td>
+ <td>[% IF ( category.hidelostitems ) %]Oculto[% ELSE %]Visível[% END %]</td>
+ [% IF (category.reservefee > 0) %]
+ <td>[% category.reservefee | $Price %]</td>
+ [% ELSE %]
+ <td>-</td>
+ [% END %]
+ [% IF Koha.Preference('EnhancedMessagingPreferences') %]
+ <td style="white-space: nowrap; font-size:80%;">
+ [% SET default_messaging = category.default_messaging %]
+ [% IF default_messaging.size %]
+ [% FOREACH prefs IN default_messaging %]
+ [% NEXT IF !Koha.Preference( 'ILLModule' ) && prefs.message_name.match('^Ill_') %]
+ [% FOREACH transport IN prefs.transports %]
+ [% IF ( transport.transport ) %]
+ [% IF ( prefs.Item_Due ) %]<span>Empréstimo em atraso</span>
+ [% ELSIF ( prefs.Advance_Notice ) %]<span>Pré-aviso</span>
+ [% ELSIF ( prefs.Hold_Filled ) %]<span>Reserva preenchida</span>
+ [% ELSIF ( prefs.Item_Check_in ) %]<span>Exemplar devolvido</span>
+ [% ELSIF ( prefs.Item_Checkout ) %]<span>Exemplar emprestado</span>
+ [% ELSIF ( prefs.Ill_ready ) %]<span>Empréstimo inter-bibliotecas pronto</span>
+ [% ELSIF ( prefs.Ill_unavailable ) %]<span>Empréstimo inter-bibliotecas indisponível</span>
+ [% ELSIF ( prefs.Ill_update ) %]<span>Empréstimo inter-bibliotecas atualizado</span>
+ [% ELSIF ( prefs.Auto_Renewals ) %]<span>Renovação automática</span>
+ [% ELSIF ( prefs.Hold_Reminder ) %]<span>Lembrete de reserva</span>
+ [% ELSE %]<span>Desconhecido</span>
+ [% END %]:
+ <strong>[% transport.transport | html %]</strong><br />
+ [% ELSE %]<span>Nenhum</span><br />[% END %]
+ [% END %]
+ [% END %]
+ [% ELSE %]
+ <span>Nenhum</span>
+ [% END %]
+ </td>
+ [% END %]
+ <td>
+ [% SET library_limits = category.library_limits %]
+ [% IF library_limits.count > 0 %]
+ [% library_str = "" %]
+ [% FOREACH library IN library_limits %]
+ [%- IF loop.first -%]
+ [% library_str = library.branchname _ " (" _ library.branchcode _ ")" %]
+ [% ELSE %]
+ [% library_str = library_str _ "\n" _ library.branchname _ " (" _ library.branchcode _ ")" %]
+ [% END %]
+ [% END %]
+ <span class="library_limitation" title="[% library_str | html %]">
+ [% IF library_limits.count > 1 %]
+ <span>[% library_limits.count | html %] limitações de biblioteca</span>
+ [% ELSE %]
+ <span>[% library_limits.count | html %] limitaçao de biblioteca</span>
+ [% END %]
+ [% ELSE %]
+ <span>Sem limitação</span>
+ [% END %]
+ </td>
+ [% IF ( Koha.Preference('CheckPrevCheckout') == 'softyes' || Koha.Preference('CheckPrevCheckout') == 'softno' ) %]
+ <td>
+ [% SWITCH category.checkprevcheckout %]
+ [% CASE 'yes' %]
+ <span>Sim</span>
+ [% CASE 'no' %]
+ <span>Não</span>
+ [% CASE 'inherit' %]
+ <span>Herdar</span>
+ [% END %]
+ </td>
+ [% END %]
+ <td>[% IF category.can_be_guarantee %] Sim [% ELSE %] Não [% END %]</td>
+ <td>
+ [% SWITCH category.default_privacy %]
+ [% CASE 'default' %]
+ <span>Omissão</span>
+ [% CASE 'never' %]
+ <span>Nunca</span>
+ [% CASE 'forever' %]
+ <span>Sempre</span>
+ [% END %]
+ </td>
+ <td>
+ [% IF category.exclude_from_local_holds_priority %]
+ <span>Sim</span>
+ [% ELSE %]
+ <span>Não</span>
+ [% END %]
+ </td>
+ <td class="actions">
+ <a class="btn btn-default btn-xs" href="/cgi-bin/koha/admin/categories.pl?op=add_form&amp;categorycode=[% category.categorycode |uri %]"><i class="fa fa-pencil"></i> Alterar</a>
+ <a class="btn btn-default btn-xs" href="/cgi-bin/koha/admin/categories.pl?op=delete_confirm&amp;categorycode=[% category.categorycode |uri %]"><i class="fa fa-trash"></i> Apagar</a>
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ [% ELSE %]
+ <div class="dialog alert">Nenhuma categoria foi definida. <a href="/cgi-bin/koha/admin/categories.pl?op=add_form">Criar uma nova categoria</a>.</div>
+ [% END %]
+ </div>
+[% END %]
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'admin-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ <script>
+        var TalkingTechItivaPhoneNotification = [% Koha.Preference('TalkingTechItivaPhoneNotification') || 0 | html %];
+        var PhoneNotification = [% Koha.Preference('PhoneNotification') || 0 | html %];
+    </script>
+ [% Asset.js("js/admin-menu.js") | $raw %]
+ [% Asset.js("js/messaging-preference-form.js") | $raw %]
+ [% INCLUDE 'calendar.inc' %]
+ [% INCLUDE 'datatables.inc' %]
+ [% INCLUDE 'columns_settings.inc' %]
+ <script>
+        var table_settings = [% TablesSettings.GetTableSettings( 'admin', 'categories', 'patron_categories', 'json' ) | $raw %];
+    </script>
+ [% Asset.js("js/categories.js") | $raw %]
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

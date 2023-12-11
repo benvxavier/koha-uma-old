@@ -1,0 +1,78 @@
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Construtor do campo 135a UNIMARC</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="cat_unimarc_field_135a" class="cat" style="padding:1em;">
+ <h1>Construtor do campo 135a UNIMARC</h1>
+ <div class="page-section">
+ <form name="f_pop" action="">
+ <table>
+ <tr>
+ <td><label for="f1">Tipo de recurso electrónico:</label></td>
+ <td>
+ <select name="f1" id="f1">
+
+ [% IF ( f1space ) %]
+ <option value=" " selected="selected">valor não requerido</option>
+ [% ELSE %]
+ <option value=" ">valor não requerido</option>
+ [% END %]
+ [% IF ( f1a ) %]
+ <option value="a" selected="selected">numérico</option>
+ [% ELSE %]
+ <option value="a">numérico</option>
+ [% END %]
+ [% IF ( f1b ) %]
+ <option value="b" selected="selected">programas de computador</option>
+ [% ELSE %]
+ <option value="b">programas de computador</option>
+ [% END %]
+ [% IF ( f1c ) %]
+ <option value="c" selected="selected">representativo</option>
+ [% ELSE %]
+ <option value="c">representativo</option>
+ [% END %]
+ [% IF ( f1d ) %]
+ <option value="d" selected="selected">texto</option>
+ [% ELSE %]
+ <option value="d">texto</option>
+ [% END %]
+ [% IF ( f1u ) %]
+ <option value="u" selected="selected">desconhecido</option>
+ [% ELSE %]
+ <option value="u">desconhecido</option>
+ [% END %]
+ [% IF ( f1v ) %]
+ <option value="v" selected="selected">combinação</option>
+ [% ELSE %]
+ <option value="v">combinação</option>
+ [% END %]
+ [% IF ( f1z ) %]
+ <option value="z" selected="selected">outro</option>
+ [% ELSE %]
+ <option value="z">outro</option>
+ [% END %]
+ </select>
+ </td></tr>
+ </table>
+ <p><input type="button" class="btn btn-primary" value="OK" onclick="report();" /> <a href="#" class="cancel close">Anular</a></p>
+ </form>
+ </div> <!-- /.page-section -->
+
+[% MACRO jsinclude BLOCK %]
+ <script>
+        var dateformat = "[% Koha.Preference('dateformat') | html %]";
+        function report() {
+            var doc   = opener.document;
+            var field = doc.getElementById("[% index | html %]");
+
+            field.value =  document.f_pop.f1.value;
+            window.close();
+            return false;
+        }
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' popup_window=1 %]

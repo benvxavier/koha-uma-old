@@ -1,0 +1,190 @@
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Construtor do campo 126b UNIMARC</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="cat_unimarc_field_126b" class="cat" style="padding:1em;">
+ <h1>Construtor do campo 126b UNIMARC</h1>
+ <div class="page-section">
+ <form name="f_pop" action="">
+ <table>
+ <tr>
+ <td><label for="f1">Tipo de disco, cilindro ou fita:</label></td>
+ <td>
+ <select name="f1" id="f1">
+
+ [% IF ( f1a ) %]
+ <option value="a" selected="selected">gravação direta (única, gravado no momento)</option>
+ [% ELSE %]
+ <option value="a">gravação direta (única, gravado no momento)</option>
+ [% END %]
+ [% IF ( f1b ) %]
+ <option value="b" selected="selected">produção em massa</option>
+ [% ELSE %]
+ <option value="b">produção em massa</option>
+ [% END %]
+ [% IF ( f1c ) %]
+ <option value="c" selected="selected">fita original</option>
+ [% ELSE %]
+ <option value="c">fita original</option>
+ [% END %]
+ [% IF ( f1d ) %]
+ <option value="d" selected="selected">duplicação da fita original</option>
+ [% ELSE %]
+ <option value="d">duplicação da fita original</option>
+ [% END %]
+ [% IF ( f1e ) %]
+ <option value="e" selected="selected">disco original (negativo)</option>
+ [% ELSE %]
+ <option value="e">disco original (negativo)</option>
+ [% END %]
+ [% IF ( f1f ) %]
+ <option value="f" selected="selected">disco original (positivo)</option>
+ [% ELSE %]
+ <option value="f">disco original (positivo)</option>
+ [% END %]
+ [% IF ( f1g ) %]
+ <option value="g" selected="selected">molde (negativo)</option>
+ [% ELSE %]
+ <option value="g">molde (negativo)</option>
+ [% END %]
+ [% IF ( f1h ) %]
+ <option value="h" selected="selected">prensagem de teste</option>
+ [% ELSE %]
+ <option value="h">prensagem de teste</option>
+ [% END %]
+ [% IF ( f1u ) %]
+ <option value="u" selected="selected">desconhecido</option>
+ [% ELSE %]
+ <option value="u">desconhecido</option>
+ [% END %]
+ [% IF ( f1z ) %]
+ <option value="z" selected="selected">outro</option>
+ [% ELSE %]
+ <option value="z">outro</option>
+ [% END %]
+ </select>
+ </td></tr>
+ <tr>
+ <td><label for="f2">Tipo de material:</label></td>
+ <td>
+ <select name="f2" id="f2">
+
+ [% IF ( f2u ) %]
+ <option value="u" selected="selected">desconhecido</option>
+ [% ELSE %]
+ <option value="u">desconhecido</option>
+ [% END %]
+ [% IF ( f2x ) %]
+ <option value="x" selected="selected">não aplicável</option>
+ [% ELSE %]
+ <option value="x">não aplicável</option>
+ [% END %]
+ [% IF ( f2z ) %]
+ <option value="z" selected="selected">outro</option>
+ [% ELSE %]
+ <option value="z">outro</option>
+ [% END %]
+ [% IF ( f2g ) %]
+ <option value="g" selected="selected">cera (instantânea)</option>
+ [% ELSE %]
+ <option value="g">cera (instantânea)</option>
+ [% END %]
+ [% IF ( f2h ) %]
+ <option value="h" selected="selected">plástico (produzido em massa)</option>
+ [% ELSE %]
+ <option value="h">plástico (produzido em massa)</option>
+ [% END %]
+ [% IF ( f2a ) %]
+ <option value="a" selected="selected">lacado (ex.: acetato)</option>
+ [% ELSE %]
+ <option value="a">lacado (ex.: acetato)</option>
+ [% END %]
+ [% IF ( f2b ) %]
+ <option value="b" selected="selected">metal (ex.: alumínio)</option>
+ [% ELSE %]
+ <option value="b">metal (ex.: alumínio)</option>
+ [% END %]
+ [% IF ( f2c ) %]
+ <option value="c" selected="selected">folhas de laca prensada</option>
+ [% ELSE %]
+ <option value="c">folhas de laca prensada</option>
+ [% END %]
+ [% IF ( f2d ) %]
+ <option value="d" selected="selected">plástico prensado</option>
+ [% ELSE %]
+ <option value="d">plástico prensado</option>
+ [% END %]
+ [% IF ( f2e ) %]
+ <option value="e" selected="selected">metal e plástico (discos compactos)</option>
+ [% ELSE %]
+ <option value="e">metal e plástico (discos compactos)</option>
+ [% END %]
+ [% IF ( f2i ) %]
+ <option value="i" selected="selected">papel reforçado</option>
+ [% ELSE %]
+ <option value="i">papel reforçado</option>
+ [% END %]
+ [% IF ( f2j ) %]
+ <option value="j" selected="selected">acetato</option>
+ [% ELSE %]
+ <option value="j">acetato</option>
+ [% END %]
+ [% IF ( f2k ) %]
+ <option value="k" selected="selected">P.V.C.</option>
+ [% ELSE %]
+ <option value="k">P.V.C.</option>
+ [% END %]
+ [% IF ( f2l ) %]
+ <option value="l" selected="selected">poliéster</option>
+ [% ELSE %]
+ <option value="l">poliéster</option>
+ [% END %]
+ </select>
+ </td></tr>
+ <tr>
+ <td><label for="f3">Tipo de corte:</label></td>
+ <td>
+ <select name="f3" id="f3">
+ [% IF ( f3a ) %]
+ <option value="a" selected="selected">corte lateral ou combinado</option>
+ [% ELSE %]
+ <option value="a">corte lateral ou combinado</option>
+ [% END %]
+ [% IF ( f3b ) %]
+ <option value="b" selected="selected">corte vertical (altos ou baixos)</option>
+ [% ELSE %]
+ <option value="b">corte vertical (altos ou baixos)</option>
+ [% END %]
+ [% IF ( f3u ) %]
+ <option value="u" selected="selected">desconhecido</option>
+ [% ELSE %]
+ <option value="u">desconhecido</option>
+ [% END %]
+ [% IF ( f3x ) %]
+ <option value="x" selected="selected">não aplicável</option>
+ [% ELSE %]
+ <option value="x">não aplicável</option>
+ [% END %]
+ </select>
+ </td></tr>
+ </table>
+ <fieldset class="action"><input type="button" class="btn btn-primary" value="OK" onclick="report();" /> <a href="#" class="cancel close">Anular</a></fieldset>
+ </form>
+ </div> <!-- /.page-section -->
+
+[% MACRO jsinclude BLOCK %]
+ <script>
+        function report() {
+            var doc = opener.document;
+            var field = doc.getElementById("[% index | html %]");
+
+            field.value = document.f_pop.f1.value+document.f_pop.f2.value+document.f_pop.f3.value ;
+            self.close();
+            return false;
+        }
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' popup_window=1 %]

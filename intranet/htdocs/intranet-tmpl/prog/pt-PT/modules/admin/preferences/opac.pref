@@ -1,0 +1,964 @@
+---
+OPAC -:
+  Aparência:
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: OPACUserSummary
+    - um resumo dos empréstimos, atrasos, reservas e multas do leitor autenticado,
+      na página inicial do OPAC.
+  - - Para os resultados de pesquisa no OPAC, mostrar os itens
+    - choices:
+        holdingbranch: biblioteca actual
+        homebranch: da biblioteca de origem
+      pref: OPACResultsLibrary
+    - . Por favor note que esta funcionalidade está disponível para MARC21 e UNIMARC.
+  - - Usar o tema
+    - choices: opac-templates
+      pref: opacthemes
+    - no OPAC.
+  - - Usar
+    - choices:
+        bootstrap: bootstrap
+        prog: prog
+      pref: OPACFallback
+    - como tema de reserva para o OPAC.
+  - - 'O OPAC está localizado em '
+    - class: url
+      pref: OPACBaseURL
+    - . Este deve ser um endereço URL completo, começado por <code>http://</code>
+      ou <code>https://</code>. Não inclua a barra final no URL. (Esta preferência
+      deve ser preenchida corretamente para que o RSS, a unAPI e os plugins de pesquisa
+      funcionem.)
+  - - Mostrar
+    - class: long
+      pref: LibraryName
+    - como o nome da biblioteca no OPAC.
+  - - choices:
+        '0': Não activar
+        '1': Activar
+      pref: OpacPublic
+    - 'o OPAC do Koha como público. OPAC privados requerem autenticação antes de poder
+      ser acedido. '
+    - 'Nota: Esta preferência não afeta a API pública, veja a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=RESTPublicAnonymousRequests">RESTPublicAnonymousRequests</a>
+      para controlar a API.'
+  - - Mostrar a classificação por estrelas
+    - choices:
+        all: resultados, detalhes e leitor
+        details: apenas nas páginas de detalhes
+        disable: em nenhuma página
+      pref: OpacStarRatings
+    - .
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: OpacMaintenance
+    - 'um aviso de que o OPAC está em manutenção, em vez do OPAC normal. Nota: isto
+      mostra o mesmo aviso quando a base de dados precisa de ser atualizada, mas incondicionalmente.'
+  - - 'Mostrar o seguinte HTML quando a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OpacMaintenance">OpacMaintenance</a>
+      estiver ativa:'
+    - class: code
+      pref: OpacMaintenanceNotice
+      syntax: text/html
+      type: textarea
+  - - Esta descrição será visualizada nos resultados do motor de pesquisa (160 caracteres).
+    - pref: OpacMetaDescription
+      type: textarea
+  - - Por omissão, mostrar os registos bibliográficos
+    - choices:
+        isbd: como especificado no modelo ISBD.
+        marc: na forma MARC.
+        normal: na forma simples.
+      pref: BiblioDefaultView
+  - - Quando o leitor clicar numa ligação para outro site a partir do OPAC (como Amazon
+      ou OCLC),
+    - choices:
+        '0': não abrir
+        '1': abrir
+      pref: OPACURLOpenInNewWindow
+    - o website numa nova janela.
+  - - choices:
+        '0': Mostrar
+        '1': Não mostrar
+      pref: hidelostitems
+    - os exemplares perdidos nas páginas de pesquisa e detalhes.
+  - - 'Mostrar as listas usando o seguinte ficheiro XSLT: '
+    - class: file
+      pref: OPACXSLTListsDisplay
+    - <br />Opções:<ul><li>Insira "<a href="#" class="set_syspref" data-syspref="OPACXSLTListsDisplay"
+      data-value="default">default</a>" para usar o por omissão</li><li>Coloque o
+      caminho para um ficheiro xslt</li><li>Coloque um URL para uma stylesheet externa
+      específica</li></ul>Se tiver folhas de estilo distintas para idiomas distintos
+      o atributo {langcode} será substituído pelo idioma actual da interface.
+  - - 'Mostrar os resultados no OPAC usando a seguinte stylesheet XSLT: '
+    - class: file
+      pref: OPACXSLTResultsDisplay
+    - '<br />Opções:<ul><li>Insira "<a href="#" class="set_syspref" data-syspref="OPACXSLTResultsDisplay"
+      data-value="default">default</a>" para usar o por omissão</li><li>Coloque o
+      caminho para um ficheiro xslt</li><li>Coloque um URL para uma stylesheet externa
+      específica</li><li>NOTA: A preferência de sistema <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=PassItemMarcToXSLT">PassItemMarcToXSLT</a>
+      deve estar ativa se as suas folhas de estilo usam dados dos exemplares</li></ul>Se
+      tiver folhas de estilo distintas para idiomas distintos o atributo {langcode}
+      será substituído pelo idioma actual da interface.'
+  - - 'Mostrar os detalhes no OPAC usando a seguinte stylesheet XSLT: '
+    - class: file
+      pref: OPACXSLTDetailsDisplay
+    - <br />Opções:<ul><li>Insira "<a href="#" class="set_syspref" data-syspref="OPACXSLTDetailsDisplay"
+      data-value="default">default</a>" para usar o por omissão</li><li>Coloque o
+      caminho para um ficheiro xslt</li><li>Coloque um URL para uma stylesheet externa
+      específica</li></ul>Se tiver folhas de estilo distintas para idiomas distintos
+      o atributo {langcode} será substituído pelo idioma actual da interface.
+  - - 'Mostrar resultados de pesquisa de autoridades usando o stylesheet XSLT em: '
+    - class: file
+      pref: AuthorityXSLTOpacResultsDisplay
+    - '<br />Opções:<ul><li>Vazio. Nenhuma XSLT será aplicada (<strong>omissão</strong>)</li><li>Insira
+      o caminho para um ficheiro XSLT.</li><li>Insira um endereço URL para uma folha
+      de estilo específica externa.</li></ul>Se tem várias stylesheets para: <ul><li>diferentes
+      idiomas: use o código {langcode} - será substituído pelo idioma da interface</li><li>tipos
+      de autoridade: use o código {authtypecode} - será substituído pelo código do
+      tipo de autoridade'
+  - - 'Mostrar os detalhes de autoridade no OPAC usando o stylesheet XSLT em: '
+    - class: file
+      pref: AuthorityXSLTOpacDetailsDisplay
+    - '<br />Opções:<ul><li>Vazio. Nenhuma XSLT será aplicada (<strong>omissão</strong>)</li><li>Insira
+      o caminho para um ficheiro XSLT.</li><li>Insira um endereço URL para uma folha
+      de estilo específica externa.</li></ul>Se tem várias stylesheets para: <ul><li>diferentes
+      idiomas: use o código {langcode} - será substituído pelo idioma da interface</li><li>tipos
+      de autoridade: use o código {authtypecode} - será substituído pelo código do
+      tipo de autoridade'
+  - - choices:
+        '0': Mostrar
+        '1': Não mostrar
+      default: 0
+      pref: OpacNoItemTypeImages
+    - os ícones dos tipos de documento no OPAC.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: DisplayOPACiconsXSLT
+    - o formato, a audiência, os ícones de tipo de material nas páginas de resultados
+      e as descrições nas páginas de resultados e detalhes do XSLT de MARC21
+  - - choices:
+        '0': Não incluir
+        '1': Incluir
+      pref: COinSinOPACResults
+    - 'COinS / OpenURL / Z39.88 nos resultados de pesquisa do OPAC.  <br/>Aviso: Activar
+      esta funcionalidade irá aumentar os tempos de resposta da pesquisa.'
+    - '<br/>Se deseja mostrar uma ligação para o OpenURL, veja as seguintes preferências
+      de sistema:'
+    - <br/><a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OpenURLResolverURL">OpenURLResolverURL</a>,
+      <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OPACShowOpenURL">OPACShowOpenURL</a>,
+      <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OPACOpenURLItemTypes">OPACOpenURLItemTypes</a>,
+      <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OpenURLText">OpenURLText</a>,
+      <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OpenURLImageLocation">OpenURLImageLocation</a>
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: OPACShowUnusedAuthorities
+    - autoridades não usadas na pesquisa de autoridades no OPAC.
+  - - choices:
+        holds: Mostrar reservas
+        holds_priority: Mostrar reservas e prioridade
+        none: Não mostrar nenhum detalhe da reserva
+        priority: Mostrar prioridade
+      pref: OPACShowHoldQueueDetails
+    - aos leitores no OPAC.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      default: 0
+      pref: OPACShowCheckoutName
+    - o nome do leitor que tem o exemplar emprestado verificado nas páginas de detalhes
+      do registo no OPAC.
+  - - Mostrar
+    - choices:
+        both: biblioteca de origem e de empréstimo
+        holding: biblioteca de empréstimo
+        home: biblioteca de origem
+      pref: OpacLocationBranchToDisplay
+    - para os exemplares na página de detalhes do OPAC.
+  - - 'Mostrar a localização da prateleira '
+    - choices:
+        both: abaixo da biblioteca de origem e da biblioteca de empréstimo
+        column: numa coluna separada
+        holding: abaixo da biblioteca de empréstimo
+        home: abaixo da biblioteca de origem
+      pref: OpacLocationOnDetail
+    - nos exemplares na página de detalhes de um registo no OPAC.
+    - '<br />Nota: se a opção ''mostrar numa coluna separada'' estiver seleccionada,
+      precisa também de activar a visualização da coluna item_shelving_location na
+      <a href=''/cgi-bin/koha/admin/columns_settings.pl''>configuração das colunas</a>
+      na página de administração.'
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      default: 0
+      pref: OPACShowMusicalInscripts
+    - as inscrições musicais na página de detalhes do registo no OPAC.
+  - - choices:
+        '0': Não reproduzir
+        '1': Reproduzir
+      default: 0,'','If displayed musical inscripts, play midi conversion for items
+        on the OPAC record details page.'
+      pref: OPACPlayMusicalInscripts
+    - a representação MIDI das inscrições musicais na página de detalhes do registo
+      no OPAC.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      default: 0
+      pref: OpacKohaUrl
+    - o texto 'Powered by Koha' no rodapé do OPAC.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      default: 0
+      pref: OpacShowRecentComments
+    - uma ligação para os comentário mais recentes no cabeçalho do OPAC.
+  - - choices:
+        '0': Não realçar
+        '1': Realçar
+      pref: OpacHighlightedWords
+    - 'as palavras que o leitor pesquisou nas páginas de resultados e de detalhes.
+      Para impedir que algumas palavras sejam realçadas, insira uma lista de palavras
+      irrelevantes aqui:'
+    - class: multi
+      pref: NotHighlightedWords
+    - (colunas separadas por |).
+  - - Usar a imagem em
+    - class: url
+      pref: OpacFavicon
+    - para o favicon do OPAC. (Deve ser um URL completo, começando com <code>http://</code>.)
+  - - 'Inclui o seguinte JavaScript em todos as páginas do OPAC:'
+    - class: code
+      pref: OPACUserJS
+      syntax: javascript
+      type: textarea
+  - - Incluir o CSS adicional
+    - class: file
+      pref: OpacAdditionalStylesheet
+    - para sobrepor configurações específicas do stylesheet por omissão (deixe em
+      branco para não activar). Insira o nome do ficheiro ou um URL completo começando
+      por <code>http://</code> (se o ficheiro estiver num servidor remoto). Por favor
+      note que se inserir o nome do ficheiro, o mesmo deve estar na subdirectoria
+      css para cada tema activo e idioma dentro da directoria de templates do Koha.
+      Um caminho local completo é esperado que comece do documento raíz HTTP.
+  - - Usar o stylesheet CSS
+    - class: file
+      pref: opaclayoutstylesheet
+    - em todas as páginas no OPAC, em substituição do CSS de omissão (usado quando
+      este campo é deixado em branco). Insira somente um nome de ficheiro, um caminho
+      local completo ou um URL completo começando por <code>http://</code> (se o ficheiro
+      estiver num servidor remoto). Por favor note que se inserir o nome do ficheiro,
+      o mesmo deve estar na subdirectoria css para cada tema e idioma activos, dentro
+      da directoria de templates do Koha. Um caminho local completo é esperado que
+      comece do documento raíz HTTP.
+  - - 'Inclui o seguinte CSS em todas as páginas do OPAC:'
+    - class: code
+      pref: OPACUserCSS
+      syntax: css
+      type: textarea
+  - - 'Incluir uma caixa "Mais pesquisas" na página de detalhes do registo no OPAC,
+      com o seguinte HTML (deixe em branco para não activar):'
+    - '<br />Nota: Os campos {BIBLIONUMBER}, {CONTROLNUMBER}, {OCLC_NO}, {TITLE},
+      {ISBN}, {ISSN} e {AUTHOR} serão substituídos pela informação do registo em questão.'
+    - class: code
+      pref: OPACSearchForTitleIn
+      syntax: text/html
+      type: textarea
+  - - 'Incluir uma coluna "Ligações" no separador "meu sumário" e no "meu histórico
+      de empréstimos" quando um utilizador está autenticado no OPAC, com o seguinte
+      HTML (deixe em branco para não activar):'
+    - '<br />Nota: Os campos {BIBLIONUMBER}, {TITLE}, {ISBN} e {AUTHOR} serão substituídos
+      pela informação do registo em questão.'
+    - class: code
+      pref: OPACMySummaryHTML
+      syntax: text/html
+      type: textarea
+  - - 'Incluir o seguinte HTML abaixo das opções de refinar pesquisa nos resultados
+      do OPAC:'
+    - class: code
+      pref: OPACResultsSidebar
+      syntax: text/html
+      type: textarea
+  - - choices:
+        '0': Não adicionar
+        '1': Adicionar
+      pref: OpacAddMastheadLibraryPulldown
+    - um menu de seleção de biblioteca no cabeçalho OPAC.
+  - - 'Mostrar o seguinte HTML quando não forem encontrados resultados para uma pesquisa
+      no OPAC:'
+    - '<br />Nota: Você pode inserir espaços reservados {QUERY_KW} que serão substituídas
+      com as palavras-chave da consulta.'
+    - class: code
+      pref: OPACNoResultsFound
+      syntax: text/html
+      type: textarea
+  - - 'Mostrar o URI no campo 856u como uma imagem: '
+    - choices:
+        Both: páginas de resultados e de detalhes
+        Details: apenas páginas de detalhes
+        OFF: nem nas páginas de detalhes ou páginas de resultados
+        Results: apenas na página de resultados
+      pref: OPACDisplay856uAsImage
+    - '. Nota: A opção <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OPACXSLT">OPACXSLT</a>
+      correspondente deve estar activada.'
+  - - 'Selecione as opções de exportação que devem estar disponíveis na página de
+      detalhes do OPAC:'
+    - multiple:
+        bibtex: BibTeX
+        dc: Dublin Core
+        isbd: ISBD
+        marc8: MARC codificado em MARC-8
+        marcstd: MARC codificado em Unicode/UTF-8 sem campos e subcampos de uso local
+          -9xx, x9x, xx9-
+        marcxml: MARCXML
+        mods: MODS
+        ris: RIS
+        utf8: MARC codificado em Unicode/UTF-8
+      pref: OpacExportOptions
+  - - choices:
+        '0': Não separar
+        '1': Separar
+      pref: OpacSeparateHoldings
+    - os exemplares em dois separadores, onde o primeiro separador irá conter os exemplares
+      cuja
+    - choices:
+        holdingbranch: biblioteca de empréstimo
+        homebranch: biblioteca de origem
+      pref: OpacSeparateHoldingsBranch
+    - é a biblioteca do leitor autenticado. O segundo separador irá conter todos os
+      outros exemplares.
+  - - choices:
+        first_column: A primeira coluna da tabela
+        holdingbranch: A biblioteca de empréstimo
+        homebranch: A biblioteca de origem
+      pref: OPACHoldingsDefaultSortField
+    - é o campo de ordenação por omissão para a tabela de reservas.
+  - - Mostrar um máximo de
+    - class: integer
+      pref: OpacMaxItemsToDisplay
+    - exemplares na página de detalhes do registo bibliográfico (se o registo bibliográfico
+      tem mais exemplares do que este número, é mostrado uma ligação que permite ao
+      leitor ver todos os exemplares).
+  - - 'Mostrar o seletor de idiomas no '
+    - choices:
+        both: cabeçalho e rodapé
+        footer: rodapé
+        top: cabeçalho
+      pref: OpacLangSelectorMode
+    - .
+  - - 'Listar os seguintes estados de não emprestados como disponíveis para consulta
+      no resultados de pesquisa do OPAC:'
+    - pref: Reference_NFL_Statuses
+    - (Usar | como delimitador.)
+  - - Não mostrar mais de
+    - pref: OPACResultsMaxItems
+    - exemplares (disponíveis) nos resultados de pesquisa processados por XSLT no
+      OPAC.<br>
+    - Se a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OPACResultsUnavailableGroupingBy">OPACResultsUnavailableGroupingBy</a>
+      estiver definida para "biblioteca e subestado", não mostrar mais que
+    - pref: OPACResultsMaxItemsUnavailable
+    - exemplares (indisponíveis) por biblioteca e por categoria (Emprestado, Danificado,
+      Reservado, etc.)<br>
+    - Agrupar os exemplares indisponíveis por
+    - choices:
+        branch: biblioteca e subestado
+        branchonly: biblioteca apenas
+        substatus: subestado
+      pref: OPACResultsUnavailableGroupingBy
+    - '. (NOTA: Para grandes consórcios, recomendamos agrupar os exemplares indisponíveis
+      por subestado, listando apenas as contagens de exemplares por subestados. De
+      forma semelhante a opção de agrupar por biblioteca resulta nas contagens de
+      exemplares por biblioteca.)'
+  Autenticação:
+  - - choices:
+        '0': Permitir
+        '1': Não permitir
+      pref: OPACShibOnly
+    - que os leitores possam autenticar-se por outros meios que não o Shibboleth.
+  Auto registo e modificação:
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: PatronSelfRegistration
+    - que os leitores se registem no OPAC.
+    - <br><strong>NOTA:</strong> Esta funcionalidade necessita que seja definida uma
+      categoria de leitor válida na preferência de sistema <a href='/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=PatronSelfRegistrationDefaultCategory'>PatronSelfRegistrationDefaultCategory</a>.
+  - - choices:
+        '0': Não requer
+        '1': Requer
+      pref: PatronSelfRegistrationVerifyByEmail
+    - quer os leitores auto registados façam a verificação via email.
+    - <br><strong>NOTA:</strong> Esta preferência de sistema necessita que a tarefa
+      <code>misc/cronjobs/cleanup_database.pl</code> esteja em funcionamento. Peça
+      ao administrador do sistema para a configurar.
+  - - Usar a categoria de leitor
+    - choices: patron-categories
+      pref: PatronSelfRegistrationDefaultCategory
+    - como a categoria de leitor por omissão para os leitores registados via OPAC.
+    - '<br><strong>AVISO: Não use uma categoria de leitor normal para o auto registo.</strong>'
+    - <br>Se o cronjob <code>misc/cronjobs/cleanup_database.pl</code> estiver configurado
+      para eliminar auto-registos no OPAC não verificados ou não concluídos, este
+      excluirá de forma permanente e irrecuperável todos os leitores que se registraram
+      há mais de <a href='/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=PatronSelfRegistrationExpireTemporaryAccountsDelay'>PatronSelfRegistrationExpireTemporaryAccountsDelay</a>
+      dias atrás (a não ser que esteja como não definido).
+  - - Eliminar os leitores que ainda se encontram na categoria indicada na preferência
+      <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=PatronSelfRegistrationDefaultCategory">PatronSelfRegistrationDefaultCategory</a>
+    - class: integer
+      pref: PatronSelfRegistrationExpireTemporaryAccountsDelay
+    - dias após a criação da conta.
+    - <br><strong>NOTA:</strong> Esta preferência de sistema necessita que a tarefa
+      <code>misc/cronjobs/cleanup_database.pl</code> esteja em funcionamento. Peça
+      ao administrador do sistema para a configurar.<br>Nenhum leitor será eliminado
+      se a preferência estiver definida como zero ou vazia.
+  - - 'As seguintes <a href=''http://schema.koha-community.org/__VERSION__/tables/borrowers.html''
+      target=''blank''>colunas da base de dados</a> devem ser preenchidas no ecrã
+      de modificação do leitor:'
+    - exclusions: password|cardnumber|dateexpiry|categorycode|sort1|sort2|opacnote|borrowernotes|gonenoaddress|lost|flags
+      pref: PatronSelfModificationMandatoryField
+      source: borrowers
+      type: modalselect
+  - - 'As seguintes <a href=''http://schema.koha-community.org/__VERSION__/tables/borrowers.html''
+      target=''blank''>colunas da base de dados</a> devem ser preenchidas no ecrã
+      de auto-registo do leitor:'
+    - exclusions: sort1|sort2|opacnote|borrowernotes|gonenoaddress|lost|flags
+      pref: PatronSelfRegistrationBorrowerMandatoryField
+      source: borrowers
+      type: modalselect
+  - - 'As seguintes <a href=''http://schema.koha-community.org/__VERSION__/tables/borrowers.html''
+      target=''blank''>colunas da base de dados</a> não devem aparecer no ecrã de
+      auto-registo do leitor:'
+    - exclusions: branchcode|sort1|sort2|gonenoaddress|lost|flags
+      pref: PatronSelfRegistrationBorrowerUnwantedField
+      source: borrowers
+      type: modalselect
+  - - 'As seguintes <a href=''http://schema.koha-community.org/__VERSION__/tables/borrowers.html''
+      target=''blank''>colunas da base de dados</a> não devem aparecer no ecrã de
+      auto-modificação do leitor:'
+    - exclusions: sort1|sort2|gonenoaddress|lost|flags
+      pref: PatronSelfModificationBorrowerUnwantedField
+      source: borrowers
+      type: modalselect
+  - - 'Mostrar a seguinte informação adicional para os leitores que se registarem
+      via OPAC (HTML é permitido):'
+    - class: html
+      pref: PatronSelfRegistrationAdditionalInstructions
+      syntax: text/html
+      type: textarea
+  - - choices:
+        '0': Não considerar
+        '1': Considerar
+      pref: PatronSelfRegistrationEmailMustBeUnique
+    - o email do leitor (borrowers.email) como único no auto-registo. Um email não
+      será aceite se já existir na base de dados.
+  - - 'Ativar o auto-registos de leitores para as seguintes bibliotecas:'
+    - pref: PatronSelfRegistrationLibraryList
+    - (códigos das bibliotecas separadas por |).
+    - Se vazio, todas as bibliotecas serão listadas.
+  - - choices:
+        '0': Não mostrar e pré-preencher
+        '1': Mostrar e pré-preencher
+      pref: PatronSelfRegistrationPrefillForm
+    - o formulário de palavra-passe e nome de utilizador após um leitor se ter registado.
+  - - choices:
+        '0': Não requer
+        '1': Requerer
+      pref: PatronSelfRegistrationConfirmEmail
+    - que os leitores confirmem o email inserindo-o duas vezes.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: OPACPatronDetails
+    - aos leitores notificarem a biblioteca de alterações à sua informação de contacto
+      a partir do OPAC.
+  - - 'Escolha o endereço de email para o qual os novos auto-registos de leitor devem
+      ser enviados: '
+    - choices:
+        '0': nenhum
+        BranchEmailAddress: endereço de email da biblioteca
+        EmailAddressForPatronRegistrations: EmailAddressForPatronRegistrations
+        KohaAdminEmailAddress: KohaAdminEmailAddress
+      default: 0
+      pref: EmailPatronRegistrations
+    - '<br>Se escolheu <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=EmailAddressForPatronRegistrations">EmailAddressForPatronRegistrations</a>
+      insira um endereço de email válido: '
+    - class: email
+      pref: EmailAddressForPatronRegistrations
+  Características:
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      default: 0
+      pref: OpacCatalogConcerns
+    - que os utilizadores do OPAC reportem problemas/preocupações sobre os registos
+      bibliográficos.
+    - <p><strong>NOTA:</strong> Ao ativar a preferência `<a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=CatalogConcerns">CatalogConcerns</a>`
+      está a permitir submissões de problemas por parte dos técnicos.</p>
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: OPACReportProblem
+    - que os leitores submetam relatórios de problemas encontrados na páginas do OPAC
+      para a biblioteca ou para o administrador do Koha.
+    - <br/>
+    - <strong>NOTA:</strong> Deve ter a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=KohaAdminEmailAddress">KohaAdminEmailAddress</a>
+      definida.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: opacuserlogin
+    - que os leitores entrem nas suas contas no OPAC.
+  - - Mostrar
+    - choices:
+        callnum: biblioteca ou cota
+        ccode: biblioteca, código de colecção e cota
+        library: apenas biblioteca
+        location: biblioteca, localização e cota
+      pref: OpacItemLocation
+    - para os exemplares nos resultados de pesquisa do OPAC.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: OpacPasswordChange
+    - ao leitores mudarem a sua palavra-passe no OPAC. Note que esta preferência deve
+      estar desligada para utilizar a autenticação LDAP.
+  - - 'Os leitores da biblioteca são '
+    - choices:
+        '0': não podem
+        '1': podem
+      default: 1
+      pref: OpacResetPassword
+    - a recuperar a palavra-passe por email no OPAC.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: OPACpatronimages
+    - as imagens do leitor na página de informação do leitor no OPAC.
+  - - choices:
+        '0': Desabilitar
+        '1': Ativar
+      pref: OPACDetailQRCode
+    - a opção para mostrar um código QR na página de detalhes de um registo bibliográfico
+      no OPAC.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: OPACFinesTab
+    - aos leitores para aceder ao separador Multas na sua área pessoal no OPAC.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: OpacBrowser
+    - que os leitores naveguem nas autoridades de assunto no OPAC.
+    - <br><strong>NOTA:</strong> Esta preferência de sistema necessita que a tarefa
+      <code>misc/cronjobs/build_browser_and_cloud.pl</code> esteja em funcionamento.
+      Peça ao administrador do sistema para a configurar.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: OpacCloud
+    - uma nuvem de assuntos no OPAC.
+    - <br><strong>NOTA:</strong> Esta preferência de sistema necessita que a tarefa
+      <code>misc/cronjobs/build_browser_and_cloud.pl</code> esteja em funcionamento.
+      Peça ao administrador do sistema para a configurar.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: OpacAuthorities
+    - aos leitores pesquisarem registos de autoridade.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: opacbookbag
+    - opac.pref#opacbookbag# aos leitores colocarem registos num "carrinho" temporário
+      no OPAC.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: OpacTopissue
+    - aos leitores aceder à lista dos exemplares mais emprestados no OPAC. Note que
+      esta funcionalidade é experimental, e deve ser evitada se a coleção de registos
+      for enorme.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: OPACComments
+    - que os leitores possam fazer comentários no OPAC.
+  - - Mostrar
+    - choices:
+        first: o primeiro nome
+        firstandinitial: o primeiro nome e a inicial do último nome
+        full: o nome inteiro
+        none: nenhum nome
+        surname: o último nome
+        username: nome de utilizador
+      pref: ShowReviewer
+    - do comentador nos comentários no OPAC.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: ShowReviewerPhoto
+    - o avatar do comentador ao lado dos comentário no OPAC. O avatar será pesquisado
+      no <a href="https://www.libravatar.org" target="_blank">Libravatar</a> usando
+      o endereço de email do leitor.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: OPACHoldRequests
+    - que os leitores reservem exemplares no OPAC.
+  - - Mostrar
+    - class: long
+      pref: numSearchRSSResults
+    - resultados de pesquisa no RSS.
+  - - Mostrar
+    - multiple:
+        email: Email
+        facebook: Facebook
+        linkedin: LinkedIn
+        twitter: Twitter
+      pref: SocialNetworks
+    - a partilha nas redes sociais nas páginas de detalhe do OPAC.
+  - - choices:
+        '0': Não activar
+        '1': Activar
+      default: 1
+      pref: OpacBrowseResults
+    - a navegação e paginação dos resultados de pesquisa a partir da página de detalhes
+      no OPAC.
+  - - Mostrar a frase do dia no
+    - multiple:
+        intranet: interface dos técnicos
+        opac: OPAC
+      pref: QuoteOfTheDay
+    - página principal.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      default: 0
+      pref: OPACPopupAuthorsSearch
+    - a lista de autores/assuntos num pop-up para uma pesquisa combinada nas páginas
+      de detalhe do OPAC.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      default: 0
+      pref: OpacHoldNotes
+    - que os leitores adicionem uma nota quando fazem uma reserva.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      default: 0
+      pref: OPACAcquisitionDetails
+    - os detalhes de aquisição nas páginas de detalhe do OPAC.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      default: 0
+      pref: OpacNewsLibrarySelect
+    - 'uma lista de selecção da biblioteca para itens de notícias no OPAC. '
+  - - 'Usar o seguinte como modelo ISBD no OPAC:'
+    - class: code
+      pref: OPACISBD
+      syntax: text/html
+      type: textarea
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      default: 0
+      pref: OpacBrowseSearch
+    - interface para navegação em todas reservas (apenas Elasticsearch).
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      default: 0
+      pref: OPACAuthorIdentifiers
+    - os identificadores para os autores e para os contribuidores na página de detalhes
+      do OPAC.
+    - Esta funcionalidade necessita de autoridades nos subcampos 024$2 e 024$a.
+    - 'Os códigos de fonte válidos no $2 são: orcid, scopus, loop, rid e viaf.'
+  - - 'Calcular o montante que um leitor ''poupou'' ao usar a biblioteca de acordo
+      com os preços de substituição e mostrar:'
+    - multiple:
+        checkouthistory: na página de histórico de empréstimo do leitor (a preferência
+          de sistema <em>opacreadinghistory</em> tem de estar ativa)
+        summary: na caixa de sumário na página principal do OPAC (a preferência de
+          sistema <em>OPACUserSummary</em> tem que estar ativa)
+        user: na página de sumário da conta do leitor
+      pref: OPACShowSavings
+    - . Note que as poupanças mostradas pode ser imprecisas se o histórico de empréstimo
+      for anonimizado.
+  OpenURL:
+  - - 'Endereço URL completo para o OpenURL (começado por <code>http://</code> ou
+      <code>https://</code>):'
+    - class: url
+      pref: OpenURLResolverURL
+  - - 'Texto para as ligações OpenURL (ou título da imagem se a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OpenURLImageLocation">OpenURLImageLocation</a>
+      estiver definida):'
+    - pref: OpenURLText
+  - - 'Localização da imagem para as ligações OpenURL:'
+    - class: url
+      pref: OpenURLImageLocation
+    - <br />Pode ser um endereço URL absoluto começado por <code>http://</code> ou
+    - <code>https://</code> ou um endereço URL relativo
+    - '<br />Exemplos:'
+    - <br />- <code>http://www.example.com/img/openurl.png</code>
+    - <br />- <code>/opac-tmpl/bootstrap/images/OpenURL.png</code>
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: OPACShowOpenURL
+    - a visualização da ligação OpenURL nos resultados de pesquisa e na página de
+      detalhes do OPAC.
+  - - 'Lista dos códigos dos tipos de documento (separados por espaços) para os quais
+      deseja mostrar a ligação OpenURL:'
+    - pref: OPACOpenURLItemTypes
+    - <br />
+  Opções da pesquisa avançada:
+  - - 'Mostrar opções de pesquisa:'
+    - multiple:
+        itemtype: Tipos de documento
+        language: Idioma
+        location: Localização e disponibilidade
+        pubdate: Data de publicação
+        sorting: Ordenação
+        subtype: Subtipos
+      pref: OpacAdvSearchOptions
+  - - 'Mostrar opções de pesquisa para a vista expandida:'
+    - multiple:
+        itemtype: Tipos de documento
+        language: Idioma
+        location: Localização e disponibilidade
+        pubdate: Data de publicação
+        sorting: Ordenação
+        subtype: Subtipos
+      pref: OpacAdvSearchMoreOptions
+  - - Mostrar separadores na pesquisa avançada do OPAC para limitar as pesquisas nos
+      campos
+    - class: long
+      pref: OpacAdvancedSearchTypes
+    - (valores separados por |). Os separadores aparecem na ordem da lista.<br/>
+    - '<em>Valores suportados atualmente</em>: Tipos de documento (<strong>itemtypes</strong>),
+      Coleção (<strong>ccode</strong>) e Localização na prateleira (<strong>loc</strong>).'
+  Política:
+  - - choices:
+        '0': Não limitar
+        '1': Limitar
+      pref: SearchMyLibraryFirst
+    - as pesquisas dos leitores à biblioteca onde estão inscritos.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: OpacRenewalAllowed
+    - ao leitores renovar os exemplares no OPAC.
+  - - Usar
+    - choices:
+        checkoutbranch: a biblioteca de empréstimo do exemplar
+        itemhomebranch: a biblioteca de origem do exemplar
+        none: NULL
+        opacrenew: '''OPACRenew'''
+        patronhomebranch: a biblioteca de origem do leitor
+      pref: OpacRenewalBranch
+    - como código da biblioteca a guardar na tabela de estatísticas.
+  - - Só permitir leitores renovem os seus exemplares no OPAC se tiverem menos de
+    - class: currency
+      pref: OPACFineNoRenewals
+    - '[% local_currency %] em multas (deixe em branco para não activar).'
+  - - choices:
+        '0': Não incluir
+        '1': Incluir
+      pref: OPACFineNoRenewalsIncludeCredits
+    - créditos pendentes/não aplicados quando aplicar a regra <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OPACFineNoRenewals">OPACFineNoRenewals</a>
+      aos leitores.
+  - - class: code
+      pref: OpacHiddenItems
+      syntax: text/x-yaml
+      type: textarea
+    - Defina regras específicas para esconder exemplares das pesquisas e visualizações
+      do OPAC. Veja como escrever essas regras conforme a documentação em <a href="http://wiki.koha-community.org/wiki/OpacHiddenItems"
+      target="_blank">Koha wiki</a>.
+  - - 'Lista de categorias de leitor, que podem ver os exemplares escondidos pela
+      preferência de sistema <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OpacHiddenItems">OpacHiddenItems</a>:'
+    - choices: patron-categories
+      class: multiple
+      pref: OpacHiddenItemsExceptions
+  - - choices:
+        '0': Não esconder
+        '1': Esconder
+      default: 1
+      pref: OpacHiddenItemsHidesRecord
+    - o registo bibliográfico quando todos os exemplares estão escondidos pela preferência
+      de sistema <a href='/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OpacHiddenItems'>OpacHiddenItems</a>.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      default: 1
+      pref: OpacAllowPublicListCreation
+    - aos leitores criar listas públicas no OPAC.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      default: 0
+      pref: OpacAllowSharingPrivateLists
+    - que os leitores possam partilhar listas privadas com outros leitores, no OPAC.
+  - - choices:
+        '0': Não bloquear
+        '1': Bloquear
+      pref: BlockExpiredPatronOpacActions
+    - os leitores expirados das ações do OPAC, tais como as reservas ou renovações.
+      Note que a definição da categoria de leitor tem prioridade em relação a esta
+      preferência.
+  Privacidade:
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: opacreadinghistory
+    - que os leitores possam ver quais os exemplares emprestados a si no passado.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: OPACHoldsHistory
+    - que os leitores possam ver a lista do seu histórico de reservas.
+  - - choices:
+        '0': Não manter
+        '1': Manter
+      default: 0
+      pref: EnableOpacSearchHistory
+    - história de pesquisa do leitor no OPAC.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      default: 0
+      pref: OPACPrivacy
+    - aos leitores escolherem as suas configurações de privacidade para o seu histórico
+      de empréstimos. Esta preferência precisa das preferências <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=opacreadinghistory">opacreadinghistory</a>
+      e <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=AnonymousPatron">AnonymousPatron</a>.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      default: 0
+      pref: AllowPatronToSetCheckoutsVisibilityForGuarantor
+    - que os leitores escolham a sua própria configuração de privacidade para mostrar
+      os seus empréstimos ao seu fiador.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      default: 0
+      pref: AllowPatronToSetFinesVisibilityForGuarantor
+    - que os leitores escolham a sua própria configuração de privacidade para mostrar
+      as suas multas ao seu fiador.
+  - - Usar o número de leitor
+    - class: integer
+      pref: AnonymousPatron
+    - como o leitor anónimo (para sugestões anónimas ou histórico de empréstimos).
+  - - choices:
+        '0': Não registar
+        anonymous: Registar de forma anónima
+        track: Registar
+      default: 0
+      pref: TrackClicks
+    - as ligações visitadas pelos leitores.
+  Página restrita:
+  - - Acesso a partir de endereços IP começados por
+    - pref: RestrictedPageLocalIPs
+    - 'não precisam de estar autenticados (endereços separados por vírgulas - ex:
+      ''127.0.0,127.0.1'').'
+  - - Conteúdo HTML da página restrita (disponível em /cgi-bin/koha/opac-restrictedpage.pl)
+    - class: HTML
+      pref: RestrictedPageContent
+      syntax: text/html
+      type: textarea
+  - - Usar
+    - class: long
+      pref: RestrictedPageTitle
+    - como título para a página restrita (aparece no menu de navegação e no topo da
+      página restrita).
+  Sugestões:
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: OpacSuggestionManagedBy
+    - o nome do bibliotecário que geriu a sugestão no OPAC.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AnonSuggestions
+    - que leitores não autenticados façam sugestões de aquisição. As sugestões estão
+      ligadas à preferência de sistema <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=AnonymousPatron">AnonymousPatron</a>.
+  - - Limitar os leitores a
+    - class: integer
+      pref: MaxOpenSuggestions
+    - 'sugestões abertas. Deixe em branco para não haver limite. **Nota: esta configuração
+      não afecta as sugestões anónimas.'
+  - - Número total de sugestões permitidas
+    - class: integer
+      pref: MaxTotalSuggestions
+    - em
+    - class: integer
+      pref: NumberOfSuggestionDays
+    - dias.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: OPACViewOthersSuggestions
+    - as sugestões de aquisição de outros leitores no OPAC.
+  - - 'Campos que devem ser obrigatórios para as sugestões de aquisição do leitor:'
+    - pref: OPACSuggestionMandatoryFields
+      required: title
+      source: suggestions
+      type: modalselect
+    - '<br />Nota: se nenhuma das opções abaixo estiverem selecionadas, o campo ''Título''
+      será obrigatório por omissão.'
+  - - 'Campos que devem ser obrigatórios nas sugestões de aquisição do leitor:'
+    - exclusions: title
+      pref: OPACSuggestionUnwantedFields
+      source: suggestions
+      type: modalselect
+    - '<br />Nota: Não tornar <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OPACSuggestionMandatoryFields">OPACSuggestionMandatoryFields</a>
+      campos indesejados '
+  - - choices:
+        '0': Desativar
+        '1': Ativar
+      pref: suggestion
+    - a sugestão de aquisições no OPAC.<br>
+    - 'Quando a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=suggestion">suggestion</a>
+      está ativa e a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=AnonSuggestions">AnonSuggestions</a>
+      está desativa, as seguintes categorias de leitor não podem fazer sugestões de
+      aquisição:'
+    - choices: patron-categories
+      class: multiple
+      pref: suggestionPatronCategoryExceptions
+  - - choices:
+        '0': Desativar
+        '1': Ativar
+      default: 0
+      pref: OPACSuggestionAutoFill
+    - o auto-preenchimento do formulário de sugestões no OPAC com dados da API do
+      Google Books.
+  Visualizador de prateleira:
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: OPACShelfBrowser
+    - um visualizador de prateleira nas páginas de detalhes do registo, permitindo
+      ao leitores ver o que está perto na prateleira. Note que esta funcionalidade
+      utiliza uma grande quantidade de recursos no servidor, e deve ser evitado se
+      sua coleção tem um grande número de registos.
+  - - choices:
+        '0': Não usar
+        '1': Usar
+      default: 1
+      pref: ShelfBrowserUsesLocation
+    - a localização para encontrar exemplares para o visualizador de prateleira.
+  - - choices:
+        '0': Não usar
+        '1': Usar
+      default: 1
+      pref: ShelfBrowserUsesHomeBranch
+    - a biblioteca de origem para encontrar exemplares para o visualizador de prateleira.
+  - - choices:
+        '0': Não usar
+        '1': Usar
+      default: 0
+      pref: ShelfBrowserUsesCcode
+    - o código de coleção para encontrar exemplares para o visualizador de prateleira.

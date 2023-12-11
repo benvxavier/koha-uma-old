@@ -1,0 +1,79 @@
+[% USE raw %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Cancelar encomenda &rsaquo; Aquisições &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="acq_cancelorder" class="acq">
+[% INCLUDE 'header.inc' %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/acqui/acqui-home.pl">Aquisições</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% basket.bookseller.id | uri %]">[% basket.bookseller.name | html %]</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/acqui/basket.pl?basketno=[% basket.basketno | uri %]">Cesto [% basket.basketname | html %] ([% basket.basketno | html %]) para [% basket.bookseller.name | html %]</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Cancelar encomenda</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+
+ [% UNLESS ( confirmcancel ) %]
+ <form method="post" action="">
+ <div class="dialog alert">
+ <h1>Tem a certeza que pretende cancelar esta encomenda ([% ordernumber | html %])</h1>
+ <p>
+ [% IF (del_biblio) %]
+ <span>O registo bibliográfico também será eliminado.</span>
+ [% ELSE %]
+ <span>O registo bibliográfico não será eliminado.</span>
+ [% END %]
+ </p>
+ <p>
+ [% PROCESS 'av-build-dropbox.inc' name="reason", category="ORDER_CANCELLATION_REASON" default="0" %]
+ </p>
+ <input type="hidden" name="action" value="confirmcancel" />
+ <input type="hidden" value="[% ordernumber | html %]" name="ordernumber" />
+ <input type="hidden" value="[% biblionumber | html %]" name="biblionumber" />
+ <input type="hidden" value="[% basket.basketno | html %]" name="basketno" />
+ <input type="hidden" value="[% referrer | html %]" name="referrer" />
+ [% IF (del_biblio) %]
+ <input type="hidden" value="1" name="del_biblio" />
+ [% END %]
+ <button type="submit" class="approve" accesskey="y"><i class="fa fa-fw fa-check"></i> Sim, cancelar (S)</button>
+ <button class="deny" accesskey="n" onclick="window.location='[% referrer | html %]';return false;"><i class="fa fa-fw fa-remove"></i> Não, não cancelar (N)</button>
+ </div>
+ </form>
+ [% ELSE %]
+ [% IF ( success_cancelorder ) %]
+ <div class="dialog message">
+ A encomenda foi cancelada com sucesso [% ELSE %] <div class="dialog alert">
+ Ocorreu um erro. [% IF error_order_already_cancelled %] <p>A encomenda já tinha sido cancelada.</p>
+ [% ELSIF error_order_not_found %]
+ <p>A encomenda não foi encontrada.</p>
+ [% END %]
+ [% IF ( error_delitem ) %]
+ <p>A encomenda foi cancelada, apesar de um ou mais itens não poderem ter sido eliminados.</p>
+ [% END %]
+ [% IF ( error_delbiblio ) %]
+ <p>A encomenda foi cancelada, apesar do registo não pode ter sido eliminado.</p>
+ [% END %]
+ [% END %]
+ <p><a href="[% referrer | url %]">OK</a></p>
+ </div>
+ [% END %]
+
+ </div>
+ </div>
+
+[% INCLUDE 'intranet-bottom.inc' %]

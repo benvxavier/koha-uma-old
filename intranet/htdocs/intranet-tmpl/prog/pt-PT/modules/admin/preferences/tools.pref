@@ -1,0 +1,50 @@
+---
+Ferramentas -:
+  Carregamento:
+  - - Automaticamente eliminar os carregamentos temporários mais antigos que
+    - class: integer
+      pref: UploadPurgeTemporaryFilesDays
+    - 'dias na tarefa cleanup_database. NOTA: se deixar este campo vazio, a tarefa
+      não vai eliminar qualquer ficheiro. Por outro lado o valor 0 significar que
+      serão eliminados todos os ficheiros temporários.'
+  Cartões de leitor:
+  - - Limitar o número de imagens guardadas na base de dados em
+    - class: Integer
+      pref: ImageLimit
+    - imagens.
+  Códigos de barras:
+  - - Separar os códigos de barras nos seguintes códigos de separador
+    - default: \s\r\n
+      pref: BarcodeSeparators
+    - 'na modificação em lote de exemplares ou no inventário.<br/>Nota: Insira \r
+      para retorno de cartucho, \n para nova linha e \s para espaço. Possíveis candidatos
+      a incluir são também a barra (|), o hífen, a vírgula, o ponto e virgula, o ponto,
+      etc.'
+  Lotes:
+  - - Processar
+    - class: integer
+      pref: MaxItemsToProcessForBatchMod
+    - itens num lote de itens para modificação.
+  - - Mostrar
+    - class: integer
+      pref: MaxItemsToDisplayForBatchDel
+    - itens num lote de itens para eliminação.
+  - - Mostrar até
+    - class: integer
+      pref: MaxItemsToDisplayForBatchMod
+    - itens num lote de itens para modificação.
+  Notícias:
+  - - 'Mostrar o nome do autor das notícias:'
+    - choices:
+        both: no interface dos técnicos e no OPAC
+        none: nunca
+        opac: apenas no OPAC
+        staff: apenas no interface dos técnicos
+      pref: NewsAuthorDisplay
+    - .
+  - - Por omissão, editar os conteúdos adicionais e as notícias com
+    - choices:
+        codemirror: um editor de texto (CodeMirror)
+        tinymce: um editor WYSIWYG editor (TinyMCE)
+      pref: AdditionalContentsEditor
+    - .

@@ -1,0 +1,186 @@
+---
+description:
+- Sample patron types and categories. Types are currently hardcoded but you can manage
+  categories after installation from the administration module.
+- ''
+- Leitor adulto - tipo de leitor por omissão
+- '                PT  - Leitor'
+- '                ST  - Estudante'
+- '                BH  - Empréstimo caseiro'
+- ''
+- Criança - leitor com um fiador
+- '                K   - Criança'
+- '                J   - Adolescente'
+- '                YA  - Jovem Adulto'
+- ''
+- Organization - patron is an institution, not a person
+- '                ILL - Empréstimo inter-bibliotecas'
+- '                SC  - Escola'
+- '                L   - Biblioteca'
+- ''
+- Professional - a member of an organization (organization is guarantor)
+- '                T   - Professor'
+- '                S   - Funcionário'
+- '                B   - Administração'
+tables:
+- categories:
+    multiline: []
+    rows:
+    - bulk: ~
+      can_be_guarantee: 0
+      category_type: A
+      categorycode: PT
+      dateofbirthrequired: 18
+      description: Leitor
+      enrolmentfee: '0.000000'
+      enrolmentperiod: 99
+      finetype: ~
+      issuelimit: ~
+      overduenoticerequired: 1
+      reservefee: '0.000000'
+      upperagelimit: 999
+    - bulk: ~
+      can_be_guarantee: 0
+      category_type: A
+      categorycode: ST
+      dateofbirthrequired: 18
+      description: Student
+      enrolmentfee: '0.000000'
+      enrolmentperiod: 99
+      finetype: ~
+      issuelimit: ~
+      overduenoticerequired: 1
+      reservefee: '0.000000'
+      upperagelimit: 999
+    - bulk: ~
+      can_be_guarantee: 0
+      category_type: A
+      categorycode: HB
+      dateofbirthrequired: 18
+      description: Home Bound
+      enrolmentfee: '0.000000'
+      enrolmentperiod: 99
+      finetype: ~
+      issuelimit: ~
+      overduenoticerequired: 1
+      reservefee: '0.000000'
+      upperagelimit: 999
+    - bulk: ~
+      can_be_guarantee: 1
+      category_type: C
+      categorycode: K
+      dateofbirthrequired: 5
+      description: Kid
+      enrolmentfee: '0.000000'
+      enrolmentperiod: 99
+      finetype: ~
+      issuelimit: ~
+      overduenoticerequired: 1
+      reservefee: '0.000000'
+      upperagelimit: 17
+    - bulk: ~
+      can_be_guarantee: 1
+      category_type: C
+      categorycode: J
+      dateofbirthrequired: 5
+      description: Juvenil
+      enrolmentfee: '0.000000'
+      enrolmentperiod: 99
+      finetype: ~
+      issuelimit: ~
+      overduenoticerequired: 1
+      reservefee: '0.000000'
+      upperagelimit: 17
+    - bulk: ~
+      can_be_guarantee: 1
+      category_type: C
+      categorycode: YA
+      dateofbirthrequired: 5
+      description: Jovem Adulto
+      enrolmentfee: '0.000000'
+      enrolmentperiod: 99
+      finetype: ~
+      issuelimit: ~
+      overduenoticerequired: 1
+      reservefee: '0.000000'
+      upperagelimit: 17
+    - bulk: ~
+      can_be_guarantee: 1
+      category_type: P
+      categorycode: T
+      dateofbirthrequired: 18
+      description: Teacher
+      enrolmentfee: '0.000000'
+      enrolmentperiod: 99
+      finetype: ~
+      issuelimit: ~
+      overduenoticerequired: 0
+      reservefee: '0.000000'
+      upperagelimit: 999
+    - bulk: ~
+      can_be_guarantee: 1
+      category_type: P
+      categorycode: B
+      dateofbirthrequired: 5
+      description: Conselho
+      enrolmentfee: '0.000000'
+      enrolmentperiod: 99
+      finetype: ~
+      issuelimit: ~
+      overduenoticerequired: 1
+      reservefee: '0.000000'
+      upperagelimit: 17
+    - bulk: ~
+      can_be_guarantee: 0
+      category_type: I
+      categorycode: IL
+      dateofbirthrequired: 18
+      description: Inter-Library Loan
+      enrolmentfee: '0.000000'
+      enrolmentperiod: 99
+      finetype: ~
+      issuelimit: ~
+      overduenoticerequired: 1
+      reservefee: '0.000000'
+      upperagelimit: 999
+    - bulk: ~
+      can_be_guarantee: 0
+      category_type: I
+      categorycode: SC
+      dateofbirthrequired: 18
+      description: Escolar
+      enrolmentfee: '0.000000'
+      enrolmentperiod: 99
+      finetype: ~
+      issuelimit: ~
+      overduenoticerequired: 1
+      reservefee: '0.000000'
+      upperagelimit: 999
+    - bulk: ~
+      can_be_guarantee: 0
+      category_type: I
+      categorycode: L
+      dateofbirthrequired: 18
+      description: Biblioteca
+      enrolmentfee: '0.000000'
+      enrolmentperiod: 99
+      finetype: ~
+      issuelimit: ~
+      overduenoticerequired: 1
+      reservefee: '0.000000'
+      upperagelimit: 999
+    - bulk: ~
+      can_be_guarantee: 0
+      category_type: S
+      categorycode: S
+      dateofbirthrequired: 18
+      description: Staff
+      enrolmentfee: '0.000000'
+      enrolmentperiod: 99
+      finetype: ~
+      issuelimit: ~
+      overduenoticerequired: 0
+      reservefee: '0.000000'
+      upperagelimit: 999
+    translatable:
+    - description

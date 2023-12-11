@@ -1,0 +1,301 @@
+[% USE raw %]
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>
+ [% IF ( biblio ) %] Carregar imagem local de capa para [% INCLUDE 'biblio-title-head.inc' %] &rsaquo; [% ELSE %] Carregar imagem local de capa &rsaquo; [% END %] Catalogação &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% FILTER collapse %]
+ <style>
+        #fileuploadstatus,
+        #fileuploadfailed,
+        #jobpanel,
+        #jobstatus,
+        #jobfailed,
+        #fileuploadform,
+        #upload_file_type,
+        #upload_options,
+        #process_images {
+            display: none;
+        }
+        #uploadpanel {
+            clear:both;
+            margin-top: .9em;
+        }
+        #filedrag {
+            background-color: #FFF;
+            outline: 2px dashed #92b0b3;
+            outline-offset: -10px;
+            font-weight: bold;
+            font-size: 130%;
+            text-align: center;
+            position: relative;
+            padding: 50px 20px;
+            margin: 1em;
+
+            cursor: default;
+        }
+
+        #click_to_select:hover {
+            color: #538200;
+            cursor: pointer;
+        }
+
+        #filedrag.hover {
+            outline-offset: -20px;
+            outline-color: #c8dadf;
+            background-color: #fff;
+        }
+
+        #messages {
+            font-weight: normal;
+        }
+        .cover_preview {
+            margin:1em;
+            max-height:200px;
+            max-width:200px;
+        }
+        .progress_panel {
+            border: 0;
+            border-radius: 0;
+            margin: .9em;
+            background-color: #FFF;
+        }
+        .fa-file-archive-o {
+            color: #777;
+            font-size: 300%
+        }
+    </style>
+[% END %]
+</head>
+
+<body id="tools_upload-images" class="tools">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/cataloguing/cataloging-home.pl">Catalogar</a>
+ [% END %]
+ [% IF uploadimage || biblio || itemnumber || biblionumber %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/tools/upload-cover-image.pl">Carregar imagens locais de capa</a>
+ [% END %]
+ [% END %]
+
+ [% IF ( uploadimage ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Resultados do carregamento</span>
+ [% END %]
+ [% IF ( biblionumber ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <em>[% INCLUDE 'biblio-title.inc' %]</em>
+ [% END %]
+ [% END %]
+ [% ELSIF biblio %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Carregar imagem para <em>[% INCLUDE 'biblio-title.inc' %]</em></span>
+ [% END %]
+ [% ELSIF itemnumber %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Carregar imagem local de capa para o número de exemplar: [% itemnumber | html %]</span>
+ [% END %]
+ [% ELSIF biblionumber %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Carregar imagens locais de capa para o número de registo bibliográfico: [% biblionumber | html %]</span>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Carregar imagens locais de capa</span>
+ [% END %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ [% UNLESS itemnumber || biblionumber %]
+ <h1>Carregar imagens locais de capa</h1>
+ [% ELSIF biblio %]
+ <h1>
+ Carregar imagens locais de capa para <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% biblionumber | uri %]"><em>[% INCLUDE 'biblio-title.inc' %]</em></a>
+ [% IF ( itemnumber ) %], Número de exemplar: [% itemnumber | html %][% END %] </h1>
+ [% ELSIF itemnumber %]
+ <h1>Carregar imagem local de capa para o número de exemplar: [% itemnumber | html %]</h1>
+ [% END %]
+
+ [% IF ( uploadimage ) %]
+ <h2>Resultados de importação :</h2>
+ <div id="upload_results">
+ [% IF ( error ) %]
+ <div class="dialog alert">
+ [% IF ( error == 'UZIPFAIL' ) %]
+ <p><strong>Não é possível descomprimir o arquivo.<br />Por favor, verifique a integridade do arquivo zip e tente novamente.</strong></p>
+ [% ELSIF ( error == 'OPNLINK' ) %]
+ <p><strong>Não é possível abrir o ficheiro de índice (idlink.txt ou datalink.txt) para leitura.<br />Por favor, verifique que já existe.</strong></p>
+ [% ELSIF ( error == 'OPNIMG' ) %]
+ <p><strong>Não é possível processar ficheiro como imagem.<br />Por favor, assegure-se que apenas carregar imagens em GIF, JPEG, PNG ou XPM.</strong></p>
+ [% ELSIF ( error == 'DELERR' ) %]
+ <p><strong>Delimitador de campo inválido ou em falta.<br />Verifique se você está usando que quer uma única citação ou uma tabulação.</strong></p>
+ [% ELSIF ( error == 'DBERR' ) %]
+ <p><strong>Impossível guardar a imagem na base de dados.</strong></p>
+ [% ELSE %]
+ <p><strong>Ocorreu um erro desconhecido.<br />Por favor, examine o log de erro para mais detalhes.</strong></p>
+ [% END %]
+ </div>
+ [% END # /IF error  %]
+ <h3>[% total | html %] imagem(s) encontrada(s)</h3>
+ <ul>
+ [% FOREACH result IN results %]
+ <li><a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% result.biblionumber | uri %]">[% result.title | html %]</a></li>
+ [% END %]
+ </ul>
+ <hr />
+ </div> <!-- /#upload_results -->
+ [% END # /IF uploadimage %]
+
+ <ul>
+ [% UNLESS itemnumber || biblionumber %]
+ <li>Seleccione um ficheiro de imagem ou um ZIP para carregar. A ferramenta aceita imagens nos formatos GIF, JPEG, PNG, e XPM.</li>
+ [% ELSE %]
+ <li>Selecione um ficheiro de imagem para carregar. A ferramenta aceita imagens nos formatos GIF, JPEG, PNG e XPM.</li>
+ [% END %]
+ </ul>
+
+ <div class="row">
+ [% IF ( cover_images ) %]
+ <div class="col-sm-9">
+ [% ELSE %]
+ <div class="col-sm-12">
+ [% END %]
+
+ <form method="post" action="/cgi-bin/koha/tools/upload-cover-image.pl" id="uploadfile" enctype="multipart/form-data">
+ <fieldset class="rows" >
+ <div id="fileuploadform">
+ <label for="fileToUpload">Seleccionar o ficheiro a carregar: </label>
+ <input type="file" id="fileToUpload" name="fileToUpload" />
+ </div>
+
+ <div id="filedrag">
+ <a id="click_to_select" href="#">Arraste os ficheiros para aqui ou clique para selecionar um ficheiro</a>
+ <div id="messages"></div>
+ </div>
+
+ <div id="uploadpanel">
+ <div id="fileuploadstatus" class="progress_panel">Progresso do carregamento: <progress max="100" value="0" id="fileuploadprogress">
+ </progress>
+ <span class="fileuploadpercent"></span>%
+ </div>
+ <div id="fileuploadfailed"></div>
+ </div>
+ </fieldset>
+ </form> <!-- /#uploadfile -->
+
+ <form method="post" id="processfile" action="/cgi-bin/koha/tools/upload-cover-image.pl" enctype="multipart/form-data">
+ <input type="hidden" name="uploadedfileid" id="uploadedfileid" value="" />
+ <input type="hidden" name="runinbackground" id="runinbackground" value="" />
+ <input type="hidden" name="completedJobID" id="completedJobID" value="" />
+
+ [% IF itemnumber %]
+ <input type="hidden" id="itemnumber" name="itemnumber" value="[% itemnumber | html %]" />
+ <input type="hidden" name="filetype" value="image" />
+ [% ELSIF biblionumber %]
+ <input type="hidden" id="biblionumber" name="biblionumber" value="[% biblionumber | html %]" />
+ <input type="hidden" name="filetype" value="image" />
+ [% END %]
+
+
+ <fieldset id="upload_options" class="rows">
+ <ol>
+ [% UNLESS itemnumber || biblionumber %]
+ <li class="radio">
+ [% IF (filetype != 'image' ) %]
+ <input type="radio" id="zipfile" name="filetype" value="zip" checked="checked" />
+ [% ELSE %]
+ <input type="radio" id="zipfile" name="filetype" value="zip" />
+ [% END %]
+ <label for="zipfile">Ficheiro ZIP</label>
+ </li>
+ <li class="radio">
+ [% IF (filetype == 'image' ) %]
+ <input type="radio" id="image" name="filetype" value="image" checked="checked" />
+ [% ELSE %]
+ <input type="radio" id="image" name="filetype" value="image" />
+ [% END %]
+ <label for="image">Ficheiro de imagem</label>
+ </li>
+ <li id="biblionumber_entry">
+ <label for="biblionumber">Identificador do registo bibliográfico: </label>
+ <input type="text" id="biblionumber" name="biblionumber" value="[% biblionumber | html %]" size="15" />
+ </li>
+ [% END %]
+ <li class="radio">
+ <label for="replace">
+ [% IF AllowMultipleCovers == 0 %]
+ <input type="checkbox" id="replace" name="replace" value="" disabled="disabled" checked="checked" />
+ As capas existentes serão substituidas [% ELSE %] <input type="checkbox" id="replace" name="replace" value="1" />
+ Substituir capas existentes [% END %] </li>
+ </ol>
+ </fieldset>
+
+ <fieldset id="process_images" class="action">
+ <button type="submit" class="btn btn-primary btn-sm save_image">Processar imagens</button>
+ [% IF ( biblionumber ) %]
+ <a class="cancel cancel_image" href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% biblionumber | uri %]">Anular</a>
+ [% ELSE %]
+ <a class="cancel cancel_image" href="/cgi-bin/koha/tools/upload-cover-image.pl">Anular</a>
+ [% END %]
+ </fieldset>
+ </form> <!-- /#processfile -->
+ </div> <!-- /.col-sm-9/.col-sm-12 -->
+
+ [% IF ( cover_images.size ) %]
+ <div class="col-sm-3">
+ <h3>Imagens existentes</h3>
+ <ul class="thumbnails">
+ [% FOREACH img IN cover_images %]
+ [% IF img %]
+ <li id="imagenumber-[% img.imagenumber | html %]" class="thumbnail">
+ <a class="show_cover" data-coverimg="[% img.imagenumber | html %]" href="/cgi-bin/koha/catalogue/imageviewer.pl?biblionumber=[% biblionumber | html %]&amp;imagenumber=[% img.imagenumber | html %]">
+ [% IF ( imagenumber == img.imagenumber ) %]
+ <img alt="Miniatura" class="selected" id="thumbnail_[% img.imagenumber | html %]" src="/cgi-bin/koha/catalogue/image.pl?imagenumber=[% img.imagenumber | html %]&thumbnail=1" />
+ [% ELSE %]
+ <img alt="Miniatura" id="thumbnail_[% img.imagenumber | html %]" src="/cgi-bin/koha/catalogue/image.pl?imagenumber=[% img.imagenumber | html %]&thumbnail=1" />
+ [% END %]
+ </a>
+ <a href="#" class="remove" data-coverimg="[% img.imagenumber | html %]"><i class="fa fa-trash"></i> Eliminar imagem</a>
+ </li>
+ [% END # /IF img %]
+ [% END # /FOREACH img %]
+ </ul> <!-- /ul.thumbnails -->
+ </div> <!-- /.col-sm-3 -->
+ [% END # /IF images.size %]
+
+ </div> <!-- /.row -->
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'cat-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ <script>
+        var interface = "[% interface | html %]";
+        var theme = "[% theme | html %]";
+        var biblionumber = "[% biblionumber | html %]";
+    </script>
+ [% Asset.js("js/upload-images.js") | $raw %]
+
+ </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

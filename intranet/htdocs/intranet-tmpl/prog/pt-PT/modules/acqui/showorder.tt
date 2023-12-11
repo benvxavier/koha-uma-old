@@ -1,0 +1,31 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Detalhes da encomenda &rsaquo; Aquisições &rsaquo; Koha</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body id="acq_showorder" class="acq">
+ <div id="main">
+ <h1>Detalhes da encomenda</h1>
+ [% IF order %]
+ <fieldset class="rows">
+ <ol>
+ <li>
+ <span class="label">Data de criação: </span>
+ [% order.entrydate | html %]
+ </li>
+ <li>
+ <span class="label">Encomendado por: </span>
+ [% INCLUDE 'patron-title.inc' patron = creator %]
+ </li>
+ <li>
+ <span class="label">Contagem de reclamações: </span>
+ [% order.claims.count | html %]
+ </li>
+ <li>
+ <span class="label">Última data de reclamação: </span>
+ [% order.claims.last.claimed_on | html %]
+ </li>
+ </ol>
+ </fieldset>
+ [% ELSE %] Nenhuma encomenda encontrada [% END %] </div>
+</body>
+</html>

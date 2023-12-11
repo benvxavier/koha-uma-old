@@ -1,0 +1,218 @@
+[% USE raw %]
+[% USE Branches %]
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>
+ [% IF op =='add_form' %] [% IF desk.desk_id %] Modificar balcão [% ELSE %] Novo balcão [% END %] &rsaquo; [% ELSE %] [% IF op == 'delete_confirm' %] Confirmar a eliminação do balcão &rsaquo; [% END %] [% END %] Balcões &rsaquo; Administração &rsaquo; Koha </title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="admin_desks" class="admin">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'desks-admin-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/admin-home.pl">Administração</a>
+ [% END %]
+
+ [% IF op == 'add_form' || op == 'delete_confirm' %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/desks.pl">Balcões</a>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active = 1 %]
+ <span>Balcões</span>
+ [% END %]
+ [% END %]
+
+ [% IF op == 'add_form' %]
+ [% WRAPPER breadcrumb_item bc_active = 1 %]
+ [% IF desk.desk_id %]
+ <span>Modificar balcão</span>
+ [% ELSE %]
+ <span>Novo balcão</span>
+ [% END %]
+ [% END %]
+
+ [% ELSIF op == 'delete_confirm' %]
+ [% WRAPPER breadcrumb_item bc_active = 1 %]
+ <span>Confirmar a eliminação do balcão</span>
+ [% END %]
+
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+[% FOR m IN messages %]
+ <div class="dialog [% m.type | html %]">
+ [% SWITCH m.code %]
+ [% CASE 'error_on_update' %]
+ <span>Ocorreu um erro ao atualizar este balcão. Pode já existir no sistema</span>
+ [% CASE 'error_on_insert' %]
+ <span>Ocorreu um erro este balcão. O identificador do balcão pode já existir no sistema</span>
+ [% CASE 'error_on_delete' %]
+ <span>Ocorreu um erro ao eliminar este balcão. Verifique os registos do sistema</span>
+ [% CASE 'success_on_update' %]
+ <span>Balcão atualizado com sucesso</span>
+ [% CASE 'success_on_insert' %]
+ <span>Balcão adicionado com sucesso</span>
+ [% CASE 'success_on_delete' %]
+ <span>Balcão eliminado com sucesso</span>
+ [% CASE 'already_exists' %]
+ <span>Este balcão já existe</span>
+ [% CASE %]
+ <span>[% m.code | html %]</span>
+ [% END %]
+ </div>
+[% END %]
+
+[% IF op == 'add_form' %]
+ [% IF desk %]
+ <h1>Modificar balcão</h1>
+ [% ELSE %]
+ <h1>Novo balcão</h1>
+ [% END %]
+
+ <form action="/cgi-bin/koha/admin/desks.pl" name="Aform" method="post" class="validated">
+ <input type="hidden" name="op" value="add_validate" />
+ <input type="hidden" name="desk_id" value="[% desk.desk_id | html %]" />
+
+ <fieldset class="rows">
+ <ol>
+ [% IF desk %]
+ <li><span class="label">ID do balcão: </span>[% desk.desk_id | html %]</li>
+ [% END %]
+ <li>
+ <label for="desk_name" class="required">Balcão: </label>
+ <input type="text" name="desk_name" id="desk_name" size="80" maxlength="100" value="[% desk.desk_name | html %]" required="required" class="required" /> <span class="required">Obrigatório</span>
+ </li>
+ <li>
+ <label for="branchcode" class="required">Biblioteca: </label>
+ <select id="branchcode" name="branchcode" required="required">
+ <option value=""></option>
+ [% FOREACH branch IN branches %]
+ [% IF desk %]
+ [% IF (desk.branchcode == branch.branchcode) %]
+ <option value="[% branch.branchcode|html %]" selected="selected">[% branch.branchname|html %]</option>
+ [% END%]
+ [% ELSE %]
+ [% IF (Branches.GetLoggedInBranchcode == branch.branchcode) %]
+ <option value="[% branch.branchcode|html %]" selected="selected">[% branch.branchname|html %]</option>
+ [% END%]
+ <option value="[% branch.branchcode|html %]">[% branch.branchname|html %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+
+ </ol>
+ </fieldset>
+
+ <fieldset class="action">
+ <input class="btn btn-primary" type="submit" value="Submeter" />
+ <a class="cancel" href="/cgi-bin/koha/admin/desks.pl">Anular</a>
+ </fieldset>
+ </form>
+[% END %]
+
+[% IF op == 'delete_confirm' %]
+ <div class="dialog alert">
+ <h1>Eliminar o balcão "[% desk.desk_name | html %]"?</h1>
+ <table>
+ <tr><th>ID do balcão</th>
+ <td>[% desk.desk_id | html %]</td>
+ </tr>
+ <tr><th>Balcão</th>
+ <td>[% desk.desk_name | html %]</td>
+ </tr>
+ <tr><th>Biblioteca</th>
+ <td>[% Branches.GetName( desk.branchcode ) | html %]</td>
+ </tr>
+ </table>
+ <form action="/cgi-bin/koha/admin/desks.pl" method="post">
+ <input type="hidden" name="op" value="delete_confirmed" />
+ <input type="hidden" name="desk_id" value="[% desk.desk_id | html %]" />
+ <button type="submit" class="approve"><i class="fa fa-fw fa-check"></i> Sim, eliminar</button>
+ </form>
+ <form action="/cgi-bin/koha/admin/desks.pl" method="get">
+ <button type="submit" class="deny"><i class="fa fa-fw fa-remove"></i> Não, não eliminar</button>
+ </form>
+ </div>
+[% END %]
+
+[% IF op == 'list' %]
+
+ <div id="toolbar" class="btn-toolbar">
+ <a class="btn btn-default" id="newdesk" href="/cgi-bin/koha/admin/desks.pl?op=add_form"><i class="fa fa-plus"></i> Novo balcão</a>
+ </div>
+
+ <h1>Balcões</h1>
+ [% IF searchfield %]
+ <span>A pesquisar: [% searchfield | html %]</span>
+ [% END %]
+
+ [% IF desks.count %]
+ <div class="page-section">
+ <table id="table_desks">
+ <thead>
+ <tr>
+ <th>ID do balcão</th>
+ <th>Balcão</th>
+ <th>Biblioteca</th>
+ <th class="NoSort noExport">Ação</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH desk IN desks %]
+ <tr>
+ <td>[% desk.desk_id | html %]</td>
+ <td>[% desk.desk_name | html %]</td>
+ <td>[% Branches.GetName( desk.branchcode ) | html %]</td>
+ <td class="actions">
+ <a class="btn btn-default btn-xs" href="/cgi-bin/koha/admin/desks.pl?op=add_form&amp;desk_id=[% desk.desk_id | html %]"><i class="fa fa-pencil"></i> Alterar</a>
+ <a class="btn btn-default btn-xs" href="/cgi-bin/koha/admin/desks.pl?op=delete_confirm&amp;desk_id=[% desk.desk_id | html %]"><i class="fa fa-trash"></i> Apagar</a>
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div> <!-- /.page-section -->
+ [% ELSE %]
+ <div class="dialog message">
+ Não existem balcões de empréstimo definidos. <a href="/cgi-bin/koha/admin/desks.pl?op=add_form">Criar um novo balcão</a>.
+ </div>
+ [% END %]
+[% END %]
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'admin-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/admin-menu.js") | $raw %]
+ [% INCLUDE 'datatables.inc' %]
+ [% INCLUDE 'columns_settings.inc' %]
+ <script>
+        $(document).ready(function() {
+            KohaTable("table_desks", {
+                "order": [[ 1, "asc" ]]
+            });
+        });
+    </script>
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

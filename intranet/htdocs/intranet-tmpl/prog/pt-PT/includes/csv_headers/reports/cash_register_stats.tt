@@ -1,0 +1,1 @@
+[%- BLOCK -%]Nome do gestor[% sep | html %]Número de cartão do leitor[% sep | html %]Nome do leitor[% sep | html %]Biblioteca da transação[% sep | html %]Data da transação[% sep | html %]Atualizado[% sep | html %]Tipo de transação[% sep |html %]Notas[% sep | html %]Montante[% sep | html %]Título[% sep | html %]Código de barras[% sep | html %]Tipo de documento[%- END -%] 

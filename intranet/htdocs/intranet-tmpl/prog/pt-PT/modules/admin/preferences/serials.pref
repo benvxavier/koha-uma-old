@@ -1,0 +1,61 @@
+---
+Periódicos:
+  Características:
+  - - Mostrar o
+    - choices:
+        holdings: separador reservas
+        serialcollection: separador colecção de periódico
+        subscriptions: separador assinaturas
+      pref: opacSerialDefaultTab
+    - como o separador por omissão para periódicos no OPAC. Por favor note que o separador
+      colecção de periódico apenas está disponível no UNIMARC.
+  - - choices:
+        '0': Não adicionar
+        '1': Adicionar
+      pref: RenewSerialAddsSuggestion
+    - uma sugestão para um registo quando o periódico associado é renovado.
+  - - choices:
+        '0': Não usar
+        '1': Usar
+      pref: RoutingSerials
+    - a funcionalidade de lista de circulação no módulo de periódicos.
+  - - choices:
+        '0': Não colocar
+        '1': Colocar
+      pref: RoutingListAddReserves
+    - os periódicos recebidos em espera se eles estiverem numa lista de circulação.
+  - - 'Incluir a seguinte nota em todas as listas de circulação:'
+    - class: code
+      pref: RoutingListNote
+      type: textarea
+  - - Mostrar os
+    - class: integer
+      pref: StaffSerialIssueDisplayCount
+    - números anteriores de um periódico no interface dos técnicos.
+  - - Mostrar os
+    - class: integer
+      pref: OPACSerialIssueDisplayCount
+    - números anteriores de um periódico no OPAC.
+  - - Quando mostrar a informação da assinatura para um registo bibliográfico, pré-selecionar
+      a vista
+    - choices:
+        full: história completa
+        simplified: história resumo
+      pref: SubscriptionHistory
+    - dos números.
+  - - Lista de campos que não devem ser rescritos quando uma assinatura é duplicada
+      (separada por |)
+    - pref: SubscriptionDuplicateDroppedInput
+  - - choices:
+        '0': Não tornar
+        '1': Tornar
+      pref: makePreviousSerialAvailable
+    - automaticamente como disponível o número anterior quando um novo periódico for
+      recebido. O número anterior pode ser também definido como de outro tipo de documento
+      quando receber um novo. Note que a preferência de sistema <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=item-level_itypes">item-level_itypes</a>
+      deve estar definida para item específico.
+  - - choices:
+        '0': Não
+        '1': Pré-preencher
+      pref: PreserveSerialNotes
+    - as notas do último número 'Recebido' quando gerar o próximo número 'Esperado'.

@@ -1,0 +1,68 @@
+[% USE raw %]
+[% USE Koha %]
+[% USE Asset %]
+[% USE KohaDates %]
+[% PROCESS 'i18n.inc' %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Ajuda para auto empréstimo &rsaquo; [% IF ( LibraryNameTitle ) %][% LibraryNameTitle | html %][% ELSE %]Koha [% END %]</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Koha [% Version | html %]" /> <!-- leave this for stats -->
+<link rel="shortcut icon" href="[% IF ( Koha.Preference('OpacFavicon')  ) %][% Koha.Preference('OpacFavicon') | url %][% ELSE %][% interface | html %]/[% theme | html %]/images/favicon.ico[% END %]" type="image/x-icon" />
+[% Asset.css("lib/font-awesome/css/font-awesome.min.css") | $raw %]
+[% Asset.css("css/sco.css") | $raw %]
+[% IF ( Koha.Preference('OPACUserCSS') ) %]<style>[% Koha.Preference('OPACUserCSS') | $raw %]</style>[% END %]
+[% IF ( SCOUserCSS ) %]<style>[% SCOUserCSS | $raw %]</style>[% END %]
+<script>
+    var Koha = {};
+    function _(s) { return s } // dummy function for gettext
+</script>
+[% IF lang && lang != 'en' %]
+ [% Asset.js(lang _ '/js/locale_data.js') | $raw %]
+[% END %]
+[% Asset.js('js/Gettext.js') | $raw %]
+[% Asset.js('js/i18n.js') | $raw %]
+</head>
+<body id="sco_help" class="sco">
+ [% INCLUDE 'masthead-sco.inc' %]
+
+ <div class="main">
+ <div class="container-fluid">
+ <div class="row">
+ <div class="col order-first order-md-first order-lg-2">
+ <h1>Ajuda para auto requisição</h1>
+
+ [% IF ( SelfCheckHelpMessage ) %]
+ <div id="selfcheckhelpmessage">
+ [% SelfCheckHelpMessage | $raw %]
+ </div>
+ [% END %]
+
+ <div id="selfcheckdefaulthelpmessage">
+ <p>Se esta for a primeira vez que usa o sistema de auto-requisição, ou se o sistema não se comportar conforme esperado, pode consultar este guia.</p>
+
+ <h2>Passo um: Introduza o seu nome de utilizador[% IF ( SelfCheckoutByLogin ) %] e palavra-passe[% END %]</h2>
+
+ <p>Introduza o seu nome de utilizador[% IF ( SelfCheckoutByLogin ) %] e palavra passe[% END %], e clique no botão (ou carregue na tecla de ENTER).</p>
+
+ <h2>Passo dois: Digitalize o código de barras para cada exemplar, um de cada vez</h2>
+
+ <p>Digite cada item e aguarde que a página recarregue antes de digitalizar o próximo item. O item emprestado deve aparecer na sua lista de empréstimos. O botão apenas precisa de ser clicado se introduzir o código de barras manualmente.</p>
+
+ <h2>Passo três: Clique no botão 'Terminar'</h2>
+
+ <p>Se não clicar no botão 'Terminar', a sua sessão vai expirar automaticamente dentro de [% SelfCheckTimeout | html %] segundos.</p>
+ </div>
+
+ <div class="button">
+ <a href="javascript:history.go(-1)">Voltar ao sistema de auto-requisição</a>
+ </div>
+
+ </div> <!-- / .col -->
+ </div> <!-- / .row -->
+ </div> <!-- / .container-fluid -->
+ </div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %]
+ [% IF ( SCOUserJS ) %]<script>[% SCOUserJS | $raw %]</script>[% END %]
+[% END %]

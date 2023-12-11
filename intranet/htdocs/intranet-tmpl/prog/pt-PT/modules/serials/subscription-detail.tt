@@ -1,0 +1,486 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Koha %]
+[% USE KohaDates %]
+[% USE Branches %]
+[% USE AuthorisedValues %]
+[% USE Price %]
+[% USE TablesSettings %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Detalhes da assinatura #[% subscriptionid | html %] &rsaquo; Periódicos &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% Asset.css("lib/jquery/plugins/treetable/stylesheets/jquery.treetable.css") | $raw %]
+</head>
+
+<body id="ser_subscription-detail" class="ser">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'serials-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/serials/serials-home.pl">Periódicos</a>
+ [% END %]
+ [% UNLESS ( blocking_error ) %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/serials/subscription-detail.pl?subscriptionid=[% subscriptionid | uri %]"><em>[% bibliotitle | html %]</em></a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Detalhes da assinatura</span>
+ [% END %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ [% INCLUDE 'serials-toolbar.inc' %]
+ [% INCLUDE 'mana/mana-comment-status.inc' %]
+
+ <h1>Assinatura para [% bibliotitle | html %] [% bibliosubtitle | html %] [% IF closed %](fechada)[% END %]</h1>
+
+ [% IF ( abouttoexpire ) %]
+ [% UNLESS closed %]
+ <div class="dialog message">Assinatura irá expirar em [% enddate | html %]. <a href="#" id="renewsub">Renovar esta assinatura</a>.</div>
+ [% END %]
+ [% END %]
+
+ [% IF ( NEEDSCONFIRMATION ) %]
+ <div id="circ_needsconfirmation" class="dialog alert">
+ <h3>Por favor confirme a eliminação da assinatura</h3>
+
+ <ul>
+ [% IF ( NOTEXPIRED ) %] <li>A Assinatura ainda não expirou</li> [% END %]
+ [% IF ( LINKEDISSUES ) %] <li>A Assinatura possui números com ligação</li> [% END %]
+ [% IF ( LINKEDITEMS ) %] <li>A Assinatura possui itens com ligação<br /> Esses itens não serão apagados</li> [% END %]
+ </ul>
+
+ <form method="post" action="/cgi-bin/koha/serials/subscription-detail.pl">
+ <input type="hidden" name="subscriptionid" value="[% subscriptionid | html %]" />
+ <input type="hidden" name="issueconfirmed" value="1" />
+ <input type="hidden" name="op" value="del" />
+ <button type="submit" class="approve" accesskey="y"><i class="fa fa-fw fa-check"></i> Sim, eliminar (S)</button>
+ </form>
+
+ <form method="get" action="/cgi-bin/koha/serials/subscription-detail.pl">
+ <input type="hidden" name="subscriptionid" value="[% subscriptionid | html %]" />
+ <button type="submit" class="deny" accesskey="n"><i class="fa fa-fw fa-remove"></i> Não, não eliminar (N)</button>
+ </form>
+ </div>
+ [% END # /IF NEEDSCONFIRMATION %]
+
+ [% IF mana_code.defined %]
+ <div id="alert-community" class="dialog message">
+ <p>
+ [% mana_code | html %]
+ </p>
+ </div>
+ [% END %]
+
+ [% WRAPPER tabs id= "subscription_description" %]
+ [% WRAPPER tabs_nav %]
+ [% WRAPPER tab_item tabname= "subscription_info" bt_active= 1 %] <span>Informação</span> [% END %]
+ [% WRAPPER tab_item tabname= "subscription_planning" %] <span>Planeamento</span> [% END %]
+ [% WRAPPER tab_item tabname= "subscription_issues" %] <span>Números</span> [% END %]
+ [% WRAPPER tab_item tabname= "subscription_summary" %] <span>Sumário</span> [% END %]
+ [% IF orders_grouped.size %]
+ [% WRAPPER tab_item tabname= "acquisition_details" %] <span>Detalhes de aquisição</span> [% END %]
+ [% END %]
+ [% END # /WRAPPER tabs_nav %]
+
+ [% WRAPPER tab_panels %]
+ [% WRAPPER tab_panel tabname="subscription_info" bt_active= 1 %]
+ <div class="row">
+ <div class="col-sm-6">
+ <div class="rows">
+ <ol>
+ <li><span class="label">ID da assinatura: </span>[% subscriptionid | html %]</li>
+ <li><span class="label">Identificação do técnico:</span> [% librarian | html %]</li>
+ <li><span class="label">Fornecedor:</span> <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% aqbooksellerid | uri %]">[% aqbooksellername | html %]</a></li>
+ <li><span class="label">Registo:</span> <a href="[% PROCESS biblio_a_href biblionumber => bibnum %]">[% bibliotitle | html %] [% bibliosubtitle | html %]</a> <em>([% bibnum | html %])</em></li>
+ [% IF ( OPACBaseURL ) %]
+ <li>
+ <span class="label">Vista OPAC:</span>
+ <a id="view-subscription-in-opac" target="_blank" href="[% Koha.Preference('OPACBaseURL') | url %]/cgi-bin/koha/opac-detail.pl?biblionumber=[% biblionumber | uri %]">Abrir numa nova janela.</a>
+ </li>
+ [% END %]
+ [% IF ( branchcode ) %]
+ <li><span class="label">Biblioteca:</span> [% Branches.GetName( branchcode ) | html %]</li>
+ [% END %]
+ [% IF ( serialsadditems ) %]
+ <li><span class="label">Exemplares:</span> A recepção criou um registo do fascículo.</li>
+ [% ELSE %]
+ <li><span class="label">Exemplares:</span> A recepção não criou um registo do fascículo.</li>
+ [% END %]
+ <li>
+ <span class="label">Número:</span>
+ [% IF skip_serialseq %] Número é ignorado quando uma irregularidade é encontrada. [% ELSE %] Número é mantido quando uma irregularidade é encontrada. [% END %] </li>
+ <li><span class="label">Dias antes de reclamar:</span> [% graceperiod | html %]</li>
+ </ol>
+ </div> <!-- /.rows -->
+ </div> <!-- /.col-sm-6 -->
+ <div class="col-sm-6">
+ <div class="rows">
+ <ol>
+ [% IF ( location ) %]<li><span class="label">Localização:</span> [% location | html %]</li>[% END %]
+ [% IF ( callnumber ) %]<li><span class="label">Cota:</span> [% callnumber | html %]</li>[% END %]
+ [% IF ( ccode ) %]<li><span class="label">Coleção:</span> [% ccode | html %]</li>[% END %]
+ [% IF ( staffdisplaycount ) %]<li><span class="label">Número de fascículos a mostrar aos técnicos:</span>[% staffdisplaycount | html %]</li>[% END %]
+ [% IF ( opacdisplaycount ) %]<li><span class="label">Número de fascículos a mostrar no OPAC:</span>[% opacdisplaycount | html %]</li>[% END %]
+ [% IF ( letter ) %]
+ <li>
+ <span class="label">Notificação do leitor:</span> [% letter | html %]
+ (<a href="/cgi-bin/koha/serials/viewalerts.pl?subscriptionid=[% subscriptionid | uri %]">subscritores</a>)
+ </li>
+ [% END %]
+ [% IF ( hasRouting ) %]<li><span class="label">Circulação:</span> sim</li>[% END %]
+ </ol>
+ </div> <!-- /.rows -->
+ </div> <!-- /.col-sm-6 -->
+ </div> <!-- /.row -->
+
+ [% IF available_additional_fields.count %]
+ <hr>
+ <div class="row">
+ <div class="col-sm-6">
+ <h3>Campos adicionais:</h3>
+ <div class="rows">
+ <ol>
+ [% INCLUDE 'additional-fields-display.inc' available=available_additional_fields values=additional_field_values %]
+ </ol>
+ </div> <!-- /.rows -->
+ </div> <!-- /.col-sm-6 -->
+ </div> <!-- /.row -->
+ [% END %]
+ [% END # /WRAPPER#subscription_info %]
+
+ [% WRAPPER tab_panel tabname="subscription_planning" %]
+ <div class="row">
+ <div class="col-sm-12">
+ <div class="rows">
+ <ol>
+ <li>
+ <span class="label">Data de início:</span>
+ [% startdate | html %]
+ </li>
+ <li>
+ <span class="label">Periodicidade:</span>
+ [% frequency.description | html %]
+ </li>
+ <li>
+ <span class="label">Histórico manual: </span>
+ [% IF ( manualhistory ) %] Activo <a href="/cgi-bin/koha/serials/subscription-history.pl?subscriptionid=[% subscriptionid | uri %]">Editar histórico</a>
+ [% ELSE %] Desactivo [% END %] </li>
+ <li>
+ <span class="label">Modelo de numeração:</span>
+ [% numberpattern.label | html %]
+ </li>
+ <li>
+ <table>
+ <tr>
+ <td>Começa por:</td>
+ [% IF (has_X) %]
+ <td>[% lastvalue1 | html %]</td>
+ [% END %]
+ [% IF (has_Y) %]
+ <td>[% lastvalue2 | html %]</td>
+ [% END %]
+ [% IF (has_Z) %]
+ <td>[% lastvalue3 | html %]</td>
+ [% END %]
+ </tr>
+ <tr>
+ <td>Voltar:</td>
+ [% IF (has_X) %]
+ <td>[% numberpattern.whenmorethan1 | html %]</td>
+ [% END %]
+ [% IF (has_Y) %]
+ <td>[% numberpattern.whenmorethan2 | html %]</td>
+ [% END %]
+ [% IF (has_Z) %]
+ <td>[% numberpattern.whenmorethan3 | html %]</td>
+ [% END %]
+ </tr>
+ </table>
+ </li>
+ [% IF ( irregular_issues ) %]
+ <li>
+ <span class="label">Irregular:</span>
+ [% irregular_issues | html %] número(s) </li>
+ [% END %]
+ <li>
+ <span class="label">Primeira entrega:</span>
+ [% firstacquidate | html %]
+ </li>
+ [% IF ( numberlength ) %]<li>
+ <span class="label">Número de fascículos:</span>
+ [% numberlength | html %]</li>
+ [% END %]
+ [% IF ( weeklength ) %]<li>
+ <span class="label">Total de semanas:</span>
+ [% weeklength | html %]</li>
+ [% END %]
+ [% IF ( monthlength ) %]<li>
+ <span class="label">Total de meses:</span>
+ [% monthlength | html %]</li>
+ [% END %]
+ </ol>
+ </div> <!-- /.rows -->
+ </div> <!-- /.col-sd-12 -->
+ </div> <!-- /.row -->
+ [% END # /WRAPPER#subscription_planning %]
+
+ [% WRAPPER tab_panel tabname="subscription_issues" %]
+ <table>
+ <tr>
+ <th>Número do fascículo</th>
+ <th>Data prevista</th>
+ <th>Data de publicação</th>
+ <th>Data de publicação (texto)</th>
+ <th>Estado</th>
+ </tr>
+ [% FOREACH serialslis IN serialslist %]
+ <tr>
+ <td>
+ [% serialslis.serialseq | html %]
+ </td>
+ <td>
+ [% IF serialslis.planneddate %]
+ [% serialslis.planneddate | $KohaDates %]
+ [% ELSE %]
+ <span>Desconhecido</span>
+ [% END %]
+ </td>
+ <td>
+ [% IF serialslis.publisheddate %]
+ [% serialslis.publisheddate | $KohaDates %]
+ [% ELSE %]
+ <span>Desconhecido</span>
+ [% END %]
+ </td>
+ <td>
+ [% serialslis.publisheddatetext | html %]
+ </td>
+ <td>
+ [% INCLUDE 'serial-status.inc' serial = serialslis %]
+ </td>
+ </tr>
+ [% END # /FOREACH serialslist %]
+ </table>
+ [% END # /WRAPPER#subscription_issues %]
+
+ [% WRAPPER tab_panel tabname="subscription_summary" %]
+ <div class="row">
+ <div class="col-sm-12">
+ <div class="rows">
+ <ol>
+ <li><span class="label">Data de início:</span> [% startdate | html %] </li>
+ <li><span class="label">Data de fim:</span> [% enddate | html %]</li>
+ <li><span class="label">Início da assinatura (histórico):</span> [% histstartdate | html %] </li>
+ <li><span class="label">Fim da assinatura (histórico):</span> [% histenddate | html %]</li>
+ <li><span class="label">Fascículos recebidos:</span>[% recievedlist | html | html_line_break %]</li>
+ <li><span class="label">Números em falta:</span>[% missinglist | html | html_line_break %]</li>
+ <li><span class="label">Nota interna:</span>[% internalnotes | html | html_line_break %]</li>
+ <li><span class="label">Nota pública:</span>[% notes | html | html_line_break %]</li>
+ <li><span class="label">Nota não publica (histórico):</span>[% librariannote | html | html_line_break %]</li>
+ <li><span class="label">Nota pública (histórico):</span>[% opacnote | html | html_line_break %]</li>
+ </ol>
+ </div> <!-- /.rows -->
+ </div> <!-- /.col-sm-12 -->
+ </div> <!-- /.row -->
+ [% END # /WRAPPER#subscription_summary %]
+
+ [% IF orders_grouped.size %]
+ [% WRAPPER tab_panel tabname="acquisition_details" %]
+ <h2>Detalhes de aquisição</h2>
+ <table id="orders">
+ <caption>
+ <span class="actions">
+ <a href="#" id="hide_received_orders">Esconder encomendas recebidas</a>
+ | <a href="#" id="show_all_orders">Mostrar todas as encomendas</a>
+ | <a href="#" id="expand_all">Expandir todos</a>
+ | <a href="#" id="collapse_all">Recolher todos</a>
+ </span>
+ </caption>
+ <thead>
+ <tr>
+ <th>Factura</th>
+ <th>Cesto</th>
+ <th>Número da encomenda</th>
+ <th>Data de criação</th>
+ <th>Data de recepção</th>
+ <th>Estado</th>
+ <th>Nota interna</th>
+ <th>Nota do fornecedor</th>
+ <th>Fundo</th>
+ <th>Quantidade</th>
+ <th title="ecost tax exc. / ecost tax inc.">Encomendado</th>
+ <th title="Custo atual sem taxas / Custo atual com taxas">Gasto</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOR ordernumber IN orders_grouped.keys %]
+ [% SET parent_tree_id = loop.count %]
+ [% SET parent_order = orders_grouped.$ordernumber %]
+ <tr data-tt-id="[% parent_tree_id | html %]" class="highlighted-row">
+ <td></td> [%# invoice %]
+ <td>
+ [% IF CAN_user_acquisition_order_manage %]
+ <a href="/cgi-bin/koha/acqui/basket.pl?basketno=[% parent_order.basket.basketno | uri %]">[% parent_order.basket.basketname | html %] ([% parent_order.basket.basketno | html %])</a>
+ [% ELSE %]
+ [% parent_order.basket.basketname | html %] ([% parent_order.basket.basketno | html %])
+ [% END %]
+ </td>
+ <td></td> [%# ordernumber %]
+ <td>[% parent_order.basket.creationdate | $KohaDates %]</td>
+ <td>[% parent_order.datereceived | $KohaDates %]</td>
+ <td>
+ [% SWITCH parent_order.orderstatus %]
+ [% CASE 'new' %]<span title="status_1">Novo</span>
+ [% CASE 'ordered' %]<span title="status_2">Encomendado</span>
+ [% CASE 'partial' %]<span title="status_3">Parcial</span>
+ [% CASE 'complete' %]<span title="status_4">Completa</span>
+ [% CASE 'cancelled' %]<span title="status_5">Cancelado</span>
+ [% END %]
+ </td>
+ <td></td> [%# internalnote %]
+ <td></td> [%# vendornote %]
+ <td></td> [%# fund %]
+ <td>[% parent_order.quantity | html %]</td>
+ <td>[% parent_order.ecost_tax_excluded | $Price %] / [% parent_order.ecost_tax_included | $Price %]</td>
+ <td>[% parent_order.unitprice_tax_excluded | $Price %] / [% parent_order.unitprice_tax_included | $Price %]</td>
+ </tr>
+ [% FOR order IN parent_order.orders %]
+ <tr data-tt-id="0" data-tt-parent-id="[% parent_tree_id | html %]">
+ <td>
+ [% IF order.invoice %]
+ [% IF CAN_user_acquisition %]
+ <a href="/cgi-bin/koha/acqui/invoice.pl?invoiceid=[% order.invoiceid | uri %]" title="Detalhes da fatura">
+ [% order.invoice.invoicenumber | html %]</a>
+ [% ELSE %]
+ [% order.invoice.invoicenumber | html %]
+ [% END %]
+ [% END %]
+ </td>
+ <td></td> [%# basket %]
+ <td>[% order.ordernumber | html %]</td>
+ <td data-order="[% order.basket.creationdate | uri %]">[% order.basket.creationdate | $KohaDates%]</td>
+ <td data-order="[% order.datereceived | uri %]">[% order.datereceived | $KohaDates %]</td>
+ [% SWITCH order.orderstatus %]
+ [% CASE 'new' %]<td data-order="status_1"><span>Novo</span>
+ [% CASE 'ordered' %]<td data-order="status_2"><span>Encomendado</span>
+ [% CASE 'partial' %]<td data-order="status_3"><span>Parcial</span>
+ [% CASE 'complete' %]<td data-order="status_4"><span>Completa</span>
+ [% CASE 'cancelled' %]<td data-order="status_5"><span>Cancelado</span>
+ [% END %]
+ </td>
+ <td>[% order.order_internalnote | html %]</td>
+ <td>[% order.order_vendornote | html %]</td>
+ <td>[% order.fund.budget_name | html %]</td>
+ <td>[% order.quantity | html %]</td>
+ <td>
+ [% UNLESS order.datereceived %]
+ [% order.ecost_tax_excluded * order.quantity | $Price %] / [% order.ecost_tax_included * order.quantity | $Price %]
+ [% END %]
+ </td>
+ <td>
+ [% IF order.datereceived %]
+ [%# FIXME What if unitprice has not been filled? %]
+ [% order.unitprice_tax_excluded * order.quantity | $Price %] / [% order.unitprice_tax_included * order.quantity | $Price %]
+ [% END %]
+ </td>
+ </tr>
+ [% END # /FOR order %]
+ [% END # /FOR ordernumber %]
+ </tbody>
+ </table> <!-- /#orders -->
+ [% END # /WRAPPER tab_panel#acquisition_details %]
+ [% END # IF orders_grouped.size %]
+ [% END # /WRAPPER tab_panels %]
+ [% END # /WRAPPER tabs#subscription_description %]
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'serials-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ <script>
+        var subscriptionid = "[% subscriptionid | html %]";
+    </script>
+ [% Asset.js("js/serials-toolbar.js") | $raw %]
+ [% Asset.js("js/mana.js") | $raw %]
+ [% INCLUDE 'datatables.inc' %]
+ [% Asset.js("lib/jquery/plugins/treetable/jquery.treetable.js") | $raw %]
+ [% INCLUDE 'columns_settings.inc' %]
+ <script>
+        // the english words used in display purposes
+        var text = new Array(_("Número"),_("Volume"),_("Número"),_("Mês"),_("Semana"),_("Começa por:"),_("Volta a:"),_("Escolher hemisfério:"),_("Norte"),_("Southern",
+        "Autumn"),_("Inverno"),_("Primavera"),_("Verão"),_("Outono"),_("Estação"),_("Ano"));
+        $(document).ready(function() {
+
+            $("#renewsub").click(function(){
+                popup([% subscriptionid | html %]);
+                return false;
+            })
+
+            var table_settings = [% TablesSettings.GetTableSettings( 'serials', 'subscription-detail', 'orders', 'json' ) | $raw %];
+            var table = KohaTable("orders", {
+                "aoColumnDefs": [
+                    { "bVisible": false, "aTargets": [ 'NoVisible' ] },
+                    { "bSortable": false, "aTargets": ["_all"] },
+                ],
+
+                'bPaginate': false,
+                'bAutoWidth': false,
+                'bSort': false,
+            }, table_settings);
+
+            [% IF orders_grouped.size %]
+                $(table).treetable({
+                    expandable: true,
+                    initialState: 'expanded',
+                });
+                $(table).treetable('expandAll');
+
+                $("#expand_all").click(function(e){
+                    e.preventDefault();
+                    $(table).treetable('expandAll');
+                });
+                $("#collapse_all").click(function(e){
+                    e.preventDefault();
+                    $(table).treetable('collapseAll');
+                });
+
+            [% END %]
+
+            $("#hide_received_orders").click(function(e){
+                e.preventDefault();
+                table.fnFilter( '^$', 4, true ); // Not empty "Receive date" columns
+            });
+            $("#show_all_orders").click(function(e){
+                e.preventDefault();
+                table.fnFilter( '', 4 ); // Not filter, display all columns
+            });
+            $("#show_all_orders").click();
+        });
+
+        function mana_comment_close(){
+            $("#selected_id").val("");
+            $("#mana-resource-id").val("");
+            $("#mana-comment").val("");
+            $("#mana-comment-box").modal("hide");
+        }
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

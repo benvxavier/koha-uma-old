@@ -1,0 +1,126 @@
+---
+Web services -:
+  Geral:
+  - - Definir o cabeçalho Access-Control-Allow-Origin como
+    - class: Text
+      pref: AccessControlAllowOrigin
+    - .
+  ILS-DI:
+  - - choices:
+        '0': Não activar
+        '1': Activar
+      pref: ILS-DI
+    - 'os serviços ILS-DI para os utilizadores do OPAC (disponível em: /cgi-bin/koha/ilsdi.pl)'
+  - - Permitir que os endereços IP
+    - class: Text
+      pref: ILS-DI:AuthorizedIPs
+    - utilizem os serviços ILS-DI (quando ativos). Separar os endereços IP com vírgulas
+      e sem espaços. Deixe o campo vazio para permitir qualquer IP.
+  Mana KB:
+  - - choices:
+        '0': Não activar
+        '1': Activar
+        '2': Não, deixe-me pensar sobre
+      pref: Mana
+    - as submissões para o Mana KB. O Mana centraliza informação sobre outras instalações
+      do Koha para facilitar a criação de novas assinaturas, fornecedores, relatórios,
+      etc. Pode pesquisar, partilhar, importar e comentar os conteúdos do sistema.
+      A informação partilhada com o Mana KB é partilhada sobre a <a href="https://creativecommons.org/choose/zero/">licença
+      CC-0</a>
+  - - 'Token de sergurança para autenticar no Mana KB:'
+    - class: Text
+      pref: ManaToken
+    - Obtenha o token de segurança na <a href="/cgi-bin/koha/admin/share_content.pl">página
+      de administração do Mana KB</a>.
+  - - 'Campos automaticamente partilhados com o Mana KB:'
+    - multiple:
+        subscription: subscrições
+      pref: AutoShareWithMana
+  OAI-PMH:
+  - - choices:
+        '0': Não activar
+        '1': Activar
+      pref: OAI-PMH
+    - o servidor
+    - '<a href="http://www.openarchives.org/pmh/">servidor OAI-PMH</a>. (disponível
+      em: /cgi-bin/koha/oai.pl?verb=Identify)'
+  - - Identificar os registos deste site com o prefixo
+    - pref: OAI-PMH:archiveID
+    - . Insira o prefixo sem o símbolo de dois pontos (:). O identificador deve respeitar
+      a especificação do OAI. Veja as
+    - '<a href="http://www.openarchives.org/OAI/2.0/guidelines-oai-identifier.htm">directrizes
+      de implementação</a>. '
+    - 'Exemplo: "oai:example-library.org"'
+  - - Apenas retornar
+    - class: integer
+      pref: OAI-PMH:MaxCount
+    - registos por cada resposta a uma consulta ListRecords ou ListIdentifiers.
+  - - 'Ficheiro de configuração YAML do serviço OAI:'
+    - class: file
+      pref: OAI-PMH:ConfFile
+    - Se vazio, o servidor OAI do Koha opera normalmente, senão opera no modo estendido.
+      Nesse modo é possível parametrizar outros formatos que o MARCXML ou o Dublin
+      Core. <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OAI-PMH:ConfFile">OAI-PMH:ConfFile</a>
+      especifica um ficheiro de configuração YAML que lista os formatos de metadados
+      e o ficheiro XSL usado para criar os registos MARCXML.
+  - - choices:
+        '0': Não activar
+        '1': Activar
+      pref: OAI-PMH:AutoUpdateSets
+    - a actualização automáticas dos conjuntos OAI-PMH quando um registo bibliográfico
+      ou de exemplar é criado ou actualizado.
+  - - choices:
+        '0': Não activar
+        '1': Activar
+      pref: OAI-PMH:AutoUpdateSetsEmbedItemData
+    - incluir dados de exemplares ao actualizar automaticamente os conjuntos OAI-PMH.
+    - <br><strong>NOTA:</strong> É necessário ter a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OAI-PMH:AutoUpdateSets">OAI-PMH:AutoUpdateSets</a>
+      ativa.
+  - - A tabela deletedbiblio do Koha
+    - choices:
+        no: nunca terá dados (não)
+        persistent: nunca será limpa ou truncada (persistente)
+        transient: pode estar vazia ou truncada a qualquer ponto (transitório)
+      pref: OAI-PMH:DeletedRecord
+    - .
+  REST API:
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: RESTBasicAuth
+    - <a href="https://www.w3.org/Protocols/HTTP/1.0/spec.html#BasicAA" target="_blank">autenticação
+      básica</a> para a API REST.
+  - - Definir o número por omissão de resultados retornados pelos métodos da REST
+      API para
+    - class: integer
+      pref: RESTdefaultPageSize
+    - por página.
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: RESTOAuth2ClientCredentials
+    - a permissão das credenciais de cliente OAuth2 para a API REST. Requer que o
+      módulo Perl Net::OAuth2::AuthorizationServer esteja instalado.
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: RESTPublicAnonymousRequests
+    - o acesso anónimo as rotas públicas (que não necessitam de autenticação)
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: RESTPublicAPI
+    - o caminho /public da API.
+  Relatórios:
+  - - Para apenas retornar
+    - class: integer
+      pref: SvcMaxReportRows
+    - linhas de um relatório pedido via web service.
+  Web services -:
+  - - choices:
+        '0': Não activar
+        '1': Activar
+      pref: IdRef
+    - o webservice IdRef na página de detalhes do OPAC. IdRef permite pesquisar autoridades
+      na base de dados Sudoc.
+    - Por favor note que esta funcionalidade apenas está disponível para UNIMARC.

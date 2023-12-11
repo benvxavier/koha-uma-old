@@ -1,0 +1,140 @@
+[% USE Koha %]
+[% USE AdditionalContents %]
+[% SET OpacNav = AdditionalContents.get( location => "OpacNav", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
+[% SET OpacNavBottom = AdditionalContents.get( location => "OpacNavBottom", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Partilhar a lista &rsaquo; [% IF ( LibraryNameTitle ) %][% LibraryNameTitle | html %][% ELSE %]Koha online[% END %] catálogo</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% BLOCK cssinclude %][% END %]
+</head>
+
+[% INCLUDE 'bodytag.inc' bodyid='opac-shareshelf' bodyclass='scrollto' %]
+[% INCLUDE 'masthead.inc' %]
+<div class="main">
+ <nav aria-label="Caminho de navegação" class="breadcrumbs" id="breadcrumbs">
+ <ol class="breadcrumb">
+ <li class="breadcrumb-item">
+ <a href="/cgi-bin/koha/opac-main.pl">Início</a>
+ </li>
+ [% IF ( loggedinusername ) %]
+ <li class="breadcrumb-item">
+ <a href="/cgi-bin/koha/opac-user.pl">[% INCLUDE 'patron-title.inc' patron = logged_in_user %]</a>
+ </li>
+ [% END %]
+ <li class="breadcrumb-item">
+ <a href="/cgi-bin/koha/opac-shelves.pl">Listas</a>
+ </li>
+ <li class="breadcrumb-item active">
+ <a href="#" aria-current="page">Partilhar uma lista</a>
+ </li>
+ </ol> <!-- / .breadcrumb -->
+ </nav> <!-- /#breadcrumbs -->
+
+ <div class="container-fluid">
+ <div class="row">
+ [% IF ( OpacNav ) %]
+ <div class="col-lg-2">
+ <div id="navigation">
+ [% INCLUDE 'navigation.inc' IsPatronPage=1 %]
+ </div>
+ </div>
+ [% END %]
+
+ <div class="col-10 order-first order-md-first order-lg-2">
+ <div id="shareshelf" class="maincontent">
+
+ [%# This section contains the essential code for error messages and three operations: invite, confirm_invite and accept. %]
+ <h1>Partilhar uma lista com outro leitor</h1>
+
+ [% IF errcode %]
+ [% IF errcode==1 && op %]
+ <div class="alert alert-warning">A operação [% op | html %] não é suportada.</div>
+ [% END %]
+ [% IF errcode==1 && !op %]
+ <div class="alert alert-warning">Não foi passado nenhum parâmetro de operação.</div>
+ [% END %]
+ [% IF errcode==2 %]
+ <div class="alert alert-warning">Número de prateleira inválido.</div>
+ [% END %]
+ [% IF errcode==3 %]
+ <div class="alert alert-warning">A funcionalidade de partilhar listas não está ativa na biblioteca.</div>
+ [% END %]
+ [% IF errcode==4 %]
+ <div class="alert alert-warning">Apenas pode partilhar uma lista se for o dono.</div>
+ [% END %]
+ [% IF errcode==5 %]
+ <div class="alert alert-warning">Não pode partilhar uma lista pública.</div>
+ [% END %]
+ [% IF errcode==6 %]
+ <div class="alert alert-warning">Desculpe, mas não inseriu um endereço de email válido.</div>
+ [% END %]
+ [% IF errcode==7 %]
+ <div class="alert alert-warning">Desculpe, mas não foi possível aceitar a chave. O convite pode ter expirado. Contacte o leitor que enviou o convite.</div>
+ [% END %]
+ [% IF errcode==8 %]
+ <div class="alert alert-warning">Como dono de uma lista não pode aceitar um convite para partilha-la.</div>
+ [% END %]
+ <p><a href="/cgi-bin/koha/opac-shelves.pl?op=list">Regressar às listas</a></p>
+
+ [% ELSIF op=='invite' %]
+ <div id="invite">
+ <form id="share_list">
+ <legend class="sr-only">Partilhar lista</legend>
+ <fieldset class="rows">
+ <input type="hidden" name="op" value="conf_invite"/>
+ <input type="hidden" name="shelfnumber" value="[% shelfnumber | html %]"/>
+ <ol>
+ <li>
+ <label for="name">Nome da lista:</label> [% shelfname | html %]
+ </li>
+ <li>
+ <label for="invite_address">Email:</label>
+ <input type="text" id="invite_address" name="invite_address" size="40" />
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input class="btn btn-primary" type="submit" value="Enviar" />
+ <a href="/cgi-bin/koha/opac-shelves.pl?op=list" class="cancel">Anular</a>
+ </fieldset>
+ </form> <!-- /#share_list -->
+ </div> <!-- /#invite -->
+
+ [% ELSIF op=='conf_invite' %]
+ <div id="conf_invite">
+ [% IF approvedaddress %]
+ <p>Um convite para partilhar a lista <em>[% shelfname | html %]</em> foi enviado para [% approvedaddress | html %].</p>
+ [% END %]
+ [% IF failaddress %]
+ <p>Ocorreu um erro no processamentos dos seguintes endereços. Por favor verifique se está tudo correto. Os endereços são: [% failaddress | html %]</p>
+ [% END %]
+ [% IF approvedaddress %]
+ <p>Irá receber uma notificação por email se alguém aceitar a sua partilha antes que expire.</p>
+ [% END %]
+ <p><a href="/cgi-bin/koha/opac-shelves.pl?op=list">Regressar às listas</a></p>
+ </div>
+
+ [% ELSIF op=='accept' %]
+ [%# Nothing to do: we already display an error or we redirect. %]
+ [% END %]
+ [%# End of essential part %]
+
+ </div> <!-- / #shareshelf.maincontent -->
+ </div> <!-- / .span10 -->
+ </div> <!-- / .row -->
+ </div> <!-- / .container-fluid -->
+</div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %]
+ <script>
+        $(document).ready(function(){
+            $("#share_list").on('submit', function(e) {
+                var address = $("#invite_address").val();
+                if ( address.length == 0) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+[% END %]

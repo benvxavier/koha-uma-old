@@ -1,0 +1,436 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Koha %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>
+ [% IF ( uploadborrowers ) %] Resultados &rsaquo; [% END %] Importar leitores &rsaquo; Ferramentas &rsaquo; Koha </title>
+[% INCLUDE 'doc-head-close.inc' %]
+<style>
+    label.description { width: 20em; }
+    .line_error { width: 100%; }
+    code { background-color: yellow; }
+</style>
+</head>
+
+<body id="tools_import_borrowers" class="tools">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'patron-search-header.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/tools/tools-home.pl">Ferramentas</a>
+ [% END %]
+ [% IF ( uploadborrowers ) %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/tools/import_borrowers.pl">Importar leitores</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Resultados</span>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Importar leitores</span>
+ [% END %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+[% INCLUDE 'blocking_errors.inc' %]
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ <div class="row">
+ <div class="col-sm-6">
+<h1>Importar leitores</h1>
+[% IF ( uploadborrowers ) %]
+ <h5>Resultados de importação :</h5>
+ <ul>
+ <li>[% imported | html %] registos importados [% IF ( lastimported ) %](o último foi [% lastimported | html %])[% END %]</li>
+ [% IF imported and patronlistname %]
+ <li>Lista de leitores com os leitores importados: [% patronlistname | html %]</li>
+ [% END %]
+ <li>[% overwritten | html %] reescritos [% IF ( lastoverwritten ) %](último foi [% lastoverwritten | html %])[% END %]</li>
+ <li>[% alreadyindb | html %] não importado, devido a já existir na base de dados e não estar activa a opção de substituição [% IF ( lastalreadyindb ) %](último foi [% lastalreadyindb | html %])[% END %]</li>
+ <li>[% invalid | html %] não foi importado, pois não está num formato esperado [% IF ( lastinvalid ) %](último foi [% lastinvalid | html %])[% END %]</li>
+ <li>[% total | html %] registo(s) aceite(s)</li>
+ <li><a href="/cgi-bin/koha/tools/tools-home.pl">Voltar às Ferramentas</a></li>
+ </ul>
+
+ [% IF ( feedback ) %]
+ <br /><br />
+
+ <div>
+ <h5>Feedback:</h5>
+ <ul class="feedback">
+ [% FOREACH f IN feedback %]
+ <li>
+ [% IF ( f.filename ) %]
+ <span>A analisar o ficheiro carregado</span> <span class="filename">[% f.filename | html %]</span>
+ [% ELSIF ( f.backend ) %]
+ <span>Carregamento analisado usando [% f.backend | html %]</span>
+ [% ELSIF ( f.headerrow ) %]
+ <span>Estes campos foram encontrados: [% f.value | html %]</span>
+ [% ELSIF ( f.already_in_db ) %]
+ <span>O leitor já se encontra na base de dados: [% f.value | html %]</span>
+ [% ELSE %]
+ [% f.name | html %] : [% f.value | html %]
+ [% END %]
+ </li>
+ [% END %]
+ </ul>
+ </div>
+ [% END %]
+
+ [% IF ( errors ) %]
+ <br /><br />
+
+ <div>
+ <h5>Erro análise :</h5>
+ <ul>
+ [% FOREACH e IN errors %]
+ [% IF ( e.badheader ) %]<li>Linha de cabeçalho não consegue ser lida</li>[% END %]
+
+ [% FOREACH missing_critical IN e.missing_criticals %]
+ <li class="line_error">
+ Linha <span class="linenumber">[% missing_critical.line | html %]</span>
+
+ [% IF ( missing_critical.badparse ) %]
+ <span>não pode ser analisada!</span>
+ [% ELSIF ( missing_critical.bad_date ) %]
+ <span>tem a coluna &quot;[% missing_critical.key | html %]&quot; num formato não reconhecido:</span> &quot;[% missing_critical.value | html %]&quot;
+ [% ELSE %]
+ <span>Campo crítico &quot;[% missing_critical.key | html %]&quot;</span>
+
+ [% IF ( missing_critical.branch_map ) %]
+ <span>tem um valor não reconhecido &quot;[% missing_critical.value | html %]&quot;</span>
+ [% ELSIF ( missing_critical.category_map ) %]
+ <span>tem um valor não reconhecido &quot;[% missing_critical.value | html %]&quot;</span>
+ [% ELSE %]
+ <span>em falta</span>
+ [% END %]
+
+ (<span>número de leitor: [% missing_critical.borrowernumber | html %]</span>; <span>apelido: [% missing_critical.surname | html %]</span>).
+ [% END %]
+
+ <br/>
+ <code>[% missing_critical.lineraw | html %]</code>
+ </li>
+ [% END %]
+
+ [% IF e.invalid_cardnumber %]
+ <li class="line_error">
+ Número de cartão [% e.cardnumber | html %] não é um número de cartão válido [% IF e.borrowernumber %] (para o leitor com o número de leitor [% e.borrowernumber | html %])[% END %] </li>
+ [% END %]
+ [% IF e.duplicate_userid %]
+ <li class="line_error">
+ O nome de utilizador [% e.userid | html %] já está a ser usado por outro leitor. </li>
+ [% END %]
+ [% IF e.passwd_too_short %]
+ <li class="line_error">
+ A palavra-passe é demasiado curta para o leitor com o número de leitor [% e.borrowernumber | html %]. O comprimento mínimo é [% e.min_length | html %], o tamanho é [% e.length | html %] </li>
+ [% END %]
+ [% IF e.passwd_whitespace %]
+ <li class="line_error">
+ A palavra-passe contém um espaço em branco para o leitor com o número de leitor [% e.borrowernumber | html %]. </li>
+ [% END %]
+ [% IF e.passwd_too_weak %]
+ <li class="line_error">
+ A palavra-passe é demasiado fraca para o leitor com o número de leitor [% e.borrowernumber | html %]. </li>
+ [% END %]
+ [% IF e.passwd_plugin_err %]
+ <li class="line_error">
+ Erro no plugin de palavra-passe para o leitor com o número de leitor [% e.borrowernumber | html %]. </li>
+ [% END %]
+ [% IF e.passwd_unknown_err %]
+ <li class="line_error">
+ Erro na palavra-passe para o leitor com o número de leitor [% e.borrowernumber | html %]. </li>
+ [% END %]
+ [% IF e.patron_attribute_unique_id_constraint %]
+ <li class="line_error">
+ [% IF e.borrowernumber %]
+ <span>O atributo de leitor [% e.attribute.code | html %] deve ser único para o leitor com o número [% e.borrowernumber | html %].</span>
+ [% ELSE %]
+ <span>O atributo de leitor [% e.attribute.code | html %] deve ser único para o leitor [% e.patron_id | html %].</span>
+ [% END %]
+ </li>
+ [% END %]
+ [% IF e.patron_attribute_invalid_type %]
+ <li class="line_error">
+ [% IF e.borrowernumber %]
+ <span>O atributo de leitor [% e.attribute_type_code | html %] é inválido para o leitor com o número de leitor [% e.borrowernumber | html %].</span>
+ [% ELSE %]
+ <span>O atributo de leitor [% e.attribute_type_code | html %] é inválido para o leitor [% e.patron_id | html %].</span>
+ [% END %]
+ </li>
+ [% END %]
+ [% IF e.patron_attribute_non_repeatable %]
+ <li class="line_error">
+ [% IF e.borrowernumber %]
+ <span>O atributo de leitor [% e.attribute.code | html %] não é repetível para o leitor com o número [% e.borrowernumber | html %].</span>
+ [% ELSE %]
+ <span>O atributo de leitor [% e.attribute.code | html %] não é repetível para o leitor [% e.patron_id | html %].</span>
+ [% END %]
+ </li>
+ [% END %]
+ [% END %]
+ </ul>
+ </div>
+ [% END %]
+[% ELSE %]
+ <ul>
+ <li>Selecione o ficheiro a importar para a tabela do leitor</li>
+ <li>Se um número de cartão já existe, pode optar por ignorar o novo ou sobrepor o antigo.</li>
+ </ul>
+
+ <form method="post" action="[% SCRIPT_NAME | html %]" enctype="multipart/form-data">
+ <fieldset class="rows">
+ <legend>Importar para a tabela de leitores</legend>
+
+ <ol>
+ <li>
+ <label for="uploadborrowers">Seleccionar o ficheiro a importar: </label>
+ <input type="file" id="uploadborrowers" name="uploadborrowers" />
+ </li>
+
+ <li>
+ <label for "createpatronlist">Criar lista de leitores: </label>
+ <input name="createpatronlist" id="createpatronlist" value="1" type="checkbox">
+ <span class="hint">O nome da lista será o nome do ficheiro e a data</span>
+ </li>
+ </ol>
+ </fieldset>
+
+ <fieldset class="rows">
+ <legend>Campo a usar na correspondência de registos</legend>
+ <ol>
+ <li class="radio">
+ <select name="matchpoint" id="matchpoint">
+ <option value="cardnumber">Número de cartão</option>
+ <option value="userid">Nome do utilizador</option>
+ [% FOREACH matchpoint IN matchpoints %]
+ <option value="[% matchpoint.code | html %]">[% matchpoint.description | html %]</option>
+ [% END %]
+ </select>
+ </li>
+ </ol>
+ </fieldset>
+
+ <fieldset class="rows">
+ <legend>
+ <a href="#" class="expand_defaults"><i class="fa fa-plus-square"></i> Usar valores por omissão</a>
+ <a href="#" class="expand_defaults" style="display:none;"><i class="fa fa-minus-square"></i> Esconder os campos por omissão</a>
+ </legend>
+
+ <ol class="default_values" style="display:none;">
+ [% FOREACH borrower_db_column IN borrower_fields.keys.sort %]
+ [% SWITCH borrower_db_column %]
+ [% CASE 'branchcode' %]
+ <li>
+ <label class="description" for="branchcode">[% borrower_fields.$borrower_db_column | html %]: </label>
+ <select id="branchcode" name="branchcode">
+ <option value="" selected="selected"></option>
+ [% FOREACH library IN Branches.all() %]
+ <option value="[% library.branchcode | html %]">[% library.branchname | html %]</option>
+ [% END %]
+ </select>
+ <span class="field_hint">[% borrower_db_column | html %]</span>
+ </li>
+ [% CASE 'categorycode' %]
+ <li>
+ <label class="description" for="categorycode">[% borrower_fields.$borrower_db_column | html %]: </label>
+ <select id="categorycode" name="categorycode">
+ <option value="" selected="selected"></option>
+ [% FOREACH category IN categories %]
+ <option value="[% category.categorycode | html %]">[% category.description | html %]</option>
+ [% END %]
+ </select>
+ <span class="field_hint">[% borrower_db_column | html %]</span>
+ </li>
+ [% CASE %]
+ <li>
+ <label class="description" for="[% borrower_db_column| html %]">[% borrower_fields.$borrower_db_column | html %]: </label>
+ <input id="[% borrower_db_column | html %]" name="[% borrower_db_column | html %]" type="text" />
+ <span class="field_hint">[% borrower_db_column | html %]</span>
+ </li>
+ [% END %]
+ [% END %]
+
+ [% IF ( Koha.Preference('ExtendedPatronAttributes') == 1 ) %]
+ <li>
+ <label class="description" for="patron_attributes">Atributos de leitor: </label>
+ <input id="patron_attributes" name="patron_attributes" type="text" />
+ <span class="field_hint">patron_attributes</span>
+ </li>
+ [% END %]
+
+ </ol>
+ </fieldset>
+ <fieldset class="rows">
+ <legend>
+ <a href="#" class="expand_preserves"><i class="fa fa-plus-square"></i> Preservar os valores existentes</a>
+ <a href="#" class="expand_preserves" style="display:none;"><i class="fa fa-minus-square"></i> Esconder os campos a preservar</a>
+ </legend>
+
+ <ol class="preserve_values" style="display:none;">
+ <div class="hint">Os campos selecionados serão preservados a partir do registo original do leitor quando estiver a sobrepor um leitor já existente.</div>
+ [% FOREACH borrower_db_column IN borrower_fields.keys.sort %]
+ <li>
+ <label class="description" for="preserve_existing_[% borrower_db_column | html %]">[% borrower_fields.$borrower_db_column | html %]: </label>
+ <input name="preserve_existing" id="preserve_existing_[%  borrower_db_column | html %]" value="[%  borrower_db_column | html %]" type="checkbox">
+ <span class="field_hint">[% borrower_db_column | html %]</span>
+ </li>
+ [% END %]
+ </ol>
+ </fieldset>
+
+ <fieldset class="brief">
+ <legend>Se um registo já existe na tabela dos leitores:</legend>
+
+ <ol>
+ <li class="radio">
+ <input type="radio" id="overwrite_cardnumberno" name="overwrite_cardnumber" value="0" checked="checked" /><label for="overwrite_cardnumberno">Ignorar este, manter o existente</label>
+ </li>
+
+ <li class="radio">
+ <input type="radio" id="overwrite_cardnumberyes" name="overwrite_cardnumber" value="1" /><label for="overwrite_cardnumberyes">Sobrepor o existente por este</label>
+ <ol>
+ <li>
+ <label class="update_dateexpiry" for="update_dateexpiry">Renovar leitores existentes</label>
+ <select class="update_dateexpiry" type="select" id="update_dateexpiry" name="update_dateexpiry" disabled/>
+ <option value="">usando a data de término do ficheiro, caso exista</option>
+ <option value="dateexpiry">a partir da data de término de conta atual</option>
+ <option value="now">a partir da data atual</option>
+ </select>
+ </li>
+ <li>
+ <input class="overwrite_passwords" type="checkbox" id="overwrite_passwords" name="overwrite_passwords" disabled/>
+ <label class="overwrite_passwords" for="overwrite_passwords">Substituir as palavra-passes do leitores com as que estão no ficheiro (as vazias serão ignoradas)</label>
+ </li>
+ </ol>
+ </li>
+ </ol>
+ </fieldset>
+
+ [% IF ( Koha.Preference('ExtendedPatronAttributes') == 1 ) %]
+ <fieldset class="brief">
+ <legend>Atributos de leitor</legend>
+
+ <ol>
+ <li class="radio">
+ <input type="radio" id="ext_preserve_0" name="ext_preserve" value="0" /><label for="ext_preserve_0">Substituir todos os atributos de leitor</label>
+ </li>
+
+ <li class="radio">
+ <input type="radio" id="ext_preserve_1" name="ext_preserve" value="1" checked="checked" /><label for="ext_preserve_1">Substituir apenas os atributos de leitor incluídos</label>
+ </li>
+ </ol>
+ </fieldset>
+ [% END %]
+
+ <fieldset class="rows">
+ <legend>Email de boas-vindas</legend>
+ <ol>
+ <li>
+ <input class="welcome_new" type="checkbox" id="welcome_new" name="welcome_new"/>
+ <label class="welcome_new" for="welcome_new">Enviar email aos novos leitores</label>
+ <span class="hint"> O aviso WELCOME é usado</span>
+ </li>
+ </ol>
+ </fieldset>
+
+ <fieldset class="action">
+ <input type="hidden" name="csrf_token" value="[% csrf_token | html %]" />
+ <input class="btn btn-primary" type="submit" value="Importar" />
+ </fieldset>
+ </form>
+[% END %]
+
+</div>
+
+<div class="col-sm-6 page-section bg-info">
+ <h2>Notas:</h2>
+ <ul>
+ <li>A primeira linha do arquivo deve ser uma linha de cabeçalho que define as colunas que você está fornecendo no arquivo de importação.</li>
+
+ <li><strong>Download <a href="?sample=1">ficheiro CSV inicial</a> com todas as colunas.</strong> Os valores são separados por vírgula.</li>
+
+ <li>
+ OU escolher quais os campos que deseja fornecer a partir da seguinte lista: <ul>
+ <li>
+ [% FOREACH columnkey IN borrower_fields.keys.sort %]'[% columnkey | html %]', [% END %]
+ </li>
+ </ul>
+ </li>
+
+ [% IF ( Koha.Preference('ExtendedPatronAttributes') ) %]
+ <li>
+ Se for para ler atributos de leitor, o campo 'patron_attributes' deve conter uma lista de tipos e valores separados por vírgulas. O código do atributo e dois pontos devem preceder o valor. Por exemplo: <strong>INSTID:12345,LANG:fr</strong> ou <strong>STARTDATE:January 1 2010,TRACK:Day</strong>. Se um registo tem mais que um atributo, os campos devem conter um valor sem aspas (exemplos anteriores), ou cada campo envolvido em aspas e delimitados por vírgula: <strong>&quot;STARTDATE:January 1, 2010&quot;,&quot;TRACK:Day&quot;</strong>. A segunda sintaxe é necessária se os dados possuem uma vírgula, como por exemplo uma data.</li>
+ [% END %]
+
+ <li>
+ <strong>Campos obrigatórios:</strong> Os campos 'surname', 'branchcode' e 'categorycode' são <em>obrigatório</em> e os campos 'branchcode' e 'categorycode' <strong>deve coincidir</strong> entradas válidas na base de dados. </li>
+
+ <li>
+ os campos 'palavra-passe' devem ser guardados em texto, e serão convertidos para uma hash Bcrypt (se as suas palavras-passe já se encontram encriptadas fale com o administrador de sistema sobre as diferentes opções). </li>
+
+ <li>
+ Valores de datas devem corresponder às preferências de sistema, e <strong>deve</strong> ser completadas com zeros, como por exemplo '01/02/2008'. Em alternativa, pode passar as datas em formato ISO ('2010-10-28').</li>
+ </ul>
+</div>
+</div>
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'tools-menu.inc' %]
+ </aside>
+ </div> <!-- .col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'calendar.inc' %]
+ [% Asset.js("js/tools-menu.js") | $raw %]
+ [% INCLUDE 'str/members-menu.inc' %]
+ [% Asset.js("js/members-menu.js") | $raw %]
+ <script>
+        $(document).ready(function() {
+            [%# Make date fields have the datepicker %]
+            $("#dateenrolled, #dateexpiry, #dateofbirth").flatpickr({
+                altInput: true,
+                altFormat: flatpickr_dateformat_string,
+                altInputClass: 'flatpickr-input',
+                dateFormat: "Y-m-d",
+            });
+
+            $(".expand_defaults").click(function(e){
+                e.preventDefault();
+                $(".default_values").toggle();
+                $(".expand_defaults").toggle();
+            });
+
+            $(".expand_preserves").click(function(e){
+                e.preventDefault();
+                $(".preserve_values").toggle();
+                $(".expand_preserves").toggle();
+            });
+        });
+
+        $("#overwrite_cardnumberno").click(function(){
+            $("#overwrite_passwords").prop('checked',false).prop('disabled',true);
+            $("#update_dateexpiry").prop('checked',false).prop('disabled',true);
+        });
+        $("#overwrite_cardnumberyes").click(function(){
+            $("#overwrite_passwords").prop('disabled',false);
+            $("#update_dateexpiry").prop('disabled',false);
+        });
+    </script>
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

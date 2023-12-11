@@ -1,0 +1,369 @@
+[% USE raw %]
+[% USE Asset %]
+[% SET footerjs = 1 %]
+ [% INCLUDE 'doc-head-open.inc' %]
+ <title>[% IF batch_id %]Editar ([% batch_id | html %])[% ELSE %]Novo[% END %] &rsaquo; Lote &rsaquo; Cartões de leitor &rsaquo; Ferramentas &rsaquo; Koha</title>
+ [% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="pcard_edit-batch" class="tools pcard">
+ [% WRAPPER 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+[% END %]
+
+ [% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/tools/tools-home.pl">Ferramentas</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/patroncards/home.pl">Cartões de leitor</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/patroncards/manage.pl?card_element=batch">Lotes</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ [% IF description %]
+ <span>Editar [% description | html %]</span>
+ [% ELSIF batch_id %]
+ <span>Editar ([% batch_id | html %])</span>
+ [% ELSE %]
+ <span>Novo</span>
+ [% END %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+ [% END #/ WRAPPER sub-header.inc %]
+
+ <div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ [% INCLUDE 'patroncards-toolbar.inc' %]
+
+ <h1>[% IF description %]<span>Alterar</span> [% description | html %]
+ [% ELSIF batch_id %]<span>Editar lote de cartões</span> [% batch_id | html %]
+ [% ELSE %]<span>Novo lote de cartões</span>[% END %]
+ </h1>
+
+ [% IF ( duplicate_message ) %]
+ <div class="dialog message">
+ <strong>Leitores duplicados removidos do lote número [% batch_id | html %]: [% duplicate_count | html %]</strong>
+ </div>
+ [% END %]
+
+ [% INCLUDE 'patroncards-errors.inc' %]
+ <div id="manage-patroncard-batches">
+ <form name="add_by_bor_num" action="/cgi-bin/koha/patroncards/edit-batch.pl" method="post">
+ <div>
+ <fieldset class="rows" style="border-bottom: 0px; border: 0px;">
+ <ol><li id="description">
+ <input type="hidden" name="op" value="add" />
+ <input type="hidden" name="batch_id" value="[% batch_id | html %]" />
+ <label for="description">Descrição do lote: </label>
+ <input type="text" name="description" value="[% description | html %]"> <span id="change-status"></span>
+ </li><li>
+ <label for="bor_num_list">Adicionar número(s) de leitor: <br /> <span class="hint">Um número de leitor por linha.</span>
+ </label>
+ <textarea rows="5" id="bor_num_list" name="bor_num_list" tabindex="1" class="focus"></textarea>
+ </li></ol>
+ </fieldset>
+ </div>
+ </form>
+ <div id="batch-manage" class="action">
+ <a class="btn btn-default" id="additems" href="#"><i class="fa fa-plus"></i> Adicionar leitor(es)</a>[% IF ( table_loop ) %]
+ <a class="btn btn-default" id="savedesc" href="#" data-batch_id="[% batch_id | html %]"><i class="fa fa-save"></i> Guardar descrição</a>
+ <a class="btn btn-default" id="removeitems" href="#"><i class="fa fa-trash"></i> Eliminar leitores selecionados</a>
+ <a class="btn btn-default" id="deletebatch" href="#"><i class="fa fa-minus-square"></i> Eliminar lote</a>
+ <a class="btn btn-default" id="deduplicate" href="#"><i class="fa fa-minus"></i> Remover duplicados</a>
+ <a class="btn btn-default" id="exportitems" href="#"><i class="fa fa-share-square-o"></i> Exportando cartão(ões) selecionado(s)</a>
+ <a class="btn btn-default" id="exportbatch" href="#"><i class="fa fa-share-square-o"></i> Exportar lote de cartões</a>[% END %]
+ </div>
+ [% IF ( table_loop ) %]
+ <form name="items">
+ <h2>Leitores no lote [% batch_id | html %]</h2>
+ <div class="page-section">
+ <table id="batcht">
+ [% FOREACH table_loo IN table_loop %]
+ [% IF ( table_loo.header_fields ) %]
+ <thead>
+ <tr>
+ [% FOREACH header_field IN table_loo.header_fields %]
+ [% SWITCH header_field.field_label -%]
+ [% CASE "Summary" -%]
+ <th>Nome de leitor</th>
+ [% CASE "Borrower Number" %]
+ <th>Número de leitor</th>
+ [% CASE "Actions " %]
+ <th class="noExport">Ações</th>
+ [% CASE "Select" -%]
+ <th>Seleccionar</th>
+ [% CASE %]
+ <th>[% header_field.field_label | html %]</th>
+ [% END -%]
+ [% END %]
+ </tr>
+ </thead>
+ <tbody>
+ [% ELSE %]
+ <tr>
+ [% FOREACH text_field IN table_loo.text_fields %]
+ [% IF ( text_field.select_field ) %]
+ <td>
+ <a class="btn btn-default btn-xs delete" href="/cgi-bin/koha/patroncards/edit-batch.pl?op=remove&amp;batch_id=[% batch_id | html %]&amp;label_id=[% text_field.field_value | html %]"><i class="fa fa-trash"></i> Apagar</a>
+ <a class="btn btn-default btn-xs export" href="#" data-batch-id="[% batch_id | html %]" data-label-id="[% text_field.field_value | html %]"><i class="fa fa-share-square-o"></i> Exportar</a>
+ </td>
+ <td><input type="checkbox" name="action" value="[% text_field.field_value | html %]" /></td>
+ [% ELSE %]
+ <td>[% text_field.field_value | html %]</td>
+ [% END %]
+ [% END %]
+ </tr>
+ [% END %]
+ [% END %]
+ </tbody>
+ </table>
+ </div>
+ </form>
+ [% ELSE %]
+ <fieldset class="rows" style="border-bottom: 0px; border: 0px;">
+ <ol><li>
+ <div class="dialog message">
+ <h4>Não existem leitores neste lote</h4>
+ <p>Adicionar por número de leitor usando a área de texto ou deixar vazio para adicionar via pesquisa.</p>
+ </div>
+ </li></ol>
+ </fieldset>
+ [% END %]
+ </div>
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'tools-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'greybox.inc' %]
+ [% INCLUDE 'datatables.inc' %]
+ <script>
+        function DeleteConfirm() {
+            var msg = _("Tem a certeza que pretende eliminar o lote %s?").format("[% batch_id | html %]");
+            var answer = confirm(msg);
+            if (answer) {
+                window.location = "/cgi-bin/koha/patroncards/manage.pl?op=delete&amp;card_element=batch&amp;element_id=[% batch_id | html %]";
+            } else {
+                return; // abort delete
+            }
+        };
+        function Remove() {
+            items = new Array;
+
+            if(document.items.action.length > 0) {
+                for (var i=0; i < document.items.action.length; i++) {
+                    if (document.items.action[i].checked) {
+                        items.push("label_id=" +  document.items.action[i].value);
+                    }
+                }
+                getstr = items.join("&");
+                var msg = _("Tem a certeza que pretende eliminar os leitores selecionados deste lote?");
+            } else if (document.items.action.checked) {
+                alert(_("Eliminar um leitor de um lote com apenas um leitor irá também eliminar o lote.") + "\n\n" + _("Se é isto que deseja, selecione a opção 'Eliminar lote' na barra de ferramentas"));
+                return; // no deletion for single item batch
+            } else {
+                alert(_("Por favor, selecione pelo menos um leitor a eliminar."));
+                return;     // no item selected
+            }
+            var answer = confirm(msg);
+            if (answer) {
+                window.location = "/cgi-bin/koha/patroncards/edit-batch.pl?op=remove&amp;batch_id=[% batch_id | html %]&amp;" + getstr;
+            } else {
+                return; // abort delete
+            }
+        };
+        function Add() {
+            var bor_nums = document.getElementById("bor_num_list");
+            if (bor_nums.value == '') {
+                window.open("/cgi-bin/koha/members/search.pl?columns=checkbox,cardnumber,name,category,branch,dateexpiry,borrowernotes,action&selection_type=add",
+               'PatronPopup',
+               'width=1024,height=768,location=yes,toolbar=no,'
+               + 'scrollbars=yes,resize=yes');
+            } else {
+                document.forms["add_by_bor_num"].submit();
+            }
+        };
+
+        function add_user(borrowernumber) {
+            $("#bor_num_list").val($("#bor_num_list").val()+borrowernumber+"\r\n");
+        }
+
+        function DeDuplicate() {
+            window.location = "/cgi-bin/koha/patroncards/edit-batch.pl?op=de_duplicate&amp;batch_id=[% batch_id | html %]";
+        };
+        function Xport(mode) {
+            if (mode == 'label') {
+                patroncards= new Array;
+                if(document.items.action.length > 0) {
+                    for (var i=0; i < document.items.action.length; i++) {
+                        if (document.items.action[i].checked) {
+                            patroncards.push("label_id=" +  document.items.action[i].value);
+                        }
+                    }
+                    if (patroncards.length < 1) {
+                        alert(_("Por favor, selecione pelo menos um cartão a exportar."));
+                        return;     // no batch selected
+                    }
+                    getstr = patroncards.join("&");
+                } else if (document.items.action.checked) {
+                    getstr = document.items.action.value;
+                } else {
+                    alert(_("Por favor, selecione pelo menos um cartão a exportar."));
+                    return;     // no batch selected
+                }
+                return GB_showCenter(_("Exportar cartões de leitor"), "/cgi-bin/koha/patroncards/print.pl?batch_id=[% batch_id | html %]&" + getstr, 400, 800);
+            } else if (mode == 'batch') {
+                return GB_showCenter(_("Exportar cartões de leitor"), "/cgi-bin/koha/patroncards/print.pl?batch_id=[% batch_id | html %]", 400, 800);
+            } else {
+                // some pass-thru error trapping just in case...
+            }
+        };
+        function selected_layout() {
+            if (document.items.action.length) {
+            for (i=0;i<document.items.action.length;i++){
+                if (document.items.action[i].checked==true){
+                    return(document.items.action[i].value);
+                }
+            };
+            } else {
+                if (document.items.action.checked){
+                    return(document.items.action.value);
+                }
+            };
+            alert(_("Por favor, seleccione pelo menos um item."));
+            return (-1);
+        };
+
+        $(document).ready(function() {
+            // Prepare DataTables settings
+            var aLengthMenu = [10, 20, 50, 100, -1];
+            var aLengthMenuLabel = [10, 20, 50, 100, _("Todos")];
+            var patronsPerPage = [% Koha.Preference('PatronsPerPage') | html %];
+            for ( var i = 0; i < aLengthMenu.length; i++ ) {
+                if ( aLengthMenu[i] == patronsPerPage ) {
+                    break;
+                }
+                if ( aLengthMenu[i] > patronsPerPage || aLengthMenu[i] == -1 ) {
+                    aLengthMenu.splice(i, 0, patronsPerPage);
+                    aLengthMenuLabel.splice(i, 0, patronsPerPage);
+                    break;
+                }
+            }
+
+            [% IF table_loop %]
+                $("#description").show();
+            [% ELSE %]
+                $("#description").hide();
+            [% END %]
+            $("#batcht").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "aoColumnDefs": [
+                    { "aTargets": [ -2, -1 ], "bSortable": false, "bSearchable": false }
+                ],
+                "aaSorting": [[ 0, "asc" ]],
+                "sPaginationType": "full",
+                "aLengthMenu": [aLengthMenu, aLengthMenuLabel],
+                "pageLength": patronsPerPage,
+                "autoWidth": false
+            }));
+            $("#additems").click(function(){
+                Add();
+                return false;
+            });
+            $("#removeitems").click(function(){
+                Remove();
+                return false;
+            });
+            $("#deletebatch").click(function(){
+                DeleteConfirm();
+                return false;
+            });
+            $("#deduplicate").click(function(){
+                DeDuplicate();
+                return false;
+            });
+            $("#exportitems").click(function(){
+                Xport('label');
+                return false;
+            });
+            $("#exportbatch").click(function(){
+                Xport('batch');
+                return false;
+            });
+            $(".delete").on("click", function(){
+                return confirmDelete( _("Tem a certeza que pretende eliminar este leitor do lote de cartões?") );
+            });
+            $(".export").on("click", function(e){
+                e.preventDefault();
+                var label_id = $(this).data("label-id");
+                var batch_id = $(this).data("batch-id");
+                GB_showCenter( _("Exportar cartão"),'/cgi-bin/koha/patroncards/print.pl?batch_id=' + batch_id + '&label_id=' + label_id, 400, 800);
+            });
+            $("#savedesc").click(function(event){
+                var newdescription = $(this).siblings('input[name="description"]').val();
+                var batch_id = $(this).data('batch_id');
+                var ajaxData = {
+                    'newdescription': newdescription,
+                    'batch_id': batch_id,
+                    'card_element': "batch",
+                    'creator': "patroncard",
+                };
+
+                $.ajax({
+                    url: '/cgi-bin/koha/svc/creator_batches',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: ajaxData,
+                })
+
+                .done(function(data){
+                    if (data.status == 'success') {
+                        $("input[name='description']").text(data.newdesc);
+                        $("#change-status").text(_("Guardado"));
+                    } else {
+                        $("#change-status").text(_("Não foi possível guardar a descrição"));
+                    }
+                });
+            });
+            $("#savedesc").click(function(event){
+                var newdescription = $('input[name="description"]').val();
+                var batch_id = $(this).data('batch_id');
+                var ajaxData = {
+                    'newdescription': newdescription,
+                    'batch_id': batch_id,
+                    'card_element': "batch",
+                    'creator': "patroncard",
+                };
+
+                $.ajax({
+                    url: '/cgi-bin/koha/svc/creator_batches',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: ajaxData,
+                })
+
+                .done(function(data){
+                    if (data.status == 'success') {
+                        $("input[name='description']").text(data.newdesc);
+                        $("#change-status").text(_("Guardado"));
+                    } else {
+                        $("#change-status").text(_("Não foi possível guardar a descrição"));
+                    }
+                });
+            });
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

@@ -1,0 +1,80 @@
+---
+description:
+- Sample news items
+tables:
+- additional_contents:
+    multiline:
+    - content
+    rows:
+    - category: news
+      code: News_1
+      content:
+      - Bem vindo ao Koha. O Koha é um software open-source para gestão de bibliotecas
+        (ILS). Desenvolvido inicialmente na Nova Zelândia pela Katipo Communications
+        Ltd e implementado pela primeira vez em janeiro de 2000 para a Horowhenua
+        Library Trust, o Koha é atualmente mantido por uma equipa de fornecedores
+        de software e equipa de tecnologia de bibliotecas de todo o mundo.
+      expirationdate: 2099-01-10
+      lang: default
+      location: staff_only
+      number: 1
+      published_on: 2007-10-29 05:25:58
+      title: Bem-vindo ao Koha
+    - category: news
+      code: News_2
+      content:
+      - 'Now that you''ve installed Koha, what''s next? Here are some suggestions:'
+      - <ul>
+      - <li><a href="http://koha-community.org/documentation/">Ler documentação do
+        Koha</a></li>
+      - <li><a href="http://wiki.koha-community.org">Ler/escrever na Wiki do Koha</a></li>
+      - <li><a href="http://koha-community.org/support/">Ler e contribuir para as
+        discussões</a></li>
+      - <li><a href="http://bugs.koha-community.org">Reporta bugs do Koha</a></li>
+      - <li><a href="http://wiki.koha-community.org/wiki/Version_Control_Using_Git">Submeter
+        patches para o Koha usando Git (sistema de controlo de versão)</a></li>
+      - <li><a href="http://koha-community.org/support/">Conversar com os utilizadores
+        e programadores do Koha</a></li>
+      - </ul>
+      - ''
+      expirationdate: 2099-01-10
+      lang: default
+      location: staff_only
+      number: 2
+      published_on: 2007-10-29 05:34:45
+      title: O que se segue?
+    - category: html_customizations
+      code: CatalogConcernHelp_1
+      content:
+      - Please describe your concern clearly and the library will try to deal with
+        it as quickly as possible
+      expirationdate: 2099-01-10
+      lang: default
+      location: CatalogConcernHelp
+      number: 1
+      published_on: 2007-10-29 05:25:58
+      title: Texto de ajuda de problema do catálogo
+    - category: html_customizations
+      code: CatalogConcernTemplate_1
+      content:
+      - '**Descreva o problema**'
+      - Uma descrição clara e concisa de qual é o problema.
+      - ''
+      - '**To reproduce**'
+      - 'Steps to reproduce the behavior:'
+      - 1. Ir a '...'
+      - 2. Clicar em '....'
+      - 3. Ir à secção '...'
+      - 4. Ver o erro
+      - ''
+      - '**Comportamento esperado**'
+      - Uma descrição clara e concisa do que é esperado acontecer.
+      expirationdate: 2099-01-10
+      lang: default
+      location: CatalogConcernTemplate
+      number: 1
+      published_on: 2007-10-29 05:25:58
+      title: Modelo de texto de problema do catálogo
+    translatable:
+    - title
+    - content

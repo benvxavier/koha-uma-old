@@ -1,0 +1,59 @@
+---
+Empréstimos inter-bibliotecas:
+  Características:
+  - - choices:
+        '0': Desativar
+        '1': Ativar
+      default: 0
+      pref: ILLModule
+    - o módulo de empréstimo inter-bibliotecas.
+  - - Adicionar texto irá ativar a etapa de autorização de direitos de autor na criação
+      do pedido. O texto que você inseriu será o texto exibido.
+    - class: long
+      pref: ILLModuleCopyrightClearance
+      type: textarea
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      default: 0
+      pref: ILLModuleUnmediated
+    - pedidos de empréstimo inter-bibliotecas não mediadas entre bibliotecas. Se activado
+      e o backoffice de Empréstimos inter-bibliotecas suportar, os pedidos recém-criados
+      são imediatamente solicitados pelo backoffice.
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      default: 0
+      pref: CirculateILL
+    - a circulação de exemplares requisitados no módulo de empréstimo inter-bibliotecas.
+  - - choices:
+        '0': Não verificar
+        '1': Verificar
+      default: 0
+      pref: ILLCheckAvailability
+    - a disponibilidade em fontes externas durante o processo de requisição.
+  - - 'Estados de empréstimos inter-bibliotecas que são considerados como concluídos
+      e que não devem ser mostrados no módulo de Empréstimos inter-bibliotecas: '
+    - class: multi
+      pref: ILLHiddenRequestStatuses
+    - (separados por |). Se deixado em branco, todos os pedidos de empréstimo inter-bibliotecas
+      serão mostrados. Os códigos dos pedidos podem ser encontrados na categoria de
+      valores autorizados <a href="/cgi-bin/koha/admin/authorised_values.pl?searchfield=ILL_STATUS_ALIAS">ILL_STATUS_ALIAS</a>.
+  Notificações:
+  - - 'Enviar estes avisos aos técnicos sobre Empréstimos inter-bibliotecas quando
+      apropriado:'
+    - class: multi
+      pref: ILLSendStaffNotices
+    - (separados por |). Por exemplo, ILL_REQUEST_CANCEL|ILL_REQUEST_MODIFIED Se a
+      preferência estiver em branco, não será enviado nenhum aviso aos técnicos sobre
+      Empréstimos inter-bibliotecas.
+  - - 'Endereço de e-mail alternativo para o envio de avisos para técnicos sobre empréstimos
+      inter-bibliotecas na ausência de um endereço de biblioteca:'
+    - class: email
+      pref: ILLDefaultStaffEmail
+  OPAC:
+  - - 'Backends ativos para pedidos de empréstimos inter-bibliotecas no OPAC:'
+    - class: multi
+      pref: ILLOpacbackends
+    - (separados por |). Se a preferência estiver vazia, todos os backends instalados
+      estarão ativos.

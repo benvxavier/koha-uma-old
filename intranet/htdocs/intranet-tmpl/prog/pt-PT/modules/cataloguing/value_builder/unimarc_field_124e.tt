@@ -1,0 +1,51 @@
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Construtor do campo 124e UNIMARC</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="cat_unimarc_field_124e" class="cat" style="padding:1em;">
+ <h1>Construtor do campo 124e UNIMARC</h1>
+ <div class="page-section">
+ <form name="f_pop" action="">
+ <table>
+ <tr>
+ <td><label for="f1">Categoria dos satélites utilizados na obtenção de imagens de teledetecção:</label></td>
+ <td>
+ <select name="f1" id="f1">
+
+ [% IF ( f1a ) %]
+ <option value="a" selected="selected">meteorológico</option>
+ [% ELSE %]
+ <option value="a">meteorológico</option>
+ [% END %]
+ [% IF ( f1b ) %]
+ <option value="b" selected="selected">recursos naturais</option>
+ [% ELSE %]
+ <option value="b">recursos naturais</option>
+ [% END %]
+ [% IF ( f1c ) %]
+ <option value="c" selected="selected">observação espacial</option>
+ [% ELSE %]
+ <option value="c">observação espacial</option>
+ [% END %]
+ </select>
+ </td></tr>
+ </table>
+ <fieldset class="action"><input type="button" class="btn btn-primary" value="OK" onclick="report();" /> <a href="#" class="cancel close">Anular</a></fieldset>
+ </form>
+ </div> <!-- /.page-section -->
+
+[% MACRO jsinclude BLOCK %]
+ <script>
+        function report() {
+            var doc     = opener.document;
+                var field   = doc.getElementById("[% index | html %]");
+                field.value =  document.f_pop.f1.value;
+            window.close();
+            return false;
+        }
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' popup_window=1 %]

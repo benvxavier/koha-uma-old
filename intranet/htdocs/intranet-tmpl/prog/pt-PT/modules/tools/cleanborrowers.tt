@@ -1,0 +1,308 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Koha %]
+[% USE KohaDates %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>
+ [% IF step == 2 %] Confirmar &rsaquo; [% END %] [% IF step == 3 %] Terminado &rsaquo; [% END %] Eliminação e anonimização de leitores em lote &rsaquo; Ferramentas &rsaquo; Koha </title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="tools_cleanborrowers" class="tools">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/tools/tools-home.pl">Ferramentas</a>
+ [% END %]
+
+ [% IF step == 1 %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Eliminar e anonimizar leitores em lote</span>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/tools/cleanborrowers.pl">Eliminar e anonimizar leitores em lote</a>
+ [% END %]
+ [% END %]
+
+ [% IF step == 2 %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Confirmar</span>
+ [% END %]
+ [% END %]
+
+ [% IF step == 3 %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Terminado</span>
+ [% END %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+[% IF !OnlyMine %]
+ [% IF current_branch == '*' %]
+ <h1>Eliminar e anonimizar leitores em lote</h1>
+ [% ELSE %]
+ <h1>Eliminar e anonimizar leitores em lote para [% Branches.GetName( current_branch ) | html %]</h1>
+ [% END %]
+ [% IF step == 1 %]
+ <form method="get" action="/cgi-bin/koha/tools/cleanborrowers.pl" id="selectlibrary">
+ Seleccionar biblioteca : <select name="branch" id="branch" style="width:20em;">
+ <option value="*">Todas as bibliotecas</option>
+ [% FOREACH branch IN Branches.all( selected => current_branch ) %]
+ [% IF branch.selected %]
+ <option value="[% branch.branchcode | html %]" selected="selected">[% branch.branchname | html %]</option>
+ [% ELSE %]
+ <option value="[% branch.branchcode | html %]">[% branch.branchname | html %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </form>
+ [% END %]
+[% ELSE %]
+ <h1>Eliminar e anonimizar leitores em lote para [% Branches.GetLoggedInBranchname | html %]</h1>
+[% END %]
+
+[% IF step == 1 %]
+<!-- step 1 START -->
+
+<div class="help">
+ <p>Esta ferramenta permite eliminar leitores e anonimizar históricos de empréstimos. Para eliminar leitores, qualquer combinação de limites pode ser usada. Os leitores não serão eliminados se um das condições se verificar:</p>
+<ul>
+<li>Têm exemplares emprestados.</li>
+<li>Têm um balanço de conta diferente de zero.</li>
+<li>São os fiadores de outros leitores.</li>
+<li>São de uma categoria de leitor do tipo funcionário.</li>
+<li>Os leitores têm permissões associadas.</li>
+</ul>
+</div>
+<div id="step1">
+ <form name="f1" id="delete_patrons_form" action="/cgi-bin/koha/tools/cleanborrowers.pl" method="post">
+ <fieldset>
+ <legend>Eliminar leitores</legend>
+ <h3><input id="checkborrower" type="checkbox" name="checkbox" value="borrower" /><label for="checkborrower"> Verifique que deseja eliminar os leitores</label></h3>
+ <br />
+ <h5>Eliminar leitores que correspondem ao seguinte critério:</h5>
+ <ul>
+ <li>
+ <label for="date1">que não requisitaram desde:</label>
+ <input size="10" id="date1" name="not_borrowed_since" type="text" class="flatpickr" />
+ <span class="hint">[% INCLUDE 'date-format.inc' %]</span>
+ </li>
+ <li>
+ <label for="borrower_dateexpiry">cuja data de expiração é antes de:</label>
+ <input size="10" id="borrower_dateexpiry" name="borrower_dateexpiry" type="text" class="flatpickr" />
+ <span class="hint">[% INCLUDE 'date-format.inc' %]</span>
+ </li>
+ [% IF Koha.Preference('TrackLastPatronActivity') %]
+ <li>
+ <label for="borrower_lastseen">que não ligam ao sistema desde:</label>
+ <input size="10" id="borrower_lastseen" name="borrower_lastseen" type="text" class="flatpickr" />
+ <span class="hint">[% INCLUDE 'date-format.inc' %]</span>
+ </li>
+ [% END %]
+ <li>
+ <label for="borrower_categorycode">cuja categoria de leitor é:</label>
+ <select id="borrower_categorycode" name="borrower_categorycode">
+ <option value="" selected="selected">Qualquer</option>
+ [% FOREACH bc IN borrower_categorycodes %]
+ [% UNLESS bc.category_type == 'S' %]
+ <option value="[% bc.categorycode | html %]">[% bc.description | html %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+ [% IF patron_lists %]
+ <li>
+ <label for="patron_list_id">quem está na lista de leitores: </label>
+ <select id="patron_list_id" name="patron_list_id">
+ <option value=""></option>
+ [% FOREACH pl IN patron_lists %]
+ <option value="[% pl.patron_list_id | html %]">[% pl.name | html %]</option>
+ [% END %]
+ </select>
+ </li>
+ [% END %]
+ </ul>
+ </fieldset>
+
+ <fieldset>
+ <legend>Anonimizar o histórico de empréstimo</legend>
+ [% UNLESS Koha.Preference('AnonymousPatron') %]
+ <div class="dialog message">A preferência de sistema AnonymousPatron não está definida. Você pode usar na mesma esta funcionalidade mas o valor NULL será usado para atualizar o histórico de empréstimo.</div>
+ [% END %]
+ <h3><input id="checkissue" type="checkbox" name="checkbox" value="issue" /><label for="checkissue"> Verificar que deseja anonimizar o histórico de empréstimo do leitor</label></h3>
+ <br />
+ <ul>
+ <li>
+ <label for="date2">Eliminar histórico do empréstimo anterior a</label>
+ <input size="10" id="date2" name="last_issue_date" type="text" class="flatpickr" />
+ <span class="hint">[% INCLUDE 'date-format.inc' %]</span>
+ </li>
+ </ul>
+
+ <!-- hidden here -->
+ <input type="hidden" name="step" value="2" />
+ <input type="hidden" name="branch" value="[% current_branch | html %]" />
+ </fieldset>
+ <fieldset class="action"><input class="btn btn-primary" type="submit" value="Seguinte >>" /></fieldset>
+ </form>
+</div>
+<!-- step 1 END -->
+[% END %]
+
+[% IF step == 2 %]
+<!-- STEP 2 START -->
+<div id="step2">
+ <form name="f2" action="/cgi-bin/koha/tools/cleanborrowers.pl" method="post">
+
+ <div class="dialog alert">
+ <h3>Aviso</h3>
+ <ul>
+ <li>[% patrons_to_delete.size || 0 | html %] leitores serão eliminados</li>
+ <li>[% patrons_to_anonymize.count || 0 | html %] históricos de empréstimo vão ser anomizados</li>
+ </ul>
+ </div>
+
+ [% IF patrons_to_delete.size %]
+ <fieldset>
+ <legend>Como os leitores devem ser eliminados?</legend>
+ <p>
+ <input id="delete" type="radio" name="radio" value="delete" />
+ <label for="delete">Eliminar permanentemente estes leitores</label>
+ <div class="hint">
+ Eliminar os leitores directamente da base de dados. Os dados dos leitores não serão recuperáveis. </div>
+ </p>
+ <p>
+ <input id="trash" type="radio" name="radio" value="trash" />
+ <label for="trash">Limpar leitores</label>
+ <div class="hint">
+ Mover os leitores para a tabela de leitores eliminados. Os leitores podem ser permanentemente eliminados pelo <code>cleanup_database</code> script. </div>
+ </p>
+ <p>
+ <input id="testrun" type="radio" name="radio" value="testrun" checked="checked" />
+ <label for="testrun">Execução de teste: Não vai remover qualquer leitor.</label>
+ <input type="hidden" name="do_delete" value="[% patrons_to_delete.size | html %]" /></fieldset>
+ </p>
+ </fieldset>
+ [% END %]
+
+ [% IF patrons_to_anonymize.count %]
+ <fieldset>
+ Histórico do empréstimo para [% patrons_to_anonymize.count | html %] leitores será alterado para anónimo <input type="hidden" name="do_anonym" value="[% patrons_to_anonymize.count | html %]" />
+ </fieldset>
+ [% END %]
+
+ <input type="hidden" name="step" value="3" />
+ <input type="hidden" name="not_borrowed_since" value="[% not_borrowed_since | $KohaDates dateformat => 'iso' %]" />
+ <input type="hidden" name="last_issue_date" value="[% last_issue_date | $KohaDates dateformat => 'iso' %]" />
+ <input type="hidden" name="borrower_dateexpiry" value="[% borrower_dateexpiry | $KohaDates dateformat => 'iso' %]" />
+ [% IF Koha.Preference('TrackLastPatronActivity') %]
+ <input type="hidden" name="borrower_lastseen" value="[% borrower_lastseen | $KohaDates dateformat => 'iso' %]" />
+ [% END %]
+ <input type="hidden" name="borrower_categorycode" value="[% borrower_categorycode | html %]" />
+ <input type="hidden" name="patron_list_id" value="[% patron_list_id | html %]" />
+ <input type="hidden" name="branch" value="[% current_branch | html %]" />
+ <fieldset class="action"><input class="btn btn-primary" type="submit" value="Terminar" /> <a class="cancel" href="/cgi-bin/koha/tools/cleanborrowers.pl">Anular</a></fieldset>
+ </form>
+</div>
+<!-- STEP 2 END -->
+[% END %]
+
+[% IF step == 3 %]
+<!-- Step 3 START -->
+
+ <div id="step3">
+ [% IF ( testrun ) %]
+ <h4>[% TotalDel | html %] leitores foram apagados com sucesso (se não foi um execução de teste)</h4>
+ <h4>Nenhum registo de leitor foi removido</h4>
+ [% ELSE %]
+ [% IF ( do_delete ) %]
+ [% IF ( trash ) %]
+ <h4>[% TotalDel | html %] leitores foram apagados com sucesso</h4>
+ [% ELSE %]
+ <h4>[% TotalDel | html %] leitores foram apagados com sucesso</h4>
+ [% END %]
+ [% ELSE %]
+ <h4>Nenhum registo de leitor foi removido</h4>
+ [% END %]
+ [% END %]
+ [% IF do_anonym %]
+ <h4>Todos empréstimos ([% do_anonym | html %]) anteriores a [% last_issue_date | $KohaDates %] foram anonimizados</h4>
+ [% ELSE %]
+ <h4>Nenhum registo de leitor foi anonimizado</h4>
+ [% END %]
+
+ </div>
+<!-- Step 3 END -->
+[% END %]
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'tools-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/tools-menu.js") | $raw %]
+ [% INCLUDE 'calendar.inc' %]
+ <script>
+        $(document).ready(function(){
+            $("#delete_patrons_form").on("submit",function(){
+                return checkForm( this );
+            });
+
+            $('#branch').change(function() {
+                $('#selectlibrary').submit();
+            });
+            $("form[name='f2']").on('submit',function(){
+                if( $("#delete").prop("checked") ){
+                    if( !confirm(_("Estes leitores serão permanentemente removidos da base de dados e não poderão ser recuperados")) ){
+                        return false;
+                    }
+                }
+            });
+        });
+
+        /**
+         *  checkForm(form)
+         *  This function check the form is correctly filled.
+         */
+        function checkForm(form) {
+            if((form.checkbox[0].checked)){
+                if ( (!form.date1.value) && (!form.borrower_dateexpiry.value) [% IF Koha.Preference('TrackLastPatronActivity') %]&& (!form.borrower_lastseen.value) [% END %]&& (!form.borrower_categorycode.value) && (!form.patron_list_id.value)){
+                  alert(_("Por favor insira pelo menos um critério de eliminação!"));
+                  return false;
+                }
+            }
+            if((form.checkbox[1].checked)){
+                if(!(form.date2.value)){
+                    alert(_("Por favor insira a data!"));
+                    return false;
+                }
+            }
+            if(!form.checkbox[0].checked && !form.checkbox[1].checked) {
+              alert( _("Por favor, selecione pelo menos uma ação") );
+              return false;
+            }
+            return true;
+        }
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

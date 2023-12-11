@@ -1,0 +1,171 @@
+[% USE raw %]
+[% USE Koha %]
+[% USE Branches %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Empréstimo &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="circ_circulation-home" class="circ">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'circ-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Empréstimo</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+ <div class="main container-fluid">
+
+ <h1>Empréstimo</h1>
+
+ <div class="row">
+
+ <div class="col-sm-5 col-md-4">
+ <h3>Empréstimo</h3>
+
+ <ul class="buttons-list">
+ <li>
+ <a class="circ-button" href="/cgi-bin/koha/circ/circulation.pl"><i class="fa fa-upload"></i> Emprestar</a>
+ </li>
+ <li>
+ <a class="circ-button" href="/cgi-bin/koha/circ/returns.pl"><i class="fa fa-download"></i> Devolver</a>
+ </li>
+ <li>
+ <a class="circ-button" href="/cgi-bin/koha/circ/renew.pl"><i class="fa fa-retweet"></i> Renovar</a>
+ </li>
+ [% IF ( CAN_user_superlibrarian || CAN_user_loggedinlibrary ) %]
+ <li>
+ [% IF Koha.Preference('UseCirculationDesks') %]
+ <a class="circ-button" href="/cgi-bin/koha/circ/set-library.pl"><i class="fa fa-home"></i> Definir biblioteca e balcão</a>
+ [% ELSE %]
+ <a class="circ-button" href="/cgi-bin/koha/circ/set-library.pl"><i class="fa fa-home"></i> Escolher a biblioteca</a>
+ [% END %]
+ </li>
+ [% ELSIF Koha.Preference('UseCirculationDesks') %]
+ <li>
+ <a class="circ-button" href="/cgi-bin/koha/circ/set-library.pl"><i class="fa fa-home"></i> Definir balcão</a>
+ </li>
+ [% END %]
+ [% IF ( fast_cataloging ) %]
+ [% IF ( CAN_user_editcatalogue_fast_cataloging ) %]
+ <li>
+ <a class="circ-button" href="/cgi-bin/koha/cataloguing/addbiblio.pl?frameworkcode=FA"><i class="fa fa-plus"></i> Catalogação rápida</a>
+ </li>
+ [% END %]
+ [% END %]
+ [% IF ( Koha.Preference('AllowCheckoutNotes') && CAN_user_circulate_manage_checkout_notes ) %]
+ <li>
+ <a class="circ-button" href="/cgi-bin/koha/circ/checkout-notes.pl"><i class="fa fa-sticky-note"></i> Notas de empréstimo</a>
+ </li>
+ [% END %]
+ [% IF Koha.Preference('OnSiteCheckouts') %]
+ <li>
+ <a class="circ-button" href="/cgi-bin/koha/circ/on-site_checkouts.pl"><i class="fa fa-map-marker"></i> Empréstimos on-site</a>
+ </li>
+ [% END %]
+ </ul>
+ </div>
+
+ <div class="col-sm-5 col-md-4">
+ <h3>Reservas</h3>
+
+ <ul class="buttons-list">
+ <li>
+ <a class="circ-button" href="/cgi-bin/koha/circ/view_holdsqueue.pl"><i class="fa fa-tasks"></i> Fila de espera</a>
+ </li>
+ <li>
+ <a class="circ-button" href="/cgi-bin/koha/circ/pendingreserves.pl"><i class="fa fa-hand-grab-o"></i> Reservas a processar</a>
+ </li>
+ <li>
+ <a class="circ-button" href="/cgi-bin/koha/circ/waitingreserves.pl"><i class="fa fa-calendar"></i> Reservas por levantar</a>
+ </li>
+ [% IF ( Koha.Preference('CurbsidePickup') && CAN_user_circulate_manage_curbside_pickups ) %]
+ <li>
+ <a class="circ-button" href="/cgi-bin/koha/circ/curbside_pickups.pl"><i class="fa fa-refresh"></i> Levantamentos de rua</a>
+ </li>
+ [% END %]
+ <li>
+ <a class="circ-button" href="/cgi-bin/koha/circ/reserveratios.pl"><i class="fa fa-line-chart"></i> Rácios da reserva</a>
+ </li>
+ </ul>
+
+ [% IF Koha.Preference('UseRecalls') and CAN_user_recalls %]
+ <h3>Reclamações</h3>
+
+ <ul class="buttons-list">
+ <li><a class="circ-button" href="/cgi-bin/koha/recalls/recalls_queue.pl" title="Todos as reclamações ativas"><i class="fa fa-tasks"></i> Fila de reclamações</a></li>
+ <li><a class="circ-button" href="/cgi-bin/koha/recalls/recalls_to_pull.pl" title="Reclamações que podem ser preenchidas mas não foi definidas como em espera"><i class="fa fa-hand-grab-o"></i> Reclamações a processar</a></li>
+ <li><a class="circ-button" href="/cgi-bin/koha/recalls/recalls_overdue.pl" title="Exemplares reclamados que estão em atraso para devolução"><i class="fa fa-clock-o"></i> Reclamações de atrasos</a></li>
+ <li><a class="circ-button" href="/cgi-bin/koha/recalls/recalls_waiting.pl" title="Exemplares reclamados por levantar"><i class="fa fa-calendar"></i> Reclamações por levantar</a></li>
+ <li><a class="circ-button" href="/cgi-bin/koha/recalls/recalls_old_queue.pl" title="Reclamações inativas"><i class="fa fa-tasks"></i> Reclamações antigas</a></li>
+ </ul>
+ [% END %]
+ </div>
+
+ <!-- Add the extra clearfix for only the required viewport -->
+ <div class="clearfix visible-sm-block"></div>
+
+ <div class="col-sm-5 col-md-4">
+ [% IF Koha.Preference('ArticleRequests') %]
+ <h3>Pedido do leitor</h3>
+ <ul class="buttons-list">
+ <li>
+ <a class="circ-button" href="/cgi-bin/koha/circ/article-requests.pl" title="Pedidos de artigo"><i class="fa fa-newspaper-o"></i> Pedidos de artigo</a>
+ </li>
+ </ul>
+ [% END %]
+
+ <h3>Transferências</h3>
+
+ <ul class="buttons-list">
+ [% IF !Koha.Preference('IndependentBranchesTransfers') || CAN_user_superlibrarian %]
+ <li>
+ <a class="circ-button" href="/cgi-bin/koha/circ/branchtransfers.pl"><i class="fa fa-exchange"></i> Transferência</a>
+ </li>
+ [% END %]
+ <li>
+ <a class="circ-button" href="/cgi-bin/koha/circ/transfers_to_send.pl"><i class="fa fa-sign-out"></i> Transferências a enviar</a>
+ </li>
+ <li>
+ <a class="circ-button" href="/cgi-bin/koha/circ/transferstoreceive.pl"><i class="fa fa-sign-in"></i> Transferências a receber</a>
+ </li>
+ </ul>
+
+ <h3>Atrasos</h3>
+
+ <ul class="buttons-list">
+ [% IF ( CAN_user_circulate_overdues_report ) %]
+ <li>
+ <a class="circ-button" href="/cgi-bin/koha/circ/overdue.pl" title="Aviso: Este relatório exige grande capacidade de processamento quando há muitos exemplares em atraso."><i class="fa fa-clock-o"></i> Atrasos</a>
+ </li>
+ [% END %]
+ <li>
+ <a class="circ-button" href="/cgi-bin/koha/circ/branchoverdues.pl" title="Limitado à sua biblioteca. Consulte a ajuda do relatório para outros detalhes."><i class="fa fa-clock-o"></i> Atrasos com multas</a>
+ </li>
+ </ul>
+ </div>
+ </div>
+ <div class="row" id="intranet-circulation-home-html">
+ <div class="col-md-12">
+ [% Koha.Preference('IntranetCirculationHomeHTML') | $raw  %]
+ </div>
+ </div>
+ <div class="row" id="offline-circulation">
+ <div class="col-md-12">
+ <h4>Circulação offline</h4>
+ <div class="col-sm-5 col-md-3">
+ <p><a href="/cgi-bin/koha/offline_circ/process_koc.pl">Carregar ficheiro de circulação offline (.koc)</a></p>
+ <p><a href="/cgi-bin/koha/offline_circ/list.pl">Ações de circulação offline pendentes</a></p>
+ </div>
+ <div class="col-sm-5 col-md-3">
+ <p><a href="https://github.com/bywatersolutions/koha-offline-circulation/releases"><i class="fa fa-window-maximize"></i> Obter aplicação desktop</a></p>
+ <p><a href="https://addons.mozilla.org/[% lang | uri %]/firefox/addon/koct/"><i class="fa fa-firefox"></i> Obter add-on para Firefox</a></p>
+ </div>
+ </div>
+ </div>
+
+[% INCLUDE 'intranet-bottom.inc' %]

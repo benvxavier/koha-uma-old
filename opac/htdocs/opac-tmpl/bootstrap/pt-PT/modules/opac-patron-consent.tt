@@ -1,0 +1,105 @@
+[% USE Koha %]
+[% USE KohaDates %]
+[% USE AdditionalContents %]
+[% SET OpacNav = AdditionalContents.get( location => "OpacNav", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
+[% SET OpacNavBottom = AdditionalContents.get( location => "OpacNavBottom", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
+[% SET consentview = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Os seus consentimentos &rsaquo; [% IF ( LibraryNameTitle ) %][% LibraryNameTitle | html %][% ELSE %]Koha online[% END %] catálogo</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% BLOCK cssinclude %][% END %]
+</head>
+[% INCLUDE 'bodytag.inc' bodyid='opac-patron-consent' %]
+[% INCLUDE 'masthead.inc' %]
+
+<div class="main">
+ <nav aria-label="Caminho de navegação" class="breadcrumbs" id="breadcrumbs">
+ <ol class="breadcrumb">
+ <li class="breadcrumb-item">
+ <a href="/cgi-bin/koha/opac-main.pl">Início</a>
+ </li>
+ <li class="breadcrumb-item">
+ <a href="/cgi-bin/koha/opac-user.pl">[% patron.firstname | html %] [% patron.surname | html %]</a>
+ </li>
+ <li class="breadcrumb-item active">
+ <a href="#" aria-current="page">Os meus consentimentos</a>
+ </li>
+ </ol>
+ </nav> <!-- /#breadcrumbs -->
+
+ <div class="container-fluid">
+ <div class="row">
+ <div class="col-lg-2">
+ <div id="navigation">
+ [% INCLUDE 'navigation.inc' IsPatronPage=1 %]
+ </div>
+ </div>
+ <div class="col-lg-10 order-first order-md-first order-lg-2">
+ <div id="patronconsents" class="maincontent">
+
+ [% IF Koha.Preference('PrivacyPolicyConsent') %]
+ <div class="alert alert-warning">
+ <p>Para mantermos a sua sessão ativa, necessitamos do seu consentimento para processar dados pessoais tal como está especificado na política de privacidade que pode consultar abaixo.</p>
+ <p>Por favor registe o seu consentimento em baixo ou termine a sua sessão. Obrigado!</p>
+ </div>
+ [% END %]
+
+ <h1>Os meus consentimentos</h1>
+
+ <form action="/cgi-bin/koha/opac-patron-consent.pl" method="post">
+ [% IF Koha.Preference('PrivacyPolicyConsent') %]
+ <legend><h2 id="GDPR_consents">Consentimentos da política de privacidade</h2></legend>
+ <input type="hidden" name="op" value="gdpr_proc_save"/>
+ <input type="hidden" name="borrowernumber" value="[% patron.borrowernumber | html %]"/>
+ <fieldset>
+ <ul><li>
+ <p>Li a <a target="_blank" href="[% Koha.Preference('PrivacyPolicyURL') | url %]">política de privacidade</a> e concordo com o processamento dos meus dados pessoais tal como lá estão descritos.</p>
+ <p><input type="radio" name="gdpr_processing" value="agreed"> Sim, concordo.<br>
+ <input type="radio" name="gdpr_processing" value="disagreed"> Não, não concordo. Por favor, removam a minha conta dentro de um período razoável.</p>
+ [% IF gdpr_proc_consent %]
+ <p>O seu consentimento foi registado em [% gdpr_proc_consent | $KohaDates with_hours => 1 %].</p>
+ [% ELSIF gdpr_proc_refusal %]
+ <p>Indicou recentemente que não consentia o uso dos seus dados, e iremos brevemente processar o seu pedido.</p>
+ [% END %]
+ </li></ul>
+ </fieldset>
+ <fieldset class="action">
+ <input class="btn btn-primary" id="saveconsent" type="submit" value="Guardar" />
+ </fieldset>
+ [% END %]
+
+ </form>
+
+ </div> <!-- / #userpasswd -->
+ </div> <!-- / .col-lg-10 -->
+ </div> <!-- / .row -->
+ </div> <!-- / .container-fluid -->
+</div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %]
+ <script>
+        var consent = null;
+        $(document).ready(function() {
+            [% IF gdpr_proc_consent %]
+                consent=1;
+                $("input[type='radio'][value='agreed']").prop('checked',true);
+                $(".alert").hide();
+            [% ELSIF gdpr_proc_refusal %]
+                consent=0;
+                $("input[type='radio'][value='disagreed']").prop('checked',true);
+            [% ELSE %]
+            [% END %]
+            $("#saveconsent").prop('disabled', true);
+
+            $("input[type='radio']").click(function() {
+                var radio = $(this).val();
+                if(radio=='agreed' && (consent==null || consent==0)) $("#saveconsent").prop('disabled', false);
+                if(radio=='disagreed' && (consent==null || consent==1)) $("#saveconsent").prop('disabled', false);
+                if(radio=='agreed') $(".alert").hide();
+                if(radio=='disagreed') $(".alert").show();
+            });
+
+        });
+    </script>
+[% END %]

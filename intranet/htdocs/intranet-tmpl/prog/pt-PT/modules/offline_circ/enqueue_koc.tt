@@ -1,0 +1,49 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Adicionar circulações offline à lista &rsaquo; Circulação &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="ocirc_enqueue_koc" class="circ ocirc">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'circ-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+<nav aria-label="Caminho de navegação" class="breadcrumb" id="breadcrumbs">
+ <ol>
+ <li>
+ <a href="/cgi-bin/koha/mainpage.pl">Início</a>
+ </li>
+ <li>
+ <a href="/cgi-bin/koha/circ/circulation-home.pl">Empréstimo</a>
+ </li>
+ <li>
+ <a href="#" aria-current="page">Carregar dados circulação offline</a>
+ </li>
+ </ol>
+</nav>
+[% END %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+
+ <h1>Koha circulação offline</h1>
+ <div class="page-section">
+ <p>O ficheiro foi carregado. Depois de carregar todos os ficheiros, processe-os em ações de circulação offline.</p>
+
+ [% FOREACH message IN messages %]
+ [% IF ( message.message ) %]
+ [% IF ( message.ERROR_file_version ) %]
+ <div class="dialog alert"><p>Atenção: Este arquivo é a versão [% message.upload_version | html %], mas eu só sei como importar a versão [% message.current_version | html %]. Vou tentar o meu melhor.</div>
+ [% END %]
+ [% END %]
+ [% END %]
+
+ <p><a href="process_koc.pl">Adicionar outro ficheiro KOC</a></p>
+
+ <p><a href="list.pl">Ver ações pendentes de circulação offline</a></p>
+ </div> <!-- /.page-section -->
+ </div>
+ </div>
+
+[% INCLUDE 'intranet-bottom.inc' %]

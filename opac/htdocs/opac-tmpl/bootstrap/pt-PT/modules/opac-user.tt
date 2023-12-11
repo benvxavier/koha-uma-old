@@ -1,0 +1,1403 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Koha %]
+[% USE KohaDates %]
+[% USE Branches %]
+[% USE ItemTypes %]
+[% USE Price %]
+[% USE AuthorisedValues %]
+[% USE AdditionalContents %]
+[% SET OpacNav = AdditionalContents.get( location => "OpacNav", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
+[% SET OpacNavBottom = AdditionalContents.get( location => "OpacNavBottom", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
+[% SET OpacMySummaryNote = AdditionalContents.get( location => "OpacMySummaryNote", lang => lang, library => branchcode ) %]
+
+[% SET borrower_club_enrollments = logged_in_user.get_club_enrollments %]
+[% SET borrower_enrollable_clubs = logged_in_user.get_enrollable_clubs(1) %] <!-- 1 => OPAC -->
+
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Página principal &rsaquo; [% IF ( LibraryNameTitle ) %][% LibraryNameTitle | html %][% ELSE %]Koha online[% END %] catálogo</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% Asset.css("css/overdrive.css") | $raw %]
+[% BLOCK cssinclude %][% END %]
+</head>
+[% INCLUDE 'bodytag.inc' bodyid='opac-user' bodyclass='scrollto' %]
+[% INCLUDE 'masthead.inc' %]
+
+[% IF Koha.Preference('AmazonAssocTag') %]
+ [% AmazonAssocTag = '?tag=' _ Koha.Preference('AmazonAssocTag') %]
+[% ELSE %]
+ [% AmazonAssocTag = '' %]
+[% END %]
+
+<div class="main">
+ <nav aria-label="Caminho de navegação" class="breadcrumbs" id="breadcrumbs">
+ <ol class="breadcrumb">
+ <li class="breadcrumb-item">
+ <a href="/cgi-bin/koha/opac-main.pl">Início</a>
+ </li>
+ <li class="breadcrumb-item">
+ <a href="/cgi-bin/koha/opac-user.pl">[% INCLUDE 'patron-title.inc' patron = logged_in_user %]</a>
+ </li>
+ <li class="breadcrumb-item active">
+ <a href="#" aria-current="page">Meu sumário</a>
+ </li>
+ </ol>
+ </nav> <!-- /#breadcrumbs -->
+
+ <div class="container-fluid">
+ <div class="row">
+ <div class="col col-lg-2 order-2 order-lg-1">
+ <div id="navigation">
+ [% INCLUDE 'navigation.inc' IsPatronPage=1 %]
+ </div>
+ </div>
+ <div class="col-md-12 col-lg-10 order-1 order-lg-2">
+ <div id="userdetails" class="maincontent">
+
+ <h1>Meu sumário</h1>
+
+ [% INCLUDE 'opac-note.inc' %]
+
+ <p>Bem-vindo, [% INCLUDE 'patron-title.inc' patron = logged_in_user %] <br />
+ <a href="/cgi-bin/koha/opac-main.pl?logout.x=1">Clique aqui se não é [% INCLUDE 'patron-title.inc' patron = logged_in_user %]</a></p>
+
+ [% IF ( patronupdate ) %]<div class="alert alert-info"><h2>Obrigado!</h2><p>As suas correcções foram submetidas para a biblioteca, os seus dados serão atualizados o mais brevemente possível.</p></div>[% END %]
+
+ [% IF failed_holds %]
+ <div class="alert alert-info">
+ <h2>Aviso:</h2>
+ <p>Uma ou mais reservas não foram efetuadas devido aos seguintes erros:</p>
+ <ul>
+ [% FOREACH fail IN failed_holds.split('\|') %]
+ <li>
+ [% SWITCH fail %]
+ [% CASE 'damaged' %]
+ <span>Exemplar danificado</span>
+ [% CASE 'ageRestricted' %]
+ <span>O registo e os seus exemplares têm restrição de idade</span>
+ [% CASE 'tooManyHoldsForThisRecord' %]
+ <span>Já atingiu o número máximo de reservas neste registo</span>
+ [% CASE 'tooManyReservesToday' %]
+ <span>Você atingiu o limite de reservas diárias</span>
+ [% CASE 'tooManyReserves' %]
+ <span>Você tem demasiadas reservas atualmente</span>
+ [% CASE 'notReservable' %]
+ <span>Não reservável</span>
+ [% CASE 'cannotReserveFromOtherBranches' %]
+ <span>Você é de uma biblioteca diferente</span>
+ [% CASE 'branchNotInHoldGroup' %]
+ <span>Reservas não permitidas a partir da sua biblioteca</span>
+ [% CASE 'itemAlreadyOnHold' %]
+ <span>Você já tem uma reserva para este exemplar</span>
+ [% CASE 'cannotBeTransferred' %]
+ <span>Não pode ser transferido para a biblioteca de levantamento</span>
+ [% CASE 'pickupNotInHoldGroup' %]
+ <span>A biblioteca de levantamento escolhida não é permitida</span>
+ [% CASE 'noReservesAllowed' %]
+ <span>Reservas não permitidas neste exemplar</span>
+ [% CASE 'libraryNotPickupLocation' %]
+ <span>A biblioteca não é uma localização de levantamento</span>
+ [% CASE 'no_valid_pickup_location' %]
+ <span>Biblioteca de levantamento inválida</span>
+ [% CASE 'notforloan' %]
+ <span>Não emprestável</span>
+ [% CASE 'items_available' %]
+ <span>Existem exemplares disponíveis na biblioteca, visite a biblioteca para os requisitar</span>
+ [% CASE 'not_placed' %]
+ <span>Ocorreu um erro ao reservar, por favor reporte o problema à biblioteca</span>
+ [% CASE %]
+ <span>Erro: [% fail | html %]</span>
+ [% END %]
+ </li>
+ [% END %]
+ </ul>
+ </div>
+ [% END %]
+
+ [% IF ( borrower.blockedonfines && Koha.Preference('OPACHoldRequests') ) %]
+ <div class="alert alert-warning" id="blockedonfines">
+ <strong>Por favor note:</strong><span> A sua conta tem multas no valor de [% amountoutstanding | $Price %]. As reservas estão bloqueadas porque o balanço das multas ultrapassa o limite máximo.</span>
+ </div>
+ [% END %]
+
+ [% IF ( borrower.warndeparture ) %]
+ <div class="alert alert-warning" id="warndeparture">
+ <strong>Por favor note:</strong><span> O seu cartão irá expirar em <span id="warndeparture_date">[% borrower.warndeparture | $KohaDates %]</span>. Por favor contacte a biblioteca para mais informação.</span>
+ [% IF ( borrower.returnbeforeexpiry ) %]<span id="warndeparture_returnbeforeexpiry"> Note também que tem que devolver todos os exemplares antes do seu cartão expirar.</span>[% END %]
+ </div>
+ [% END %]
+
+ [% IF ( borrower.warnexpired ) %]
+ <div class="alert alert-warning" id="warnexpired">
+ <strong>Por favor note: </strong><span>A sua conta expirou em [% borrower.warnexpired | $KohaDates %]. Por favor contacte a biblioteca para mais informação.</span>
+ </div>
+ [% END %]
+
+ [% IF ( RENEW_ERROR ) %]
+ <div class="alert alert-warning">
+ <strong>Por favor note:</strong>
+ A renovação do empréstimo falhou por causa das seguintes razões: <ul>
+ [% FOREACH error IN RENEW_ERROR.split('\|') %]
+ [% IF error == 'card_expired' %]
+ <li>A sua conta expirou. Por favor contacte a biblioteca para mais informação.</li>
+ [% ELSIF error == 'too_many' %]
+ <li>Já renovou este empréstimo o número máximo de vezes permitido.</li>
+ [% ELSIF error == 'too_unseen' %]
+ <li>Já renovou este exemplar o número máximo de vezes permitido sem que ele tenha sido visto pela biblioteca.</li>
+ [% ELSIF error == 'too_soon' %]
+ <li>Ainda não passou tempo suficiente desde a data de empréstimo para o empréstimo deste exemplar ser renovado.</li>
+ [% ELSIF error == 'on_reserve' %]
+ <li>O exemplar encontra-se em reservado para outro leitor.</li>
+ [% ELSIF error == 'item_denied_renewal' %]
+ <li>Renovação não permitida.</li>
+ [% ELSIF error == 'item_issued_to_other_patron'%]
+ <li>Exemplar já emprestado a outro leitor.</li>
+ [% ELSIF error == 'auto_too_soon' %]
+ <li>Este exemplar está agendado para renovação automática.</li>
+ [% END %]
+ [% END %]
+ </ul>
+ </div>
+ [% END %]
+
+ [% IF ( patron_flagged ) %]
+ <div class="alert alert-warning">
+ <ul>
+ [% IF ( userdebarred ) %]
+ [% IF ( discharge_available ) %]
+ <li id="discharged">
+ <strong>Por favor note:</strong> A sua conta está bloqueada porque foi despenalizada. <a href="/cgi-bin/koha/opac-discharge.pl?op=get">Pedir quitação</a>
+ </li>
+ [% ELSE %]
+ <li id="userdebarred"><strong>Por favor note:</strong> A sua conta está suspensa. [% IF ( borrower.debarredcomment ) %] Comentário: <span id="userdebarred_comment">
+ <strong>
+ [% IF borrower.debarredcomment.search('OVERDUES_PROCESS') %] Restrição adicionada pelo processo de atrasos [% borrower.debarredcomment.remove('OVERDUES_PROCESS ') | html_line_break %] [% ELSE %] [% borrower.debarredcomment | html_line_break %] [% END %] </strong>
+ </span>
+ [% END %] [% IF ( borrower.userdebarreddate && debarred_date != '9999-12-31' ) %] Data de término: <span id="userdebarred_date">[% borrower.userdebarreddate | $KohaDates %]</span>
+ [% END %]
+
+ <em>Normalmente as razões para suspender uma conta são exemplares não devolvidos ou multas por pagar. Se a sua conta estiver limpa, por favor contacte a biblioteca.</em> <a href="/cgi-bin/koha/opac-account.pl">Ir para a minha conta</a></li>
+ [% END %]
+ [% END %]
+ [% IF ( borrower.gonenoaddress ) %]
+ <li id="gonenoaddress"><strong>Por favor note:</strong> De acordo com os nosso registos, não possuímos informação de contacto atualizada. Por favor contacte a biblioteca. <a href="/cgi-bin/koha/opac-memberentry.pl">[% IF ( Koha.Preference('OPACPatronDetails') ) %]<span>Atualizar as informações de contacto</span>[% ELSE %]<span>Ir para as informações de contacto</span>[% END %]</a>
+ [% IF ( Koha.Preference('OPACPatronDetails') ) %]<em>(Por favor note: poderá haver um atraso na recuperação da sua conta se submeter online.)</em>[% END %]
+ </li>
+ [% END %]
+ [% IF ( borrower.lost ) %]
+ <li id="lost"><strong>Por favor note: </strong> O seu cartão da biblioteca foi dado como perdido ou roubado. <em>Se isto for um erro, por favor consulte um bibliotecário.</em></li>
+ [% END %]
+ [% IF ( renewal_blocked_fines.defined ) && ( OpacRenewalAllowed ) %]
+ <li id="renewal_blocked_fines"><strong>Por favor note: </strong>Não pode renovar os exemplares. Razão: [% IF ( renewal_blocked_fines ) > 0  %]As suas multas excedem <span id="renewal_blocked_fines_amount">[% renewal_blocked_fines | $Price %]</span>.[% ELSE %]Possui multas por pagar.[% END %] [% END %] </ul>
+ </div>
+ [% END # / IF patron_flagged %]
+
+ [% IF savings %]
+ <div class="alert alert-info" id="savings">
+ Parabéns, poupou um total de [% savings | $Price with_symbol => 1 %] por usar a biblioteca. </div>
+ [% END %]
+
+ <div class="alert alert-info" id="notesaved" style="display:none;"></div>
+ [% IF ( OpacMySummaryNote ) %]
+ [% PROCESS koha_news_block news => OpacMySummaryNote %]
+ [% END %]
+
+ [% IF Koha.Preference('AllowPatronToControlAutorenewal') %]
+ <form id="autorenewal_option" action="/cgi-bin/koha/opac-user.pl" method="post">
+ <legend class="sr-only">Renovação automática</legend>
+ <label for="yes-autorenew_checkouts">
+ Permitir renovação automática: </label>
+ [% IF ( borrower.autorenew_checkouts ) %]
+ <label class="radio inline" for="yes-autorenew_checkouts">
+ Sim <input type="radio" id="yes-autorenew_checkouts" name="borrower_autorenew_checkouts" value="1" checked="checked" />
+ </label>
+
+ <label class="radio inline" for="no-autorenew_checkouts">
+ Não <input type="radio" id="no-autorenew_checkouts" name="borrower_autorenew_checkouts" value="0" />
+ </label>
+ [% ELSE %]
+ <label class="radio inline" for="yes-autorenew_checkouts">
+ Sim <input type="radio" id="yes-autorenew_checkouts" name="borrower_autorenew_checkouts" value="1" />
+ </label>
+ <label class="radio inline" for="no-autorenew_checkouts">
+ Não <input type="radio" id="no-autorenew_checkouts" name="borrower_autorenew_checkouts" value="0" checked="checked" />
+ </label>
+ [% END %]
+ <input type="hidden" name="csrf_token" value="[% csrf_token | html %]" />
+ <input type="hidden" name="update_arc" value="1" />
+ <input type="submit" value="Atualizar a preferência de auto-renovação" />
+ </form>
+ [% END %]
+
+ <div id="opac-user-views" class="toptabs">
+ <ul class="nav nav-tabs" role="tablist">
+ <li class="nav-item" role="presentation">
+ <a class="nav-link active" id="opac-user-checkouts-tab" data-toggle="tab" role="tab" aria-controls="opac-user-checkouts" aria-selected="true"  href="#opac-user-checkouts">Emprestado ([% issues_count | html %])</a>
+ </li>
+ [% IF relatives %]
+ <li class="nav-item" role="presentation">
+ <a class="nav-link" id="opac-user-relative-issues-tab" data-toggle="tab" role="tab" aria-controls="opac-user-relative-issues" aria-selected="false" href="#opac-user-relative-issues">Empréstimos relativos</a>
+ </li>
+ [% END %]
+ [% IF ( overdues_count ) %]
+ <li class="nav-item" role="presentation">
+ <a class="nav-link" id="opac-user-overdues-tab" data-toggle="tab" role="tab" aria-controls="opac-user-overdues" aria-selected="false" href="#opac-user-overdues">Atraso ([% overdues_count | html %])</a>
+ </li>
+ [% END %]
+ [% IF ( OPACFinesTab ) %]
+ [% IF ( amountoutstanding > 0 ) %]
+ <li class="nav-item" role="presentation">
+ <a class="nav-link" id="opac-user-fines-tab" data-toggle="tab" role="tab" aria-controls="opac-user-fines" aria-selected="false" href="#opac-user-fines">Encargos ([% amountoutstanding | $Price %])</a>
+ </li>
+ [% END %]
+ [% IF ( amountoutstanding < 0 ) %]
+ <li class="nav-item" role="presentation">
+ <a class="nav-link" id="opac-user-fines-tab" data-toggle="tab" role="tab" aria-controls="opac-user-fines" aria-selected="false" href="#opac-user-fines">Créditos ([% amountoutstanding * -1 | $Price %])</a>
+ </li>
+ [% END %]
+ [% IF relatives_with_fines %]
+ <li class="nav-item" role="presentation">
+ <a class="nav-link" id="opac-user-relative-fines-tab" data-toggle="tab" role="tab" aria-controls="opac-user-relative-fines" aria-selected="false" href="#opac-user-relative-fines">Cobranças de relativos</a>
+ </li>
+ [% END %]
+ [% END %]
+
+ [% IF borrower_club_enrollments.count || borrower_enrollable_clubs.count %]
+ <li class="nav-item" role="presentation">
+ <a class="nav-link" data-toggle="tab" role="tab" aria-controls="opac-user-clubs" aria-selected="false" id="opac-user-clubs-tab-link" href="#opac-user-clubs">
+ Grupos ([% borrower_club_enrollments.count || 0 | html %]/[% borrower_enrollable_clubs.count || 0 | html %]) </a>
+ </li>
+ [% END %]
+
+ [% IF ( RESERVES.count ) %]
+ <li class="nav-item" role="presentation">
+ <a class="nav-link" id="opac-user-holds-tab" data-toggle="tab" role="tab" aria-controls="opac-user-holds" aria-selected="false" href="#opac-user-holds">Reservas ([% RESERVES.count | html %])</a>
+ </li>
+ [% END %]
+ [% IF Koha.Preference('UseRecalls') && RECALLS.count %]
+ <li class="nav-item" role="presentation">
+ <a class="nav-link" id="opac-user-recalls-tab" data-toggle="tab" role="tab" aria-controls="opac-user-recalls" aria-selected="false" href="#opac-user-recalls">Reclamações ([% RECALLS.count | html %])</a>
+ </li>
+ [% END %]
+ [% IF Koha.Preference('ArticleRequests') %]
+ <li class="nav-item" role="presentation">
+ <a class="nav-link" id="opac-user-article-requests-tab" data-toggle="tab" role="tab" aria-controls="opac-user-article-requests" aria-selected="false" href="#opac-user-article-requests">Pedidos de artigos ([% current_article_requests.size || 0 | html %])</a>
+ </li>
+ [% END %]
+ [% IF ( OverDriveCirculation ) %]
+ <li class="nav-item" role="presentation">
+ <a class="nav-link" id="opac-user-overdrive-tab" data-toggle="tab" role="tab" aria-controls="opac-user-overdrive" aria-selected="false" href="#opac-user-overdrive">Conta OverDrive</a>
+ </li>
+ [% END %]
+ </ul>
+ <div class="tab-content">
+
+ <div id="opac-user-overdrive" class="tab-pane" role="tabpanel" aria-labelledby="opac-user-overdrive-tab">
+ </div>
+ <div id="opac-user-checkouts" class="tab-pane active" role="tabpanel" aria-labelledby="opac-user-checkouts-tab">
+ [% IF ( issues_count ) %]
+ <form id="renewselected" action="/cgi-bin/koha/opac-renew.pl" method="post">
+ <legend class="sr-only">Renovar selecionados</legend>
+ <input type="hidden" name="borrowernumber" value="[% borrowernumber | html %]">
+ <input type="hidden" name="from" value="opac_user" />
+ <table id="checkoutst" class="table table-bordered table-striped">
+ <caption>[% issues_count | html %] Exemplares emprestados</caption>
+ <thead>
+ <tr>
+ [% IF ( JacketImages ) %]<th class="nosort">&nbsp;</th>[% END %]
+ <th class="all anti-the">Título</th>
+ <th>Autor</th>
+ <th class="psort">Data de devolução</th>
+ [% UNLESS ( item_level_itypes ) %]
+ <th>Tipo de documento</th>
+ [% END %]
+ [% IF ( show_barcode ) %]
+ <th>Código de barras</th>
+ [% END %]
+ <th>Cota</th>
+ [% IF ( OpacRenewalAllowed && !( logged_in_user.is_expired && logged_in_user.category.effective_BlockExpiredPatronOpacActions ) ) %]
+ <th>Renovar</th>
+ [% END %]
+ [% IF ( OPACFinesTab ) %]
+ <th>Multas</th>
+ [% END %]
+ [% IF ( OPACMySummaryHTML ) %]
+ <th class="nosort">Ligações</th>
+ [% END %]
+ [% IF ( Koha.Preference('AllowCheckoutNotes') ) %]
+ <th class="hidden">Nota de empréstimo</th>
+ <th class="nosort noExport" id="checkout-notes" title="Utilize esta funcionalidade para reportar problemas com os exemplares que tem actualmente emprestados">Reportar um problema</th>
+ [% END %]
+ <th></th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH ISSUE IN ISSUES %]
+ [% IF ( ISSUE.overdue ) %]<tr class="overdue">[% ELSE %]<tr>[% END %]
+ [% IF ( JacketImages ) %]
+ <td class="jacketcell">
+ [% IF ( OPACAmazonCoverImages ) %]
+ [% IF ( ISSUE.normalized_isbn ) %]
+ <a href="http://www.amazon.com/gp/reader/[% ISSUE.normalized_isbn | uri %][% AmazonAssocTag | uri %]#reader-link" title="Ver na Amazon.com"><img alt="Ver na Amazon.com" class="item-thumbnail" src="https://images-na.ssl-images-amazon.com/images/P/[% ISSUE.normalized_isbn | html %].01.THUMBZZZ.jpg" /></a>
+ [% ELSE %]
+ <a href="#"><span class="no-image">Sem imagem de capa disponível</span></a>
+ [% END %]
+ [% END %]
+
+ [% IF ( GoogleJackets ) %]
+ [% IF ( ISSUE.normalized_isbn ) %]
+ <div class="[% ISSUE.normalized_isbn | html %]" id="gbs-thumbnail[% loop.count | html %]" style="display:block;" title="Clique para ver no Google Books"></div>
+ [% ELSE %]
+ <a href="http://books.google.com/books?q=[% ISSUE.title |url %]"><span class="no-image">Sem imagem de capa disponível</span></a>
+ [% END %]
+ [% END %]
+
+ [% IF ( BakerTaylorEnabled ) %]
+ [% bt_id = ( ISSUE.normalized_upc || ISSUE.normalized_isbn ) %]
+ [% IF ( bt_id ) %]
+ <a href="https://[% BakerTaylorBookstoreURL | uri %][% bt_id | uri %]"><img alt="Ver Baker &amp; Taylor" src="[% BakerTaylorImageURL | html %][% bt_id | html %]" /></a>
+ [% ELSE %]
+ <span class="no-image">Sem imagem de capa disponível</span><!-- BakerTaylor needs normalized_upc or normalized_isbn! -->
+ [% END %]
+ [% END %]
+
+ [% IF Koha.Preference('OPACCustomCoverImages') AND Koha.Preference('CustomCoverImagesURL') %]
+ [% SET custom_cover_image_url = ISSUE.biblio_object.custom_cover_image_url %]
+ [% IF custom_cover_image_url %]
+ <a class="custom_cover_image" href="[% custom_cover_image_url | url %]"><img alt="Imagem da capa" src="[% custom_cover_image_url | url %]" /></a>
+ [% END %]
+ [% END %]
+
+ [% IF ( SyndeticsEnabled && SyndeticsCoverImages ) %]
+ <img src="https://secure.syndetics.com/index.aspx?isbn=[% ISSUE.normalized_isbn | html %]/[% SyndeticsCoverImageSize | uri %].GIF&amp;client=[% SyndeticsClientCode | html %]&amp;type=xw10&amp;upc=[% ISSUE.normalized_upc | html %]&amp;oclc=[% ISSUE.normalized_oclc | html %]" alt="" class="item-thumbnail" />
+ [% END %]
+ </td>
+ [% END # / IF JacketImages %]
+
+ <td class="title">
+ [% INCLUDE 'biblio-title.inc' biblio=ISSUE link=> 1 %]
+ [% IF ( ISSUE.enumchron ) %] [% ISSUE.enumchron | html %][% END %]
+
+ [% IF ( ISSUE.onsite_checkout ) %] <em class="onsite_checkout">(Empréstimos on-site)</em>[% END %]
+
+ [% IF ( Koha.Preference('OpacStarRatings') == 'all' ) %]
+ [% INCLUDE 'user-star-ratings.inc' item=ISSUE %]
+ [% END %]
+
+ [% IF ( ISSUE.recall ) %]<br><i>O exemplar foi reclamado. Por favor, devolva até à nova data de término.</i>[% END %]
+ </td>
+
+ <td class="author">[% ISSUE.author | html %]</td>
+ [% IF ( ISSUE.overdue ) %]
+ <td class="date_due overdue" data-order="[% ISSUE.date_due | html %]">
+ <span class="tdlabel">Data de devolução:</span>
+ [% ISSUE.date_due | $KohaDates as_due_date => 1 %]
+ </td>
+ [% ELSE %]
+ <td class="date_due" data-order="[% ISSUE.date_due | html %]">
+ <span class="tdlabel">Data de devolução:</span>
+ [% ISSUE.date_due | $KohaDates as_due_date => 1 %]
+ </td>
+ [% END %]
+ [% UNLESS ( item_level_itypes ) %]
+ <td class="itype">
+ <span class="tdlabel">Tipo de documento:</span>
+ [% IF ( ISSUE.imageurl && !Koha.Preference('OpacNoItemTypeImages') ) %]
+ <img src="[% ISSUE.imageurl | html %]" title="[% ISSUE.description | html %]" alt="[% ISSUE.description | html %]" />
+ [% END %] <span class="itypetext">[% ISSUE.description | html %]</span>
+ </td>
+ [% END %]
+ [% IF ( show_barcode ) %]
+ <td class="barcode">
+ <span class="tdlabel">Código de barras:</span>
+ [% ISSUE.barcode | html %]
+ </td>
+ [% END %]
+ <td class="call_no">
+ <span class="tdlabel">Cota:</span>
+ [% ISSUE.itemcallnumber | html %]
+ </td>
+ [% IF ( OpacRenewalAllowed && !( logged_in_user.is_expired && logged_in_user.category.effective_BlockExpiredPatronOpacActions ) ) %]
+ [% IF ( ISSUE.status && canrenew ) %]
+ <td class="renew" data-order="[% ISSUE.renewsleft | html %]">
+ [% ELSE %]
+ <td class="renew" data-order="0">
+ [% END %]
+ [% IF ISSUE.renewed %]<span class="blabel label-success">Renovado!</span><br />[% END %]
+ [% IF ( ISSUE.status ) %]
+ [% IF ( canrenew ) %]
+ <input type="checkbox" name="issue" value="[% ISSUE.issue_id | uri %]"/> <a href="/cgi-bin/koha/opac-renew.pl?from=opac_user&amp;issue=[% ISSUE.issue_id | uri %]&amp;borrowernumber=[% ISSUE.borrowernumber | uri %]">Renovar</a>
+ [% END %]
+ [% IF ISSUE.renewalfee > 0 %]
+ <span class="renewalfee label label-warning">Taxa para o tipo de documento '[% ItemTypes.GetDescription( ISSUE.renewalitemtype) | html %]': [% ISSUE.renewalfee | $Price %]</span>
+ [% END %]
+ [% IF ISSUE.itemtype_object.rentalcharge_daily > 0 %]
+ <span class="renewalfee label label-warning">[% ISSUE.itemtype_object.rentalcharge_daily | $Price %] por dia</span>
+ [% END %]
+ [% IF ISSUE.itemtype_object.rentalcharge_hourly > 0 %]
+ <span class="renewalfee label label-warning">[% ISSUE.itemtype_object.rentalcharge_hourly | $Price %] por hora</span>
+ [% END %]
+ <span class="renewals">( [% ISSUE.renewsleft | html %] de [% ISSUE.renewsallowed | html %] renovações restantes [% IF Koha.Preference('UnseenRenewals') && ISSUE.unseenallowed %] / [% ISSUE.unseenleft | html %] de [% ISSUE.unseenallowed | html %] renovações permitidas antes do exemplar ter que ser visto pela biblioteca [% END %] )</span>
+ [% ELSIF ( ISSUE.on_reserve ) %]
+ <span class="usr-msg no-renew-hold">Não renovável <span class="renewals">(reservado)</span></span>
+ [% ELSIF ( ISSUE.too_many ) %]
+ <span class="usr-msg no-renew-too-many">Não renovável</span>
+ [% ELSIF ( ISSUE.too_unseen ) %]
+ <span class="usr-msg no-renew-unseen">O exemplar deve ser renovado na biblioteca. [% ISSUE.renewsleft | html %] renovações restantes</span>
+ [% ELSIF ( ISSUE.norenew_overdue ) %]
+ <span class="usr-msg no-renew-overdue">Não permitido <span class="renewals">(atraso)</span></span>
+ [% ELSIF ( ISSUE.auto_too_late ) %]
+ <span class="usr-msg no-renew-too-late">Não renovável</span>
+ [% ELSIF ISSUE.auto_too_much_oweing %]
+ <span class="usr-msg auto-renew-fines">A renovação automática falhou, tem multas por pagar</span>
+ <span class="renewals">( [% ISSUE.renewsleft | html %] de [% ISSUE.renewsallowed | html %] renovações restantes [% IF Koha.Preference('UnseenRenewals') && ISSUE.unseenallowed %] / [% ISSUE.unseenleft | html %] de [% ISSUE.unseenallowed | html %] renovações permitidas antes do exemplar ter que ser visto pela biblioteca [% END %] )</span>
+ [% ELSIF ISSUE.auto_account_expired %]
+ <span class="usr-msg auto-renew-expired">A renovação automática falhou, conta expirada.</span>
+ <span class="renewals">( [% ISSUE.renewsleft | html %] de [% ISSUE.renewsallowed | html %] renovações restantes [% IF Koha.Preference('UnseenRenewals') && ISSUE.unseenallowed %] / [% ISSUE.unseenleft | html %] de [% ISSUE.unseenallowed | html %] renovações permitidas antes do exemplar ter que ser visto pela biblioteca [% END %] )</span>
+ [% ELSIF ( ISSUE.too_soon ) %]
+ <span class="usr-msg no-renewal-before">Não renovável antes de [% ISSUE.soonestrenewdate | $KohaDates  as_due_date => 1 %]</span>
+ <span class="renewals">( [% ISSUE.renewsleft | html %] de [% ISSUE.renewsallowed | html %] renovações restantes [% IF Koha.Preference('UnseenRenewals') && ISSUE.unseenallowed %] / [% ISSUE.unseenleft | html %] de [% ISSUE.unseenallowed | html %] renovações permitidas antes do exemplar ter que ser visto pela biblioteca [% END %] )</span>
+ [% ELSIF ( ISSUE.auto_renew || ISSUE.auto_too_soon ) %]
+ <span class="usr-msg automatic-renewal">Renovação automática</span>
+ <span class="renewals">( [% ISSUE.renewsleft | html %] de [% ISSUE.renewsallowed | html %] renovações restantes [% IF Koha.Preference('UnseenRenewals') && ISSUE.unseenallowed %] / [% ISSUE.unseenleft | html %] de [% ISSUE.unseenallowed | html %] renovações permitidas antes do exemplar ter que ser visto pela biblioteca [% END %] )</span>
+ [% ELSIF ( ISSUE.item_denied_renewal ) %] Renovação não permitida [% END %] </td>
+ [% END %]
+ [% IF ( OPACFinesTab ) %]
+ <td class="fines">
+ <span class="tdlabel">Multas:</span>
+ [% IF ( ISSUE.charges ) %]
+ <span>Sim (Exemplar em atraso ou perdido)</span>
+ [% ELSIF ( ISSUE.rentalfines ) %]
+ <span>Sim (Taxas de empréstimo)</span>
+ [% ELSE %]
+ <span>Não</span>
+ [% END %]
+ </td>
+ [% END %]
+ [% IF ( OPACMySummaryHTML ) %]
+ <td class="links">[% ISSUE.MySummaryHTML | $raw %]</td>
+ [% END %]
+ [% IF ( Koha.Preference('AllowCheckoutNotes') ) %]
+ <td>
+ [% ISSUE.note | html %]
+ </td>
+ <td class="note">
+ <div id="viewnote_[% ISSUE.issue_id | html %]">
+ [% ISSUE.note | html %]
+ </div>
+ <a id="save_[% ISSUE.issue_id | html %]" href="/cgi-bin/koha/opac-issue-note.pl?issue_id=[% ISSUE.issue_id | html %]" class="btn btn-primary btn-sm btn-add-note noprint" data-title="[% ISSUE.title | html %] [% FOREACH subtitle IN ISSUE.subtitle.split(' \| ') %][% IF Koha.Preference('marcflavour')=='UNIMARC' %],[% END %][% subtitle | html %][% END %]" data-issueid="[% ISSUE.issue_id | html %]" id="save_[% ISSUE.issue_id | html %]">
+ [% IF ( ISSUE.note ) -%]
+ <span>Editar nota</span>
+ [% ELSE -%]
+ <span>Adicionar nota</span>
+ [% END %]
+ </a>
+ <input type="hidden" id="note_[% ISSUE.issue_id | html %]" name="note" value="[% ISSUE.note | html %]" data-origvalue="[% ISSUE.note | html %]" />
+ </td>
+ [% END %]
+ <td></td>
+ </tr>
+ [% END # /FOREACH ISSUES %]
+ </tbody>
+ </table>
+ [% IF ( canrenew && !userdebarred && OpacRenewalAllowed && !( logged_in_user.is_expired && logged_in_user.category.effective_BlockExpiredPatronOpacActions ) ) %]
+ <input class="btn btn-primary" type="submit" value="Renovar selecionados" />
+ <button type="button" id="renewall_js" class="btn btn-primary">Renovar todos</button>
+ [% END %]
+ </form>
+
+ [% IF ( canrenew && !userdebarred && OpacRenewalAllowed && !( logged_in_user.is_expired && logged_in_user.category.effective_BlockExpiredPatronOpacActions ) ) %]
+ <form id="renewall" class="js-hide" action="/cgi-bin/koha/opac-renew.pl" method="post">
+ <legend class="sr-only">Renovar</legend>
+ <input type="hidden" name="from" value="opac_user" />
+ <input type="hidden" name="borrowernumber" value="[% borrowernumber | html %]" />
+ [% FOREACH ISSUE IN ISSUES %]
+ [% IF ISSUE.status %]
+ <input type="hidden" name="issue" value="[% ISSUE.issue_id | html %]" />
+ [% END %]
+ [% END %]
+ <input class="btn btn-primary" type="submit" value="Renovar todos" />
+ </form>
+ [% END %]
+ [% ELSE %]
+ <table class="table table-bordered table-striped">
+ <caption class="sr-only">Emprestado</caption>
+ <tr><td>Não tem nada emprestado</td></tr>
+ </table>
+ [% END # IF issues_count %]
+
+ <!-- Add note modal -->
+ <div class="modal" id="addNoteModal" tabindex="-1" aria-labelledby="addNoteLabel" aria-hidden="true">
+ <div class="modal-dialog">
+ <form action="#" id="addNoteForm">
+ <div class="modal-content">
+ <div class="modal-header">
+ <h5 class="modal-title" id="addNoteLabel">Reportar um problema</h5>
+ <button aria-label="Fechar" class="closebtn" data-dismiss="modal" type="button">
+ <span aria-hidden="true">&times;</span>
+ </button>
+ </div>
+ <div class="modal-body" id="addNoteBody">
+ <h6 id="addNoteTitle"></h6>
+ <input type="hidden" id="addNoteIssueId" name="issue_id" value="" />
+ <textarea name="note" id="addNote" rows="4"></textarea>
+ <div class="hint">A sua nota será mostrada ao bibliotecário quando o exemplar estiver a ser devolvido.</div>
+ </div>
+ <div class="modal-footer">
+ <button type="submit" class="btn btn-primary">Submeter nota</button>
+ <button type="button" class="btn btn-default" data-dismiss="modal">Anular</button>
+ </div>
+ </div>
+ </form>
+ </div>
+ </div>
+
+ </div> <!-- / .opac-user-checkouts -->
+
+ [% IF borrower_club_enrollments.count || borrower_enrollable_clubs.count %]
+ <div id="opac-user-clubs" class="tab-pane" role="tabpanel" aria-labelledby="opac-user-clubs-tab-link">
+ Em carregamento... </div>
+ [% END %]
+
+ [% IF ( OPACFinesTab ) %]
+ <!-- FINES BOX -->
+ [% IF ( amountoutstanding > 0 ) %]
+ <div id="opac-user-fines" class="tab-pane" id="home" role="tabpanel" aria-labelledby="opac-user-fines-tab">
+ <table class="table table-bordered table-striped">
+ <caption>Encargos</caption>
+ <thead><tr><th colspan="2">Montante</th></tr></thead>
+ <tbody>
+ <tr>
+ <td>Atualmente tem multas no valor de:</td>
+ <td><a href="/cgi-bin/koha/opac-account.pl">[% amountoutstanding | $Price %]</a></td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ [% END %]
+
+ [% IF ( amountoutstanding < 0 ) %]
+ <div id="opac-user-fines" class="tab-pane" id="home" role="tabpanel" aria-labelledby="opac-user-fines-tab">
+ <table class="table table-bordered table-striped">
+ <caption>Créditos</caption>
+ <thead><tr><th colspan="2">Montante</th></tr></thead>
+ <tbody>
+ <tr>
+ <td>Tem um crédito de:</td><td><a href="/cgi-bin/koha/opac-account.pl">[% amountoutstanding * -1 | $Price %]</a></td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ [% END %]
+
+ [% IF relatives_with_fines %]
+ <div id="opac-user-relative-fines" class="tab-pane" role="tabpanel" aria-labelledby="opac-user-relative-fines-tab">
+ <table class="table table-bordered table-striped">
+ <caption>Multas</caption>
+ <thead>
+ <tr>
+ <th colspan="2">Montante</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH r IN relatives_with_fines %]
+ <tr>
+ <td>[% r.firstname | html %] [% r.surname | html %] atualmente tem multas no valor de:</td>
+ <td><a href="/cgi-bin/koha/opac-account.pl#g[% r.id | uri %]">[% r.account.balance | $Price %]</a></td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div>
+ [% END %]
+ [% END # / OPACFinesTab %]
+
+ [% IF relatives %]
+ <div id="opac-user-relative-issues" class="tab-pane" role="tabpanel" aria-labelledby="opac-user-relative-issues-tab">
+ <table id="opac-user-relative-issues-table" class="table table-bordered table-striped">
+ <caption class="sr-only">Empréstimos relativos</caption>
+ <thead>
+ <tr>
+ <th class="all anti-the">Título</th>
+ <th>Data de devolução</th>
+ <th>Código de barras</th>
+ <th>Cota</th>
+ <th class="psort">Relativo</th>
+ <th></th>
+ </tr>
+ </thead>
+
+ <tbody>
+ [% FOREACH r IN relatives %]
+ [% FOREACH c IN r.checkouts %]
+ <tr>
+ <td>
+ <a href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% c.item.biblio.biblionumber | uri %]">
+ [% c.item.biblio.title | html %][% IF ( c.item.enumchron ) %] [% c.item.enumchron | html %][% END %]
+ </a>
+ </td>
+
+ <td>
+ [% c.date_due | $KohaDates %]
+ </td>
+
+ <td>
+ [% c.item.barcode | html %]
+ </td>
+
+ <td>
+ [% c.item.itemcallnumber | html %]
+ </td>
+
+ <td>
+ [% r.firstname | html %] [% r.surname | html %]
+ </td>
+ <td></td>
+ </tr>
+ [% END %]
+ [% END %]
+ </tbody>
+ </table>
+ </div>
+ [% END %]
+
+ [% IF ( overdues_count ) %]
+ <div id="opac-user-overdues" class="tab-pane" role="tabpanel" aria-labelledby="opac-user-overdues-tab">
+ <table id="overduest" class="table table-bordered table-striped">
+ <caption>Atrasos <span class="count">([% overdues_count | html %] total)</span></caption>
+ <!-- OVERDUES TABLE ROWS -->
+ <thead>
+ <tr>
+ [% IF ( JacketImages ) %]<th class="nosort">&nbsp;</th>[% END %]
+ <th class="all anti-the">Título</th>
+ [% UNLESS ( item_level_itypes ) %]<th>Tipo de documento</th> [% END %]
+ [% IF ( show_barcode ) %]<th>Código de barras</th>[% END %]
+ <th>Cota</th>
+ <th class="psort">Data de devolução</th>
+ [% IF ( OpacRenewalAllowed ) %]
+ <th class="nosort">Renovar</th>
+ [% END %]
+ [% IF ( OPACFinesTab ) %]
+ <th>Multas</th>
+ [% END %]
+ <th></th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH OVERDUE IN OVERDUES %]
+ <tr>
+ [% IF ( JacketImages ) %]
+ <td class="jacketcell">
+ [% IF ( OPACAmazonCoverImages ) %]
+ [% IF ( OVERDUE.normalized_isbn ) %]
+ <a href="http://www.amazon.com/gp/reader/[% OVERDUE.normalized_isbn | uri %][% AmazonAssocTag | uri %]#reader-link" title="Ver na Amazon.com"><img alt="Ver na Amazon.com" class="item-thumbnail" src="https://images-na.ssl-images-amazon.com/images/P/[% OVERDUE.normalized_isbn | html %].01.THUMBZZZ.jpg" /></a>
+ [% ELSE %]
+ <a href="#"><span class="no-image">Sem imagem de capa disponível</span></a>
+ [% END %]
+ [% END %]
+
+ [% IF ( GoogleJackets ) %]
+ [% IF ( OVERDUE.normalized_isbn ) %]
+ <div class="[% OVERDUE.normalized_isbn | html %]" id="gbs-thumbnail[% loop.count | html %]" style="display:block;" title="Clique para ver no Google Books"></div>
+ [% ELSE %]
+ <a href="http://books.google.com/books?q=[% OVERDUE.title |url %]"><span class="no-image">Sem imagem de capa disponível</span></a>
+ [% END %]
+ [% END %]
+
+ [% IF ( BakerTaylorEnabled ) %]
+ [% bt_id = ( OVERDUE.normalized_upc || OVERDUE.normalized_isbn ) %]
+ [% IF ( bt_id ) %]
+ <a href="https://[% BakerTaylorBookstoreURL | uri %][% bt_id | uri %]"><img alt="Ver Baker &amp; Taylor" src="[% BakerTaylorImageURL | html %][% bt_id | html %]" /></a>
+ [% ELSE %]
+ <span class="no-image">Sem imagem de capa disponível</span><!-- BakerTaylor needs normalized_upc or normalized_isbn! -->
+ [% END %]
+ [% END %]
+
+ [% IF ( SyndeticsCoverImages ) %]
+ <img src="https://secure.syndetics.com/index.aspx?isbn=[% OVERDUE.normalized_isbn | html %]/[% SyndeticsCoverImageSize | uri %].GIF&amp;client=[% SyndeticsClientCode | html %]&amp;upc=[% OVERDUE.normalized_upc | html %]&amp;oclc=[% OVERDUE.normalized_oclc | html %]&amp;type=xw10" alt="" class="item-thumbnail" />
+ [% END %]
+ </td>
+ [% END # /IF jacketcell %]
+
+ <td>
+ [% INCLUDE 'biblio-title.inc' biblio=OVERDUE link=> 1 %]
+ <span class="item-details">[% OVERDUE.author | html %]</span>
+ </td>
+
+ [% UNLESS ( item_level_itypes ) %]
+ <td>
+ [% IF ( OVERDUE.imageurl  && !Koha.Preference('OpacNoItemTypeImages') ) %]
+ <img src="[% OVERDUE.imageurl | html %]" title="[% OVERDUE.description | html %]" alt="[% OVERDUE.description | html %]" />
+ [% END %] [% OVERDUE.description | html %]
+ </td>
+ [% END %]
+ [% IF ( show_barcode ) %]
+ <td>
+ <span class="tdlabel">Código de barras:</span>
+ [% OVERDUE.barcode | html %]
+ </td>
+ [% END %]
+ <td>
+ <span class="tdlabel">Cota:</span>
+ [% OVERDUE.itemcallnumber | html %]
+ </td>
+ <td data-order="[% OVERDUE.date_due | html %]">
+ <span class="tdlabel">Data de devolução:</span>
+ [% OVERDUE.date_due | $KohaDates as_due_date => 1 %]
+ </td>
+ [% IF ( OpacRenewalAllowed ) %]
+ <td>
+ [% IF ( OVERDUE.debarred ) %] Conta suspensa [% ELSIF ( OVERDUE.status ) %] [% IF ( canrenew ) %] <a href="/cgi-bin/koha/opac-renew.pl?from=opac_user&amp;item=[% OVERDUE.itemnumber | uri %]&amp;bornum=[% OVERDUE.borrowernumber | uri %]">Renovar</a>
+ [% END %]
+ <span class="renewals">( [% OVERDUE.renewsleft | html %] de [% OVERDUE.renewsallowed | html %] renovações restantes [% IF Koha.Preference('UnseenRenewals') && ISSUE.unseenallowed %] / [% OVERDUE.unseenleft | html %] de [% OVERDUE.unseenallowed | html %] renovações permitidas antes do exemplar ter que ser visto pela biblioteca [% END %] )</span>
+ [% ELSIF ( OVERDUE.norenew_overdue ) %] Não permitido <span class="renewals">(atraso)</span>
+ [% ELSIF ( OVERDUE.onreserve ) %]
+ <span>Reservado</span>
+ [% ELSE %]
+ <span>Renovações não permitidas</span>
+ [% END %]
+ </td>
+ [% END %]
+ [% IF ( OPACFinesTab ) %]
+ <td>
+ <span class="tdlabel">Multas:</span>
+ [% IF ( OVERDUE.charges ) %]
+ <span>Sim</span>
+ [% ELSE %]
+ <span>Não</span>
+ [% END %]
+ </td>
+ [% END %]
+ <td></td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div> <!-- / #opac-user-overdues -->
+ [% END # /overdues_count %]
+
+ [% PROCESS 'holds-table.inc' HOLDS = RESERVES, SuspendHoldsOpac = SuspendHoldsOpac, showpriority = showpriority, AutoResumeSuspendedHolds = AutoResumeSuspendedHolds %]
+
+ [% IF Koha.Preference('UseRecalls') && RECALLS.count %]
+ <div id="opac-user-recalls" class="tab-pane" role="tabpanel" aria-labelledby="opac-user-recalls-tab">
+ <table id="recalls-table" class="table table-bordered table-striped">
+ <caption>Reclamações <span class="count">([% RECALLS.count | html %])</span></caption>
+ <thead>
+ <tr>
+ <th class="all anti-the">Título</th>
+ <th class="psort">Colocado em</th>
+ <th>Expira em</th>
+ <th>Biblioteca de levantamento</th>
+ <th>Estado</th>
+ <th class="nosort">&nbsp;</th>
+ <th></th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH RECALL IN RECALLS %]
+ <tr>
+ <td class="title">
+ [% INCLUDE 'biblio-title.inc' biblio=RECALL.biblio link=> 1 %]
+ [% IF RECALL.item_level %]<p class="hint">Exemplar reclamado: [% RECALL.item.barcode | html %]</p>[% END %]
+ </td>
+ <td class="recalldate" data-order="[% RECALL.created_date | html %]">
+ <span title="[% RECALL.created_date | html %]">
+ <span class="tdlabel">Data de reclamação:</span>
+ [% RECALL.created_date | $KohaDates %]
+ </span>
+ </td>
+ <td class="expirationdate" data-order="[% RECALL.expiration_date | html %]">
+ [% IF ( RECALL.expiration_date ) %]
+ <span title="[% RECALL.expiration_date | html %]">
+ <span class="tdlabel">Fim:</span>
+ [% RECALL.expiration_date | $KohaDates %]
+ </span>
+ [% ELSE %]
+ <span title="0000-00-00">
+ <span class="tdlabel">Fim:</span>
+ Nunca expira </span>
+ [% END %]
+ </td>
+ <td class="branch">
+ <span class="tdlabel">Biblioteca de levantamento:</span>
+ [% RECALL.library.branchname | html %]
+ </td>
+ <td class="status">
+ <span class="tdlabel">Estado:</span>
+ [% IF ( RECALL.requested ) %]
+ <span>Pedido</span>
+ [% ELSIF ( RECALL.overdue ) %]
+ <span>Devolução atrasada</span>
+ [% ELSIF ( RECALL.in_transit ) %]
+ <span>Em trânsito para [% RECALL.library.branchname | html %]</span>
+ [% ELSIF ( RECALL.waiting ) %]
+ <span>Pronta para levantamento</span>
+ [% END %]
+ </td>
+ <td class="cancelrecall">
+ [% IF ( RECALL.requested or RECALL.overdue ) %]
+ <form action="/cgi-bin/koha/opac-recall.pl" method="post">
+ <input type="hidden" name="op" value="cancel">
+ <input type="hidden" name="recall_id" value="[% RECALL.id | html %]">
+ <input type="hidden" name="biblionumber" value="[% RECALL.biblio_id | html %]">
+ <button type="submit" name="submit" class="btn btn-sm btn-danger cancel_recall"><i class="fa fa-remove" aria-hidden="true"></i> Anular</button>
+ </form>
+ [% END %]
+ </td>
+ [% END %]
+ <td></td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ [% END # / # RECALLS.count %]
+
+ [% IF Koha.Preference('ArticleRequests') %]
+ <div id="opac-user-article-requests" class="tab-pane" role="tabpanel" aria-labelledby="opac-user-article-requests-tab">
+ [% IF current_article_requests.size %]
+ <table id="article-requests-table" class="table table-bordered table-striped">
+ <caption>Pedidos de artigos <span class="count"></span></caption>
+ <thead>
+ <tr>
+ <th class="all anti-the article-request-record-title">Título do registo</th>
+ <th class="psort article-request-created-on">Colocado em</th>
+ <th class="anti-the article-request-title">Título</th>
+ <th class="article-request-author">Autor</th>
+ <th class="article-request-volume">Volume</th>
+ <th class="article-request-issue">Número</th>
+ <th class="article-request-date">Data</th>
+ <th class="article-request-toc" title="Tabela de conteúdos">TOC</th>
+ <th class="article-request-pages">Páginas</th>
+ <th class="article-request-chapters">Capítulos</th>
+ <th class="article-request-patron-notes">Notas</th>
+ <th class="article-request-format">Formato</th>
+ <th class="article-request-status">Estado</th>
+ <th class="article-request-branchcode">Biblioteca de levantamento</th>
+ <th class="nosort article-request-cancel">&nbsp;</th>
+ <th></th>
+ </tr>
+ </thead>
+
+ <tbody>
+ [% FOREACH ar IN current_article_requests %]
+ <tr>
+ <td class="article-request-record-title">
+ [% INCLUDE 'biblio-title.inc' biblio=ar.biblio link=> 1 %]
+ [% ar.item.enumchron | html %]
+ [% ar.biblio.author | html %]
+ [% IF ar.itemnumber %] <em>(apenas [% ar.item.barcode | html %])</em>[% END %]
+ </td>
+
+ <td class="article-request-created_on">
+ [% ar.created_on | $KohaDates %]
+ </td>
+
+ <td class="article-request-title">
+ [% ar.title | html %]
+ </td>
+
+ <td class="article-request-author">
+ [% ar.author | html %]
+ </td>
+
+ <td class="article-request-volume">
+ [% ar.volume | html %]
+ </td>
+
+ <td class="article-request-issue">
+ [% ar.issue | html %]
+ </td>
+
+ <td class="article-request-date">
+ [% ar.date | html %]
+ </td>
+
+ <td class="article-request-toc">
+ [% IF ar.toc_request %]Sim[% END %] </td>
+
+ <td class="article-request-pages">
+ [% ar.pages | html %]
+ </td>
+
+ <td class="article-request-chapters">
+ [% ar.chapters | html %]
+ </td>
+
+ <td class="article-request-patron-notes">
+ [% ar.patron_notes | html %]
+ </td>
+
+ <td class="article-request-format">[% IF ar.format == 'PHOTOCOPY' %]<span>Copiar</span>[% ELSIF ar.format == 'SCAN' %]<span>Leitura</span>[% END %]</td>
+
+ <td class="article-request-status">
+ [% IF ar.status == 'PENDING' %]
+ <span>Pendente</span>
+ [% ELSIF ar.status == 'PROCESSING' %]
+ <span>A processar</span>
+ [% ELSIF ar.status == 'REQUESTED' %]
+ <span>Novo</span>
+ [% ELSIF ar.status == 'COMPLETED' %]
+ <span>Completo</span>
+ [% ELSIF ar.status == 'CANCELED' %]
+ <span>Cancelado</span>
+ [% END %]
+ </td>
+
+ <td class="article-request-branchcode">
+ [% ar.branch.branchname | html %]
+ </td>
+
+ <td class="article-request-cancel">
+ <button data-title="[% ar.biblio.title | html %] [% ar.item.enumchron | html %]" data-article-request_id="[% ar.id | html %]" class="btn btn-sm btn-danger btn-delete-article-request"><i class="fa fa-remove" aria-hidden="true"></i> Anular</button>
+ </td>
+ <td></td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ [% ELSE %]
+ <table class="table table-bordered table-striped">
+ <caption class="sr-only">Pedidos de artigo</caption>
+ <tr><td>Não existem pedidos de artigo.</td></tr>
+ </table>
+ [% END # IF current_article_requests.size %]
+ </div> <!-- / #opac-user-article-requests -->
+ [% END %]
+ </div> <!-- /.tab-content -->
+ </div> <!-- /#opac-user-views -->
+ </div> <!-- /#userdetails -->
+ </div> <!-- /.col-10 -->
+ </div> <!-- /.row -->
+ </div> <!-- /.container-fluid -->
+</div> <!-- /#main -->
+
+[% # hold suspend modal form %]
+<div id="suspendHoldModal" class="modal" tabindex="-1" role="dialog" aria-labelledby="suspendModalLabel" aria-hidden="true" data-focus="false">
+ <div class="modal-dialog">
+ <div class="modal-content">
+ <form action="/cgi-bin/koha/opac-modrequest-suspend.pl" method="post">
+ <div class="modal-header">
+ [% IF HOLD.suspend %]
+ <h5 class="modal-title" id="suspendModalLabel">Retomar reserva</h5>
+ [% ELSE %]
+ <h5 class="modal-title" id="suspendModalLabel">Suspender reserva</h5>
+ [% END %]
+ <button aria-label="Fechar" class="closebtn" data-dismiss="modal" type="button">
+ <span aria-hidden="true">x</span>
+ </button>
+ </div>
+ <div class="modal-body">
+ <h6 id="suspendHoldTitle"></h6>
+ <input type="hidden" name="reserve_id" id="suspendHoldReserveId" value="" />
+ <label for="suspend_untilDate">Suspender até:</label>
+ <input type="text" name="suspend_until" id="suspend_untilDate" size="10" />
+ [% INCLUDE 'date-format.inc' %]
+ <p><a href="#" class="clear-flatpickr" data-fp="suspend_untilDate">Limpar data para suspender por tempo indeterminado</a></p>
+ </div>
+ <div class="modal-footer">
+ <button class="btn btn-primary"><i class="fa fa-check" aria-hidden="true"></i> Suspender</button>
+ <button data-dismiss="modal" class="btn btn-secondary"><i class="fa fa-remove" aria-hidden="true"></i> Não suspender</button>
+ </div>
+ </form>
+ </div> <!-- /.modal-content -->
+ </div> <!-- /.modal-dialog -->
+</div> <!-- /#suspendModal -->
+
+[% IF ( OverDriveCirculation ) %]
+ [% INCLUDE 'overdrive-checkout.inc' %]
+ [% IF ( Koha.Preference('OverDrivePasswordRequired') ) %]
+ [% INCLUDE 'overdrive-login.inc' %]
+ [% END %]
+[% END %]
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %]
+ [% INCLUDE 'calendar.inc' %]
+ [% INCLUDE 'datatables.inc' %]
+ <script>
+        var AR_CAPTION_COUNT = _("(%s total)");
+
+
+        function tableInit( tableId ){
+            if( tableId == "checkoutst" ){
+                $(".dt-buttons").append("<button type=\"button\" class=\"dt-button buttons-ical\" id=\"buttons-ics\">iCal</button> ");
+                [% IF ( OpacRenewalAllowed && canrenew && !userdebarred ) %]
+                    $(".dt-buttons").append("<button id=\"renewselected_link\" class=\"dt-button buttons-renew\"><i class=\"fa fa-check\" aria-hidden=\"true\"></i> "+_("Renovar selecionados")+"</button> <button id=\"renewall_link\" class=\"dt-button buttons-renewall\"><span class=\"fa-stack\"><i class=\"fa fa-check fa-stack-1x\" aria-hidden=\"true\"></i><i class=\"fa fa-check fa-stack-1x\" aria-hidden=\"true\"></i></span> "+_("Renovar todos")+"</button>");
+                [% END %]
+            }
+        }
+        $(document).ready(function(){
+            $('#opac-user-article-requests caption .count').html(AR_CAPTION_COUNT.format('[% current_article_requests.size | html %]'));
+
+            $(".modal-nojs").addClass("modal").addClass("hide").removeClass("modal-nojs");
+
+            $(".btn-delete-hold").on("click", function(e){
+                e.preventDefault();
+                var hold_title = $(this).data("title");
+                var reserve_id = $(this).data("reserve_id");
+                confirmModal( hold_title, _("Tem a certeza que pretende cancelar esta reserva?"), _("Sim, cancelar a reserva"), _("Não, não cancelar a reserva"), function( result ){
+                        $("#bootstrap-confirm-box-modal").remove()
+                        if( result ){
+                            $("#delete_hold_" + reserve_id ).submit();
+                        }
+                    }
+                );
+            });
+
+            $(".btn-req-delete-hold").on("click", function(e){
+                e.preventDefault();
+                var hold_title = $(this).data("title");
+                var reserve_id = $(this).data("reserve_id");
+                confirmModal( hold_title, _("Tem a certeza que deseja cancelar esta reserva?"), _("Sim"), _("Não"), function( result ){
+                        $("#bootstrap-confirm-box-modal").remove()
+                        if( result ){
+                            $("#req_cancel_hold_" + reserve_id ).submit();
+                        }
+                    }
+                );
+            });
+
+            $(".btn-delete-article-request").on("click", function(e){
+                e.preventDefault();
+                var article_request = $(this).data("title");
+                var article_request_id = $(this).data("article-request_id");
+                (function(row){
+                    var doCancel = function( result ){
+                        $("#bootstrap-confirm-box-modal").remove();
+                        if( result ){
+                            $.ajax({
+                                type: "DELETE",
+                                url: '/api/v1/public/patrons/'+borrowernumber+'/article_requests/'+article_request_id+'?cancellation_reason=OPAC',
+                                success: function( data ) {
+                                    row.parents('tr').hide({
+                                        duration: 'slow',
+                                        complete: function() {
+                                            var ar_tab = $('a[href="#opac-user-article-requests"');
+                                            var ar_table = $('#article-requests-table');
+                                            var ar_length = $('tbody tr:visible', ar_table).length;
+                                            var ar_count = $('caption .count', ar_table);
+
+                                            ar_tab.html(ar_tab.html().replace(/\(\d+\)/, '('+ar_length+')'));
+                                            ar_count.html(AR_CAPTION_COUNT.format(ar_length));
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    };
+                    confirmModal( article_request, _("Tem a certeza que pretende cancelar este pedido de artigo?"), _("Sim, cancelar o pedido de artigo"), _("Não, não cancelar o pedido de artigo"), doCancel);
+                })($(this))
+            });
+
+            /* We initiate this flatpickr instance here so that we can use the variable later */
+            var suspend_until_date = $("#suspend_untilDate").flatpickr({
+                minDate: "today"
+            });
+
+            $(document).on("click", ".suspend_hold", function(e){
+                e.preventDefault();
+                var title = $(this).data("title");
+                var reserve_id = $(this).data("reserve_id");
+                $("#suspendHoldReserveId").val( reserve_id );
+                $("#suspendHoldTitle").html( "<em>" + title + "</em>" );
+                $("#suspendHoldModal").modal("show");
+            });
+
+            $("#suspendHoldModal").on("hidden.bs.modal", function(){
+                $("#suspendHoldTitle").html("");
+                $("#suspendHoldReserveId").val("");
+                suspend_until_date.clear();
+            });
+
+            $("#suspend_all_submit").on("click", function(e){
+                e.preventDefault();
+                var title = _("Tem a certeza que pretende suspender todas as reservas?");
+                var body = _("Todas as reservas serão suspensas.");
+                confirmModal( body, title, _("Sim, suspender todas as reservas"), "", function( result ){
+                        $("#bootstrap-confirm-box-modal").remove()
+                        if( result ){
+                            $("#suspend_all_holds").submit();
+                        }
+                    }
+                );
+            });
+
+            $("#resume_all_submit").on("click", function(e){
+                e.preventDefault();
+                var title = _("Tem a certeza que pretende restaurar todas as reservas suspensas?");
+                var body = _("Todas as reservas serão retomadas.");
+                confirmModal( body, title, _("Sim, retomar todas as reservas"), _("Não, não retomar as reservas"), function( result ){
+                        $("#bootstrap-confirm-box-modal").remove()
+                        if( result ){
+                            $("#resume_all_holds").submit();
+                        }
+                    }
+                );
+            });
+
+            var dTables = $("#checkoutst,#holdst,#overduest,#opac-user-relative-issues-table");
+            dTables.each(function(){
+                var thIndex = $(this).find("th.psort").index();
+                $(this).on("init.dt", function() {
+                        tableInit( $(this).attr("id") );
+                    })
+                    .dataTable($.extend(true, {}, dataTablesDefaults, {
+                    "sorting" : [[ thIndex, 'asc' ]],
+                    "dom": '<"top"<"table_entries"><"table_controls"fB>>t',
+                    "columnDefs": [
+                        { "targets": [ "nosort" ],"sortable": false,"searchable": false },
+                        { "type": "anti-the", "targets" : [ "anti-the" ] },
+                        { "visible": false, "targets" : [ "hidden" ] },
+                        { "className": 'dtr-control', "orderable": false, "targets": -1 }
+                    ],
+                    "language": {
+                        "search": "_INPUT_",
+                        "searchPlaceholder": _("Pesquisar")
+                    },
+                    "autoWidth": false,
+                    "responsive": {
+                        details: {
+                            type: 'column',
+                            target: -1
+                        }
+                    },
+                    buttons: [
+                        /* Override default button set so that we can extend the options of print and csv */
+                        'clearFilter', 'copy',
+                        {
+                            extend: "print",
+                            exportOptions: {
+                                /* Print view should show all columns (even invisible ones) unless they are .noExport */
+                                columns: ":not(.noExport)"
+                            }
+                        },
+                        {
+                            extend: "csv",
+                            exportOptions: {
+                                /* CSV export should include all columns (even invisible ones) unless they are .noExport */
+                                columns: ":not(.noExport)"
+                            }
+                        }
+                    ]
+                }));
+            });
+
+            var dataTables = $("#recalls-table,#article-requests-table");
+            dataTables.each(function(){
+                $(this).dataTable($.extend(true, {}, dataTablesDefaults, {
+                    "searching": false,
+                    "paging": false,
+                    "info": false,
+                    "autoWidth": false,
+                    "responsive": {
+                        "details": { "type": 'column',"target": -1 }
+                    },
+                    "columnDefs": [
+                        { "className": 'dtr-control', "orderable": false, "targets": -1 }
+                    ],
+                }));
+            });
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (event) {
+                dTables.DataTable().responsive.recalc();
+                dataTables.DataTable().responsive.recalc();
+            } );
+
+            $("body").on("click", "#buttons-ics", function(){
+                location.href="/cgi-bin/koha/opac-ics.pl";
+            });
+
+            [% IF ( GoogleJackets ) %]KOHA.Google.GetCoverFromIsbn();[% END %]
+            [% IF ( OpacRenewalAllowed && canrenew && !userdebarred ) %]
+                $("#renewselected").submit(function(){
+                    valid = false;
+                    $("input[type=checkbox]").each(function(){
+                        if($(this).is(':checked')){
+                            valid = true;
+                        }
+                    });
+                    if(!valid){
+                        alert(_("Nenhum item foi selecionado. Marque cada item que deseja renovar"));
+                    }
+                    return valid;
+                });
+                $("body").on("click","#renewselected_link",function(e){
+                    e.preventDefault();
+                    $("#renewselected").submit();
+                });
+                $("body").on("click","#renewall_link, #renewall_js",function(e){
+                    e.preventDefault();
+                    $("#renewall").submit();
+                });
+            [% END # /IF ( OpacRenewalAllowed && canrenew && !userdebarred ) %]
+
+            [% IF ( Koha.Preference('AllowCheckoutNotes') ) %]
+
+                /* If JS enabled, show button, otherwise show link to redirect to a page where note can be submitted */
+                $(".nonjs_submitnote").hide();
+
+                $("input[name='note']").prop('readonly', false);
+                $("input[name='note']").keypress(function(e){
+                    /* prevent submitting of renewselected form */
+                    if(e.which == 13)
+                        e.preventDefault();
+                });
+
+                $("input[name='note']").keyup(function(e){
+                    var $btn_save = $('#save_'+$(this).data('issue_id'));
+                    var origvalue = $(this).data('origvalue');
+                    var value = $(this).val();
+
+                    if(origvalue != value) {
+                        if(origvalue != "")
+                            $btn_save.text(_("Enviar alterações"));
+                        else
+                            $btn_save.text(_("Submeter nota"));
+                        $btn_save.show();
+                    } else {
+                        $btn_save.hide();
+                    }
+                });
+
+            [% END %]
+
+            $(".change_pickup").on("click", function(){
+                var hold_id = $(this).data("hold-id");
+                $(this).hide();
+                $("#change-pickup-location" + hold_id ).show();
+            });
+
+            if ( $('#opac-user-clubs').length ) {
+                $('#opac-user-clubs-tab-link').on('click', function() {
+                    $('#opac-user-clubs').text(_("Em carregamento..."));
+                    $('#opac-user-clubs').load('/cgi-bin/koha/clubs/clubs-tab.pl?borrowernumber=[% borrowernumber | html %]');
+                });
+            }
+
+            $(".cancel_recall").click(function(e){
+                return confirmDelete(_("Tem a certeza que pretende remover esta reclamação?"));
+            });
+
+            $("body").on("click", ".btn-add-note", function(e){
+                e.preventDefault();
+                var title = $(this).data("title");
+                var issue_id = $(this).data("issueid");
+                var note = $("#note_" + issue_id ).val();
+                var origvalue = $("#note_" + issue_id ).data("origvalue");
+                $("#addNote").val( note );
+                $("#addNoteIssueId").val( issue_id );
+                $("#addNoteTitle").text( title );
+                $("#addNoteModal").modal("show");
+            });
+
+            $("#addNoteForm").on("submit", function(e){
+                e.preventDefault();
+                var title = $("#addNoteTitle").text();
+                var issue_id = $("#addNoteIssueId").val();
+                var note = $("#addNote").val();
+                submitNote( title, issue_id, note );
+            });
+
+            $("#addNoteModal").on("hidden.bs.modal", function(){
+                $("#addNoteTitle").text("");
+                $("#addNote").val("");
+            });
+
+            $(".dismiss-message-button").click(function(e){
+                return confirmDelete(_("Tem a certeza que pretende fechar esta mensagem?"));
+            });
+        });
+
+        function submitNote( title, issue_id, note ){
+            var self = $("#addNoteModal");
+            var notebutton = $("#save_" + issue_id );
+            var noteinput = $("#note_" + issue_id );
+
+            var ajaxData = {
+                'action': 'issuenote',
+                'issue_id': issue_id,
+                'note': note
+            };
+
+            $.ajax({
+                url: '/cgi-bin/koha/svc/checkout_notes/',
+                type: 'POST',
+                dataType: 'json',
+                data: ajaxData,
+            })
+            .done(function(data) {
+                var message = "";
+                if(data.status == 'saved') {
+                    $("#notesaved").removeClass("alert-error");
+                    $("#notesaved").addClass("alert-info");
+                    noteinput.data('origvalue', data.note)
+                        .val(data.note);
+                    notebutton.text( _("Editar nota" ) );
+                    $("#viewnote_" + issue_id ).text( data.note );
+                    message = "<p>" + _("A sua nota sobre %s foi guardada e enviada para a biblioteca.").format( em(title) ) + "</p>";
+                    message += "<p class=\"checkout_note\">" + data.note;
+                    message += "<a href=\"/cgi-bin/koha/opac-issue-note.pl?issue_id=" + issue_id + "\" class=\"btn btn-link btn-sm btn-add-note\" data-title=\"" + title + "\" data-issueid=\"" + issue_id + "\"><i class=\"fa fa-pencil\" aria-hidden=\"true\"></i> " + _("Editar nota") + "</a>";
+                    message += "</p>";
+                } else if(data.status == 'removed') {
+                    $("#notesaved").removeClass("alert-error");
+                    $("#notesaved").addClass("alert-info");
+                    noteinput.data('origvalue', "")
+                        .val("")
+                    notebutton.text( _("Adicionar nota") );
+                    $("#viewnote_" + issue_id ).text( data.note );
+                    message = "<p>" + _("A sua nota sobre %s sobre eliminada.").format( em(title) ) + "</p>";
+                } else {
+                    $("#notesaved").removeClass("alert-info");
+                    $("#notesaved").addClass("alert-error");
+                    message =  "<p>" + _("Não foi possível guardar a sua nota sobre %s.").format( em(title) ) + "</p>";
+                    notebutton.text( _("Adicionar nota") );
+                    $("#viewnote_" + issue_id ).text( data.note );
+                    message += "<p style=\"font-weight:bold;\">" + _("Ocorreu um erro. A nota não foi guardada.") + "</p>";
+                }
+                $("#notesaved").html(message);
+            })
+            .fail(function(data) {
+                $("#notesaved").removeClass("alert-info");
+                $("#notesaved").addClass("alert-error");
+                var message = "<p style=\"font-weight:bold;\">" + _("Ocorreu um erro. A nota não foi guardada.") + "</p>";
+                $("#notesaved").html(message);
+            })
+            .always(function() {
+                self.modal("hide");
+                $("#notesaved").show();
+            });
+        }
+
+        function em( title ){
+            return "<em>" + title + "</em>";
+        }
+
+        var borrowernumber = "[% borrowernumber | html %]";
+    </script>
+ [% IF ( Koha.Preference('OpacStarRatings') == 'all' ) %]
+ [% Asset.js("lib/jquery/plugins/jquery.barrating.min.js") | $raw %]
+ [% Asset.js("js/ratings.js") | $raw %]
+ [% END %]
+ [% IF Koha.Preference('OverDriveCirculation') %]
+ [% Asset.js("js/overdrive.js") | $raw %]
+ <script>
+    [%- IF Koha.Preference('OverDrivePasswordRequired') -%]
+        var OD_password_required = 1;
+    [%- ELSE -%]
+        var OD_password_required = 0;
+    [%- END -%]
+    $(document).ready(function() {
+        [% IF ( overdrive_error ) %]
+            KOHA.OverDriveCirculation.display_error("#opac-user-overdrive", "[% overdrive_error.dquote | html %]");
+        [% END %]
+
+        [% IF ( overdrive_tab ) %]
+            $("#opac-user-views a[href='#opac-user-overdrive']").tab("show");
+        [% END %]
+
+        $("#opac-user-overdrive").each( function() {
+            KOHA.OverDriveCirculation.display_account_details(this);
+        } );
+    });
+    </script>
+ [% END %]
+[% END %]

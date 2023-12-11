@@ -1,0 +1,295 @@
+[% USE CGI %]
+[% PROCESS 'i18n.inc' %]
+[% SET footerjs = 1 %]
+[% BLOCK translate_card_element %]
+[%-  SWITCH element -%]
+[%-  CASE 'layout'    -%][% t('layout') | html %]
+[%-  CASE 'Layouts'   -%][% t('Layouts') | html %]
+[%-  CASE 'template'  -%][% t('template') | html %]
+[%-  CASE 'Templates' -%][% t('Templates') | html %]
+[%-  CASE 'profile'   -%][% t('profile') | html %]
+[%-  CASE 'Profiles'  -%][% t('Profiles') | html %]
+[%-  CASE 'batch'     -%][% t('batch') | html %]
+[%-  CASE 'Batches'   -%][% t('Batches') | html %]
+[%-  CASE 'Actions'   -%][% t('Actions') | html %]
+[%-  END -%]
+[% END %]
+[% BLOCK translate_card_elements %]
+[%-  SWITCH element -%]
+[%-  CASE 'layout'    -%]<span>esquemas</span>
+[%-  CASE 'template'  -%]<span>modelos</span>
+[%-  CASE 'profile'   -%]<span>perfis</span>
+[%-  CASE 'batch'     -%]<span>lotes</span>
+[%-  END -%]
+[% END %]
+
+ [% INCLUDE 'doc-head-open.inc' %]
+ <title>[% PROCESS translate_card_element element=card_element_title %] &rsaquo; Cartões de leitor &rsaquo; Ferramentas &rsaquo; Koha</title>
+ [% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="pcard_manage" class="tools pcard">
+ [% WRAPPER 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+[% END %]
+
+ [% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/tools/tools-home.pl">Ferramentas</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/patroncards/home.pl">Cartões de leitor</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ [% PROCESS translate_card_element element=card_element_title %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+ [% END #/ WRAPPER sub-header.inc %]
+
+ <div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ [% INCLUDE 'patroncards-toolbar.inc' %]
+
+ <h1>Modelos de cartões de leitor</h1>
+
+ [% INCLUDE 'patroncards-errors.inc' %]
+ <div id="manage-patroncards-layouts">
+ [% IF ( table_loop ) %]
+ <form name="layouts" action="/cgi-bin/koha/manage.pl?card_element=[% card_element | html %]">
+ <div class="page-section">
+ <h2>[% PROCESS translate_card_element element=card_element_title FILTER lower %] disponíveis</h2>
+ <table>
+ [% FOREACH table_loo IN table_loop %]
+ [% IF ( table_loo.header_fields ) %]
+ <tr>
+ [% FOREACH header_field IN table_loo.header_fields %]
+ [% SWITCH header_field.field_label -%]
+ [%-  CASE 'Layout ID'     -%]<th>ID do esquema</th>
+ [%-  CASE 'Layout'        -%]<th>Esquema</th>
+ [%-  CASE 'Action'        -%]<th>Ação</th>
+ [%-  CASE 'Actions'       -%]<th class="noExport">Ações</th>
+ [%-  CASE 'Select'        -%][% IF ( print ) %]<th>Seleccionar</th>[% END %]
+ [%-  CASE 'Template ID'   -%]<th>Modelo</th>
+ [%-  CASE 'Template Name' -%]<th>Nome do modelo</th>
+ [%-  CASE 'Description'   -%]<th>Descrição</th>
+ [%-  CASE 'Profile ID'    -%]<th>Perfil</th>
+ [%-  CASE 'Printer Name'  -%]<th>Nome de impressora</th>
+ [%-  CASE 'Paper Bin'     -%]<th>Caixote para papel</th>
+ [%-  CASE 'Batch ID'      -%]<th>ID do lote</th>
+ [%-  CASE 'Patron Count'  -%]<th>Número de leitores</th>
+ [%-  CASE                 -%]<th>[% header_field.field_label | html %]</th>
+ [% END -%]
+ [% END %]
+ </tr>
+ [% ELSE %]
+ <tr>
+ [% FOREACH text_field IN table_loo.text_fields %]
+ [% IF ( text_field.select_field ) %]
+ <td>
+ <a class="btn btn-default btn-xs" href="/cgi-bin/koha/patroncards/edit-[% card_element | html %].pl?op=edit&element_id=[% text_field.field_value | html %]"><i class="fa fa-edit"></i> Alterar</a>
+ [% IF ( print ) %]<a class="btn btn-default btn-xs export" data-batch-id="[% text_field.field_value |url %]" href="/cgi-bin/koha/patroncards/print.pl?batch_id=[% text_field.field_value |url %]"><i class="fa fa-share-square-o"></i> Exportar</a>[% END %]
+ <a class="btn btn-default btn-xs delete" href="/cgi-bin/koha/patroncards/manage.pl?op=delete&card_element=[% card_element | html %]&element_id=[% text_field.field_value | html %]"><i class="fa fa-trash"></i> Apagar</a>
+ </td>
+ [% IF ( print ) %]<td><input type="checkbox" name="action" value="[% text_field.field_value | html %]" /></td>[% END %]
+ [% ELSIF ( text_field.field_value ) %]
+ <td>[% text_field.field_value | html %]</td>
+ [% ELSE %]
+ <td>&nbsp;</td>
+ [% END %]
+ [% END %]
+ </tr>
+ [% END %]
+ [% END %]
+ </table>
+ <fieldset class="action">
+ [% IF ( print ) %]<input id="print" type="button" value="Exportar lotes selecionados" />[% END %]
+ </fieldset>
+ </div> <!-- /.page-section -->
+ [% IF patron_lists %]
+ <fieldset class="rows">
+ <legend>Ou usar uma lista de leitores</legend>
+ <ol>
+ <li>
+ <label for="patron_list_id">Lista de leitores: </label>
+ <select id="patron_list_id" name="patron_list_id">
+ <option value=""></option>
+ [% FOREACH pl IN patron_lists %]
+ <option value="[% pl.patron_list_id | html %]">[% pl.name | html %]</option>
+ [% END %]
+ </select>
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input id="printlist" type="button" value="Exportar da lista de leitores" />
+ </fieldset>
+ [% END %]
+ </form>
+
+ [% ELSE %]
+ <div class="dialog message">
+ <h4>Não existem [% PROCESS translate_card_element element=card_element_title %] disponíveis no momento.</h4>
+ <p>Use a barra de ferramentas acima para criar um novo [% PROCESS translate_card_element element=card_element %].</p></div>
+ [% END %]
+ </div>
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'tools-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'greybox.inc' %]
+ <script>
+        function DeleteConfirm() {
+            var element_ids = selected_layouts("delete");
+
+            var msg;
+            if (element_ids.length > 1) {
+                msg = _("Tem a certeza que pretende eliminar %s %s?").format(element_ids.length, "[% PROCESS translate_card_elements element=card_element %]");
+            } else if (element_ids.length == 1) {
+                msg = _("Tem a certeza que pretende eliminar %s %s?").format("[% PROCESS translate_card_element element=card_element %]", element_ids[0]);
+            }
+
+            if (msg && confirm(msg)) {
+                var elements = "";
+                for (var i = 0; i < element_ids.length; i++) {
+                    if (element_ids[i] > -1) {
+                        elements += element_ids[i] + ","
+                    }
+                    else {
+                        return;     // no layout selected
+                    }
+                }
+
+                window.location = "/cgi-bin/koha/patroncards/manage.pl?op=delete&card_element=[% card_element | html %]&element_id=" + elements;
+            }
+            else {
+                return; // abort delete
+            }
+
+        };
+
+        function Edit() {
+            var element_id = selected_layouts("edit");
+            if (element_id>-1) {
+                window.location = "/cgi-bin/koha/patroncards/edit-[% card_element | html %].pl?op=edit&element_id=" + element_id;
+            }
+            else {
+                return;     // no layout selected
+            };
+        };
+        function Xport() {
+            batches= new Array;
+            if(document.layouts.action.length > 0) {
+                for (var i=0; i < document.layouts.action.length; i++) {
+                    if (document.layouts.action[i].checked) {
+                        batches.push("batch_id=" +  document.layouts.action[i].value);
+                    }
+                }
+                if (batches.length < 1) {
+                    alert(_("Por favor, selecione pelo menos um lote a exportar."));
+                    return;     // no batch selected
+                }
+                getstr = batches.join("&");
+            }
+            else if (document.layouts.action.checked) {
+                getstr = "batch_id="+document.layouts.action.value;
+            }
+            else {
+                alert(_("Por favor, selecione pelo menos um lote a exportar."));
+                return;     // no batch selected
+            }
+            return GB_showCenter(_("Exportar cartões de leitor"), "/cgi-bin/koha/patroncards/print.pl?" + getstr, 400, 800);
+        };
+
+        function XportPatronlist() {
+            if ( patron_list_id.value.length < 1 ) {
+                alert(_("Por favor, selecione uma lista de leitores."));
+                return;     // no patron list selected
+            }
+            getstr = 'patronlist_id='+patron_list_id.value;
+            return GB_showCenter(_("Exportar cartões de leitor da lista"), "/cgi-bin/koha/patroncards/print.pl?" + getstr, 700, 800);
+        };
+
+        function selected_layout(op) {
+            if (document.layouts.action.length) {
+                var selected = new Array();
+                for (i=0;i<document.layouts.action.length;i++){
+                    if (document.layouts.action[i].checked){
+                        selected.push(i);
+                    }
+                };
+                if (selected.length == 1 || (op == "delete" && selected.length >= 1)) {
+                    if (op == "delete") {
+                        var selectedDelete = new Array;
+                        for (i = 0; i < selected.length; i++) {
+                            selectedDelete.push(document.layouts.action[selected[i]].value);
+                        }
+                        return(selectedDelete);
+                    } else {
+                        // op == 'edit' returns only the object and not list
+                        return(document.layouts.action[selected[0]].value);
+                    }
+                }
+                else if (selected.length < 1) {
+                    if (op == "edit") {
+                        alert(_("Por favor, selecione um %s para %s.").format("[% PROCESS translate_card_element element=card_element %]", op));
+                    } else {
+                        alert(_("Por favor selecione pelo menos um %s para %s.").format("[% PROCESS translate_card_element element=card_element %]", op));
+                    }
+                    return (-1);
+                }
+                else {
+                    alert(_("Por favor, selecione apenas um %s para %s.").format("[% PROCESS translate_card_element element=card_element %]", op));
+                    return (-1);
+                }
+            }
+            else {
+                if (document.layouts.action.checked){
+                    return([document.layouts.action.value]);
+                }
+            };
+            alert(_("Por favor, selecione a %s.").format("[% PROCESS translate_card_element element=card_element %]"));
+            return (-1);
+        };
+
+        $(document).ready(function() {
+            $("#edit").click(function(){
+                Edit();
+                return false;
+            });
+            $("#delete").click(function(){
+                DeleteConfirm();
+                return false;
+            });
+            $("#print").click(function(){
+                Xport();
+                return false;
+            });
+            $("#printlist").click(function(){
+                XportPatronlist();
+                return false;
+            });
+            $(".delete").on("click", function(){
+                return confirmDelete( _("Tem a certeza que pretende eliminar isto?") );
+            });
+            $(".export").on("click", function(e){
+                e.preventDefault();
+                var batch_id = $(this).data("batch-id");
+                GB_showCenter( _("Exportar lote"),'/cgi-bin/koha/patroncards/print.pl?batch_id='+batch_id, 400, 800);
+            });
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

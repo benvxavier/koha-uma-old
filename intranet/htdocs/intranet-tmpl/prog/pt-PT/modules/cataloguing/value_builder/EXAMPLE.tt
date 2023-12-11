@@ -1,0 +1,35 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Exemplo de plugin de modelos &rsaquo; Catalogação &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="EXAMPLE" class="cat" style="padding:1em;">
+<form name="f_pop" onsubmit="report()" action="">
+
+<h1>EXAMPLE plugin</h1>
+<p>Olá, você está a olhar para o resultado da execução do plugin EXAMPLE.</p>
+<p>Eu recebi isto de si:</p>
+<input type="text" id="received" value="[% result | html %]" disabled />
+
+<p>Irei passar o que você digitou aqui, se carregar em OK.</p>
+<input type="text" id="return" value="[% result | html %]" />
+<p>
+ <input type="button" value="OK"  onclick="submitMyForm();" />
+ <a href="#" class="cancel close">Anular</a>
+</p>
+</form>
+
+<script>
+    $(document).ready(function () {
+        $('#return').focus();
+    });
+
+    // The following function just puts back the value of the input #return
+    // into the caller's field, referenced by index. And closes the popup.
+    function submitMyForm() {
+        $(window.opener.document).find('#[% index | html %]').val($('#return').val() );
+        window.close();
+    }
+</script>
+
+[% INCLUDE 'popup-bottom.inc' %]

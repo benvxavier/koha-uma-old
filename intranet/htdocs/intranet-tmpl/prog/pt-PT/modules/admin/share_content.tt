@@ -1,0 +1,168 @@
+[% USE raw %]
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% USE Koha %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Partilhar conteúdo com o Mana KB &rsaquo; Administração &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="admin_share_content" class="admin">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/admin-home.pl">Administração</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Partilhar conteúdo com o Mana KB</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <div class="col-sm-6">
+ [% IF result.code != 201 && result.msg %]
+ <div class="dialog alert" role="alert">
+ [% result.msg | html %]
+ </div>
+ [% END %]
+
+ [% IF result.code == 201  %]
+ <div class="dialog message" role="alert">
+ Criou com sucesso a sua conta no Mana KB. Verifique a caixa de entrada do seu email e siga as instruções. </div>
+ [% END %]
+
+ [% UNLESS (mana_url) %]
+ <div class="dialog alert" role="alert">
+ A configuração está vazia. A funcionalidade não vai funcionar. Por favor contacte o administrador do sistema. </div>
+ [% ELSIF (bad_url) %]
+ <div class="dialog alert" role="alert">
+ Não foi possível detectar o servidor Mana em <strong>[% mana_url | url %]</strong>, por favor peça a um administrador para verificar a configuração. </div>
+ [% END %]
+
+ <h1>Partilhar conteúdo com a comunidade do Koha usando o Mana KB</h1>
+ <p>O Mana KB é um sistema centralizado de gestão de conteúdos das bibliotecas. Foi inicialmente desenhado para interagir com o Koha mas pode ser usado por qualquer outro software.</p>
+
+ <p>O sistema centraliza informação entre outras instalações do Koha de forma a facilitar a criação de novas assinaturas, fornecedores, relatórios, etc. Pode pesquisar, partilhar, importar ou comentar o conteúdo do Mana. A informação partilhada com o Mana KB é partilhada sobre a <a href="https://creativecommons.org/choose/zero/">Licença CC-0</a>.
+
+ <p>Aprenda mais sobre o Mana LB no <a href="https://wiki.koha-community.org/wiki/Mana_central_database">site da documentação oficial do Mana KB</a>.</p>
+
+ [% IF mana_url && !bad_url %]
+ [% IF (mana_url) %]
+ <p>O seu servidor Mana KB é: <strong>[% mana_url | url %]</strong></p>
+ [% END %]
+
+ <form id="mana_preference" method="post" class="clearfix">
+ <fieldset class="rows">
+ <ol>
+ <li>
+ <label for="mana">Usar o Mana KB para partilhar conteúdo: </label>
+ <select name="mana" id="mana">
+ [% IF Koha.Preference('Mana') == 0 %]
+ <option value="0" selected="selected">Não</option>
+ [% ELSE %]
+ <option value="0">Não</option>
+ [% END %]
+
+ [% IF Koha.Preference('Mana') == 1 %]
+ <option value="1" selected="selected">Sim</option>
+ [% ELSE %]
+ <option value="1">Sim</option>
+ [% END %]
+ [% IF Koha.Preference('Mana') == 2 %]
+ <option value="2" selected="selected">Não, deixe-me pensar sobre isso</option>
+ [% ELSE %]
+ <option value="2">Não, deixe-me pensar sobre isso</option>
+ [% END %]
+ </select>
+ <div class="hint">Ative o Mana KB de forma a pesquisar, importar e comentar conteúdo no servidor, e para partilhar o seu conteúdo.</div>
+ </li>
+ <li>
+ <label for="autosharewithmana">Partilha automática da assinatura: </label>
+ [% IF Koha.Preference('AutoShareWithMana').grep('subscription').size == 0 %]
+ <input id="autosharewithmana" type="checkbox" name="autosharewithmana">
+ [% ELSE %]
+ <input id="autosharewithmana" type="checkbox" name="autosharewithmana" checked="checked">
+ [% END %]
+ <span class="hint">Se marcado, as novas assinaturas que criar serão automaticamente partilhadas com o Mana KB.</span>
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input type="hidden" name="op" value="save" />
+ <input class="btn btn-primary" type="submit" value="Guardar" />
+ </fieldset>
+ </form>
+
+ [% UNLESS Koha.Preference('ManaToken') %]
+ <h3>Configurar Mana KB</h3>
+
+ <p>Assim que ativar a funcionalidade deve configurar a mesma. Insira o seu nome e o email e submeta essa informação. Será enviado um pedido de criação de conta no Mana KB que irá devolver um token de segurança (identificador encriptado que identifica de forma única a sua instalação). O token será automaticamente guardado na sua base de dados. Posteriormente receberá um email. Deve ler o mesmo e seguir as instruções.</p>
+ [% END %]
+
+ [% IF Koha.Preference('ManaToken') %]
+ <form id="mana_token" method="post" class="clearfix">
+ <fieldset class="rows">
+ <legend>Token do Mana KB</legend>
+ <ol>
+ <li>
+ <label for="token">Token do Mana: </label>
+ <input type="text" id="token" name="token" value="[% Koha.Preference('ManaToken') | html %]" size="50" disabled="disabled" />
+ <div class="hint">O seu token de segurança único usado para a autentição com o serviço Mana KB (anti spam).</div>
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input type="hidden" name="op" value="reset" />
+ <input class="btn btn-primary" type="submit" value="Redefinir o seu token" />
+ </fieldset>
+ </form>
+ [% ELSE %]
+ <form id="mana_request" method="post" class="clearfix">
+ <fieldset class="rows" id="mana_subscription">
+ <ol>
+ <li>
+ <label for="name">O seu nome: </label>
+ <input id="name" type="text" name="name" />
+ <div class="hint">Digitar o nome pessoal ou da organização.</div>
+ </li>
+ <li>
+ <label for="email">Email: </label>
+ <input id="email" type="text" name="email" size="45" required="required" />
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input type="hidden" name="op" value="send" />
+ <input class="btn btn-primary" type="submit" value="Enviar para o Mana KB" />
+ </fieldset>
+ </form>
+ [% END %]
+ [% END # /IF mana_url && !bad_url %]
+ </div>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'admin-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/admin-menu.js") | $raw %]
+ <script>
+        $(document).ready(function() {
+            $('#mana_token').submit(function() {
+                return confirm( _("Isto vai eliminar o token do Mana KB da base de dados. Deseja continuar?") );
+            });
+        });
+    </script>
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

@@ -1,0 +1,371 @@
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Construtor do campo 100 UNIMARC</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="cat_unimarc_field_100" class="cat" style="padding:1em;">
+ <h1>Construtor do campo 100 UNIMARC</h1>
+ <div class="page-section">
+ <form name="f_pop" action="">
+ <table>
+ <tr>
+ <td><label for="f1">Data do ficheiro</label></td>
+ <td><input type="text" name="f1" id="f1" maxlength="8" size="9" value="[% f1 | html %]" /></td>
+ </tr>
+ <tr>
+ <td><label for="f2">Código do estado do ponto de acesso autorizado</label></td>
+ <td>
+ <select name="f2" id="f2">
+ [% IF ( f2a ) %]
+ <option value="a" selected="selected">a - estabelecido</option>
+ [% ELSE %]
+ <option value="a">a - estabelecido</option>
+ [% END %]
+ [% IF ( f2c ) %]
+ <option value="c" selected="selected">c - provisório</option>
+ [% ELSE %]
+ <option value="c">c - provisório</option>
+ [% END %]
+ [% IF ( f2x ) %]
+ <option value="x" selected="selected">x - não aplicável</option>
+ [% ELSE %]
+ <option value="x">x - não aplicável</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+
+ <tr>
+ <td><label for="f3">Idioma da catalogação (obrigatório)</label></td>
+ <td><input type="text" name="f3" id="f3" maxlength="3" size="4" value="[% f3 | html %]" /></td>
+ </tr>
+
+ <tr>
+ <td><label for="f4">Código de transliteração</label></td>
+ <td>
+ <select name="f4" id="f4">
+
+ [% IF ( f4a ) %]
+ <option value="a" selected="selected">a- Esquema de transliteração ISO</option>
+ [% ELSE %]
+ <option value="a">a- Esquema de transliteração ISO</option>
+ [% END %]
+ [% IF ( f4b ) %]
+ <option value="b" selected="selected">b- outro</option>
+ [% ELSE %]
+ <option value="b">b- outro</option>
+ [% END %]
+ [% IF ( f4c ) %]
+ <option value="c"
+                                 selected="selected">c- transliterações múltiplas: ISO ou outros esquemas</option>
+ [% ELSE %]
+ <option value="c">c- transliterações múltiplas: ISO ou outros esquemas</option>
+ [% END %]
+ [% IF ( f4y ) %]
+ <option value="y" selected="selected">y- não foi usado esquema de transliteração</option>
+ [% ELSE %]
+ <option value="y">y- não foi usado esquema de transliteração</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td><label for="f5">Conjunto de caracteres (obrigatório) 1</label></td>
+ <td>
+ <select name="f5" id="f5">
+
+ [% IF ( f501 ) %]
+ <option value="01" selected="selected">01- ISO 646, versão IRV (conjunto latino básico)</option>
+ [% ELSE %]
+ <option value="01">01- ISO 646, versão IRV (conjunto latino básico)</option>
+ [% END %]
+ [% IF ( f502 ) %]
+ <option value="02" selected="selected">02- Registo ISO # 37 (conjunto básico Cirílico)</option>
+ [% ELSE %]
+ <option value="02">02- Registo ISO # 37 (conjunto básico Cirílico)</option>
+ [% END %]
+ [% IF ( f503 ) %]
+ <option value="03" selected="selected">03- ISO 5426 (conjunto Latino expandido)</option>
+ [% ELSE %]
+ <option value="03">03- ISO 5426 (conjunto Latino expandido)</option>
+ [% END %]
+ [% IF ( f504 ) %]
+ <option value="04" selected="selected">04- ISO 5427 (conjunto Cirílico expandido)</option>
+ [% ELSE %]
+ <option value="04">04- ISO 5427 (conjunto Cirílico expandido)</option>
+ [% END %]
+ [% IF ( f505 ) %]
+ <option value="05" selected="selected">05- ISO 5428 (conjunto Grego)</option>
+ [% ELSE %]
+ <option value="05">05- ISO 5428 (conjunto Grego)</option>
+ [% END %]
+
+ [% IF ( f506 ) %]
+ <option value="06" selected="selected">06- ISO 6438 (conjunto de caracteres africanos codificados)</option>
+ [% ELSE %]
+ <option value="06">06- ISO 6438 (conjunto de caracteres africanos codificados)</option>
+ [% END %]
+
+ [% IF ( f507 ) %]
+ <option value="07" selected="selected">07- ISO 10586 (conjunto Georgiano)</option>
+ [% ELSE %]
+ <option value="07">07- ISO 10586 (conjunto Georgiano)</option>
+ [% END %]
+
+ [% IF ( f508 ) %]
+ <option value="08" selected="selected">08- ISO 8957 (conjunto Hebraico) Tabela 1</option>
+ [% ELSE %]
+ <option value="08">08- ISO 8957 (conjunto Hebraico) Tabela 1</option>
+ [% END %]
+
+ [% IF ( f509 ) %]
+ <option value="09" selected="selected">09- ISO 8957 (conjunto hebraico) Tabela 2</option>
+ [% ELSE %]
+ <option value="09">09- ISO 8957 (conjunto hebraico) Tabela 2</option>
+ [% END %]
+
+ [% IF ( f511 ) %]
+ <option value="11" selected="selected">11- ISO 5426-2 (caracteres latinos usados em línguas europeias minoritárias e tipografia obsoleta) </option>
+ [% ELSE %]
+ <option value="11">11- ISO 5426-2 (caracteres latinos usados em línguas europeias minoritárias e tipografia obsoleta) </option>
+ [% END %]
+
+ [% IF ( f550 ) %]
+ <option value="50" selected="selected">50- ISO 10646 Nível 3 (Unicode, UTF-8) </option>
+ [% ELSE %]
+ <option value="50">50- ISO 10646 Nível 3 (Unicode, UTF-8)</option>
+ [% END %]
+ </select>
+ </td>
+
+ </tr>
+ <tr>
+ <td><label for="f6">Conjunto de caracteres (obrigatório) 2</label></td>
+ <td>
+ <select name="f6" id="f6">
+
+ [% IF ( f6dblspace ) %]
+ <option value="  " selected="selected">valor não requerido</option>
+ [% ELSE %]
+ <option value="  ">valor não requerido</option>
+ [% END %]
+
+ [% IF ( f601 ) %]
+ <option value="01" selected="selected">01- ISO 646, versão IRV (conjunto latino básico)</option>
+ [% ELSE %]
+ <option value="01">01- ISO 646, versão IRV (conjunto latino básico)</option>
+ [% END %]
+ [% IF ( f602 ) %]
+ <option value="02" selected="selected">02- Registo ISO # 37 (conjunto básico Cirílico)</option>
+ [% ELSE %]
+ <option value="02">02- Registo ISO # 37 (conjunto básico Cirílico)</option>
+ [% END %]
+ [% IF ( f603 ) %]
+ <option value="03"
+                                    selected="selected">03- ISO 5426 (conjunto Latino expandido)</option>
+ [% ELSE %]
+ <option value="03">03- ISO 5426 (conjunto Latino expandido)</option>
+ [% END %]
+ [% IF ( f604 ) %]
+ <option value="04" selected="selected">04- ISO 5427 (conjunto Cirílico expandido)</option>
+ [% ELSE %]
+ <option value="04">04- ISO 5427 (conjunto Cirílico expandido)</option>
+ [% END %]
+ [% IF ( f605 ) %]
+ <option value="05" selected="selected">05- ISO 5428 (conjunto Grego)</option>
+ [% ELSE %]
+ <option value="05">05- ISO 5428 (conjunto Grego)</option>
+ [% END %]
+ [% IF ( f606 ) %]
+ <option value="06" selected="selected">06- ISO 6438 (conjunto de caracteres africanos codificados)</option>
+ [% ELSE %]
+ <option value="06">06- ISO 6438 (conjunto de caracteres africanos codificados)</option>
+ [% END %]
+
+ [% IF ( f607 ) %]
+ <option value="07" selected="selected">07- ISO 10586 (conjunto Georgiano)</option>
+ [% ELSE %]
+ <option value="07">07- ISO 10586 (conjunto Georgiano)</option>
+ [% END %]
+
+ [% IF ( f608 ) %]
+ <option value="08" selected="selected">08- ISO 8957 (conjunto Hebraico) Tabela 1</option>
+ [% ELSE %]
+ <option value="08">08- ISO 8957 (conjunto Hebraico) Tabela 1</option>
+ [% END %]
+
+ [% IF ( f609 ) %]
+ <option value="09" selected="selected">09- ISO 8957 (conjunto hebraico) Tabela 2</option>
+ [% ELSE %]
+ <option value="09">09- ISO 8957 (conjunto hebraico) Tabela 2</option>
+ [% END %]
+
+ [% IF ( f611 ) %]
+ <option value="11" selected="selected">11- ISO 5426-2 (caracteres latinos usados em línguas europeias minoritárias e tipografia obsoleta)</option>
+ [% ELSE %]
+ <option value="11">11- ISO 5426-2 (caracteres latinos usados em línguas europeias minoritárias e tipografia obsoleta)</option>
+ [% END %]
+
+ [% IF ( f650 ) %]
+ <option value="50" selected="selected">50- ISO 10646 Nível 3 (Unicode, UTF-8)</option>
+ [% ELSE %]
+ <option value="50">ISO 10646 Nível 3 (Unicode, UTF-8)</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+
+ <tr>
+ <td><label for="f7">Conjunto adicional de caracteres</label></td>
+ <td>
+ <input type="text" name="f7" id="f7" maxlength="4" size="5" value="[% f7 | html %]" />
+ </td>
+ </tr>
+
+ <tr>
+ <td><label for="f8">Alfabeto da catalogação</label></td>
+ <td>
+ <select name="f8" id="f8">
+ [% IF ( f8dblspace ) %]
+ <option value="  " selected="selected">Valor não necessário</option>
+ [% ELSE %]
+ <option value="  ">Valor não necessário</option>
+ [% END %]
+
+ [% IF ( f8ba ) %]
+ <option value="ba" selected="selected">ba- Latino</option>
+ [% ELSE %]
+ <option value="ba">ba- Latino</option>
+ [% END %]
+ [% IF ( f8ca ) %]
+ <option value="ca" selected="selected">ca- Cirílico</option>
+ [% ELSE %]
+ <option value="ca">ca- Cirílico</option>
+ [% END %]
+
+ [% IF ( f8da ) %]
+ <option value="da" selected="selected">da- Japonês - alfabeto não especificado</option>
+ [% ELSE %]
+ <option value="da">da- Japonês - alfabeto não especificado</option>
+ [% END %]
+
+ [% IF ( f8db ) %]
+ <option value="db" selected="selected">db- Japonês - Kanji</option>
+ [% ELSE %]
+ <option value="db">db- Japonês - Kanji</option>
+ [% END %]
+
+ [% IF ( f8dc ) %]
+ <option value="dc" selected="selected">dc- Japonês - Kana</option>
+ [% ELSE %]
+ <option value="dc">dc- Japonês - Kana</option>
+ [% END %]
+ [% IF ( f8ea ) %]
+ <option value="ea" selected="selected">ea- Chinês</option>
+ [% ELSE %]
+ <option value="ea">ea- Chinês</option>
+ [% END %]
+ [% IF ( f8fa ) %]
+ <option value="fa" selected="selected">fa- Árabe</option>
+ [% ELSE %]
+ <option value="fa">fa- Árabe</option>
+ [% END %]
+ [% IF ( f8ga ) %]
+ <option value="ga" selected="selected">ga- Grego</option>
+ [% ELSE %]
+ <option value="ga">ga- Grego</option>
+ [% END %]
+ [% IF ( f8ha ) %]
+ <option value="ha" selected="selected">ha- Hebraico</option>
+ [% ELSE %]
+ <option value="ha">ha- Hebraico</option>
+ [% END %]
+ [% IF ( f8ia ) %]
+ <option value="ia" selected="selected">ia- Tailandês</option>
+ [% ELSE %]
+ <option value="ia">ia- Tailandês</option>
+ [% END %]
+ [% IF ( f8ja ) %]
+ <option value="ja" selected="selected">ja- Devanagari</option>
+ [% ELSE %]
+ <option value="ja">ja- Devanagari</option>
+ [% END %]
+ [% IF ( f8ka ) %]
+ <option value="ka" selected="selected">ka- Coreano</option>
+ [% ELSE %]
+ <option value="ka">ka- Coreano</option>
+ [% END %]
+ [% IF ( f8la ) %]
+ <option value="la" selected="selected">la- Tamil</option>
+ [% ELSE %]
+ <option value="la">la- Tamil</option>
+ [% END %]
+ [% IF ( f8zz ) %]
+ <option value="zz" selected="selected">zz- Outro</option>
+ [% ELSE %]
+ <option value="zz">zz- Outro</option>
+ [% END %]
+
+ [% IF ( f8ma ) %]
+ <option value="ma" selected="selected">ma- Georgiano</option>
+ [% ELSE %]
+ <option value="ma">ma- Georgiano</option>
+ [% END %]
+
+ [% IF ( f8mb ) %]
+ <option value="mb" selected="selected">mb- Armeniano</option>
+ [% ELSE %]
+ <option value="mb">mb- Armeniano</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+
+ <tr>
+ <td><label for="f9">Direção da escrita da catalogação</label></td>
+ <td>
+ <select name="f9" id="f9">
+ [% IF ( f90 ) %]
+ <option value="0" selected="selected">0 - da esquerda para a direita</option>
+ [% ELSE %]
+ <option value="0">0 - da esquerda para a direita</option>
+ [% END %]
+ [% IF ( f91 ) %]
+ <option value="1" selected="selected">1 - da direita para a esquerda</option>
+ [% ELSE %]
+ <option value="1">1 - da direita para a esquerda</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ </table>
+ <p><input type="button" value="OK" class="btn btn-primary" onclick="report();" /> <a href="#" class="cancel close">Anular</a> </p>
+ </form>
+ </div> <!-- /.page-section -->
+
+[% MACRO jsinclude BLOCK %]
+ <script>
+        function report() {
+            var doc   = opener.document;
+            var field = doc.getElementById("[% index | html %]");
+
+            document.f_pop.f1.value=document.f_pop.f1.value+'        ';
+            document.f_pop.f3.value=document.f_pop.f3.value+'   ';
+            document.f_pop.f7.value=document.f_pop.f7.value+'    ';
+
+            document.f_pop.f1.value=document.f_pop.f1.value.substring(0,8);
+            document.f_pop.f3.value=document.f_pop.f3.value.substring(0,3);
+            document.f_pop.f7.value=document.f_pop.f7.value.substring(0,4);
+
+            field.value= document.f_pop.f1.value +
+            document.f_pop.f2.value +document.f_pop.f3.value
+            +document.f_pop.f4.value+document.f_pop.f5.value+document.f_pop.f6.value+document.f_pop.f7.value+document.f_pop.f8.value+document.f_pop.f9.value;
+
+            self.close();
+            return false;
+        }
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' popup_window=1 %]

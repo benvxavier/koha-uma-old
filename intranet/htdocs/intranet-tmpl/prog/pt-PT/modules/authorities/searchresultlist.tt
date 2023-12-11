@@ -1,0 +1,130 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Koha %]
+[% SET footerjs = 1 %]
+[% PROCESS 'authorities-search-results.inc' %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Resultados da pesquisa de autoridades &rsaquo; Autoridades &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% Asset.css("css/addbiblio.css") | $raw %]
+<style>
+.usefor {
+    padding: 0;
+    margin: 0;
+}
+.usefor li {
+    list-style-type: none;
+}
+</style>
+</head>
+
+<body id="auth_searchresultlist" class="auth">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'authorities-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/authorities/authorities-home.pl">Autoridades</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Resultados da pesquisa de Autoridade</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-md-8 col-md-offset-2">
+
+ [% INCLUDE 'authorities-toolbar.inc' %]
+<h1>Resultados da pesquisa de Autoridade</h1>
+
+<div id="merge_in_progress" class="page-section bg-info" style="display:none;"></div>
+<div class="page-section">
+ [% IF ( query_error ) %]
+ <div class="dialog alert"><p><strong>Erro:</strong> [% query_error | html %]</p></div>
+ [% END %]
+
+ [% IF ( total ) %]
+ <div class="pages">[% pagination_bar | $raw %]</div>
+
+ <p id="authorities_searchresultlist_current_page_info">
+ Resultados [% from | html %] a [% to | html %] de [% total | html %] </p>
+
+ <div id="authorities_searchresultlist_results">
+ <table>
+ <tr>
+ <th>Sumário</th>
+ <th>Tipo de cabeçalho</th>
+ [% UNLESS ( isEDITORS ) %]
+ <th>Utilizado em</th>
+ [% END %]
+ [% IF Koha.Preference('ShowHeadingUse') %]
+ <th class="heading_use">Uso do cabeçalho</th>
+ [% END %]
+ [% IF ( CAN_user_editauthorities ) %]
+ <th>&nbsp;</th>
+ [% END %]
+ </tr>
+ [% FOREACH resul IN result %]
+ <tr data-authid="[% resul.authid | html %]">
+ <td>
+ [% IF resul.html %]
+ [% resul.html | $raw %]
+ [% ELSE %]
+ [% PROCESS authresult summary=resul.summary authid=resul.authid %]
+ [% END %]
+ </td>
+ <td>[% resul.authtype | html %]</td>
+ [% UNLESS ( resul.isEDITORS ) %]
+ <td>
+ [% IF resul.used > 0 %]
+ <a href="/cgi-bin/koha/catalogue/search.pl?type=intranet&amp;op=do_search&amp;idx=an,phr&amp;q=[% resul.authid | uri %]" class="button">[% resul.used | html %] registo(s)</a>
+ [% ELSE %] 0 registos [% END %] </td>
+ [% END %]
+ [% IF Koha.Preference('ShowHeadingUse') %]
+ <td class="heading_use"><ul class="usefor">
+ <li>[% IF resul.main %]<i class="fa fa-check"></i>[% ELSE %]<i class="fa fa-times"></i>[% END %] Cabeçalho principal</li>
+ <li>[% IF resul.subject %]<i class="fa fa-check"></i>[% ELSE %]<i class="fa fa-times"></i>[% END %] Assunto</li>
+ <li>[% IF resul.series %]<i class="fa fa-check"></i>[% ELSE %]<i class="fa fa-times"></i>[% END %] Título de coleção</li>
+ </ul></td>
+ [% END %]
+ [% IF ( CAN_user_editauthorities ) %]
+ <td>
+ <div class="btn-group dropup">
+ <a class="btn btn-default btn-xs dropdown-toggle" id="authactions[% resul.authid | html %]" role="button" data-toggle="dropdown" href="#">
+ Ações <b class="caret"></b></a>
+ <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="authactions[% resul.authid | html %]">
+ <li><a href="/cgi-bin/koha/authorities/authorities.pl?authid=[% resul.authid | uri %]"><i class="fa fa-pencil"></i> Alterar</a></li>
+ <li><a class="merge_auth" href="#merge"><i class="fa fa-compress"></i> Unificar</a></li>
+ [% UNLESS ( resul.used ) %]
+ <li><a onclick='return confirm_deletion("[% resul.authid | html %]")'><i class="fa fa-trash"></i> Apagar</a></li>
+ [% END %]
+ <li class="authority_preview">
+ <a data-authid="[% resul.authid | html %]" href="/cgi-bin/koha/authorities/detail.pl?authid=[% resul.authid | uri %]"><i class="fa fa-eye"></i> Pré-visualização MARC</a>
+ </li>
+ </ul>
+ </div>
+ </td>
+ [% END %]
+ </tr>
+ [% END %]
+ </table>
+ </div>
+
+ [% INCLUDE 'authority-detail-modal.inc' %]
+
+ <div class="pages">[% pagination_bar | $raw %]</div>
+
+ [% ELSE %] Resultado(s) encontrado(s) [% END %] </div> <!-- /.page-section -->
+</div>
+</div>
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'authorities_js.inc' %]
+ [% Asset.js("js/authorities-detail-modal.js") | $raw %]
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

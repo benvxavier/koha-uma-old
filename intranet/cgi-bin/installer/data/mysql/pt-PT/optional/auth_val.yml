@@ -1,0 +1,241 @@
+---
+description:
+- Alguns valores autorizadores básicos por omissão para as bibliotecas, estados de
+  perdido, etc.
+- You can change these at any time after installation.
+tables:
+- authorised_values:
+    multiline: []
+    rows:
+    - authorised_value: BSELL
+      category: SUGGEST
+      lib: Best-seller
+    - authorised_value: SCD
+      category: SUGGEST
+      lib: Shelf copy damaged
+    - authorised_value: LCL
+      category: SUGGEST
+      lib: Library copy lost
+    - authorised_value: AVILL
+      category: SUGGEST
+      lib: Disponível via ILL
+    - authorised_value: Budget
+      category: SUGGEST
+      lib: Insufficient budget
+    - authorised_value: Expensive
+      category: SUGGEST
+      lib: Documento muito caro
+    - authorised_value: Poldoc
+      category: SUGGEST
+      lib: Documento que não corresponde à nossa política de aquisição
+    translatable:
+    - lib
+- authorised_values:
+    multiline: []
+    rows:
+    - authorised_value: BOOK
+      category: SUGGEST_FORMAT
+      lib: Livro
+      lib_opac: Livro
+    - authorised_value: LP
+      category: SUGGEST_FORMAT
+      lib: Impressão grande
+      lib_opac: Impressão grande
+    - authorised_value: EBOOK
+      category: SUGGEST_FORMAT
+      lib: E-book
+      lib_opac: E-book
+    - authorised_value: AUDIOBOOK
+      category: SUGGEST_FORMAT
+      lib: Áudio-livro
+      lib_opac: Áudio-livro
+    - authorised_value: DVD
+      category: SUGGEST_FORMAT
+      lib: DVD
+      lib_opac: DVD
+    translatable:
+    - lib
+    - lib_opac
+- authorised_values:
+    multiline: []
+    rows:
+    - authorised_value: '2'
+      category: LOST
+      lib: Long overdue (lost)
+    - authorised_value: '1'
+      category: LOST
+      lib: Perdido
+    - authorised_value: '3'
+      category: LOST
+      lib: Lost and paid for
+    - authorised_value: '4'
+      category: LOST
+      lib: Em falta
+    - authorised_value: '5'
+      category: LOST
+      lib: Missing from bundle
+    - authorised_value: '1'
+      category: DAMAGED
+      lib: Danificado
+    - authorised_value: FIC
+      category: LOC
+      lib: Ficção
+    - authorised_value: CHILD
+      category: LOC
+      lib: Área infantil
+    - authorised_value: DISPLAY
+      category: LOC
+      lib: On display
+    - authorised_value: NEW
+      category: LOC
+      lib: New materials shelf
+    - authorised_value: STAFF
+      category: LOC
+      lib: Staff office
+    - authorised_value: GEN
+      category: LOC
+      lib: General stacks
+    - authorised_value: AV
+      category: LOC
+      lib: Audiovisual
+    - authorised_value: REF
+      category: LOC
+      lib: Reference
+    - authorised_value: CART
+      category: LOC
+      lib: Carrinho de livros
+    - authorised_value: PROC
+      category: LOC
+      lib: Processing center
+    - authorised_value: FIC
+      category: CCODE
+      lib: Ficção
+    - authorised_value: REF
+      category: CCODE
+      lib: Reference
+    - authorised_value: NFIC
+      category: CCODE
+      lib: Não ficção
+    - authorised_value: '1'
+      category: WITHDRAWN
+      lib: Retirado
+    - authorised_value: '-1'
+      category: NOT_LOAN
+      lib: Encomendado
+    - authorised_value: '1'
+      category: NOT_LOAN
+      lib: Not for loan
+    - authorised_value: '2'
+      category: NOT_LOAN
+      lib: Staff collection
+    - authorised_value: '3'
+      category: NOT_LOAN
+      lib: Adicionado ao conjunto
+    - authorised_value: '1'
+      category: RESTRICTED
+      lib: Restricted access
+    - authorised_value: ADDR
+      category: BOR_NOTES
+      lib: Notas da morada
+    translatable:
+    - lib
+- authorised_values:
+    multiline: []
+    rows:
+    - authorised_value: damaged
+      category: OPAC_SUG
+      lib: A cópia na prateleira está danificada
+      lib_opac: A cópia na prateleira está danificada
+    - authorised_value: bestseller
+      category: OPAC_SUG
+      lib: Upcoming title by popular author
+      lib_opac: Upcoming title by popular author
+    translatable:
+    - lib
+    - lib_opac
+- authorised_values:
+    multiline: []
+    rows:
+    - authorised_value: CIRC
+      category: REPORT_GROUP
+      lib: Empréstimo
+    - authorised_value: CAT
+      category: REPORT_GROUP
+      lib: Catálogo
+    - authorised_value: PAT
+      category: REPORT_GROUP
+      lib: Leitores
+    - authorised_value: ACQ
+      category: REPORT_GROUP
+      lib: Aquisições
+    - authorised_value: ACC
+      category: REPORT_GROUP
+      lib: Contas
+    - authorised_value: SER
+      category: REPORT_GROUP
+      lib: Periódicos
+    - authorised_value: '000'
+      category: SIP_MEDIA_TYPE
+      lib: Outros
+    - authorised_value: '001'
+      category: SIP_MEDIA_TYPE
+      lib: Livro
+    - authorised_value: '002'
+      category: SIP_MEDIA_TYPE
+      lib: Magazine
+    - authorised_value: '003'
+      category: SIP_MEDIA_TYPE
+      lib: Jornal encadernado
+    - authorised_value: '004'
+      category: SIP_MEDIA_TYPE
+      lib: Fita de áudio
+    - authorised_value: '005'
+      category: SIP_MEDIA_TYPE
+      lib: Video tape
+    - authorised_value: '006'
+      category: SIP_MEDIA_TYPE
+      lib: CD/CDROM
+    - authorised_value: '007'
+      category: SIP_MEDIA_TYPE
+      lib: Disquete
+    - authorised_value: '008'
+      category: SIP_MEDIA_TYPE
+      lib: Livro com disquete
+    - authorised_value: '009'
+      category: SIP_MEDIA_TYPE
+      lib: Livro com CD
+    - authorised_value: '010'
+      category: SIP_MEDIA_TYPE
+      lib: Livro com fita de áudio
+    - authorised_value: 0
+      category: ORDER_CANCELLATION_REASON
+      lib: No reason provided
+    - authorised_value: 1
+      category: ORDER_CANCELLATION_REASON
+      lib: Out of stock
+    - authorised_value: 2
+      category: ORDER_CANCELLATION_REASON
+      lib: Restocking
+    - authorised_value: RET_BY_PATRON
+      category: RETURN_CLAIM_RESOLUTION
+      lib: Returned by patron
+    - authorised_value: FOUND_IN_LIB
+      category: RETURN_CLAIM_RESOLUTION
+      lib: Found in library
+    - authorised_value: NOT_FOUND
+      category: HOLD_CANCELLATION
+      lib: Não foi possível encontrar o exemplar na prateleira
+    - authorised_value: DAMAGED
+      category: HOLD_CANCELLATION
+      lib: Item was found to be too damaged to fill hold
+    - authorised_value: NOT_FOUND
+      category: AR_CANCELLATION
+      lib: Não foi possível encontrar o exemplar na prateleira
+    - authorised_value: DAMAGED
+      category: AR_CANCELLATION
+      lib: Item was found to be too damaged to fill article request
+    - authorised_value: OPAC
+      category: AR_CANCELLATION
+      lib: Cancelado na página pessoal no OPAC
+    translatable:
+    - lib

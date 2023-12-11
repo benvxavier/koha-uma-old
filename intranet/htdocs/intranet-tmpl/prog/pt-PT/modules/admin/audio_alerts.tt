@@ -1,0 +1,158 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Koha %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Alertas de áudio &rsaquo; Administração &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="admin_audio_alerts" class="admin">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'prefs-admin-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/admin-home.pl">Administração</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Alertas de áudio</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ <div id="toolbar" class="btn-toolbar">
+ <a class="btn btn-default" id="newalert" href="/cgi-bin/koha/admin/audio_alerts.pl"><i class="fa fa-plus"></i> Novo alerta</a>
+ </div>
+
+ <form id="new-alert-form" action="audio_alerts.pl" method="post" class="validated">
+ <fieldset class="rows">
+ <legend><h1><span class="create-alert">Adicionar novo alerta</span><span class="edit-alert">Modificar alerta</span></h1></legend>
+
+ <input id="id" name="id" type="hidden" value="" />
+ <ol>
+ <li>
+ <label for="selector" class="required">Seletor: </label>
+ <input class="required input-large" id="selector" name="selector" placeholder="seletor" type="text" />
+ <span class="required">Obrigatório</span>
+ </li>
+ <li>
+ <label for="sound" class="required">Som: </label>
+ <input class="required input-large" id="sound" name="sound" placeholder="som" type="text" />
+ <button id="play-sound" class="btn btn-default btn-xs disabled"><i class="fa fa-play"></i> Reproduzir som</button>
+ <span class="required">Obrigatório</span>
+ </li>
+ <li>
+ <label for="koha-sounds">Selecionar som embutido: </label>
+ <select id="koha-sounds">
+ <option value=""> -- Escolher um -- </option>
+ <option value="beep.ogg">beep.ogg</option>
+ <option value="call.ogg">call.ogg</option>
+ <option value="critical.ogg">critical.ogg</option>
+ <option value="device_connect.ogg">device_connect.ogg</option>
+ <option value="device_disconnect.ogg">device_disconnect.ogg</option>
+ <option value="ending.ogg">ending.ogg</option>
+ <option value="fail.ogg">fail.ogg</option>
+ <option value="IM_notification.ogg">IM_notification.ogg</option>
+ <option value="incoming_call.ogg">incoming_call.ogg</option>
+ <option value="loading.ogg">loading.ogg</option>
+ <option value="loading_2.ogg">loading_2.ogg</option>
+ <option value="maximize.ogg">maximize.ogg</option>
+ <option value="minimize.ogg">minimize.ogg</option>
+ <option value="new_mail_notification.ogg">new_mail_notification.ogg</option>
+ <option value="opening.ogg">opening.ogg</option>
+ <option value="panic.ogg">panic.ogg</option>
+ <option value="popup.ogg">popup.ogg</option>
+ <option value="warning.ogg">warning.ogg</option>
+ </select>
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input class="btn btn-primary" id="save-alert" type="submit" value="Submeter" />
+ <a href="#" id="cancel-edit" class="cancel cancel-edit">Anular</a>
+ </fieldset>
+ </form>
+
+ <form id="delete-alert-form" action="audio_alerts.pl" method="post">
+ <h1>Alertas de áudio</h1>
+ [%IF !( Koha.Preference('AudioAlerts') ) %]
+ <div class="dialog alert">
+ <h3>Os alertas de áudio estão desativados</h3>
+ [% IF ( CAN_user_parameters_manage_sysprefs ) %]
+ <p>Por favor, ative a preferência de sistema <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=AudioAlerts">AudioAlerts</a> para ativar os sons.</p>
+ [% ELSE %]
+ <p>A preferência de sistema <strong>AudioAlerts</strong> deve estar ativa para permitir usar sons.</p>
+ [% END %]
+ </div>
+ [% END %]
+ <div class="page-section">
+ <table id="audio-alerts-table">
+ <thead id="audio-alerts-table-head">
+ <tr>
+ <th>&nbsp;</th>
+ <th>Precedência</th>
+ <th>Alterar ordem</th>
+ <th>Seletor</th>
+ <th>Som</th>
+ <th>&nbsp;</th>
+ </tr>
+ </thead>
+
+ <tbody id="audio-alerts-table-body">
+ [% FOREACH a IN audio_alerts %]
+ <tr>
+ <td><input type="checkbox" name="delete" value="[% a.id | html %]" /></td>
+ <td>[% a.precedence | html %]</td>
+ <td style="white-space:nowrap;">
+ <a href="audio_alerts.pl?action=move&where=up&id=[% a.id | html %]" title="Subir o alerta">
+ <i class="fa fa-arrow-up fa-lg order-control"></i>
+ </a>
+
+ <a href="audio_alerts.pl?action=move&where=top&id=[% a.id | html %]" title="Mover alerta para o topo">
+ <i class="fa fa-arrow-up fa-lg overline order-control"></i>
+ </a>
+
+ <a href="audio_alerts.pl?action=move&where=bottom&id=[% a.id | html %]" title="Mover alerta para o fundo">
+ <i class="fa fa-arrow-down fa-lg underline order-control"></i>
+ </a>
+
+ <a href="audio_alerts.pl?action=move&where=down&id=[% a.id | html %]" title="Descer alerta">
+ <i class="fa fa-arrow-down fa-lg order-control"></i>
+ </a>
+ </td>
+ <td>[% a.selector | html %]</td>
+ <td>[% a.sound | html %]</td>
+ <td>
+ <a class="btn btn-default btn-xs edit" data-soundid="[% a.id | html %]" data-precedence="[% a.precedence | html %]" data-selector="[% a.selector | html %]" data-sound="[% a.sound | html %]"><i class="fa fa-pencil"></i> Alterar</a></td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div> <!-- /.page-section -->
+
+ <fieldset class="action">
+ <button id="delete-alerts" type="submit" class="btn btn-default disabled"><i class="fa fa-trash"></i> Eliminar alertas selecionados</button>
+ </fieldset>
+ </form>
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'admin-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/admin-menu.js") | $raw %]
+ [% Asset.js("js/audio_alerts.js") | $raw %]
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

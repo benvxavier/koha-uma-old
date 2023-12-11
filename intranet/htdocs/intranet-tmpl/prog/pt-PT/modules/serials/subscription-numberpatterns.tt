@@ -1,0 +1,405 @@
+[% USE raw %]
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Modelos de numeração &rsaquo; Periódicos &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="ser_subscription_numberpatterns" class="ser">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'serials-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/serials/serials-home.pl">Periódicos</a>
+ [% END %]
+ [% IF ( new || modify ) %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/serials/subscription-numberpatterns.pl">Modelo de numeração</a>
+ [% END %]
+ [% END %]
+ [% IF ( new ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Novo modelo de numeração</span>
+ [% END %]
+ [% ELSIF ( modify ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Modificar modelo de numeração '[% label | html %]'</span>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Modelo de numeração</span>
+ [% END %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ [% IF (new or modify) %]
+ [% IF (new) %]
+ <h1>Novo modelo de numeração</h1>
+ [% IF (error_existing_numberpattern) %]
+ <div class="dialog alert">
+ <p>Um padrão com este nome já existe.</p>
+ </div>
+ [% END %]
+ [% ELSE %]
+ <h1>Modificar padrão: [% label | html %]</h1>
+ [% IF (error_existing_numberpattern) %]
+ <div class="dialog alert">
+ <p>Outro padrão com este nome já existe.</p>
+ </div>
+ [% END %]
+ [% END %]
+
+ <form action="/cgi-bin/koha/serials/subscription-numberpatterns.pl" method="post">
+ [% IF (new) %]
+ <input type="hidden" name="op" value="savenew" />
+ [% ELSE %]
+ <input type="hidden" name="op" value="savemod" />
+ <input type="hidden" name="id" value="[% id | html %]" />
+ [% END %]
+ <fieldset class="rows">
+ <ol>
+ <li>
+ <label for="label">Nome:</label>
+ <input type="text" id="label" name="label" value="[% label | html %]" />
+ </li>
+ <li>
+ <label for="description">Descrição:</label>
+ <input type="text" id="description" name="description" value="[% description | html %]" size="50" />
+ </li>
+ <li>
+ <label for="numberingmethod">Fórmula de numeração:</label>
+ <input type="text" id="numberingmethod" name="numberingmethod" value="[% numberingmethod | html %]" />
+ </li>
+ <li>
+ <label for="displayorder">Mostrar ordem:</label>
+ <input type="text" id="displayorder" name="displayorder" value="[% displayorder | html %]" />
+ </li>
+ </ol>
+ <table>
+ <thead>
+ <tr>
+ <th>&nbsp;</th>
+ <th>X</th>
+ <th>Y</th>
+ <th>Z</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td>Etiqueta</td>
+ <td><input type="text" id="label1" name="label1" value="[% label1 | html %]" /></td>
+ <td><input type="text" id="label2" name="label2" value="[% label2 | html %]" /></td>
+ <td><input type="text" id="label3" name="label3" value="[% label3 | html %]" /></td>
+ </tr>
+ <tr>
+ <td>Adicionar</td>
+ <td><input type="text" id="add1" name="add1" value="[% add1 | html %]" /></td>
+ <td><input type="text" id="add2" name="add2" value="[% add2 | html %]" /></td>
+ <td><input type="text" id="add3" name="add3" value="[% add3 | html %]" /></td>
+ </tr>
+ <tr>
+ <td>Todos</td>
+ <td><input type="text" id="every1" name="every1" value="[% every1 | html %]" /></td>
+ <td><input type="text" id="every2" name="every2" value="[% every2 | html %]" /></td>
+ <td><input type="text" id="every3" name="every3" value="[% every3 | html %]" /></td>
+ </tr>
+ <tr>
+ <td>Voltar a</td>
+ <td><input type="text" id="setto1" name="setto1" value="[% setto1 | html %]" /></td>
+ <td><input type="text" id="setto2" name="setto2" value="[% setto2 | html %]" /></td>
+ <td><input type="text" id="setto3" name="setto3" value="[% setto3 | html %]" /></td>
+ </tr>
+ <tr>
+ <td>Quando superior a</td>
+ <td><input type="text" id="whenmorethan1" name="whenmorethan1" value="[% whenmorethan1 | html %]" /></td>
+ <td><input type="text" id="whenmorethan2" name="whenmorethan2" value="[% whenmorethan2 | html %]" /></td>
+ <td><input type="text" id="whenmorethan3" name="whenmorethan3" value="[% whenmorethan3 | html %]" /></td>
+ </tr>
+ <tr>
+ [% BLOCK numbering_select %]
+ <select id="[% name | html %]" name="[% name | html %]">
+ <option value=""></option>
+ [% IF (value == "dayname") %]
+ <option selected="selected" value="dayname">Nome do dia</option>
+ [% ELSE %]
+ <option value="dayname">Nome do dia</option>
+ [% END %]
+ [% IF (value == "dayabrv") %]
+ <option selected="selected" value="dayabrv">Nome do dia (abreviado)</option>
+ [% ELSE %]
+ <option value="dayabrv">Nome do dia (abreviado)</option>
+ [% END %]
+ [% IF (value == "monthname") %]
+ <option selected="selected" value="monthname">Nome do mês</option>
+ [% ELSE %]
+ <option value="monthname">Nome do mês</option>
+ [% END %]
+ [% IF (value == "monthabrv") %]
+ <option selected="selected" value="monthabrv">Nome do mês (abreviado)</option>
+ [% ELSE %]
+ <option value="monthabrv">Nome do mês (abreviado)</option>
+ [% END %]
+ [% IF (value == "season") %]
+ <option selected="selected" value="season">Nome da estação</option>
+ [% ELSE %]
+ <option value="season">Nome da estação</option>
+ [% END %]
+ [% IF (value == "seasonabrv") %]
+ <option selected="selected" value="seasonabrv">Nome da estação (abreviado)</option>
+ [% ELSE %]
+ <option value="seasonabrv">Nome da estação (abreviado)</option>
+ [% END %]
+ </select>
+ [% END %]
+ <td>Formatação</td>
+ <td>[% PROCESS numbering_select name="numbering1" value=numbering1 %]</td>
+ <td>[% PROCESS numbering_select name="numbering2" value=numbering2 %]</td>
+ <td>[% PROCESS numbering_select name="numbering3" value=numbering3 %]</td>
+ </tr>
+ </tbody>
+ </table>
+ </fieldset>
+ <fieldset class="action">
+ <button type="submit" class="btn btn-primary">Guardar</button>
+ <button type="reset" class="btn btn-default">Repor</button>
+ <a class="cancel" href="/cgi-bin/koha/serials/subscription-numberpatterns.pl">Anular</a>
+ </fieldset>
+ </form>
+
+ <form>
+ <fieldset class="rows">
+ <legend>Testar padrão de numeração</legend>
+ <ol>
+ <li>
+ <label for="frequency">Periodicidade: </label>
+ <select id="frequency">
+ [% FOREACH frequency IN frequencies_loop %]
+ <option value="[% frequency.id | html %]">[% frequency.description | html %]</option>
+ [% END %]
+ </select>
+ </li>
+ <li>
+ <label for="firstacquidate">Data do primeiro fascículo: </label>
+ <input type="text" id="firstacquidate" class="flatpickr" size="10" />
+ </li>
+ <li>
+ <label for="sublength">Duração da assinatura:</label>
+ <select id="subtype">
+ <option value="issues">números</option>
+ <option value="weeks">semanas</option>
+ <option value="months">meses</option>
+ </select>
+ <input type="text" id="sublength" size="3" />
+ </li>
+ <li>
+ <label for="locale">Idioma: </label>
+ <select id="locale" name="locale">
+ <option value=""></option>
+ [% FOREACH locale IN locales %]
+ <option value="[% locale.language | html %]">[% locale.description | html %]</option>
+ [% END %]
+ </select>
+ <span class="hint">Se vazio, Inglês é usado</span>
+ </li>
+ </ol>
+ <table>
+ <thead>
+ <tr>
+ <th>&nbsp;</th>
+ <th>X</th>
+ <th>Y</th>
+ <th>Z</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td>Começa com</td>
+ <td><input type="text" id="lastvalue1" name="lastvalue1" value="[% lastvalue1 | html %]" /></td>
+ <td><input type="text" id="lastvalue2" name="lastvalue2" value="[% lastvalue2 | html %]" /></td>
+ <td><input type="text" id="lastvalue3" name="lastvalue3" value="[% lastvalue3 | html %]" /></td>
+ </tr>
+ <tr>
+ <td>Contador</td>
+ <td><input type="text" id="innerloop1" name="innerloop1" value="[% innerloop1 | html %]" /></td>
+ <td><input type="text" id="innerloop2" name="innerloop2" value="[% innerloop2 | html %]" /></td>
+ <td><input type="text" id="innerloop3" name="innerloop3" value="[% innerloop3 | html %]" /></td>
+ </tr>
+ </tbody>
+ </table>
+ <div id="predictionpattern"></div>
+ </fieldset>
+ <fieldset class="action">
+ <button type="button" id="test_pattern" class="btn btn-default">Testar padrão</button>
+ </fieldset>
+ </form>
+
+ [% ELSE %]
+ <h1>Modelo de numeração</h1>
+ [% IF still_used %]
+ <div class="dialog alert">
+ <p>
+ Este padrão é usado por [% subscriptions.size | html %] assinatura(s). Deseja na mesma eliminar-lo? </p>
+ <p><a href="#" id="show_blocking_subs">Mostrar assinaturas</a></p>
+ <ul id="blocking_subs" style="display:none">
+ [% FOREACH sub IN subscriptions %]
+ <li style="list-style-type:none">
+ <a href="/cgi-bin/koha/serials/subscription-detail.pl?subscriptionid=[% sub.subscriptionid | uri %]">[% sub.title | html %]</a>
+ </li>
+ [% END %]
+ </ul>
+
+ <form action="/cgi-bin/koha/serials/subscription-numberpatterns.pl" method="get">
+ <input type="hidden" name="op" value="del" />
+ <input type="hidden" name="confirm" value="1" />
+ <input type="hidden" name="id" value="[% id | html %]" />
+ <button type="submit" class="approve"><i class="fa fa-fw fa-check"></i> Sim, eliminar</button>
+ </form>
+ <form action="/cgi-bin/koha/serials/subscription-numberpatterns.pl" method="get">
+ <button type="submit" class="deny"><i class="fa fa-fw fa-remove"></i> Não, não eliminar</button>
+ </form>
+ </div>
+ [% END %]
+
+ <div id="toolbar" class="btn-toolbar">
+ <a class="btn btn-default" id="newnumberpattern" href="/cgi-bin/koha/serials/subscription-numberpatterns.pl?op=new"><i class="fa fa-plus"></i> Novo modelo de numeração</a>
+ </div>
+
+ [% IF (numberpatterns_loop.size) %]
+ <table id="numberpatternst">
+ <thead>
+ <tr>
+ <th>Nome</th>
+ <th>Descrição</th>
+ <th>Fórmula de numeração</th>
+ <th>Mostrar ordem</th>
+ <th class="noExport">Ações</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH numberpattern IN numberpatterns_loop %]
+ <tr>
+ <td>[% numberpattern.label | html %]</td>
+ <td>[% numberpattern.description | html %]</td>
+ <td>[% numberpattern.numberingmethod | html %]</td>
+ <td>[% numberpattern.displayorder | html %]</td>
+ <td class="actions">
+ <a class="btn btn-default btn-xs" href="/cgi-bin/koha/serials/subscription-numberpatterns.pl?op=modify&id=[% numberpattern.id | html %]"><i class="fa fa-pencil"></i> Alterar</a>
+ <a class="delete_pattern btn btn-default btn-xs" href="/cgi-bin/koha/serials/subscription-numberpatterns.pl?op=del&id=[% numberpattern.id | html %]"><i class="fa fa-trash"></i> Apagar</a>
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ [% ELSE %]
+ <p>Não existem padrões de numeração definidos.</p>
+ [% END %]
+ [% END %]
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'serials-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% IF (daily_options) %]
+ [% Asset.js("js/showpredictionpattern.js") | $raw %]
+ [% END %]
+ [% INCLUDE 'calendar.inc' %]
+ [% INCLUDE 'datatables.inc' %]
+ <script>
+        function confirmDelete() {
+            return confirm(_("Tem a certeza que pretende eliminar este padrão de numeração?"));
+        }
+
+        [% IF (new or modify) %]
+            function testPattern() {
+                var frequencyid = $("#frequency").val();
+                var firstacquidate = $("#firstacquidate").val();
+                var error = 0;
+                var error_msg = "";
+                if(frequencyid == undefined || frequencyid == "") {
+                    error_msg += _("- Frequência não está definida") + "\n";
+                    error ++;
+                }
+                if(firstacquidate == undefined || firstacquidate == "") {
+                    error_msg += _("- Primeira data de publicação não está definida") + "\n";
+                    error ++;
+                }
+
+                if(error){
+                    alert(_("Não é possível testar a predição de padrão pelas seguintes razões:") + "\n\n"
+                        + error_msg);
+                    return false;
+                }
+
+                var ajaxData = {
+                    'custompattern': true,
+                };
+                var ajaxParams = [
+                    'firstacquidate', 'subtype', 'sublength', 'frequency', 'numberingmethod',
+                    'lastvalue1', 'lastvalue2', 'lastvalue3', 'add1', 'add2', 'add3',
+                    'every1', 'every2', 'every3', 'innerloop1', 'innerloop2', 'innerloop3',
+                    'setto1', 'setto2', 'setto3', 'numbering1', 'numbering2', 'numbering3',
+                    'whenmorethan1', 'whenmorethan2', 'whenmorethan3', 'locale'
+                ];
+                for(i in ajaxParams) {
+                    var param = ajaxParams[i];
+                    var value = $("#"+param).val();
+                    if(value.length > 0)
+                        ajaxData[param] = value;
+                }
+
+                $.ajax({
+                    url: "/cgi-bin/koha/serials/showpredictionpattern.pl",
+                    data: ajaxData,
+                    async: false,
+                    dataType: "text",
+                    success: function(data) {
+                        $("#predictionpattern").html(data);
+                    }
+                });
+            }
+        [% END %]
+
+        function show_blocking_subs() {
+            $("#blocking_subs").show();
+        }
+        $(document).ready(function(){
+
+            $("#numberpatternst").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "aoColumnDefs": [
+                    { "aTargets": [ -1 ], "bSortable": false, "bSearchable": false },
+                ],
+                "sPaginationType": "full"
+            }));
+
+            $(".delete_pattern").on("click",function(){
+                return confirmDelete();
+            });
+            $("#show_blocking_subs").on("click",function(e){
+                e.preventDefault();
+                $("#blocking_subs").show();
+            });
+            $("#test_pattern").on("click",function(){
+                 testPattern();
+            });
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

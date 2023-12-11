@@ -1,0 +1,203 @@
+[% USE raw %]
+[% USE Koha %]
+[% USE KohaDates %]
+[% USE Asset %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% PROCESS 'i18n.inc' %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Eliminar exemplares em lote &rsaquo; Catalogação &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+<!--[if IE]>
+<style>#selections { display: none; }</style>
+<![endif]-->
+</head>
+<body id="tools_batchMod-del" class="tools">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/cataloguing/cataloging-home.pl">Catalogar</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Eliminar exemplares em lote</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+
+ <h1>Eliminar exemplares em lote</h1>
+
+ [% FOREACH message IN messages %]
+ [% IF message.type == 'success' %]
+ <div class="dialog message">
+ [% ELSIF message.type == 'warning' %]
+ <div class="dialog alert">
+ [% ELSIF message.type == 'error' %]
+ <div class="dialog alert" style="margin:auto;">
+ [% END %]
+ [% IF message.code == 'cannot_enqueue_job' %]
+ <span>Não é possível retirar esta tarefa da lista.</span>
+ [% END %]
+ [% IF message.error %]
+ <span>(O erro foi: [% message.error | html %], veja os registos do sistema do Koha para mais informação).</span>
+ [% END %]
+ </div>
+ [% END %]
+
+
+ [% UNLESS ( action ) %]
+
+ [% IF ( notfoundbarcodes.size ) %]
+ <div class="dialog alert">
+ [% IF ( itemresults ) %]<p>Atenção, os códigos de barras a seguir não foram encontrados:</p>[% ELSE %]<p>Atenção: os códigos de barras não foram encontrados</p>[% END %]
+ </div>
+ <table style="margin:auto;">
+ <thead>
+ <tr><th>Não foi encontrado o código de barras</th></tr>
+ </thead>
+ <tbody>
+ [% FOREACH notfoundbarcode IN notfoundbarcodes %]
+ <tr><td>[% notfoundbarcode |html %]</td></td>
+ [% END %]
+ </tbody>
+ </table>
+ [% END %] <!-- /notfoundbarcodes -->
+ [% IF ( notfounditemnumbers.size ) %]
+ <div class="dialog alert">
+ [% IF ( itemresults ) %]<p>Atenção, os seguintes números de exemplar não foram encontrados:</p>[% ELSE %]<p>Atenção: os números de exemplar não foram encontrados</p>[% END %]
+ </div>
+ <table style="margin:auto;">
+ <thead>
+ <tr><th>Números de exemplar não encontrados</th></tr>
+ </thead>
+ <tbody>
+ [% FOREACH notfounditemnumber IN notfounditemnumbers %]
+ <tr><td>[% notfounditemnumber |html %]</td></td>
+ [% END %]
+ </tbody>
+ </table>
+ [% END %] <!-- /notfounditemnumbers -->
+
+ [% IF cannot_be_deleted.size %]
+ <div class="dialog alert">
+ <p>Atenção, os seguintes exemplares não podem ser eliminados:</p>
+ </div>
+ <table style="margin:auto;">
+ <thead>
+ <tr><th>Não é possível eliminar</th></tr>
+ </thead>
+ <tbody>
+ [% FOREACH barcode IN cannot_be_deleted %]
+ <tr><td>[% barcode | html %]</td></td>
+ [% END %]
+ </tbody>
+ </table>
+ [% END %]
+
+ [% IF ( notfoundbarcodes.size || notfounditemnumbers.size || cannot_be_deleted.size ) && !too_many_items_display && item_loop %]
+ <h4>Os seguintes códigos de barras foram encontrados: </h4>
+ [% END %]
+
+
+<form name="f" action="batchMod.pl" method="post">
+ <input type="hidden" name="biblionumber" id="biblionumber" value="[% biblionumber | html %]" />
+ <input type="hidden" name="op" value="[% op | html %]" />
+ <input type="hidden" name="searchid" value="[% searchid | html %]" />
+ <input type="hidden" name="src" id="src" value="[% src | html %]" />
+ [% IF biblionumber %]
+ <input type="hidden" name="biblionumber" id="biblionumber" value="[% biblionumber | html %]" />
+ [% END %]
+
+[% IF items.size %]
+ [% PROCESS items_table_batchmod headers => item_header_loop, items => items, checkboxes_delete => 1, display_columns_selection => 1 %]
+[% END %]
+
+[% IF ( simple_items_display ) %]
+ <ul>
+ [% FOREACH simple_items_displa IN simple_items_display %]
+ <li>
+ <a href="[% simple_items_displa.itemnumber | url %]">[% simple_items_displa.barcode | html %]</a>
+ </li>
+ [% END %]
+ </ul>
+[% END %]
+
+
+[% IF ( show ) %]
+
+[% IF ( too_many_items_display ) %]
+ <p>Demasiados itens ([% too_many_items_display | html %]) para mostrar individualmente.</p>
+ [% FOREACH itemnumber IN itemnumbers_array %]
+ <input type="hidden" name="itemnumber" value="[% itemnumber | html %]" />
+ [% END %]
+[% END %]
+
+ [% IF ( itemresults ) %]
+ <div id="cataloguing_additem_newitem" class="item_edit_form">
+ <input type="hidden" name="op" value="[% op | html %]" />
+ <p>Isto irá eliminar [% IF ( too_many_items_display ) %]todos os [% ELSE %] itens seleccionados[% END %].</p>
+ <input type="hidden" name="del" value="1" />
+ <input type="checkbox" name="del_records" id="del_records" /> <label for="del_records">Eliminar registo se não existirem exemplares.</label>
+
+ <fieldset class="action">
+ [% IF too_many_items_display %]
+ <input class="btn btn-primary" name="mainformsubmit" type="submit" value="Eliminar TODOS os documentos" />
+ [% ELSE %]
+ <input class="btn btn-primary" name="mainformsubmit" type="submit" value="Eliminar exemplares seleccionados" />
+ [% END %]
+
+ <a href="/cgi-bin/koha/tools/batchMod.pl?del=1" class="cancel">Anular</a>
+ </fieldset>
+ </div>
+ [% ELSE %]
+ <p><a href="/cgi-bin/koha/tools/batchMod.pl?del=1">Voltar à eliminação em exemplares em lote</a></p>
+ [% END %]
+ [% END %]
+ </form>
+ [% END %]
+
+
+ [% IF op == 'enqueued' %]
+ <div class="dialog message">
+ <p>A tarefa foi colocada na lista de tarefas! Será iniciada assim que possível.</p>
+ <p><a href="/cgi-bin/koha/admin/background_jobs.pl?op=view&id=[% job_id | uri %]" title="Ver detalhes da tarefa agendada">Ver detalhes da tarefa agendada</a>
+ | <a href="/cgi-bin/koha/tools/batchMod.pl?del=1" title="Novo lote de eliminação de exemplares">Novo lote de eliminação de exemplares</a></p>
+ </div>
+
+ <fieldset class="action">
+ [% IF src == 'CATALOGUING' # from catalogue/detail.pl > Delete items in a batch%]
+ [% IF searchid %]
+ <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% biblionumber | uri %]&searchid=[% searchid | uri %]">Voltar ao registo</a>
+ [% ELSE %]
+ <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% biblionumber | uri %]">Voltar ao registo</a>
+ [% END %]
+ [% ELSIF src %]
+ <a href="[% src | url %]">Voltar à página anterior</a>
+ [% ELSE %]
+ <a href="/cgi-bin/koha/tools/batchMod.pl?del=1">Voltar à eliminação em exemplares em lote</a>
+ [% END %]
+ </fieldset>
+ [% END %]
+
+ </div>
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/tools-menu.js") | $raw %]
+ [% INCLUDE 'datatables.inc' %]
+ [% INCLUDE 'columns_settings.inc' %]
+ [% Asset.js("js/pages/batchMod.js") | $raw %]
+ [% Asset.js("js/browser.js") | $raw %]
+ <script>
+        [% IF searchid %]
+            browser = KOHA.browser('[% searchid | html %]');
+            browser.show_back_link();
+        [% END %]
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

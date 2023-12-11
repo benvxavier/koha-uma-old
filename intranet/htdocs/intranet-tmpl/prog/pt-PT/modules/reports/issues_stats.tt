@@ -1,0 +1,402 @@
+[% USE raw %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Estatísticas de empréstimo[% IF ( do_it ) %] &rsaquo; Resultados[% END %] &rsaquo; Relatórios &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+<style>
+	.sql {display:none;}
+</style>
+</head>
+
+<body id="rep_issues_stats" class="rep">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/reports/reports-home.pl">Relatórios</a>
+ [% END %]
+ [% IF ( do_it ) %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/reports/issues_stats.pl">Estatísticas do Empréstimo</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Resultados</span>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Estatísticas do Empréstimo</span>
+ [% END %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+<h1>Estatísticas do Empréstimo</h1>
+[% IF ( do_it ) %]
+ [% FOREACH mainloo IN mainloop %]
+ [% IF ( mainloo.loopfilter ) %]
+ <p>Filtrados:</p>
+ <ul>
+ [% FOREACH loopfilte IN mainloo.loopfilter %]
+ [% IF ( loopfilte.err ) %]
+ <li class="error">Erro: [% ELSIF ( loopfilte.sql ) %] <li class="sql">
+ [% ELSE %]
+ <li>
+ [% END %]
+ [% SWITCH loopfilte.crit %]
+ [% CASE 0 %]<span>Período desde [% loopfilte.filter | html %]</span>
+ [% CASE 1 %]<span>Período até [% loopfilte.filter | html %]</span>
+ [% CASE 2 %]<span>Categoria de leitor = [% loopfilte.filter | html %]</span>
+ [% CASE 3 %]<span>Tipo de documento = [% loopfilte.filter | html %]</span>
+ [% CASE 4 %]<span>Biblioteca de empréstimo = [% loopfilte.filter | html %]</span>
+ [% CASE 5 %]<span>Coleção = [% loopfilte.filter | html %]</span>
+ [% CASE 6 %]<span>Localização = [% loopfilte.filter | html %]</span>
+ [% CASE 7 %]<span>Cota do exemplar &gt;= [% loopfilte.filter | html %]</span>
+ [% CASE 8 %]<span>Cota do exemplar &lt; [% loopfilte.filter | html %]</span>
+ [% CASE 9 %]<span>Leitor sort1 = [% loopfilte.filter | html %]</span>
+ [% CASE 10 %]<span>Leitor sort2 = [% loopfilte.filter | html %]</span>
+ [% CASE 11 %]<span>Biblioteca de inscrição = [% loopfilte.filter | html %]</span>
+ [% CASE 12 %]<span>Biblioteca de empréstimo = [% loopfilte.filter | html %]</span>
+ [% CASE 13 %]<span>Biblioteca do leitor = [% loopfilte.filter | html %]</span>
+ [% CASE 14 %]<span>Biblioteca de empréstimo = [% loopfilte.filter | html %]</span>
+ [% CASE %]<span>[% loopfilte.crit | html %] = [% loopfilte.filter | html %]</span>
+ [% END %]
+ </li>
+ [% END %]
+ </ul>
+ [% END %]
+ 
+ <table> 
+ <tr>
+ <th>[% mainloo.line | html %] / [% mainloo.column | html %]</th>
+ [% FOREACH loopco IN mainloo.loopcol %]
+ <th>[% loopco.coltitle_display | html %]</th>
+ [% END %]
+ <th>TOTAL</th>
+ </tr>
+ [% FOREACH loopro IN mainloo.looprow %]
+ <tr>
+ <td>[% loopro.rowtitle_display or "UNKNOWN VALUE" | html %]</td>
+ [% FOREACH loopcel IN loopro.loopcell %]
+ <td>[% loopcel.value || 0 | html %]</td>
+ [% END %]
+ <td>[% loopro.totalrow | html %]</td>
+ </tr>
+ [% END %]
+ <tr>
+ <th>TOTAL</th>
+ [% FOREACH loopfoote IN mainloo.loopfooter %]
+ <th>[% loopfoote.totalcol | html %]</th>
+ [% END %]
+ <th>[% mainloo.total | html %]</th>
+ </tr>
+ </table>
+ [% END %]
+[% ELSE %]
+
+ <form method="post" action="/cgi-bin/koha/reports/issues_stats.pl">
+ <fieldset class="rows">
+ <legend>Estatísticas do Empréstimo</legend><table>
+ <thead>
+ <tr>
+ <th>Título</th>
+ <th>Linha</th>
+ <th>Coluna</th>
+ <th>Filtrar</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr>
+ <td>Período</td>
+ <td><input type="radio" name="Line" value="datetime" /></td>
+ <td><input type="radio" name="Column" value="datetime" /></td>
+ <td>
+ <label for="from">De</label>
+ <input type="text" size="10" id="from" name="Filter" class="flatpickr" data-date_to="to" />
+ <label for="to">Para</label>
+ <input size="10" id="to" name="Filter" value="" type="text" class="flatpickr" />
+ <span class="hint">[% INCLUDE 'date-format.inc' %]</span>
+ </td>
+ </tr>
+ <tr>
+ <td><label for="PeriodTypeSel">Tipo:</label><select name="PeriodTypeSel" id="PeriodTypeSel">
+ <option value ="issue">Empréstimo</option>
+ <option value ="renew">Renovação</option>
+ <option value ="return">Devolver</option>
+ <option value ="localuse">Uso local</option>
+ </select></td>
+ <td colspan="2"><label for="DisplayBy">agrupar por</label> <select name="DisplayBy" id="DisplayBy">
+ <option value="">Nenhum</option>
+ <option value ="4">Hora</option>
+ <option value ="1">Dia de semana</option>
+ <option value ="2">Mês</option>
+ <option value ="3">Ano</option>
+ </select>
+ </td>
+ <td>
+ <label for="PeriodDaySel">Seleccionar dia: </label><select name="PeriodDaySel" id="PeriodDaySel">
+ <option value =""></option>
+ <option value ="Monday">Segunda-feira</option>
+ <option value ="Tuesday">Terça-feira</option>
+ <option value ="Wednesday">Quarta-feira</option>
+ <option value ="Thursday">Quinta-feira</option>
+ <option value ="Friday">Sexta-feira</option>
+ <option value ="Saturday">Sábado</option>
+ <option value ="Sunday">Domingo</option>
+ </select>
+ <label for="PeriodMonthSel">Seleccionar mês:</label> <select name="PeriodMonthSel" id="PeriodMonthSel">
+ <option value =""></option>
+ <option value ="January">Janeiro</option>
+ <option value ="February">Fevereiro</option>
+ <option value ="March">Março</option>
+ <option value ="April">Abril</option>
+ <option value ="May">Maio</option>
+ <option value ="June">Junho</option>
+ <option value ="July">Julho</option>
+ <option value ="August">Agosto</option>
+ <option value ="September">Setembro</option>
+ <option value ="October">Outubro</option>
+ <option value ="November">Novembro</option>
+ <option value ="December">Dezembro</option>
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td>Categoria de leitor</td>
+ <td><input type="radio" name="Line" value="borrowers.categorycode" /></td>
+ <td><input type="radio" name="Column" value="borrowers.categorycode" /></td>
+ <td><select name="Filter" id="borcat">
+ <option value=""> </option>
+ [% FOREACH categoryloo IN categoryloop %]
+ <option value="[% categoryloo.categorycode | html %]">[% categoryloo.description | html %]</option>
+ [% END %]
+ </select>
+ </td> 
+ </tr>
+ <tr>
+ <td>Tipo de documento</td>
+ <td><input type="radio" name="Line" value="itemtype" /></td>
+ <td><input type="radio" checked="checked" name="Column" value="itemtype" /></td>
+ <td><select name="Filter" id="itemtype">
+ <option value=""> </option>
+ [% FOREACH itemtype IN itemtypes %]
+ <option value="[% itemtype.itemtype | html %]">[% itemtype.translated_description | html %]</option>
+ [% END %]
+ </select>
+ </td> 
+ </tr>
+ <tr>
+ <td>Biblioteca de empréstimo</td>
+ <td><input type="radio" checked="checked" name="Line" value="branch" /></td>
+ <td><input type="radio" name="Column" value="branch" /></td>
+ <td><select name="Filter" id="branch">
+ <option value=""> </option>
+ [% PROCESS options_for_libraries libraries => Branches.all() %]
+ </select>
+ </td> 
+ </tr>
+ <tr>
+ <td>Coleção</td>
+ <td><input type="radio" name="Line"   value="items.ccode" /></td>
+ <td><input type="radio" name="Column" value="items.ccode" /></td>
+ <td><select name="Filter" id="ccode">
+ <option value=""> </option>
+ [% FOREACH ccodeloo IN ccodeloop %]
+ <option value="[% ccodeloo.code | html %]">[% ccodeloo.description | html %]</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td>Localização</td>
+ <td><input type="radio" name="Line" value="items.location" /></td>
+ <td><input type="radio" name="Column" value="items.location" /></td>
+ <td><select name="Filter" id="location">
+ <option value=""> </option>
+ [% FOREACH locationloo IN locationloop %]
+ <option value="[% locationloo.code | html %]">[% locationloo.description | html %]</option>
+ [% END %]
+ </select>
+ </td> 
+ </tr>
+ <tr>
+ <td>Cota do exemplar</td>
+ <td></td>
+ <td></td>
+ <td>De <input type="text" name="Filter" size="10" /> (inclusive) a <input type="text" name="Filter" size="10" /> (exclusivo) </td>
+ </tr>
+ [% IF ( hassort1 ) %]
+ <tr><td>Leitor critério 1</td>
+ <td><input type="radio" name="Line" value="borrowers.sort1" /></td>
+ <td><input type="radio" name="Column" value="borrowers.sort1" /></td>
+ <td><select name="Filter" id="sort1">
+ <option value=""> </option>
+ [% FOREACH Bsort IN Bsort1 %]
+ <option value="[% Bsort.authorised_value | html %]" >[% Bsort.lib | html %]</option>
+ [% END %]
+ </select>
+ </td> 
+ </tr>
+ [% END %]
+ [% IF ( hassort2 ) %]
+ <tr><td>Leitor critério 2</td>
+ <td><input type="radio" name="Line" value="borrowers.sort2" /></td>
+ <td><input type="radio" name="Column" value="borrowers.sort2" /></td>
+ <td><select name="Filter" id="sort2">
+ <option value=""> </option>
+ [% FOREACH Bsort IN Bsort2 %]
+ <option value="[% Bsort.authorised_value | html %]" >[% Bsort.lib | html %]</option>
+ [% END %]
+ </select>
+ </td> 
+ </tr>
+ [% END %]
+ <tr><td>Biblioteca de inscrição</td>
+ <td><input type="radio" name="Line" value="items.homebranch" /></td>
+ <td><input type="radio" name="Column" value="items.homebranch" /></td>
+ <td><select name="Filter" id="homebranch">
+ <option value=""> </option>
+ [% PROCESS options_for_libraries libraries => Branches.all() %]
+ </select>
+ </td>
+ </tr>
+
+ <tr><td>Biblioteca</td>
+ <td><input type="radio" name="Line" value="items.holdingbranch" /></td>
+ <td><input type="radio" name="Column" value="items.holdingbranch" /></td>
+ <td><select name="Filter" id="holdingbranch">
+ <option value=""> </option>
+ [% PROCESS options_for_libraries libraries => Branches.all() %]
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td>Biblioteca do leitor</td>
+ <td><input type="radio" name="Line" value="borrowers.branchcode" /></td>
+ <td><input type="radio" name="Column" value="borrowers.branchcode" /></td>
+ <td>
+ <select name="Filter" id="patronbranch">
+ <option value="">&nbsp;</option>
+ [% FOREACH branch IN branchloop %]
+ <option value="[% branch.value | html %]">
+ [% branch.branchname | html %]
+ </option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ [% IF (attribute_types_by_class.keys.size) %]
+ <tr>
+ <th colspan="4">Atributos de leitor</th>
+ </tr>
+ [% FOREACH class IN attribute_types_by_class.keys.sort %]
+ [% IF (class) %]
+ <tr>
+ <th>[% class | html %]</th>
+ <th colspan="3"></th>
+ </tr>
+ [% END %]
+ [% FOREACH attr_type IN attribute_types_by_class.$class %]
+ <tr>
+ <td>[% attr_type.description | html %]</td>
+ <td><input type="radio" name="Line" value="borrower_attributes.[% attr_type.code | html %]" /> </td>
+ <td><input type="radio" name="Column" value="borrower_attributes.[% attr_type.code | html %]" /> </td>
+ <td>
+ [% IF attr_type.authorised_value_category %]
+ <select name="Filter_borrower_attributes.[% attr_type.code | html %]">
+ <option value="">&nbsp;</option>
+ [% FOREACH av IN attr_type.authorised_values %]
+ <option value="[% av.authorised_value | html %]">
+ [% av.lib | html %]
+ </option>
+ [% END %]
+ </select>
+ [% ELSE %]
+ <input type="text" name="Filter_borrower_attributes.[% attr_type.code | html %]" />
+ [% END %]
+ </td>
+ </tr>
+ [% END %]
+ [% END %]
+ [% END %]
+
+ </tbody>
+ </table><br /></fieldset>
+
+<fieldset class="rows">
+ <legend>Valor da célula</legend>
+ <ol>
+ <li>
+ <label for="cellvalue1">Contar o total de exemplares:</label>
+ <input type="radio" name="Cellvalue" value="1" id="cellvalue1" checked="checked" />
+ </li>
+ <li>
+ <label for="cellvalue3">Contar exemplares únicos:</label>
+ <input type="radio" name="Cellvalue" id="cellvalue3" value="3" />
+ </li>
+ <li>
+ <label for="cellvalue5">Contar registos bibliográficos únicos:</label>
+ <input type="radio" name="Cellvalue" id="cellvalue5" value="5" />
+ </li>
+ </ol>
+</fieldset>
+ 
+ <fieldset class="rows">
+ <legend>Saída</legend>
+ <ol>
+ <li>
+ <label for="outputscreen">Para mostrar no browser: </label><input type="radio" checked="checked" name="output" id="outputscreen" value="screen" />
+ </li>
+ <li>
+ <label for="outputfile">Para um ficheiro:</label> <input type="radio" name="output" value="file" id="outputfile" />
+ <label class="inline" for="basename">Chamado: </label><input id="basename" name="basename" type="text" value="Exportar" />
+ <label class="inline" for="MIME">Para uma aplicação:</label>
+ <select name="MIME" id="MIME">
+ [% FOREACH value IN CGIextChoice %]
+ <option value="[% value | html %]">[% value | html %]</option>
+ [% END %]
+ </select>
+ <select name="sep" id="sep">
+ [% FOREACH value IN CGIsepChoice.values.sort() %]
+ [% IF ( value == CGIsepChoice.default ) %]
+ <option value="[% value | html %]" selected="selected">[% value | html %]</option>
+ [% ELSE %]
+ <option value="[% value | html %]">[% value | html %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </li>
+ </ol>
+ </fieldset>
+
+ <fieldset class="action">
+ <input class="btn btn-primary" type="submit" value="Submeter" />
+ <input type="hidden" name="report_name" value="[% report_name | html %]" />
+ <input type="hidden" name="do_it" value="1" />
+ </fieldset>
+ </form>
+[% END %]
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'reports-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'calendar.inc' %]
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

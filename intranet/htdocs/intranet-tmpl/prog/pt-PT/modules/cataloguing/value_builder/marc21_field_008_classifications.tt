@@ -1,0 +1,223 @@
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>008 construtor &rsaquo; Classificações &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="cat_marc21_field_008_classifications" class="cat" style="padding:1em;">
+<h1> 008 Dados de comprimento fixo</h1>
+<form name="f_pop" onsubmit="report()" action="">
+<input type="hidden" name="plugin_name" value="marc21_field_008_classifications.pl" />
+<input name="f1" value="[% f1 | html %]" type="hidden" />
+<table>
+ <tr>
+ <td>00-05- Data de criação do ficheiro</td>
+ <td>[% f1 | html %]</td>
+ </tr>
+ <tr>
+ <td><label for="f6">06- Tipo de registo</label></td>
+ <td>
+ <select name="f6" id="f6">
+ [% IF ( f6a ) %]
+ <option value="a" selected="selected">a- Registo de agenda</option>
+ [% ELSE %]
+ <option value="a">a- Registo de agenda</option>
+ [% END %]
+ [% IF ( f6b ) %]
+ <option value="b" selected="selected">b- Registo de tabela</option>
+ [% ELSE %]
+ <option value="b">b- Registo de tabela</option>
+ [% END %]
+ [% IF ( f6c ) %]
+ <option value="c" selected="selected">c- Registo de índice de termos</option>
+ [% ELSE %]
+ <option value="c">c- Registo de índice de termos</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td><label for="f7">07- Tipo de número</label></td>
+ <td>
+ <select name="f7" id="f7">
+ [% IF ( f7a ) %]
+ <option value="a" selected="selected">a- Número único</option>
+ [% ELSE %]
+ <option value="a">a- Número único</option>
+ [% END %]
+ [% IF ( f7b ) %]
+ <option value="b" selected="selected">b- Intervalo de número definido</option>
+ [% ELSE %]
+ <option value="b">b- Intervalo de número definido</option>
+ [% END %]
+ [% IF ( f7c ) %]
+ <option value="c" selected="selected">c- Intervalo de número de resumo</option>
+ [% ELSE %]
+ <option value="c">c- Intervalo de número de resumo</option>
+ [% END %]
+ [% IF ( f7n ) %]
+ <option value="n" selected="selected">n- Não aplicável</option>
+ [% ELSE %]
+ <option value="n">n - Não aplicável</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td><label for="f8">08- Validade da classificação</label></td>
+ <td>
+ <select name="f8" id="f8">
+ [% IF ( f8a ) %]
+ <option value="a" selected="selected">a- Válido</option>
+ [% ELSE %]
+ <option value="a">a- Válido</option>
+ [% END %]
+ [% IF ( f8b ) %]
+ <option value="b" selected="selected">b- Primeiro número de intervalo inválido</option>
+ [% ELSE %]
+ <option value="b">b- Primeiro número de intervalo inválido</option>
+ [% END %]
+ [% IF ( f8c ) %]
+ <option value="c" selected="selected">c- Último número do intervalo inválido</option>
+ [% ELSE %]
+ <option value="c">c- Último número do intervalo inválido</option>
+ [% END %]
+ [% IF ( f8d ) %]
+ <option value="d" selected="selected">d- Completamente inválido</option>
+ [% ELSE %]
+ <option value="d">d- Completamente inválido</option>
+ [% END %]
+ [% IF ( f8e ) %]
+ <option value="e" selected="selected">e- Obsoleto</option>
+ [% ELSE %]
+ <option value="e">e- Obsoleto</option>
+ [% END %]
+ [% IF ( f8n ) %]
+ <option value="n" selected="selected">n- Não aplicável</option>
+ [% ELSE %]
+ <option value="n">n - Não aplicável</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td><label for="f9">09- Standard ou designação opcional</label></td>
+ <td>
+ <select name="f9" id="f9">
+ [% IF ( f9a ) %]
+ <option value="a" selected="selected">a- Padrão</option>
+ [% ELSE %]
+ <option value="a">a- Padrão</option>
+ [% END %]
+ [% IF ( f9b ) %]
+ <option value="b" selected="selected">b- Opcional</option>
+ [% ELSE %]
+ <option value="b">b- Opcional</option>
+ [% END %]
+ [% IF ( f9n ) %]
+ <option value="n" selected="selected">n- Não aplicável</option>
+ [% ELSE %]
+ <option value="n">n - Não aplicável</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td><label for="f10">10- Atualização do registo em processo</label></td>
+ <td>
+ <select name="f10" id="f10">
+ [% IF ( f10a ) %]
+ <option value="a" selected="selected">a- Registo pode ser usado</option>
+ [% ELSE %]
+ <option value="a">a- Registo pode ser usado</option>
+ [% END %]
+ [% IF ( f10b ) %]
+ <option value="b" selected="selected">b- Registo está sendo atualizado</option>
+ [% ELSE %]
+ <option value="b">b- Registo está sendo atualizado</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td><label for="f11">11- Nível de estabelecimento</label></td>
+ <td>
+ <select name="f11" id="f11">
+ [% IF ( f11a ) %]
+ <option value="a" selected="selected">a- Completamente estabelecido</option>
+ [% ELSE %]
+ <option value="a">a- Completamente estabelecido</option>
+ [% END %]
+ [% IF ( f11c ) %]
+ <option value="c" selected="selected">c- Provisório</option>
+ [% ELSE %]
+ <option value="c">c- Provisório</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td><label for="f12">12- Indicação de número sintetizado</label></td>
+ <td>
+ <select name="f12" id="f12">
+ [% IF ( f12a ) %]
+ <option value="a" selected="selected">a- Não sintetizado</option>
+ [% ELSE %]
+ <option value="a">a- Não sintetizado</option>
+ [% END %]
+ [% IF ( f12b ) %]
+ <option value="b" selected="selected">b- Sintetizado</option>
+ [% ELSE %]
+ <option value="b">b- Sintetizado</option>
+ [% END %]
+ [% IF ( f12n ) %]
+ <option value="n" selected="selected">n- Não aplicável</option>
+ [% ELSE %]
+ <option value="n">n - Não aplicável</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td><label for="f13">13- Controlo de apresentação</label></td>
+ <td>
+ <select name="f13" id="f13">
+ [% IF ( f13a ) %]
+ <option value="a" selected="selected">a- Exibido em agendas ou tabelas padrão</option>
+ [% ELSE %]
+ <option value="a">a- Exibido em agendas ou tabelas padrão</option>
+ [% END %]
+ [% IF ( f13b ) %]
+ <option value="b" selected="selected">b- Exibição estendida</option>
+ [% ELSE %]
+ <option value="b">b- Exibição estendida</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+</table>
+<fieldset class="action"><input type="submit" class="btn btn-primary" value="OK" /> <a href="#" class="cancel close">Anular</a></fieldset>
+</form>
+
+[% MACRO jsinclude BLOCK %]
+ <script>
+        function report() {
+            var doc   = opener.document;
+            var field = doc.getElementById("[% index | html %]");
+            field.value =
+                document.f_pop.f1.value +
+                document.f_pop.f6.value +
+                document.f_pop.f7.value +
+                document.f_pop.f8.value +
+                document.f_pop.f9.value +
+                document.f_pop.f10.value +
+                document.f_pop.f11.value +
+                document.f_pop.f12.value +
+                document.f_pop.f13.value;
+            self.close();
+            return false;
+        }
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' popup_window=1 %]

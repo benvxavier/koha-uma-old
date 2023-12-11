@@ -1,0 +1,292 @@
+
+[% USE raw %]
+[% USE Koha %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Administração &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="admin_admin-home" class="admin">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'prefs-admin-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Administração</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+ <h1>Administração do Koha</h1>
+ [% IF ( CAN_user_parameters_manage_mana ) %]
+ [% IF ( Koha.Preference('Mana') == 1) && !mana_url %]
+ <div class="dialog message">
+ <h4>A funcionalidade do Mana KB está ativa mas não está configurada.</h4>
+ <p>Esta funcionalidade permite obter e partilhar dados (padrões das assinaturas e relatórios) de outras bibliotecas.</p>
+ <p>
+ Peça ao administrador do sistema para configurar esta funcionalidade, ou remova esta nota <a href=/cgi-bin/koha/admin/share_content.pl>desactivando a preferência de sistema 'Mana'</a>.
+ </p>
+ </div>
+ [% END %]
+ [% IF ( Koha.Preference('Mana') == 2 ) %]
+ <div class="dialog message">
+ <h4>Partilhar conteúdo com o Mana KB?</h4>
+ <p> Ainda não decidiu se deseja ativar a funcionalidade do Mana KB. <a href=/cgi-bin/koha/admin/share_content.pl>Altere as suas configurações do Mana KB.</a>.</p>
+ </div>
+ [% END %]
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_usage_stats ) %]
+ [% IF ( Koha.Preference('UsageStats') == 2 ) %]
+ <div class="dialog message">
+ <h4>Partilhar de forma anónima as estatísticas de uso com a comunidade do Koha?</h4>
+ <p> Ainda não decidiu se deseja activar a partilha das estatísticas de uso no Koha. <a href=/cgi-bin/koha/admin/usage_statistics.pl>Alterar as configurações HEA</a>.</p>
+ <p> Esta funcionalidade fornece aos programadores do Koha informação valiosa sobre como o Koha deve ser usado e ajuda a tomar decisões no círculo de desenvolvimento</p>
+ </div>
+ [% END %]
+ [% END %]
+ <div class="row">
+ <div class="col-md-6 sysprefs">
+ [% IF ( CAN_user_parameters_manage_sysprefs ) %]
+ <form action="/cgi-bin/koha/admin/preferences.pl" method="post">
+ <fieldset>
+ <h4><a href="/cgi-bin/koha/admin/preferences.pl">Preferências do sistema</a></h4>
+ <p>Gestão das preferências de sistema como o formato MARC, o formato da data, o endereço electrónico do administrador e os modelos.</p>
+ <input type="hidden" name="op" value="search" />
+ <input type="text" name="searchfield" value="[% searchfield | html %]" />
+ <input class="btn btn-primary" name="ok" type="submit" value="Pesquisar" />
+ </fieldset>
+ </form>
+ [% END %]
+
+ [% IF ( CAN_user_parameters_manage_libraries || CAN_user_parameters_manage_itemtypes || CAN_user_parameters_manage_auth_values ) %]
+ <div class="hint"><h4>Sugestão:</h4><p>Configurar estes parâmetros por ordem de aparição.</p></div>
+ <h3>Parâmetros de base</h3>
+ <dl>
+ [% IF ( CAN_user_parameters_manage_libraries ) %]
+ <dt><a href="/cgi-bin/koha/admin/branches.pl">Bibliotecas</a></dt>
+ <dd>Definir as bibliotecas</dd>
+ <dt><a href="/cgi-bin/koha/admin/library_groups.pl">Grupos de bibliotecas</a></dt>
+ <dd>Definir os grupos hierárquicos de bibliotecas</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_itemtypes ) %]
+ <dt><a href="/cgi-bin/koha/admin/itemtypes.pl">Tipos de documento</a></dt>
+ <dd>Definir os tipos de documentos utilizados nas regras de empréstimo</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_auth_values ) %]
+ <dt><a href="/cgi-bin/koha/admin/authorised_values.pl">Valores Autorizados</a></dt>
+ <dd>Definir as categorias e respetivos valores autorizados</dd>
+ [% END %]
+ </dl>
+ [% END %]
+
+ [% IF ( CAN_user_parameters_manage_patron_categories || CAN_user_parameters_manage_circ_rules || CAN_user_parameters_manage_patron_attributes || CAN_user_parameters_manage_transfers || CAN_user_parameters_manage_item_circ_alerts || CAN_user_parameters_manage_cities || CAN_user_parameters_manage_curbside_pickups ) %]
+ <h3>Leitores e empréstimo</h3>
+ <dl>
+ [% IF ( CAN_user_parameters_manage_patron_categories ) %]
+ <dt><a href="/cgi-bin/koha/admin/categories.pl">Categorias de Leitores</a></dt>
+ <dd>Definir as categorias de leitores</dd>
+ [% END %]
+ [% IF CAN_user_parameters_manage_circ_rules %]
+ <dt><a href="/cgi-bin/koha/admin/smart-rules.pl">Regras de empréstimo e multas</a></dt>
+ <dd>Definir os prazos de empréstimo e as multas para cada biblioteca, categoria de leitor e tipo de documento.</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_patron_attributes ) %]
+ <dt><a href="/cgi-bin/koha/admin/patron-attr-types.pl">Tipos de atributos de leitor</a></dt>
+ <dd>Definir outros atributos (identificadores e estatísticos) dos leitores</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_transfers ) %]
+ <dt><a href="/cgi-bin/koha/admin/branch_transfer_limits.pl">Limites da biblioteca</a> (<a href="/cgi-bin/koha/admin/transfer_limits.pl">Editor avançado</a>)</dt>
+ <dd>Limitar a opção de transferir exemplares entre as biblioteca através da biblioteca de origem, a biblioteca de destino e o tipo de documento envolvido. Estas regras apenas serão usadas se a preferência UseBranchTransferLimits estiver ativa.</dd>
+ <dt><a href="/cgi-bin/koha/admin/transport-cost-matrix.pl">Tabela de custos de transporte</a></dt>
+ <dd>Definir custos de transportes entre bibliotecas</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_item_circ_alerts ) %]
+ <dt><a href="/cgi-bin/koha/admin/item_circulation_alerts.pl">Avisos de empréstimo</a></dt>
+ <dd>Definir os prazos de empréstimo e as multas para cada biblioteca, categoria de leitor e tipo de documento.</dd>
+ [% END %]
+ [% IF ( Koha.Preference('UseCirculationDesks') && CAN_user_parameters_manage_libraries ) %]
+ <dt><a href="/cgi-bin/koha/admin/desks.pl">Balcões de empréstimo</a></dt>
+ <dd>Definir balcões de empréstimo</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_cities ) %]
+ <dt><a href="/cgi-bin/koha/admin/cities.pl">Cidades</a></dt>
+ <dd>Definir cidades e vilas onde residem os seus leitores</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_curbside_pickups ) %]
+ <dt><a href="/cgi-bin/koha/admin/curbside_pickup.pl">Levantamento de rua</a></dt>
+ <dd>Configurar os levantamentos de rua para as bibliotecas</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_patron_restrictions ) %]
+ <dt><a href="/cgi-bin/koha/admin/restrictions.pl">Tipos de restrições do leitor</a></dt>
+ <dd>Definir os tipos de restrições manuais dos leitores</dd>
+ [% END %]
+ </dl>
+ [% END %]
+
+ [% IF ( CAN_user_parameters_manage_accounts || ( Koha.Preference('UseCashRegisters') && CAN_user_parameters_manage_cash_registers ) ) %]
+ <h3>Contabilidade</h3>
+ <dl>
+ [% IF ( CAN_user_parameters_manage_accounts ) %]
+ <dt><a href="/cgi-bin/koha/admin/debit_types.pl">Tipos de débito</a></dt>
+ <dd>Definir os tipos de débitos</dd>
+ <dt><a href="/cgi-bin/koha/admin/credit_types.pl">Tipos de crédito</a></dt>
+ <dd>Definir os tipos de crédito</dd>
+ [% END %]
+ [% IF ( Koha.Preference('UseCashRegisters') && CAN_user_parameters_manage_cash_registers ) %]
+ <dt><a href="/cgi-bin/koha/admin/cash_registers.pl">Caixas registadoras</a></dt>
+ <dd>Definir as caixas registadoras</dd>
+ [% END %]
+ </dl>
+ [% END %]
+
+ [% IF CAN_user_plugins && plugins_enabled %]
+ <h3>Plugins</h3>
+ <dl>
+ <dt><a href="/cgi-bin/koha/plugins/plugins-home.pl">Gerir plugins</a></dt>
+ <dd>Ver, gerir, configurar e correr plugins.</dd>
+ </dl>
+ [% END %]
+
+ [% IF CAN_user_parameters_manage_background_jobs %]
+ <h3>Tarefas</h3>
+ <dl>
+ <dt><a href="/cgi-bin/koha/admin/background_jobs.pl">Gerir tarefas</a></dt>
+ <dd>Ver, gerir e cancelar tarefas.</dd>
+ </dl>
+ [% END %]
+
+ </div>
+
+ <div class="col-md-6 sysprefs">
+ [% IF ( CAN_user_parameters_manage_marc_frameworks || CAN_user_parameters_manage_classifications || CAN_user_parameters_manage_matching_rules || CAN_user_parameters_manage_oai_sets || CAN_user_parameters_manage_item_search_fields || CAN_user_parameters_manage_search_engine_config || CAN_user_parameters_manage_marc_overlay_rules || ( Koha.Preference('SavedSearchFilters') && ( CAN_user_parameters_manage_search_filters ) ) ) %]
+ <h3>Catálogo</h3>
+ <dl>
+ [% IF ( CAN_user_parameters_manage_marc_frameworks ) %]
+ <dt><a href="/cgi-bin/koha/admin/biblio_framework.pl">Modelo bibliográfico MARC</a></dt>
+ <dd>Criar e gerir as folhas de recolha de registos bibliográficos que permitem definir as características dos registos MARC (definição dos campos e subcampos) e modelos para o editor</dd>
+ <dt><a href="/cgi-bin/koha/admin/koha2marclinks.pl">Ligações Koha => MARC</a></dt>
+ <dd>Definir os mapeamentos entre os campos da base de dados Koha (SQL) e os campos dos registos bibliográficos MARC.</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_marc_frameworks ) %]
+ <dt><a href="/cgi-bin/koha/admin/checkmarc.pl">Teste do modelo Bibliográfico MARC</a></dt>
+ <dd>Validação da estrutura MARC. Quando é feita uma alteração numa folha de recolha é recomendado executar este procedimento para confirmar se não existem erros</dd>
+ <dt><a href="/cgi-bin/koha/admin/authtypes.pl">Tipos de autoridade</a></dt>
+ <dd>Criar e gerir as folhas de recolha de registos de autoridade que permitem definir as características dos registos MARC (definição dos campos e subcampos)</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_classifications ) %]
+ <dt><a href="/cgi-bin/koha/admin/classsources.pl">Configuração da classificação</a></dt>
+ <dd>Definir as fontes de classificação (por exemplo o sistema de cotas) utilizadas pela sua colecção. Inclua também as regras de preenchimento para ordenação das cotas e as regras de separação para separar as mesmas</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_matching_rules ) %]
+ <dt><a href="/cgi-bin/koha/admin/matching-rules.pl">Regras de concordância</a></dt>
+ <dd>Gestão das regras de verificação de registos duplicados durante a fase de importação</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_marc_overlay_rules ) %]
+ <dt><a href="/cgi-bin/koha/admin/marc-overlay-rules.pl">Regras de sobreposição de registos</a></dt>
+ <dd>Gestão das regras de sobreposição de campos MARC durante a fase de importação e de atualização de registos</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_oai_sets ) %]
+ <dt><a href="/cgi-bin/koha/admin/oai_sets.pl">Configuração dos conjuntos OAI</a></dt>
+ <dd>Gerir conjuntos OAI</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_item_search_fields ) %]
+ <dt><a href="/cgi-bin/koha/admin/items_search_fields.pl">Campos de pesquisa de exemplar</a></dt>
+ <dd>Gerir campos para a pesquisa de exemplares</dd>
+ [% END %]
+ [% IF Koha.Preference('SavedSearchFilters') && ( CAN_user_parameters_manage_search_filters ) %]
+ <dt><a href="/cgi-bin/koha/admin/search_filters.pl">Filtros de pequisa</a></dt>
+ <dd>Gerir os filtros de pesquisa personalizados</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_search_engine_config ) %]
+ <dt><a href="/cgi-bin/koha/admin/searchengine/elasticsearch/mappings.pl">Configuração do motor de pesquisa (Elasticsearch)</a></dt>
+ <dd>Gerir índices, filtros e os seus mapeamentos para campos e subcampos MARC</dd>
+ [% END %]
+ </dl>
+ [% END %]
+
+ [% IF ( CAN_user_acquisition_currencies_manage || CAN_user_acquisition_period_manage || CAN_user_acquisition_budget_manage || ( Koha.Preference('EDIFACT') && CAN_user_acquisition_edi_manage ) ) %]
+ <h3>Parâmetros das aquisições</h3>
+ <dl>
+ [% IF ( CAN_user_acquisition_currencies_manage ) %]
+ <dt><a href="/cgi-bin/koha/admin/currency.pl">Moedas e câmbios</a></dt>
+ <dd>Definir as moedas e taxas de câmbio utilizadas nas aquisições</dd>
+ [% END %]
+ [% IF ( CAN_user_acquisition_period_manage ) %]
+ <dt><a href="/cgi-bin/koha/admin/aqbudgetperiods.pl">Orçamentos</a></dt>
+ <dd>Definir os seus orçamentos de raiz</dd>
+ [% END %]
+ [% IF ( CAN_user_acquisition_budget_manage ) %]
+ <dt><a href="/cgi-bin/koha/admin/aqbudgets.pl">Fundos</a></dt>
+ <dd>Definir fundos, dentro de seus orçamentos</dd>
+ [% END %]
+ [% IF ( Koha.Preference('EDIFACT') && CAN_user_acquisition_edi_manage ) %]
+ <dt><a href="/cgi-bin/koha/admin/edi_accounts.pl">Contas EDI</a></dt>
+ <dd>Gerir contas de fornecedores EDI para importação/exportação</dd>
+ <dt><a href="/cgi-bin/koha/admin/edi_ean_accounts.pl">EANs</a></dt>
+ <dd>Gerir EDI EANs</dd>
+ [% END %]
+ </dl>
+ [% END %]
+
+ [% IF ( ( CAN_user_parameters_manage_identity_providers || CAN_user_parameters_manage_smtp_servers || CAN_user_parameters_manage_search_targets || CAN_user_parameters_manage_didyoumean || CAN_user_parameters_manage_column_config || CAN_user_parameters_manage_audio_alerts || CAN_user_parameters_manage_sms_providers && Koha.Preference('SMSSendDriver') == 'Email' ) || CAN_user_parameters_manage_usage_stats || CAN_user_parameters_manage_additional_fields || CAN_user_parameters_manage_mana || (Koha.Preference('EnableAdvancedCatalogingEditor') && CAN_user_parameters_manage_keyboard_shortcuts) ) %]
+ <h3>Parâmetros adicionais</h3>
+ <dl>
+ <!-- <dt><a href="/cgi-bin/koha/admin/printers.pl">Network Printers</a></dt>
+ <dd>Printers (UNIX paths).</dd> -->
+ [% IF ( CAN_user_parameters_manage_identity_providers) %]
+ <dt><a href="/cgi-bin/koha/admin/identity_providers.pl">Fornecedores de identidade</a></dt>
+ <dd>Definir os fornecedores de identidade externos a serem usados</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_search_targets ) %]
+ <dt><a href="/cgi-bin/koha/admin/z3950servers.pl">Servidores Z39.50/SRU</a></dt>
+ <dd>Definir os servidores externos a aceder para a pesquisa de dados MARC</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_smtp_servers ) %]
+ <dt><a href="/cgi-bin/koha/admin/smtp_servers.pl">Servidores SMTP</a></dt>
+ <dd>Definir que servidores SMTP utilizar</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_didyoumean ) %]
+ <dt><a href="/cgi-bin/koha/admin/didyoumean.pl">Quis dizer?</a></dt>
+ <dd>Escolher quais os plugins a usar para sugerir pesquisas a leitores ou técnicos</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_column_config ) %]
+ <dt><a href="/cgi-bin/koha/admin/columns_settings.pl">Configurações da tabela</a></dt>
+ <dd>Configurar e esconder ou mostrar as colunas para as tabelas</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_audio_alerts ) %]
+ <dt><a href="/cgi-bin/koha/admin/audio_alerts.pl">Alertas de áudio</a></dt>
+ <dd>Definir quais os eventos que despoletam sons</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_sms_providers && Koha.Preference('SMSSendDriver') == 'Email' ) %]
+ <dt><a href="/cgi-bin/koha/admin/sms_providers.pl">Operadores de serviços móveis</a></dt>
+ <dd>Definir uma lista de operadores de serviços móveis para mensagens SMS</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_usage_stats ) %]
+ <dt><a href="/cgi-bin/koha/admin/usage_statistics.pl">Partilhar as estatísticas de uso</a></dt>
+ <dd>Partilhar com a comunidade do Koha as estatísticas de uso da sua instalação</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_mana ) %]
+ <dt><a href="/cgi-bin/koha/admin/share_content.pl">Partilhar conteúdo com o Mana KB</a></dt>
+ <dd>Partilhar conteúdo (assinaturas, relatórios) com a comunidade</dd>
+ [% END %]
+ [% IF ( CAN_user_parameters_manage_additional_fields ) %]
+ <dt><a href="/cgi-bin/koha/admin/additional-fields.pl">Campos adicionais</a></dt>
+ <dd>Adicionar campos adicionais a determinadas tabelas</dd>
+ [% END %]
+ [% IF Koha.Preference('EnableAdvancedCatalogingEditor') && ( CAN_user_parameters_manage_keyboard_shortcuts ) %]
+ <dt><a href="/cgi-bin/koha/admin/adveditorshortcuts.pl">Atalhos de teclado</a></dt>
+ <dd>Definir quais as teclas que ativam ações no editor de catalogação avançado</dd>
+ [% END %]
+ </dl>
+ [% END %]
+ </div>
+ </div>
+ </div>
+</div>
+
+[% INCLUDE 'intranet-bottom.inc' %]

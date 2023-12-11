@@ -1,0 +1,199 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Koha %]
+[% PROCESS 'restriction-types.inc' %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>[% IF op == 'add_form' %][% IF ( restriction ) %]Modificar tipo de restrição [% PROCESS restriction_type_description restriction_type=restriction %]' &rsaquo; [% ELSE %]Novo tipo de restrição &rsaquo; [% END %][% END %] [% IF op == 'delete_confirm' %]Confirmar eliminação do tipo de restrição '[% PROCESS restriction_type_description restriction_type=restriction %]' &rsaquo; [% END %]Tipos de restrição de leitor &rsaquo; Administração &rsaquo; Koha </title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="admin_restrictions" class="admin">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'prefs-admin-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/admin-home.pl">Administração</a>
+ [% END %]
+
+ [% IF op == 'list' %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Tipos de restrições do leitor</span>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/restrictions.pl">Tipos de restrições do leitor</a>
+ [% END %]
+ [% END %]
+
+ [% IF op == 'add_form' %]
+ [% IF restriction %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Modificar tipo de restrição '[% PROCESS restriction_type_description %]'</span>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Novo tipo de restrição</span>
+ [% END %]
+ [% END %]
+ [% END %]
+
+ [% IF op == 'delete_confirm' %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Eliminar tipo de restrição '[% PROCESS restriction_type_description %]'</span>
+ [% END %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+[% FOR m IN messages %]
+ <div class="dialog message [% m.code | html %]">
+ [% SWITCH m.code %] [% CASE 'add_success' %] Tipo de restrição adicionado [% CASE 'update_success' %] Tipo de restrição atualizado [% CASE 'duplicate_display_text' %] Existe outra restrição com esta descrição [% CASE 'duplicate_code' %] Existe outra restrição com este código [% CASE 'delete_success' %] Tipo de restrição eliminado [% CASE 'delete_default' %] Não é possível eliminar o tipo de restrição por omissão [% CASE 'delete_system' %] Não é possível eliminar um tipo de restrição por omissão do sistema [% CASE %] [% m.code | html %] [% END %] </div>
+[% END %]
+
+[% IF op == 'add_form' %]
+ <form id="restriction_form" action="/cgi-bin/koha/admin/restrictions.pl" method="post">
+ <input type="hidden" name="op" value="add_validate" />
+ <input type="hidden" name="checked" value="0" />
+ [% IF restriction %]
+ <h1>Modificar tipo de restrição [% PROCESS restriction_type_description restriction_type=restriction %]</h1>
+ <input type="hidden" name="is_a_modif" value="1" />
+ [% ELSE %]
+ <h1>Novo tipo de restrição</h1>
+ [% END %]
+ <fieldset class="rows">
+ <ol>
+ [% IF restriction %]
+ <li>
+ <span class="label">Código: </span>[% restriction.code | html %]
+ <input type="hidden" name="code" value="[% restriction.code | html %]" />
+ </li>
+ <li>
+ <label for="display_text" class="required">Etiqueta: </label>
+ <input type="text" value="[% restriction.display_text | html %]" name="display_text" id="display_text" size="50" maxlength="50" class="required" required="required" />
+ <span class="required">Obrigatório</span>
+ </li>
+ [% ELSE %]
+ <li>
+ <label for="code" class="required">Código: </label>
+ <input type="text" name="code" id="code" size="50" maxlength="50" class="focus required type_input " required="required" />
+ <span class="required">Obrigatório</span>
+ </li>
+ <li>
+ <label for="display_text" class="required">Etiqueta: </label>
+ <input type="text" name="display_text" id="display_text" size="50" maxlength="50" class="required" required="required" />
+ <span class="required">Obrigatório</span>
+ </li>
+ [% END %]
+ </ol>
+ </fieldset>
+
+ <fieldset class="action">
+ <input class="btn btn-primary" type="submit" value="Guardar" />
+ <a href="/cgi-bin/koha/admin/restrictions.pl" class="cancel">Anular</a>
+ </fieldset>
+ </form>
+[% END %]
+
+[% IF op == 'delete_confirm' %]
+ <form action="/cgi-bin/koha/admin/restrictions.pl" method="post">
+ <fieldset>
+ <legend>
+ Confirmar a eliminação do tipo de restrição </legend>
+
+ <p>Tem a certeza que pretende eliminar '[% PROCESS restriction_type_description restriction_type=restriction %]'?</p>
+
+ <fieldset class="action">
+ <input type="hidden" name="op" value="delete_confirmed" />
+ <input type="hidden" name="code" value="[% restriction.code | html %]" />
+ <input class="btn btn-primary" type="submit" value="Eliminar este tipo de restrição" />
+ <a class="cancel" href="/cgi-bin/koha/admin/restrictions.pl">Anular</a>
+ </fieldset>
+ </fieldset>
+ </form>
+[% END %]
+
+[% IF op == 'list' %]
+
+ <div id="toolbar" class="btn-toolbar">
+ <a class="btn btn-default" id="newrestriction" href="/cgi-bin/koha/admin/restrictions.pl?op=add_form"><i class="fa fa-plus"></i> Novo tipo de restrição</a>
+ </div>
+
+ <h1>Tipos de restrições do leitor</h1>
+
+ [% IF restrictions %]
+ <div class="page-section">
+ <table id="restriction_types">
+ <thead>
+ <tr>
+ <th scope="col">Código</th>
+ <th scope="col">Etiqueta</th>
+ <th scope="col">Omissão</th>
+ <th scope="col">Ações</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH restriction IN restrictions %]
+ <tr>
+ <td>
+ [% restriction.code | html %]
+ </td>
+ <td>
+ [% PROCESS restriction_type_description restriction_type=restriction %]
+ </td>
+ <td>
+ [% IF restriction.is_default %]Sim[% END %] </td>
+ <td class="actions">
+ <a class="btn btn-default btn-xs" href="/cgi-bin/koha/admin/restrictions.pl?op=add_form&amp;code=[% restriction.code | uri %]"><i class="fa fa-pencil"></i> Alterar</a>
+ [% IF !restriction.is_system && !restriction.is_default %]
+ <a class="btn btn-default btn-xs" href="/cgi-bin/koha/admin/restrictions.pl?op=delete_confirm&amp;code=[% restriction.code | uri %]"><i class="fa fa-trash"></i> Apagar</a>
+ [% END %]
+ [% IF !restriction.is_system && !restriction.is_default %]
+ <a class="btn btn-default btn-xs" href="/cgi-bin/koha/admin/restrictions.pl?op=make_default&amp;code=[% restriction.code | uri %]"><i class="fa fa-archive"></i> Usar por omissão</a>
+ [% END %]
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div><!-- /.page-section -->
+ [% ELSE %]
+ <div class="dialog alert">Nenhum tipo de restrição foi definido. <a href="/cgi-bin/koha/admin/restrictions.pl?op=add_form">Criar um novo tipo de restrição</a>.</div>
+ [% END %]
+[% END %]
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'admin-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/admin-menu.js") | $raw %]
+ [% INCLUDE 'datatables.inc' %]
+ [% INCLUDE 'columns_settings.inc' %]
+ <script>
+        var MSG_DUPLICATE_CODE = _("Código do tipo de restrição já em uso");
+        var MSG_DUPLICATE_DISPLAY_TEXT = _("Designação do tipo de restrição já em uso");
+        var existing = {
+        [% FOREACH ex IN existing %]
+            [% NEXT IF ex.code == restriction.code %]
+            [% ex.code | $raw %]: '[% ex.display_text | $raw %]',
+        [% END %]
+        };
+    </script>
+ [% Asset.js("js/restrictiontypes.js") | $raw %]
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

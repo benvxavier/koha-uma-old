@@ -1,0 +1,146 @@
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Construtor do campo 125b UNIMARC</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="unimarc_field_125b" class="cat" style="padding:1em;">
+ <h1>Construtor do campo 125b UNIMARC</h1>
+ <div class="page-section">
+ <form name="f_pop" action="">
+ <table>
+ <tr>
+ <td><label for="f1">Indicador de texto literário:</label></td>
+ <td>
+ <select name="f1" id="f1">
+ [% IF ( f1space ) %]
+ <option value=" " selected="selected">valor não requerido</option>
+ [% ELSE %]
+ <option value=" ">valor não requerido</option>
+ [% END %]
+ [% IF ( f1a ) %]
+ <option value="a" selected="selected">poesia</option>
+ [% ELSE %]
+ <option value="a">poesia</option>
+ [% END %]
+ [% IF ( f1b ) %]
+ <option value="b" selected="selected">drama</option>
+ [% ELSE %]
+ <option value="b">drama</option>
+ [% END %]
+ [% IF ( f1c ) %]
+ <option value="c" selected="selected">ficção</option>
+ [% ELSE %]
+ <option value="c">ficção</option>
+ [% END %]
+ [% IF ( f1d ) %]
+ <option value="d" selected="selected">histórico</option>
+ [% ELSE %]
+ <option value="d">histórico</option>
+ [% END %]
+ [% IF ( f1e ) %]
+ <option value="e" selected="selected">conferências, discursos</option>
+ [% ELSE %]
+ <option value="e">conferências, discursos</option>
+ [% END %]
+ [% IF ( f1f ) %]
+ <option value="f" selected="selected">instruções</option>
+ [% ELSE %]
+ <option value="f">instruções</option>
+ [% END %]
+ [% IF ( f1g ) %]
+ <option value="g" selected="selected">sons</option>
+ [% ELSE %]
+ <option value="g">sons</option>
+ [% END %]
+ [% IF ( f1h ) %]
+ <option value="h" selected="selected">autobiografia</option>
+ [% ELSE %]
+ <option value="h">autobiografia</option>
+ [% END %]
+ [% IF ( f1i ) %]
+ <option value="i" selected="selected">biografia</option>
+ [% ELSE %]
+ <option value="i">biografia</option>
+ [% END %]
+ [% IF ( f1j ) %]
+ <option value="j" selected="selected">ensaios</option>
+ [% ELSE %]
+ <option value="j">ensaios</option>
+ [% END %]
+ [% IF ( f1k ) %]
+ <option value="k" selected="selected">relatórios</option>
+ [% ELSE %]
+ <option value="k">relatórios</option>
+ [% END %]
+ [% IF ( f1l ) %]
+ <option value="l" selected="selected">memórias</option>
+ [% ELSE %]
+ <option value="l">memórias</option>
+ [% END %]
+ [% IF ( f1m ) %]
+ <option value="m" selected="selected">ensaios</option>
+ [% ELSE %]
+ <option value="m">ensaios</option>
+ [% END %]
+ [% IF ( f1n ) %]
+ <option value="n" selected="selected">entrevistas</option>
+ [% ELSE %]
+ <option value="n">entrevistas</option>
+ [% END %]
+ [% IF ( f1o ) %]
+ <option value="o" selected="selected">textos publicitários</option>
+ [% ELSE %]
+ <option value="o">textos publicitários</option>
+ [% END %]
+ [% IF ( f1p ) %]
+ <option value="p" selected="selected">instrução (idioma)</option>
+ [% ELSE %]
+ <option value="p">instrução (idioma)</option>
+ [% END %]
+ [% IF ( f1q ) %]
+ <option value="q" selected="selected">actas de conferências</option>
+ [% ELSE %]
+ <option value="q">actas de conferências</option>
+ [% END %]
+ [% IF ( f1r ) %]
+ <option value="r" selected="selected">comédia</option>
+ [% ELSE %]
+ <option value="r">comédia</option>
+ [% END %]
+ [% IF ( f1s ) %]
+ <option value="s" selected="selected">contos populares</option>
+ [% ELSE %]
+ <option value="s">contos populares</option>
+ [% END %]
+ [% IF ( f1t ) %]
+ <option value="t" selected="selected">textos sagrados</option>
+ [% ELSE %]
+ <option value="t">textos sagrados</option>
+ [% END %]
+ [% IF ( f1z ) %]
+ <option value="z" selected="selected">outros tipos de texto literário</option>
+ [% ELSE %]
+ <option value="z">outros tipos de texto literário</option>
+ [% END %]
+ </select>
+ </td></tr>
+ </table>
+ <fieldset class="action"><input type="button" class="btn btn-primary" value="OK" onclick="report();" /> <a href="#" class="cancel close">Anular</a></fieldset>
+ </form>
+ </div> <!-- /.page-section -->
+
+[% MACRO jsinclude BLOCK %]
+ <script>
+        function report() {
+            var doc   = opener.document;
+            var field = doc.getElementById("[% index | html %]");
+
+            field.value =  document.f_pop.f1.value;
+            window.close();
+            return false;
+        }
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' popup_window=1 %]

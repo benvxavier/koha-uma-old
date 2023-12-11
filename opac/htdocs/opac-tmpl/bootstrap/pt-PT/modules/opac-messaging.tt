@@ -1,0 +1,327 @@
+[% USE Koha %]
+[% USE AdditionalContents %]
+[% SET OpacNav = AdditionalContents.get( location => "OpacNav", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
+[% SET OpacNavBottom = AdditionalContents.get( location => "OpacNavBottom", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>As suas preferências de mensagem &rsaquo; [% IF ( LibraryNameTitle ) %][% LibraryNameTitle | html %][% ELSE %]Koha online[% END %] catálogo</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% BLOCK cssinclude %][% END %]
+</head>
+[% INCLUDE 'bodytag.inc' bodyid='opac-messaging' %]
+[% INCLUDE 'masthead.inc' %]
+
+<div class="main">
+ <nav aria-label="Caminho de navegação" class="breadcrumbs" id="breadcrumbs">
+ <ol class="breadcrumb">
+ <li class="breadcrumb-item">
+ <a href="/cgi-bin/koha/opac-main.pl">Início</a>
+ </li>
+ <li class="breadcrumb-item">
+ <a href="/cgi-bin/koha/opac-user.pl">[% INCLUDE 'patron-title.inc' patron = logged_in_user %]</a>
+ </li>
+ <li class="breadcrumb-item active">
+ <a href="#" aria-current="page">As suas configurações de mensagens</a>
+ </li>
+ </ol>
+ </nav> <!-- /#breadcrumbs -->
+
+ <div class="container-fluid">
+ <div class="row">
+ <div class="col col-lg-2 order-2 order-lg-1">
+ <div id="navigation">
+ [% INCLUDE 'navigation.inc' IsPatronPage=1 %]
+ </div>
+ </div>
+ <div class="col-md-12 col-lg-10 order-1">
+
+ [% IF Koha.Preference( 'EnhancedMessagingPreferencesOPAC' ) || Koha.Preference('TranslateNotices') %]
+ <div id="usermessaging" class="maincontent">
+ <h1>As suas configurações de mensagens</h1>
+ [% IF ( settings_updated ) %]
+ <div class="alert alert-success"><p><strong>Configurações atualizadas</strong></p></div>
+ [% END %]
+ <form action="/cgi-bin/koha/opac-messaging.pl" method="post" name="opacmessaging">
+ <input type="hidden" name="csrf_token" value="[% csrf_token | html %]" />
+ <input type="hidden" name="modify" value="yes" />
+
+ [% IF Koha.Preference( 'EnhancedMessagingPreferencesOPAC' )  %]
+ <table class="table table-bordered table-condensed table-striped">
+ <caption class="sr-only">As suas configurações de mensagens</caption>
+ <thead>
+ <tr>
+ <th>&nbsp;</th>
+ <th>Dias em avanço</th>
+ [% IF ( SMSSendDriver ) %]<th>SMS</th>[% END %]
+ [% IF ( TalkingTechItivaPhone ) %]<th>Telefone</th>[% END %]
+ [% IF Koha.Preference('PhoneNotification') %]<th>Telefone</th>[% END %]
+ <th>Email</th>
+ <th>Resumos apenas <i class="fa fa-info-circle" data-placement="right" data-toggle="tooltip" id="info_digests" title="Pode pedir um resumo para reduzir o número de mensagens. As mensagens serão guardadas e enviadas numa única mensagem."></i></th>
+ <th></th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH messaging_preference IN messaging_preferences %]
+ [% NEXT IF !Koha.Preference( 'ILLModule' ) && messaging_preference.message_name.match('^Ill_') %]
+ [% NEXT IF messaging_preference.Auto_Renewals && Koha.Preference('AutoRenewalNotices') != 'preferences' %]
+ <tr id="[% messaging_preference.message_name _ "_message" | lower | html %]">
+ <td>[% IF ( messaging_preference.Item_Due ) %]<span>Empréstimo em atraso</span>
+ [% ELSIF ( messaging_preference.Advance_Notice ) %]<span>Pré-aviso</span>
+ [% ELSIF ( messaging_preference.Hold_Filled ) %]<span>Reserva preenchida</span>
+ [% ELSIF ( messaging_preference.Hold_Reminder ) %]<span>Lembrete de reserva</span>
+ [% ELSIF ( messaging_preference.Item_Check_in ) %]<span>Exemplar devolvido</span>
+ [% ELSIF ( messaging_preference.Item_Checkout ) %]
+ [% IF Koha.Preference( 'RenewalSendNotice' ) %]
+ <span>Empréstimo e renovação</span>
+ [% ELSE %]
+ <span>Exemplar emprestado</span>
+ [% END %]
+ [% ELSIF ( messaging_preference.Ill_ready ) %]<span>Empréstimo inter-bibliotecas pronto</span>
+ [% ELSIF ( messaging_preference.Ill_unavailable ) %]<span>Empréstimo inter-bibliotecas indisponível</span>
+ [% ELSIF ( messaging_preference.Ill_update ) %]<span>Empréstimo inter-bibliotecas atualizado</span>
+ [% ELSIF ( messaging_preference.Auto_Renewals ) %]<span>Renovação automática</span>
+ [% ELSE %]<span>Desconhecido</span> [% END %]</td>
+ [% IF ( messaging_preference.takes_days ) %]
+ <td><select class="input-mini" name="[% messaging_preference.message_attribute_id | html %]-DAYS">
+ [% FOREACH select_day IN messaging_preference.select_days %]
+ [% IF ( select_day.selected ) %]
+ <option value="[% select_day.day | html %]" selected="selected">[% select_day.day | html %]</option>
+ [% ELSE %]
+ <option value="[% select_day.day | html %]">[% select_day.day | html %]</option>
+ [% END %]
+ [% END %]
+ </select></td>
+ [% ELSE %]
+ <td>-</td>
+ [% END %]
+ [% IF ( SMSSendDriver ) %]
+ [% IF ( messaging_preference.transport_sms ) %]
+ <td class="selectcol">
+ [% IF ( messaging_preference.transports_sms ) %]
+ <input type="checkbox" class="pmp_sms" id="sms[% messaging_preference.message_attribute_id | html %]" name="[% messaging_preference.message_attribute_id | html %]" value="sms" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" class="pmp_sms" id="sms[% messaging_preference.message_attribute_id | html %]" name="[% messaging_preference.message_attribute_id | html %]" value="sms" />
+ [% END %]
+ </td>
+ [% ELSE %]
+ <td>-</td>
+ [% END %]
+ [% END %]
+ [% IF Koha.Preference('PhoneNotification') %]
+ [% IF ( messaging_preference.transport_phone ) %]
+ <td class="selectcol">
+ [% IF ( messaging_preference.transports_phone ) %]
+ <input type="checkbox"
+                                                                   class="pmp_phone"
+                                                                   id="phone[% messaging_preference.message_attribute_id | html %]"
+                                                                   name="[% messaging_preference.message_attribute_id | html %]"
+                                                                   value="phone" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox"
+                                                                   class="pmp_phone"
+                                                                   id="phone[% messaging_preference.message_attribute_id | html %]"
+                                                                   name="[% messaging_preference.message_attribute_id | html %]"
+                                                                   value="phone" />
+ [% END %]
+ </td>
+ [% ELSE %]
+ <td>-</td>
+ [% END %]
+ [% END %]
+ [% IF ( TalkingTechItivaPhone ) %]
+ [% IF ( messaging_preference.transport_itiva ) %]
+ <td class="selectcol">
+ [% IF ( messaging_preference.transports_itiva ) %]
+ <input type="checkbox"
+                                                            class="itiva"
+                                                            id="itiva[% messaging_preference.message_attribute_id | html %]"
+                                                            name="[% messaging_preference.message_attribute_id | html %]"
+                                                            value="itiva" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox"
+                                                            class="itiva"
+                                                            id="itiva[% messaging_preference.message_attribute_id | html %]"
+                                                            name="[% messaging_preference.message_attribute_id | html %]"
+                                                            value="itiva" />
+ [% END %]
+ </td>
+ [% ELSE %]
+ <td>-</td>
+ [% END %]
+ [% END %]
+
+ [% IF ( messaging_preference.transport_email ) %]
+ <td class="selectcol">
+ [% IF ( messaging_preference.transports_email ) %]
+ <input type="checkbox" class="pmp_email" id="email[% messaging_preference.message_attribute_id | html %]" name="[% messaging_preference.message_attribute_id | html %]" value="email" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" class="pmp_email" id="email[% messaging_preference.message_attribute_id | html %]" name="[% messaging_preference.message_attribute_id | html %]" value="email" />
+ [% END %]
+ </td>
+ [% ELSE %]
+ <td>-</td>
+ [% END %]
+
+ [% IF ( messaging_preference.has_digest ) %]
+ <td class="selectcol">
+ [% IF ( messaging_preference.digest ) %]
+ <input checked="checked" data-toggle="tooltip" id="digest[% messaging_preference.message_attribute_id | html %]" name="digest" title="Deve selecionar um meio de comunicação que permite resumos para conseguir selecionar resumos" type="checkbox" value="[% messaging_preference.message_attribute_id | html %]" />
+ [% ELSE %]
+ <input data-toggle="tooltip" id="digest[% messaging_preference.message_attribute_id | html %]" name="digest" title="Deve selecionar um meio de comunicação que permite resumos para conseguir selecionar resumos" type="checkbox" value="[% messaging_preference.message_attribute_id | html %]" />
+ [% END %]
+ </td>
+ [% ELSE %]
+ <td>-</td>
+ [% END %]
+ <td></td>
+
+ </tr>
+ [% END # / FOREACH messaging_preferences%]
+ </tbody>
+ </table>
+ [% END %]
+
+ [% IF ( SMSSendDriver || Koha.Preference('TranslateNotices') ) %]
+ <fieldset class="rows">
+ <ol>
+ [% IF ( SMSSendDriver ) %]
+ <li>
+ <strong>Aviso:</strong> Algumas taxas por mensagens de texto podem ser cobradas ao usar este serviço. Por favor verifique com o seu operador de serviços móveis se tiver alguma questão. </li>
+ <li>
+ <label for="SMSnumber">Número de SMS:</label>
+ <input type="text" id="SMSnumber" name="SMSnumber" value="[% SMSnumber | html %]" pattern="^(\+[1-9]\d{0,2})?\d{1,12}$" />
+ <span class="hint sms_number_help">Por favor introduza somente números. Prefixe o número com + se incluir o código do país.</span>
+ </li>
+
+ [% IF ( SMSSendDriver == 'Email' ) %]
+ <li>
+ <label for="sms_provider_id">Operador de SMS:</label>
+ <select id="sms_provider_id" name="sms_provider_id">
+ <option value="">Desconhecido</option>
+ [% FOREACH s IN sms_providers %]
+ [% IF s.id == sms_provider_id %]
+ <option value="[% s.id | html %]" selected="selected">[% s.name | html %]</option>
+ [% ELSE %]
+ <option value="[% s.id | html %]">[% s.name | html %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ <div class="hint">Por favor contacte a biblioteca se não está seguro qual é o seu operador de serviços móveis, ou se o seu operador não aparecer na lista.</div>
+ </li>
+ [% END # /IF ( SMSSendDriver == 'Email' ) %]
+ [% END # /IF SMSSendDriver %]
+
+ [% IF Koha.Preference('TranslateNotices') %]
+ <li>
+ <label for="lang">Idioma preferido para os avisos: </label>
+ <select id="lang" name="lang">
+ <option value="default">Omissão</option>
+ [% FOR language IN languages %]
+ [% FOR sublanguage IN language.sublanguages_loop %]
+ [% IF language.plural %]
+ [% IF sublanguage.rfc4646_subtag == patron_lang %]
+ <option value="[% sublanguage.rfc4646_subtag | html %]" selected="selected">[% sublanguage.native_description | html %] [% sublanguage.region_description | html %] ([% sublanguage.rfc4646_subtag | html %])</option>
+ [% ELSE %]
+ <option value="[% sublanguage.rfc4646_subtag | html %]">[% sublanguage.native_description | html %] [% sublanguage.region_description | html %] ([% sublanguage.rfc4646_subtag | html %])</option>
+ [% END %]
+ [% ELSE %]
+ [% IF sublanguage.rfc4646_subtag == patron_lang %]
+ <option value="[% sublanguage.rfc4646_subtag | html %]" selected="selected">[% sublanguage.native_description | html %] ([% sublanguage.rfc4646_subtag | html %])</option>
+ [% ELSE %]
+ <option value="[% sublanguage.rfc4646_subtag | html %]">[% sublanguage.native_description | html %] ([% sublanguage.rfc4646_subtag | html %])</option>
+ [% END %]
+ [% END # /IF language.plural %]
+ [% END # /FOR sublanguage %]
+ [% END #/FOR language %]
+ </select> <!-- /#lang -->
+ </li>
+ [% END #/IF Koha.Preference('TranslateNotices') %]
+ </ol>
+ </fieldset>
+ [% END #/IF SMSSendDriver || Koha.Preference('TranslateNotices') %]
+
+ <fieldset class="action">
+ <input class="btn btn-primary" type="submit" value="Enviar alterações" />
+ <a class="cancel" href="/cgi-bin/koha/opac-user.pl">Anular</a>
+ </fieldset>
+ </form>
+ </div> <!-- / #usermessaging -->
+ [% ELSE %]
+ <p><strong>Não tem autorização para ver esta página.</strong></p>
+ [% END # /IF Koha.Preference( 'EnhancedMessagingPreferencesOPAC' ) %]
+ </div> <!-- / .col-lg-10 -->
+ </div> <!-- / .row -->
+ </div> <!-- / .container-fluid -->
+</div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %]
+ [% INCLUDE 'datatables.inc' %]
+ <script>
+        $(document).ready(function(){
+            $("#info_digests").tooltip();
+
+            function toggle_digest(id){
+                let PhoneNotification = [% Koha.Preference('PhoneNotification') || 0 | html %];
+                let TalkingTechItivaPhoneNotification = [% Koha.Preference('TalkingTechItivaPhoneNotification') || 0 | html %];
+                let phone_checked = TalkingTechItivaPhoneNotification ? false : PhoneNotification ? $("#phone"+id).prop("checked") : false;
+
+                if ( $("#email"+id).prop("checked") || $("#sms"+id).prop("checked") || phone_checked ) {
+                    $("#digest"+id).attr("disabled", false).tooltip('disable');
+                } else {
+                    $("#digest"+id).attr("disabled", true).prop("checked",false).tooltip('enable');
+                }
+
+            }
+            // At load time, we want digest disabled if no digest using transport is enabled
+            $(".pmp_email").each(function(){
+                toggle_digest(Number($(this).attr("id").replace("email", "")));
+            });
+
+            // If user clears all digest using transports for a notice, disable digest checkbox
+            $(".pmp_email").click(function(){
+                toggle_digest(Number($(this).attr("id").replace("email", "")));
+            });
+            $(".pmp_sms").click(function(){
+                toggle_digest(Number($(this).attr("id").replace("sms", "")));
+            });
+            $(".pmp_phone").click(function(){
+                toggle_digest(Number($(this).attr("id").replace("phone", "")));
+            });
+
+        });
+
+        function normalizeSMS(value){
+            let has_plus = value.charAt(0) === '+';
+            let new_value = value.replace(/\D/g,'');
+            if ( has_plus ) new_value = '+' + new_value;
+            return new_value;
+        }
+
+        var sms_input = document.getElementById('SMSnumber');
+
+        if (typeof sms_input !== 'undefined' && sms_input !== null) {
+            sms_input.addEventListener('keyup', function(){
+                var field = sms_input.value;
+                sms_input.value = normalizeSMS(field);
+            });
+
+            sms_input.addEventListener('paste', function(event) {
+                let paste = (event.clipboardData || window.clipboardData).getData('text');
+                setTimeout(function () {
+                sms_input.value = normalizeSMS(paste);
+                }, 100);
+            });
+        }
+        $('.table').dataTable($.extend(true, {}, dataTablesDefaults, {
+            "searching": false,
+            "paging": false,
+            "info": false,
+            "responsive": {
+                "details": { "type": 'column',"target": -1 }
+            },
+            "columnDefs": [
+                { "className": 'dtr-control', "orderable": false, "targets": -1 }
+            ],
+        }));
+    </script>
+[% END %]

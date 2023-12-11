@@ -1,0 +1,145 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Koha %]
+[% USE KohaDates %]
+[% USE AuthorisedValues  %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Sugestões de aquisição de [% INCLUDE 'patron-title.inc' no_html = 1 %] &rsaquo; Leitores &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="pat_purchase_suggestions" class="pat">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'patron-search-header.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/members/members-home.pl">Leitores</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% patron.borrowernumber | uri %]">[% INCLUDE 'patron-title.inc' %]</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Sugestões de aquisição</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ [% INCLUDE 'members-toolbar.inc' %]
+ <h1>Sugestões de aquisição</h1>
+
+ <div id="toolbar" class="btn-toolbar">
+ <a class="btn btn-default" id="newsuggestion" href="/cgi-bin/koha/suggestion/suggestion.pl?op=add&amp;suggestedby=[% patron.borrowernumber | html %]&amp;redirect=purchase_suggestions&amp;borrowernumber=[% patron.borrowernumber | html %]"><i class="fa fa-plus"></i> Novo sugestão de aquisição</a>
+ </div>
+
+ [% IF suggestions.size %]
+ <div class="page-section">
+ <table id="suggestions">
+ <thead>
+ <tr>
+ <th>Sumário</th>
+ <th>Nota</th>
+ <th>Gerido por</th>
+ <th>Gerido em</th>
+ <th>Sugerido em</th>
+ <th>Estado</th>
+ </tr>
+ </thead>
+
+ <tbody>
+ [% FOREACH s IN suggestions %]
+ <tr>
+ <td>
+ <p>
+ <strong>
+ [% IF ( CAN_user_catalogue ) %]
+ <a href="/cgi-bin/koha/suggestion/suggestion.pl?suggestionid=[% s.suggestionid | uri %]&amp;op=show">[% s.title | html %]</a>
+ [% ELSE %]
+ [% s.title | html %]
+ [% END %]
+ </strong>
+ </p>
+ <p>
+ [% IF ( s.author ) %][% s.author | html %],[% END %]
+ [% IF ( s.copyrightdate ) %] - [% s.copyrightdate | html %],[% END %]
+ [% IF ( s.publishercode ) %] - [% s.publishercode | html %][% END %]
+ [% IF ( s.place ) %]([% s.place | html %])[% END %]
+ [% IF ( s.collectiontitle ) %] , [% s.collectiontitle | html %][% END %]
+ [% IF ( s.itemtype ) %] - [% s.itemtype | html %][% END %]
+ </p>
+ </td>
+ <td>[% s.note | html %]
+ <td>
+ [% INCLUDE 'patron-title.inc' patron => s.manager %]
+ </td>
+ <td data-order="[% s.manageddate | html %]">
+ [% s.manageddate | $KohaDates %]
+ </td>
+ <td data-order="[% s.suggesteddate | html %]">
+ [% s.suggesteddate | $KohaDates %]
+ </td>
+ <td>
+ [% SWITCH s.STATUS %]
+ [% CASE "ASKED" %]<span>Obrigatório</span>
+ [% CASE "CHECKED" %]<span>Verificado pela biblioteca</span>
+ [% CASE "ACCEPTED" %]<span>Aceite pela biblioteca</span>
+ [% CASE "ORDERED" %]<span>Encomendado pela biblioteca</span>
+ [% CASE "REJECTED" %]<span>Sugestão rejeitada<span>
+ [% CASE "AVAILABLE" %]<span>Disponível na biblioteca</span>
+ [% CASE %]
+ [% SET status_description = AuthorisedValues.GetByCode('SUGGEST_STATUS', s.STATUS) %]
+ [% IF status_description %]
+ [% status_description | html %]
+ [% ELSE %]
+ <span>Desconhecido</span>
+ [% END %]
+ [% END %]
+ [% IF s.reason %]([% s.reason | html %])[% END %]
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div> <!-- /.page-section -->
+ [% ELSE %]
+ <div class="dialog message">
+ <p>Este leitor não submeteu nenhuma sugestão de aquisição.</p>
+ </div>
+ [% END %]
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'circ-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'str/members-menu.inc' %]
+ [% Asset.js("js/members-menu.js") | $raw %]
+ [% INCLUDE 'datatables.inc' %]
+ <script>
+        $(document).ready(function() {
+            $("#suggestions").dataTable($.extend(true, {}, dataTablesDefaults, {
+                'bPaginate': false,
+                'bFilter': false,
+                'bInfo': false,
+                'sDom': 't'
+            } ));
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

@@ -1,0 +1,272 @@
+[% USE AuthorisedValues %]
+[% USE raw %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>
+ [% SWITCH op %] [% CASE 'add_form' %][% IF field %]Modificar campo adicional '[% field.name | html %]'[% ELSE %]Adicionar campo adicional[% END %] [% CASE %]Gerir os campos adicionais [% END %] &rsaquo; Administração &rsaquo; Koha </title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+[% marcfield_tables = ['subscription', 'aqorders'] %]
+[% searchable_tables = ['subscription', 'aqbasket', 'aqinvoices'] %]
+[% show_marcfield = marcfield_tables.grep('^' _ tablename _ '$').size ? 1 : 0 %]
+[% show_searchable = searchable_tables.grep('^' _ tablename _ '$').size ? 1 : 0 %]
+
+<body id="ser_add_fields" class="ser">
+ [% WRAPPER 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/admin-home.pl">Administração</a>
+ [% END %]
+ [% SWITCH op %]
+ [% CASE 'add_form' %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/additional-fields.pl">Gerir os campos adicionais</a>
+ [% END %]
+ [% IF field %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Modificar campo '[% field.name | html %]'</span>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Adicionar campo</span>
+ [% END %]
+ [% END %]
+
+ [% CASE 'list' %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/additional-fields.pl">Gerir os campos adicionais</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Modificar campos para '[% tablename | html %]'</span>
+ [% END %]
+
+ [% CASE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Gerir os campos adicionais</span>
+ [% END %]
+
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ [% IF op == 'list' %]
+ <div id="toolbar" class="btn-toolbar">
+ <a class="btn btn-default" id="newfields" href="?op=add_form&amp;tablename=[% tablename | uri %]"><i class="fa fa-plus"></i> Criar campo</a>
+ </div>
+ [% END %]
+
+ [% IF messages %]
+ [% FOR message IN messages %]
+ [% IF message.code == 'insert' %]
+ [% IF message.number > 0 %]
+ <div class="dialog message">O campo foi adicionado</div>
+ [% ELSE %]
+ <div class="dialog alert">O campo não foi adicionado. Talvez o nome já exista?</div>
+ [% END %]
+ [% ELSIF message.code == 'update' %]
+ [% IF message.number > 0 %]
+ <div class="dialog message">O campo foi atualizado</div>
+ [% ELSE %]
+ <div class="dialog alert">O campo não foi atualizado. Talvez o nome já exista?</div>
+ [% END %]
+ [% ELSIF message.code == 'delete' %]
+ [% IF message.number > 0 %]
+ <div class="dialog message">O campo foi eliminado</div>
+ [% ELSE %]
+ <div class="dialog alert">O campo não foi adicionado. Consulte os registos para verificar os erros.</div>
+ [% END %]
+ [% END %]
+ [% END %]
+ [% END %]
+
+ [% IF op == 'list_tables' %]
+ [% IF CAN_user_acquisitions_order_manage || CAN_user_serials_edit_subscription || CAN_user_updatecharges_remaining_permissions %]
+ <h1>Campos adicionais</h1>
+
+ <div class="page-section">
+ <p>Selecionar tabela:</p>
+ [% BLOCK table_option %]
+ <li><a href="?tablename=[% value | uri %]">[% content | $raw %] (<span class="ex">[% value | html %]</span>)</a></li>
+ [% END %]
+ <ul>
+ [% IF CAN_user_acquisition_order_manage %]
+ [% WRAPPER table_option value="aqbasket" %]<span>Cestos de encomendas</span>[% END %]
+ [% WRAPPER table_option value="aqorders" %]<span>Linhas de encomenda</span>[% END %]
+ [% END %]
+ [% IF CAN_user_acquisition_edit_invoices %]
+ [% WRAPPER table_option value="aqinvoices" %]<span>Facturas</span>[% END %]
+ [% END %]
+ [% IF CAN_user_serials_edit_subscription %]
+ [% WRAPPER table_option value="subscription" %]<span>Assinaturas</span>[% END %] [% END %] [% IF CAN_user_updatecharges_remaining_permissions %] [% WRAPPER table_option value="accountlines:credit" %]Linhas da conta (crédito)[% END %] [% WRAPPER table_option value="accountlines:debit" %]Linhas da conta (débito)[% END %] [% END %] </ul>
+ [% ELSE %] Permissões adicionais são necessárias para a edição de campos adicionais [% END %] </div><!-- /.page-section -->
+ [% ELSIF op == 'list' %]
+ <h1>Campos adicionais para '[% tablename | html %]'</h1>
+ [% IF fields %]
+ <div class="page-section">
+ <table id="fieldst">
+ <thead>
+ <tr>
+ <th>Nome</th>
+ <th>Categoria de valor autorizado</th>
+ [% IF show_marcfield %]
+ <th>Campo MARC</th>
+ <th>Campo MARC</th>
+ [% END %]
+ [% IF show_searchable %]
+ <th>Pesquisável</th>
+ [% END %]
+ <th class="noExport">Ações</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOR field IN fields %]
+ <tr>
+ <td>[% field.name | html %]</td>
+ <td>[% field.authorised_value_category | html %]</td>
+ [% IF show_marcfield %]
+ <td>[% field.marcfield | html %]</td>
+ <td>
+ [% SWITCH field.marcfield_mode %] [% CASE 'get' %]Obter valor do registo MARC [% CASE 'set' %]Guardar valor no registo marc [% END %] </td>
+ [% END %]
+ [% IF show_searchable %]
+ <td>
+ [% IF field.searchable %]Sim[% ELSE %]Não[% END %] </td>
+ [% END %]
+ <td class="actions">
+ <a class="btn btn-default btn-xs" href="?op=add_form&amp;field_id=[% field.id | html %]"><i class="fa fa-pencil"></i> Alterar</a>
+ <a class="confirmdelete btn btn-default btn-xs" href="?op=delete&amp;field_id=[% field.id | uri %]&amp;tablename=[% tablename | uri %]"><i class="fa fa-trash"></i> Apagar</a>
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ </div><!-- /.page-section -->
+ [% ELSE %]
+ [% IF tablename %]There are no additional fields defined for this table.[% END %]
+ [% END %]
+ [% ELSIF op == 'add_form' %]
+ [% IF field %]
+ <h1>Modificar campo</h1>
+ [% ELSE %]
+ <h1>Adicionar campo</h1>
+ [% END %]
+ <form action="" name="add_form" id="add_field" method="post">
+ <fieldset class="rows">
+ <ol>
+ <li>
+ <label for="name" class="required">Nome: </label>
+ <input type="text" name="name" id="name" value="[% field.name | html %]" class="required focus" required="required" />
+ <span class="required">Obrigatório</span>
+ </li>
+ <li>
+ <label for="av">Categoria de valor autorizado: </label>
+ <select id="av" name="authorised_value_category">
+ <option value="">Nenhum</option>
+ [% PROCESS options_for_authorised_value_categories authorised_value_categories = AuthorisedValues.GetCategories({selected => field.authorised_value_category}) %]
+ </select>
+ </li>
+ [% IF show_marcfield %]
+ <li>
+ <label for="marcfield">Campo MARC: </label>
+ <input type="text" name="marcfield" id="marcfield" value="[% field.marcfield | html %]" />
+ <div class="hint">Exemplo: 942$c</div>
+ </li>
+ <li>
+ <label for="marcfield_mode">Campo MARC: </label>
+ <select id="marcfield_mode" name="marcfield_mode">
+ [% IF field.marcfield_mode == 'get' %]
+ <option value="get" selected>Obter valor do registo MARC (não editável)</option>
+ [% ELSE %]
+ <option value="get">Obter valor do registo MARC (não editável)</option>
+ [% END %]
+
+ [% IF field.marcfield_mode == 'set' %]
+ <option value="set" selected>Guardar valor no registo MARC</option>
+ [% ELSE %]
+ <option value="set">Guardar valor no registo MARC</option>
+ [% END %]
+ </select>
+ </li>
+ [% END %]
+ [% IF show_searchable %]
+ <li>
+ <label for="searchable">Pesquisável: </label>
+ [% IF field.searchable %]
+ <input type="checkbox" name="searchable" id="searchable" checked="checked" />
+ [% ELSE %]
+ <input type="checkbox" name="searchable" id="searchable" />
+ [% END %]
+ </li>
+ [% END %]
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ [% IF field %]
+ <input type="hidden" name="field_id" value="[% field.id | html %]" />
+ [% END %]
+ <input type="hidden" name="tablename" value="[% tablename | html %]" />
+ <input type="hidden" name="op" value="add" />
+ <input class="btn btn-primary" type="submit" value="Guardar" />
+ <a href="?tablename=[% tablename | uri %]" class="cancel">Anular</a>
+ </fieldset>
+ </form>
+ [% END %]
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'admin-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE "datatables.inc" %]
+ <script>
+        $(document).ready(function(){
+            $('#selecttable').find(":submit").hide();
+            $('#selecttable select').change(function() {
+                $('#selecttable').submit();
+            });
+
+            $("#fieldst").dataTable($.extend(true, {}, dataTablesDefaults, {
+                'bAutoWidth': false,
+                'sDom': 't<"bottom pager"ilpf>',
+                'sPaginationType': 'full',
+                'aLengthMenu': [[10, 20, 50, 100, -1], [10, 20, 50, 100, "All"]],
+                'iDisplayLength': 20,
+                'aaSorting': [[ 0, "asc" ]],
+            }));
+
+            $(".confirmdelete").click(function(){
+                return confirm(_("Tem a certeza que pretende eliminar este campo?"));
+            });
+
+            $("#add_field").on('submit', function() {
+                if ( $("#marcfield").length && $("select[name='authorised_value_category']").length ) {
+                    if ( $("#marcfield").val().length > 0
+                        && $("select[name='authorised_value_category']" ).val().length > 0 ) {
+                        alert(_("Não pode selecionar uma categoria de valor autorizado e um campo MARC") );
+                        return false;
+                    }
+                }
+                return true;
+            });
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

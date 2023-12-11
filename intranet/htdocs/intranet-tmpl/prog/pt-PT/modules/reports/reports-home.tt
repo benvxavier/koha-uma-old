@@ -1,0 +1,116 @@
+[% USE Koha %]
+[% USE raw %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Relatórios &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="rep_reports-home" class="rep">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'circ-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Relatórios</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+ <h1>Relatórios</h1>
+ <div class="row">
+ <div class="col-xs-6">
+
+ [% IF ( CAN_user_reports_execute_reports || CAN_user_reports_create_reports ) %]
+ <form action="/cgi-bin/koha/reports/guided_reports.pl" method="get">
+ <fieldset class="brief">
+ <h2>Relatórios guiados</h2>
+ <input name="phase" value="Use saved" type="hidden">
+ <input name="filter_set" value="1" type="hidden">
+ [% IF ( CAN_user_reports_create_reports ) %]
+ <p>
+ <a href="/cgi-bin/koha/reports/guided_reports.pl?phase=Build%20new"><i class="fa fa-code-fork"></i> Criar relatório guiado</a>
+ </p>
+ <p>
+ <a href="/cgi-bin/koha/reports/guided_reports.pl?phase=Create%20report%20from%20SQL"><i class="fa fa-plus"></i> Criar a partir de SQL</a>
+ </p>
+ [% END %]
+ <p>
+ <a href="/cgi-bin/koha/reports/guided_reports.pl?phase=Use%20saved"><i class="fa fa-list"></i> Relatórios guardados</a>
+ </p>
+ <label for="filter_keyword">Pesquisa por palavra-chave:</label> <input id="filter_keyword" name="filter_keyword" value="" size="16" type="text" /> <input class="btn btn-primary" type="submit" value="Pesquisar" />
+ </fieldset>
+ </form>
+ [% END %]
+
+ <h5>Dicionário dos relatórios</h5>
+ <ul>
+ <li><a href="/cgi-bin/koha/reports/dictionary.pl?phase=View%20Dictionary">Ver dicionário</a></li>
+ </ul>
+
+ <h2>Assistente de estatísticas</h2>
+ <ul>
+ <li><a href="/cgi-bin/koha/reports/acquisitions_stats.pl">Aquisições</a></li>
+ <li><a href="/cgi-bin/koha/reports/borrowers_stats.pl">Leitores</a></li>
+ <li><a href="/cgi-bin/koha/reports/catalogue_stats.pl">Catálogo</a></li>
+ <li><a href="/cgi-bin/koha/reports/issues_stats.pl">Empréstimo</a></li>
+ <li><a href="/cgi-bin/koha/reports/serials_stats.pl">Periódicos</a></li>
+ <li><a href="/cgi-bin/koha/reports/cash_register_stats.pl">Registo de dinheiro</a></li>
+ <li><a href="/cgi-bin/koha/reports/reserves_stats.pl">Reservas</a></li>
+ </ul>
+
+ [% IF plugins_enabled %]
+ <h2>Plugins de relatórios</h2>
+ <ul>
+ <li><a href="/cgi-bin/koha/plugins/plugins-home.pl?method=report">Plugins de relatórios</a></li>
+ </ul>
+ [% END %]
+
+ </div>
+
+ <div class="col-xs-6"><h2>Quadros de honra</h2>
+ <ul>
+ <li><a href="/cgi-bin/koha/reports/bor_issues_top.pl">Leitores com mais empréstimos</a></li>
+ <li><a href="/cgi-bin/koha/reports/cat_issues_top.pl">Documentos mais emprestados</a></li>
+ </ul>
+
+ <h2>Inactivo</h2>
+ <ul>
+ <li><a href="/cgi-bin/koha/reports/borrowers_out.pl">Leitores que nunca requisitaram documentos</a></li>
+ <li><a href="/cgi-bin/koha/reports/catalogue_out.pl">Exemplares nunca emprestados</a></li>
+ </ul>
+
+ <h2>Outros</h2>
+ <ul>
+ <li><a href="/cgi-bin/koha/reports/itemslost.pl">Documentos extraviados</a></li>
+ <li><a href="/cgi-bin/koha/reports/orders_by_fund.pl">Encomendas por fundo</a></li>
+ <li><a href="/cgi-bin/koha/reports/manager.pl?report_name=itemtypes">Catálogo por tipo de documento</a></li>
+ <li><a href="/cgi-bin/koha/reports/issues_avg_stats.pl">Duração média do empréstimo</a></li>
+ [% SET koha_version = Koha.Version %]
+ [% IF koha_version.development %]
+ <li><a href="http://schema.koha-community.org/master" target="blank">Esquema da base de dados do Koha</a></li>
+ [% ELSE %]
+ <li><a href="http://schema.koha-community.org/[% koha_version.major | uri %]_[% koha_version.minor | uri %]" target="blank">Esquema da base de dados do Koha</a></li>
+ [% END %]
+
+ <li><a href="http://wiki.koha-community.org/wiki/SQL_Reports_Library" target="blank">Repositório de relatórios</a></li>
+ </ul>
+ [% IF ( Koha.Preference('Mana') == 2 ) %]
+ <div class="dialog message" style="margin:15px 0 0 0";>
+ <strong>Knowledgebase</strong>
+ <p> Ainda não decidiu se deseja ativar a funcionalidade do Mana KB. <a href=/cgi-bin/koha/admin/share_content.pl>Altere as suas configurações do Mana KB.</a>.</p>
+ </div>
+ [% END %]
+ </div>
+</div>
+
+
+</div>
+ <div class="col-md-12" id="intranet-reports-home-html">
+ [% Koha.Preference('IntranetReportsHomeHTML') | $raw %]
+ </div>
+</div>
+[% INCLUDE 'intranet-bottom.inc' %]

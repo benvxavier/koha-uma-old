@@ -1,0 +1,17 @@
+---
+Recuros electrónicos:
+  Interface:
+  - - choices:
+        '0': Desativar
+        '1': Ativar
+      pref: ERMModule
+    - o módulo de gestão de recursos electrónicos
+  - - Fornecedores para o módulo de gestão de recursos electrónicos
+    - multiple:
+        ebsco: EBSCO
+        local: Local
+      pref: ERMProviders
+  - - ID de Cliente da EBSCO HoldingsIQ
+    - pref: ERMProviderEbscoCustomerID
+  - - Chave da API da EBSCO HoldingsIQ
+    - pref: ERMProviderEbscoApiKey

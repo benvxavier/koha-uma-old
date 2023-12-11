@@ -1,0 +1,399 @@
+---
+Gestão de conteúdos -:
+  Amazon:
+  - - Usar dados da Amazon do seu website
+    - choices:
+        CA: canadiano
+        DE: alemão
+        FR: francês
+        IN: Indiano
+        JP: japonês
+        UK: britânico
+        US: americano
+      pref: AmazonLocale
+    - .
+  - - Colocar a etiqueta associada
+    - pref: AmazonAssocTag
+    - nas ligações à Amazon. Isto permite a biblioteca referenciar taxas se um leitor
+      decidir comprar um exemplar.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      default: 1
+      pref: AmazonCoverImages
+    - imagens de capa da Amazon nos resultados de pesquisa e nos detalhes no interface
+      dos técnicos.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      default: 1
+      pref: OPACAmazonCoverImages
+    - as imagens de capa da Amazon nas páginas dos resultados de pesquisa e nos detalhes
+      do registo no OPAC.
+  Babelthèque:
+  - - choices:
+        '0': Não incluir
+        '1': Incluir
+      pref: Babeltheque
+    - informação (com comentários e citações) da Babelthèque na página de detalhes
+      no OPAC.
+  - - 'Usar esta URL para o ficheiro javascript Babelthèque: '
+    - class: url
+      pref: Babeltheque_url_js
+    - (por exemplo, http://www.babeltheque.com/bw_XX.js).
+  - - 'Usar esta URL a actualização periódica do Babelthèque: '
+    - class: url
+      pref: Babeltheque_url_update
+    - (por exemplo, http://www.babeltheque.com/.../file.csv.bz2).
+  Baker and Taylor:
+  - - choices:
+        '0': Não adicionar
+        '1': Adicionar
+      pref: BakerTaylorEnabled
+    - ligações e imagens de capa da Baker and Taylor para os interfaces OPAC e dos
+      técnicos. Necessita que tenha inserido um nome de utilizador e uma palavra-chave
+      (que podem ser vistos nas ligações das imagens).
+  - - As ligações "My Library Bookstore" da Baker and Taylor devem ser acedidas em
+      <code>https://
+    - class: url
+      pref: BakerTaylorBookstoreURL
+    - <em>isbn</em></code> (deve ser preenchido com algo tipo <code>ocls.mylibrarybookstore.com/MLB/actions/searchHandler.do?nextPage=bookDetails&amp;parentNum=10923&amp;key=</code>).
+      Deixe em branco se não quiser activar estas ligações.
+  - - Aceder à Baker and Taylor com o nome de utilizador
+    - class: password
+      pref: BakerTaylorUsername
+    - e a palavra-passe
+    - class: password
+      pref: BakerTaylorPassword
+    - .
+  Cache Coce para images:
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: OpacCoce
+    - o serviço de imagens Coce no OPAC.
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: IntranetCoce
+    - o serviço de cache de imagens Coce no interface dos técnicos.
+  - - URL do servidor Coce
+    - class: url
+      pref: CoceHost
+  - - Usar os seguintes provedores para obter as capas
+    - multiple:
+        aws: Serviços Web da Amazon
+        gb: Google Books
+        ol: Open Library
+      pref: CoceProviders
+  Google:
+  - - choices:
+        '0': Não adicionar
+        '1': Adicionar
+      pref: GoogleJackets
+    - imagens de capa da Google Books ao resultados de pesquisa e páginas de detalhes
+      no OPAC.
+  HTML5:
+  - - Mostrar um separador com um leitor HTML5 para os ficheiros catalogados no campo
+      856
+    - choices:
+        both: nos interfaces OPAC e dos técnicos.
+        not: em nenhum sítio.
+        opac: no OPAC.
+        staff: no interface dos técnicos.
+      pref: HTML5MediaEnabled
+  - - Extensões de ficheiro
+    - class: multi
+      pref: HTML5MediaExtensions
+    - (separadas por |).
+  - - choices:
+        '0': Não embeber
+        '1': Embeber
+      pref: HTML5MediaYouTube
+    - os endereços do YouTube como vídeos.
+  Imagens de capa locais ou remotas:
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: LocalCoverImages
+    - imagens de capa locais nas páginas de pesquisa e de detalhes, no interface dos
+      técnicos.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: OPACLocalCoverImages
+    - imagens de capa locais nas páginas de pesquisa e detalhes do OPAC.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowMultipleCovers
+    - que múltiplas imagens sejam associadas a cada registo bibliográfico e de exemplar.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: CustomCoverImages
+    - imagens personalizadas remotas a partir de URL, no interface dos técnicos.<br/>
+    - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: OPACCustomCoverImages
+    - imagens personalizadas remotas a partir de URL, no OPAC.<br/>
+    - 'Usar o seguinte URL:'
+    - class: url
+      pref: CustomCoverImagesURL
+    - 'Pode definir os seguintes padrões: {isbn}, {issn}, {normalized_isbn}.<br/>'
+    - 'Ou pode usar a seguinte sintaxe para especificar um valor de um campo e subcampo:
+      {field$subfield}. Por exemplo: {024$a}.'
+    - Para campos de controlo pode usar a expressão {field}, como {001}.
+  Library Thing:
+  - - choices:
+        '0': Não usar
+        '1': Usar
+      pref: ThingISBN
+    - o serviço ThingISBN para mostrar outras edições de um título (quando <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=FRBRizeEditions">FRBRizeEditions</a>
+      e <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OPACFRBRizeEditions">OPACFRBRizeEditions</a>
+      estão activas). É separado do Library Thing for Libraries.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: LibraryThingForLibrariesEnabled
+    - 'comentários, registos similares, e etiquetas da Library Thing na página de
+      detalhes de um registo no OPAC. Se activar esta preferência, precisa de '
+    - <a href="https://www.librarything.com/forlibraries/">registar-se</a>, e depois
+      introduzir o identificador abaixo.
+  - - Aceder à Library Thing usando o identificador
+    - pref: LibraryThingForLibrariesID
+    - .
+  - - Mostrar conteúdos da Library Thing
+    - choices:
+        '0': em linha com a informação bibliográfica.
+        '1': em separadores.
+      pref: LibraryThingForLibrariesTabbedView
+  Manual:
+  - - Localização do manual do Koha
+    - class: url
+      pref: KohaManualBaseURL
+    - Você pode especificar a localização do manual do Koha a usar. Por omissão é
+      https://koha-community.org/manual/
+    - Se o endereço começar como '/', o valor da preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=staffClientBaseURL">staffClientBaseURL</a>
+      será usada como prefixo.
+    - Note que será usado o sufixo com a versão / o idioma / o formato (/17.11/en/html)
+      no endereço
+  - - Idioma do manual online
+    - choices:
+        ar: Árabe
+        cs: Checo
+        de: Alemão
+        en: Inglês
+        es: Espanhol
+        fr: Francês
+        it: Italiano
+        pt_BR: Português – Brasil
+        tr: Turco
+        zh_TW: Chinês – Taiwan
+      pref: KohaManualLanguage
+    - Será usado como valor de reserva se o idioma usado no interface não tiver uma
+      versão online do manual.
+  Novelist Select:
+  - - choices:
+        '0': Não adicionar
+        '1': Adicionar
+      pref: NovelistSelectEnabled
+    - conteúdos no OPAC da Novelist Select (necessita a inserção de um perfil de utilizador
+      e palavra-passe, para que possa aceder às ligações das imagens).
+  - - Mostrar conteúdo da Novelist Select
+    - choices:
+        above: acima da tabela de exemplares
+        below: abaixo da tabela de exemplares
+        right: abaixo da caixa de selecção Guardar Registo, à direita
+        tab: num separador do OPAC
+      pref: NovelistSelectView
+    - .
+  - - Aceder ao Novelist Select usando o perfil de utilizador
+    - pref: NovelistSelectProfile
+    - no OPAC
+  - - Aceder ao Novelist Select usando o perfil de utilizador
+    - pref: NovelistSelectStaffProfile
+    - no interface dos técnicos.
+  - - Aceder ao Novelist Select usando a palavra-passe
+    - class: password
+      pref: NovelistSelectPassword
+    - .
+  - - choices:
+        '0': Não adicionar
+        '1': Adicionar
+      pref: NovelistSelectStaffEnabled
+    - conteúdo Novelist Select no interface dos técnicos (requer que introduza um
+      perfil de utilizador e a palavra-passe, que podem ser nos endereços das imagens).
+  - - Mostrar o conteúdo Novelist Select no interface dos técnicos
+    - choices:
+        above: acima da tabela de exemplares
+        below: abaixo da tabela de exemplares
+        tab: num separador
+      pref: NovelistSelectStaffView
+    - .
+  Open Library:
+  - - choices:
+        '0': Não adicionar
+        '1': Adicionar
+      pref: OpenLibraryCovers
+    - as imagens de capa da Open Library aos resultados de pesquisa e à página de
+      detalhes do registo no OPAC.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: OpenLibrarySearch
+    - os resultados de pesquisa da Open Library no OPAC.
+  OverDrive:
+  - - Incluir a informação de disponibilidade da OverDrive com a chave de cliente
+    - pref: OverDriveClientKey
+    - e com a palavra-passe de cliente
+    - pref: OverDriveClientSecret
+    - .
+  - - 'Autenticar usando o id do OverDrive #'
+    - pref: OverDriveWebsiteID
+    - .
+  - - Autenticar usando o OverDrive Authname
+    - pref: OverDriveAuthName
+    - (será usado como reserva se o authname individual do polo não estiver definido
+      na <a href="/cgi-bin/koha/admin/overdrive.pl">tabela authnames da biblioteca
+      no OverDrive</a>).
+  - - 'Mostrar exemplares do catálogo da OverDrive e da biblioteca #'
+    - pref: OverDriveLibraryID
+    - .
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: OverDriveCirculation
+    - o acesso dos utilizadores ao seu histórico de circulação OverDrive e que requisitem
+      exemplares.<br />
+    - Usar o
+    - choices:
+        cardnumber: número de cartão
+        userid: nome do utilizador
+      pref: OverDriveUsername
+    - para o acesso ao OverDrive. <br />
+    - A palavra-passe
+    - choices:
+        '0': não é necessária
+        '1': necessária
+      pref: OverDrivePasswordRequired
+    - para o acesso ao OverDrive. <br />
+    - Se ativar o acesso, deve ter uma conecção SIP registada no
+    - OverDrive para a autenticação do leitor no Koha
+  Syndetics:
+  - - choices:
+        '0': Não usar
+        '1': Usar
+      pref: SyndeticsEnabled
+    - conteúdo da Syndetics. Note que isto necessita que se tenha registado no serviço
+      e inserido o código de cliente.
+  - - Usar o código de cliente
+    - pref: SyndeticsClientCode
+    - para aceder à Syndetics.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: SyndeticsCoverImages
+    - imagens de capa da Syndetics nas páginas de resultados e detalhes de registo
+      no OPAC e no interface dos técnicos com tamanho
+    - choices:
+        LC: grande
+        MC: médio
+      pref: SyndeticsCoverImageSize
+    - .
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: SyndeticsAuthorNotes
+    - as notas de autor da Syndetics na página de detalhes do registo no OPAC.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: SyndeticsAwards
+    - informação da Syndetics sobre os prémios ganhos pelo título na página de detalhes
+      do registo do OPAC.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: SyndeticsEditions
+    - informação da Syndetics sobre outras edições de um título na página de detalhes
+      de um registos no OPAC (quando <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OPACFRBRizeEditions">OPACFRBRizeEditions</a>
+      está activa).
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: SyndeticsExcerpt
+    - extractos de um título da Syndetics na página de detalhes de registo no OPAC.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: SyndeticsReviews
+    - revisões da Syndetics de um título na página de detalhes de registo no OPAC.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: SyndeticsSeries
+    - informações sobre outros livros em série de um título da Syndetics na página
+      de detalhes de registo no OPAC.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: SyndeticsSummary
+    - um sumário da Syndetics na página de detalhes de registo no OPAC.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: SyndeticsTOC
+    - a tabela de conteúdos de um título da Syndetics na página de detalhes de registo
+      no OPAC.
+  Tagging:
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: TagsEnabled
+    - que os leitores e staff coloquem tags nos registos.
+  - - choices:
+        '0': Não requer
+        '1': Requer
+      pref: TagsModeration
+    - que as tags submitidas pelos leitores sejam moderadas por um técnico antes de
+      serem mostradas.
+  - - Mostrar
+    - class: integer
+      pref: TagsShowOnList
+    - tags nos resultados de pesquisa no OPAC.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: TagsInputOnList
+    - que os leitores coloquem tags nos resultados de pesquisa no OPAC.
+  - - Mostrar
+    - class: integer
+      pref: TagsShowOnDetail
+    - tags na página de detalhes do registo no OPAC.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: TagsInputOnDetail
+    - que os leitores coloquem tags na página de detalhes do registo no OPAC.
+  - - Permitir que tags no dicionário do executável
+    - class: file
+      pref: TagsExternalDictionary
+    - no servidor sejam aprovadas sem moderação.
+  Todos:
+  - - <strong>NOTA:</strong> Apenas deve escolher uma das fontes para as imagens de
+      capa, senão o Koha irá mostrar todas as imagens de todas as fontes selecionadas.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      default: 0
+      pref: FRBRizeEditions
+    - outras edições de um exemplar no interface dos técnicos (se encontrado por um
+      dos serviços abaixo).
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      default: 0
+      pref: OPACFRBRizeEditions
+    - outras edições de um registo no OPAC.

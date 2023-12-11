@@ -1,0 +1,652 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE KohaDates %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>[% Branches.GetName( branch ) | html %] - calendário &rsaquo; Ferramentas &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% Asset.css("css/calendar.css") | $raw %]
+</head>
+<body id="tools_holidays" class="tools">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/tools/tools-home.pl">Ferramentas</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>[% Branches.GetName( branch ) | html %] calendário</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ <h1>[% Branches.GetName( branch ) | html %] calendário</h1>
+
+ <div class="row">
+ <div class="col-sm-6">
+ <div class="page-section">
+ <label for="branch">Definir os feriados para:</label>
+ <select id="branch" name="branch">
+ [% PROCESS options_for_libraries libraries => Branches.all( selected => branch ) %]
+ </select>
+
+ <div class="panel" id="showHoliday">
+ <form action="/cgi-bin/koha/tools/exceptionHolidays.pl" method="post">
+ <input type="hidden" id="showHolidayType" name="showHolidayType" value="" />
+ <fieldset class="brief">
+ <h3>Editar feriado</h3>
+ <span id="holtype"></span>
+ <ol>
+ <li>
+ <strong>Biblioteca:</strong> <span id="showBranchNameOutput"></span>
+ <input type="hidden" id="showBranchName" name="showBranchName" />
+ </li>
+ <li>
+ <strong>Da data:</strong>
+ <span id="showDaynameOutput"></span>,
+ [% IF ( dateformat == "us" ) %]
+ <span id="showMonthOutput"></span>/<span id="showDayOutput"></span>/<span id="showYearOutput"></span>
+ [% ELSIF ( dateformat == "metric") %]
+ <span id="showDayOutput"></span>/<span id="showMonthOutput"></span>/<span id="showYearOutput"></span>
+ [% ELSIF ( dateformat == "dmydot") %]
+ <span id="showDayOutput"></span>.<span id="showMonthOutput"></span>.<span id="showYearOutput"></span>[% ELSE %]<span id="showYearOutput"></span>/<span id="showMonthOutput"></span>/<span id="showDayOutput"></span>
+ [% END %]
+
+ <input type="hidden" id="showDayname" name="showDayname" />
+ <input type="hidden" id="showWeekday" name="showWeekday" />
+ <input type="hidden" id="showDay" name="showDay" />
+ <input type="hidden" id="showMonth" name="showMonth" />
+ <input type="hidden" id="showYear" name="showYear" />
+ </li>
+ <li class="dateinsert">
+ <strong>Até à data: </strong>
+ <input type="text" id="datecancelrange" name="datecancelrange" size="20" value="[% datecancelrange | html %]" class="flatpickr" />
+ </li>
+ <li>
+ <label for="showTitle">Título: </label><input type="text" name="showTitle" id="showTitle" size="35" />
+ </li>
+ <!-- showTitle is necessary for exception radio button to work properly -->
+ <li>
+ <label for="showDescription">Descrição:</label>
+ <textarea rows="2" cols="40" id="showDescription" name="showDescription"></textarea>
+ </li>
+ <li class="radio">
+ <div class="exceptionPossibility" style="position:static">
+ <input type="radio" name="showOperation" id="showOperationExc" value="exception" /> <label for="showOperationExc">Gerar uma excepção para este feriado.</label>
+ <a href="#" class="helptext">[?]</a>
+ <div class="hint">Pode criar uma excepção para a regra de feriado. Isto significa que pode dizer que para um feriado repetível existe um dia que vai haver uma excepção.</div>
+ </div>
+ </li>
+ <li class="radio">
+ <div class="exceptionPossibility" style="position:static">
+ <input type="radio" name="showOperation" id="showOperationExcRange" value="exceptionrange" />
+ <label for="showOperationExcRange">Gerar uma excepção para este feriado.</label>
+ <a href="#" class="helptext">[?]</a>
+ <div class="hint">Pode gerar uma excepção num intervalo de datas repetidas anualmente.</div>
+ </div>
+ </li>
+ <li class="radio">
+ <input type="radio" name="showOperation" id="showOperationDel" value="delete" />
+ <label for="showOperationDel" id="showOperationDelLabel">Eliminar feriado</label>
+ <a href="#" class="helptext">[?]</a>
+ <div class="hint">Isto vai apagar esta regra de férias. Se for um feriado repetível, este opção verifica para excepções possíveis. Se existe uma excepção, esta opção irá remover a excepção e definir a data de um feriado normal.</div>
+ </li>
+ <li class="radio">
+ <input type="radio" name="showOperation" id="showOperationDelRange" value="deleterange" /> <label for="showOperationDelRange" id="showOperationDelLabelRange">Eliminar os ferias únicos num limite</label>.
+ <a href="#" class="helptext">[?]</a>
+ <div class="hint">Isto irá apagar os feriados simples apenas. Os feriados repetidos e as excepções não são eliminadas.</div>
+ </li>
+ <li class="radio">
+ <input type="radio" name="showOperation" id="showOperationDelRangeRepeat" value="deleterangerepeat" /> <label for="showOperationDelRangeRepeat" id="showOperationDelLabelRangeRepeat">Eliminar o feriado repetido num intervalo</label>.
+ <a href="#" class="helptext">[?]</a>
+ <div class="hint">Isto irá apagar os feriados repetidos apenas. Os feriados repetidos serão eliminados mas as excepções não.</div>
+ </li>
+ <li class="radio">
+ <input type="radio" name="showOperation" id="showOperationDelRangeRepeatExcept" value="deleterangerepeatexcept" /> <label for="showOperationDelRangeRepeatExcept" id="showOperationDelLabelRangeRepeatExcept">Eliminar as excepções num intervalo</label>.
+ <a href="#" class="helptext">[?]</a>
+ <div class="hint">Isto irá apagar as excepções dentro de um período de tempo. Seja cuidadoso acerca do período, porque se o mesmo for grande pode tornar o Koha lento.</div>
+ </li>
+ <li class="radio">
+ <input type="radio" name="showOperation" id="showOperationEdit" value="edit" checked="checked" /> <label for="showOperationEdit">Editar feriado</label>
+ <a href="#" class="helptext">[?]</a>
+ <div class="hint">Isto irá salvar as alterações ao título do feriado e descrição. Se as informações para um feriado repetível forem modificadas, afecta todas as datas em que o feriado se repita.</div></li>
+ <li class="checkbox">
+ <input type="checkbox" name="allBranches" id="allBranches" />
+ <label for="allBranches">Copiar alterações para todas as bibliotecas</label>.
+ <a href="#" class="helptext">[?]</a>
+ <div class="hint">Se marcado, as alterações a este feriado serão copiadas para todas as bibliotecas. Se o feriado não existe para uma biblioteca, o feriado é adicionado ao calendário. NOTA! Pode sobrepor os feriados existentes nos outros calendários.</div>
+ </li>
+ </ol>
+ <fieldset class="action">
+ <input class="btn btn-primary" name="submit" type="submit" value="Guardar" />
+ <a href="#" class="cancel hidePanel showHoliday">Anular</a>
+ </fieldset>
+ </fieldset> <!-- /.brief -->
+ </form>
+ </div> <!-- /#showHoliday -->
+
+ <!-- Panel to deal with new holidays -->
+ <div class="panel" id="newHoliday">
+ <form action="/cgi-bin/koha/tools/newHolidays.pl" method="post">
+ <fieldset class="brief">
+ <h3>Adicionar novo feriado</h3>
+ <ol>
+ <li>
+ <strong>Biblioteca:</strong>
+ <span id="newBranchNameOutput"></span>
+ <input type="hidden" id="newBranchName" name="newBranchName" />
+ </li>
+ <li>
+ <strong>Da data:</strong>
+ <span id="newDaynameOutput"></span>,
+
+ [% IF ( dateformat == "us" ) %]
+ <span id="newMonthOutput"></span>/<span id="newDayOutput"></span>/<span id="newYearOutput"></span>
+ [% ELSIF ( dateformat == "metric" ) %]
+ <span id="newDayOutput"></span>/<span id="newMonthOutput"></span>/<span id="newYearOutput"></span>
+ [% ELSIF ( dateformat == "dmydot" ) %]
+ <span id="newDayOutput"></span>.<span id="newMonthOutput"></span>.<span id="newYearOutput"></span>
+ [% ELSE %]
+ <span id="newYearOutput"></span>/<span id="newMonthOutput"></span>/<span id="newDayOutput"></span>
+ [% END %]
+
+ <input type="hidden" id="newDayname" name="showDayname" />
+ <input type="hidden" id="newWeekday" name="newWeekday" />
+ <input type="hidden" id="newDay" name="newDay" />
+ <input type="hidden" id="newMonth" name="newMonth" />
+ <input type="hidden" id="newYear" name="newYear" />
+ </li>
+ <li class="dateinsert">
+ <strong>Até à data: </strong>
+ <input type="text" id="dateofrange" name="dateofrange" size="20" value="[% dateofrange | html %]" class="flatpickr" />
+ <div class="hint">Este campo apenas se aplica quandos os feriados são adicionados num intervalo.</div>
+ </li>
+ <li>
+ <label for="title">Título: </label>
+ <input type="text" name="newTitle" id="title" size="35" /></li>
+ <li>
+ <label for="newDescription">Descrição:</label>
+ <textarea rows="2" cols="40" id="newDescription" name="newDescription"></textarea>
+ </li>
+ <li class="radio">
+ <input type="radio" name="newOperation" id="newOperationOnce" value="holiday" checked="checked" />
+ <label for="newOperationOnce">Feriado apenas neste dia</label>.
+ <a href="#" class="helptext">[?]</a>
+ <div class="hint">Faça um único feriado. Por exemplo, selecionando 1 de Agosto de 2012 fará um feriado, mas não afectará 1 de Agosto de outros anos</div>
+ </li>
+ <li class="radio">
+ <input type="radio" name="newOperation" id="newOperationDay" value="weekday" />
+ <label for="newOperationDay">Feriado repetido no mesmo dia de todas as semanas</label>.
+ <a href="#" class="helptext">[?]</a>
+ <div class="hint">Faça este dia da semana um feriado, todas as semanas. Por exemplo, se a biblioteca está fechada aos sábados, utilize esta opção para fazer todos os sábados um feriado.</div>
+ </li>
+ <li class="radio">
+ <input type="radio" name="newOperation" id="newOperationYear" value="repeatable" />
+ <label for="newOperationYear">Feriado repetido na mesma data anualmente</label>.
+ <a href="#" class="helptext">[?]</a>
+ <div class="hint">Isso vai levar este dia e mês como referência para torná-lo um feriado. Através desta opção, você pode repetir esta regra para cada ano. Por exemplo, selecionar 1 de Agosto vai tornar esse dia um feriado todos os anos.</div>
+ </li>
+ <li class="radio">
+ <input type="radio" name="newOperation" id="newOperationField" value="holidayrange" />
+ <label for="newOperationField">Feriados num intervalo</label>.
+ <a href="#" class="helptext">[?]</a>
+ <div class="hint">Faça um único feriado num período. Por exemplo, selecionando de 1 de Agosto de 2012 até 10 de Agosto vai marcar os dias de 1 a 10 mas apenas no ano que está escolhido.</div>
+ </li>
+ <li class="radio">
+ <input type="radio" name="newOperation" id="newOperationFieldyear" value="holidayrangerepeat" />
+ <label for="newOperationFieldyear">Feriados repetidos anualmente num intervalo</label>.
+ <a href="#" class="helptext">[?]</a>
+ <div class="hint">Faça um único feriado num período repetido anualmente. Por exemplo, selecionando de 1 de Agosto de 2012 até 10 de Agosto vai marcar os dias de 1 a 10 como feriados em todos os anos.</div>
+ </li>
+ <li class="checkbox">
+ <input type="checkbox" name="allBranches" id="allBranches" />
+ <label for="allBranches">Copiar para todas as bibliotecas</label>.
+ <a href="#" class="helptext">[?]</a>
+ <div class="hint">Se marcado, este feriado será copiado para todas as bibliotecas. Se o feriado já existe para uma biblioteca, nenhuma alteração é feita.</div>
+ </li>
+ </ol>
+ <fieldset class="action">
+ <input class="btn btn-primary" name="submit" type="submit" value="Guardar" />
+ <a href="#" class="cancel hidePanel newHoliday">Anular</a>
+ </fieldset>
+ </fieldset> <!-- /.brief -->
+ </form>
+ </div> <!-- /#newHoliday -->
+
+ <div id="calendar-container">
+ <h3>Calendário</h3>
+ <span id="calendar-anchor"></span>
+ </div>
+ <div style="margin-top: 2em;">
+ <form action="copy-holidays.pl" method="post">
+ <input type="hidden" name="from_branchcode" value="[% branch | html %]" />
+ <label for="branchcode">Copiar feriados para:</label>
+ <select id="branchcode" name="branchcode">
+ <option value=""></option>
+ [% FOREACH l IN Branches.all() %]
+ <option value="[% l.branchcode | html %]">[% l.branchname | html %]</option>
+ [% END %]
+ </select>
+ <input class="btn btn-primary" type="submit" value="Copiar" />
+ </form>
+ </div>
+ </div> <!-- /.page-section -->
+ </div> <!-- /.col-sm-6 -->
+
+ <div class="col-sm-6">
+ <div class="page-section">
+ <div class="help">
+ <h4>Sugestão</h4>
+ <ul>
+ <li>Procure o dia no calendário que deseja definir como feriado.</li>
+ <li>Clicar na data para adicionar ou editar um feriado.</li>
+ <li>Inserir um título e um descrição para o feriado.</li>
+ <li>Especifica como os feriados devem ser repetidos.</li>
+ <li>Clicar em 'Guardar' para terminar o procedimento.</li>
+ </ul>
+ <h4>Palavra</h4>
+ <p>
+ <span class="key normalday">Dia de trabalho</span>
+ <span class="key holiday">Feriado único</span>
+ <span class="key repeatableweekly">Feriado repetido semanalmente</span>
+ <span class="key repeatableyearly">Feriado repetido anualmente</span>
+ <span class="key exception">Feriado</span>
+ </p>
+ </div> <!-- /#help -->
+
+ <div id="holiday-list">
+ <!-- Exceptions First -->
+ <!-- this will probably always have the least amount of data -->
+ [% IF ( EXCEPTION_HOLIDAYS_LOOP ) %]
+ <h3>Excepções</h3>
+ <label class="controls">
+ <input type="checkbox" name="show_past" id="show_past_holidayexceptions" class="show_past" />
+ Mostrar entradas antigas </label>
+ <table id="holidayexceptions">
+ <thead>
+ <tr>
+ <th class="exception">Data</th>
+ <th class="exception">Título</th>
+ <th class="exception">Descrição</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH EXCEPTION_HOLIDAYS_LOO IN EXCEPTION_HOLIDAYS_LOOP %]
+ <tr data-date="[% EXCEPTION_HOLIDAYS_LOO.DATE_SORT | html %]">
+ <td data-order="[% EXCEPTION_HOLIDAYS_LOO.DATE_SORT | html %]">
+ <a href="/cgi-bin/koha/tools/holidays.pl?branch=[% branch | uri %]&amp;calendardate=[% EXCEPTION_HOLIDAYS_LOO.DATE | uri %]">
+ [% EXCEPTION_HOLIDAYS_LOO.DATE | html %]
+ </a>
+ </td>
+ <td>[% EXCEPTION_HOLIDAYS_LOO.TITLE | html %]</td>
+ <td>[% EXCEPTION_HOLIDAYS_LOO.DESCRIPTION | html %]</td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table> <!-- /#holidayexceptions -->
+ [% END # /IF ( EXCEPTION_HOLIDAYS_LOOP ) %]
+
+ [% IF ( WEEK_DAYS_LOOP ) %]
+ <h3>Dias de encerramento repetíveis</h3>
+ <table id="holidayweeklyrepeatable">
+ <thead>
+ <tr>
+ <th class="repeatableweekly">Dia de semana</th>
+ <th class="repeatableweekly">Título</th>
+ <th class="repeatableweekly">Descrição</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH WEEK_DAYS_LOO IN WEEK_DAYS_LOOP %]
+ <tr>
+ <td>[% WEEK_DAYS_LOO.KEY | html %]</td>
+ <td>[% WEEK_DAYS_LOO.TITLE | html %]</td>
+ <td>[% WEEK_DAYS_LOO.DESCRIPTION | html %]</td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table> <!-- /#holidayweeklyrepeatable -->
+ [% END # / IF ( WEEK_DAYS_LOOP ) %]
+
+ [% IF ( DAY_MONTH_HOLIDAYS_LOOP ) %]
+ <h3>Dias de encerramento repetíveis por ano</h3>
+ <table id="holidaysyearlyrepeatable">
+ <thead>
+ <tr>
+ [% IF ( dateformat == "metric" ) %]
+ <th class="repeatableyearly">Dia/mês</th>
+ [% ELSE %]
+ <th class="repeatableyearly">Mês/dia</th>
+ [% END %]
+ <th class="repeatableyearly">Título</th>
+ <th class="repeatableyearly">Descrição</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH DAY_MONTH_HOLIDAYS_LOO IN DAY_MONTH_HOLIDAYS_LOOP %]
+ <tr>
+ <td data-order="[% DAY_MONTH_HOLIDAYS_LOO.DATE_SORT | html %]">
+ [% DAY_MONTH_HOLIDAYS_LOO.DATE | html %]
+ </td>
+ <td>[% DAY_MONTH_HOLIDAYS_LOO.TITLE | html %]</td>
+ <td>[% DAY_MONTH_HOLIDAYS_LOO.DESCRIPTION | html %]</td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table> <!-- /#holidaysyearlyrepeatable -->
+ [% END # /IF ( DAY_MONTH_HOLIDAYS_LOOP ) %]
+
+ [% IF ( HOLIDAYS_LOOP ) %]
+ <h3>Feriados únicos</h3>
+ <label class="controls">
+ <input type="checkbox" name="show_past" id="show_past_holidaysunique" class="show_past" />
+ Mostrar entradas antigas </label>
+ <table id="holidaysunique">
+ <thead>
+ <tr>
+ <th class="holiday">Data</th>
+ <th class="holiday">Título</th>
+ <th class="holiday">Descrição</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH HOLIDAYS_LOO IN HOLIDAYS_LOOP %]
+ <tr data-date="[% HOLIDAYS_LOO.DATE_SORT | html %]">
+ <td data-order="[% HOLIDAYS_LOO.DATE_SORT | html %]">
+ <a href="/cgi-bin/koha/tools/holidays.pl?branch=[% branch | uri %]&amp;calendardate=[% HOLIDAYS_LOO.DATE | uri %]">
+ [% HOLIDAYS_LOO.DATE | html %]
+ </a>
+ </td>
+ <td>[% HOLIDAYS_LOO.TITLE | html %]</td>
+ <td>[% HOLIDAYS_LOO.DESCRIPTION.replace('\\\r\\\n', '<br />') | html %]</td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table> <!-- #holidaysunique -->
+ [% END # /IF ( HOLIDAYS_LOOP ) %]
+ </div> <!-- /#holiday-list -->
+ </div> <!-- /.page-section -->
+ </div> <!-- /.col-sm-6 -->
+ </div> <!-- /.row -->
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'tools-menu.inc' %]
+ </aside>
+ </div> <!-- .col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'calendar.inc' %]
+ [% INCLUDE 'datatables.inc' %]
+ [% Asset.js("js/tools-menu.js") | $raw %]
+ <script>
+        var weekdays = new Array(_("Domingos"),_("Segundas-feiras"),_("Terças-feiras"),_("Quartas-feiras"),_("Quintas-feiras"),_("Sextas-feiras"),_("Sábados"));
+
+        /* Creates all the structures to deal with all different kinds of holidays */
+        var week_days = new Array();
+        var holidays = new Array();
+        var holidates = new Array();
+        var exception_holidays = new Array();
+        var day_month_holidays = new Array();
+        var hola= "[% code | html %]";
+        [% FOREACH WEEK_DAYS_LOO IN WEEK_DAYS_LOOP %]
+            week_days["[% WEEK_DAYS_LOO.KEY | html %]"] = {title:"[% WEEK_DAYS_LOO.TITLE | replace('"','\"') | html %]", description:"[% WEEK_DAYS_LOO.DESCRIPTION | replace('"','\"') | html %]"};
+        [% END %]
+        [% FOREACH HOLIDAYS_LOO IN HOLIDAYS_LOOP %]
+            holidates.push("[% HOLIDAYS_LOO.KEY | html %]");
+            holidays["[% HOLIDAYS_LOO.KEY | html %]"] = {title:"[% HOLIDAYS_LOO.TITLE | replace('"','\"') | html %]", description:"[% HOLIDAYS_LOO.DESCRIPTION | replace('"','\"') | html %]"};
+        [% END %]
+        [% FOREACH EXCEPTION_HOLIDAYS_LOO IN EXCEPTION_HOLIDAYS_LOOP %]
+            exception_holidays["[% EXCEPTION_HOLIDAYS_LOO.KEY | html %]"] = {title:"[% EXCEPTION_HOLIDAYS_LOO.TITLE | replace('"','\"') | html %]", description:"[% EXCEPTION_HOLIDAYS_LOO.DESCRIPTION | replace('"','\"') | html %]"};
+        [% END %]
+        [% FOREACH DAY_MONTH_HOLIDAYS_LOO IN DAY_MONTH_HOLIDAYS_LOOP %]
+            day_month_holidays["[% DAY_MONTH_HOLIDAYS_LOO.KEY | html %]"] = {title:"[% DAY_MONTH_HOLIDAYS_LOO.TITLE | replace('"','\"') | html %]", description:"[% DAY_MONTH_HOLIDAYS_LOO.DESCRIPTION | replace('"','\"') | html %]"};
+        [% END %]
+
+        function holidayOperation(formObject, opType) {
+            var op = document.getElementsByName('operation');
+            op[0].value = opType;
+            formObject.submit();
+        }
+
+        // This function shows the "Show Holiday" panel //
+        function showHoliday (exceptionPossibility, dayName, day, month, year, weekDay, title, description, holidayType) {
+            $("#newHoliday").slideUp("fast");
+            $("#showHoliday").slideDown("fast");
+            $('#showDaynameOutput').html(dayName);
+            $('#showDayname').val(dayName);
+            $('#showBranchNameOutput').html($("#branch :selected").text());
+            $('#showBranchName').val($("#branch").val());
+            $('#showDayOutput').html(day);
+            $('#showDay').val(day);
+            $('#showMonthOutput').html(month);
+            $('#showMonth').val(month);
+            $('#showYearOutput').html(year);
+            $('#showYear').val(year);
+            $('#showDescription').val(description);
+            $('#showWeekday:first').val(weekDay);
+            $('#showTitle').val(title);
+            $('#showHolidayType').val(holidayType);
+
+            if (holidayType == 'exception') {
+                $("#showOperationDelLabel").html(_("Eliminar excepção."));
+                $("#holtype").attr("class","key exception").html(_("Feriado"));
+            } else if(holidayType == 'weekday') {
+                $("#showOperationDelLabel").html(_("Eliminar feriado."));
+                $("#holtype").attr("class","key repeatableweekly").html(_("Feriado repetido semanalmente"));
+            } else if(holidayType == 'daymonth') {
+                $("#showOperationDelLabel").html(_("Eliminar feriado."));
+                $("#holtype").attr("class","key repeatableyearly").html(_("Feriado repetido anualmente"));
+            } else {
+                $("#showOperationDelLabel").html(_("Eliminar feriado."));
+                $("#holtype").attr("class","key holiday").html(_("Feriado único"));
+            }
+
+            if (exceptionPossibility == 1) {
+                $(".exceptionPossibility").parent().show();
+            } else {
+                $(".exceptionPossibility").parent().hide();
+            }
+        }
+
+        // This function shows the "Add Holiday" panel //
+        function newHoliday (dayName, day, month, year, weekDay) {
+            $("#showHoliday").slideUp("fast");
+            $("#newHoliday").slideDown("fast");
+            $("#newDaynameOutput").html(dayName);
+            $("#newDayname").val(dayName);
+            $("#newBranchNameOutput").html($('#branch :selected').text());
+            $("#newBranchName").val($('#branch').val());
+            $("#newDayOutput").html(day);
+            $("#newDay").val(day);
+            $("#newMonthOutput").html(month);
+            $("#newMonth").val(month);
+            $("#newYearOutput").html(year);
+            $("#newYear").val(year);
+            $("#newWeekday:first").val(weekDay);
+        }
+
+        function hidePanel(aPanelName) {
+            $("#"+aPanelName).slideUp("fast");
+        }
+
+        function changeBranch () {
+            var branch = $("#branch option:selected").val();
+            location.href='/cgi-bin/koha/tools/holidays.pl?branch=' + branch + '&calendardate=' + "[% calendardate | html %]";
+        }
+
+        /**
+        * Build settings to be passed to the formatDay function for each day in the calendar
+        * @param  {object} dayElem - HTML node passed from Flatpickr
+        * @return {void}
+        */
+        function dateStatusHandler( dayElem ) {
+            var day = dayElem.dateObj.getDate();
+            var month = dayElem.dateObj.getMonth() + 1;
+            var year = dayElem.dateObj.getFullYear();
+            var weekDay = dayElem.dateObj.getDay();
+            var dayMonth = month + '/' + day;
+            var dateString = year + '/' + month + '/' + day;
+            if (exception_holidays[dateString] != null) {
+                formatDay( [ "exception", _("Excepção: %s").format(exception_holidays[dateString].title)], dayElem );
+            } else if ( week_days[weekDay] != null ){
+                formatDay( [ "repeatableweekly", _("Feriado semanal: %s").format(week_days[weekDay].title)], dayElem );
+            } else if ( day_month_holidays[dayMonth] != null ) {
+                formatDay( [ "repeatableyearly", _("Feriado repetível por ano: %s").format(day_month_holidays[dayMonth].title)], dayElem );
+            } else if (holidays[dateString] != null) {
+                formatDay( [ "holiday", _("Feriado único: %s").format(holidays[dateString].title)], dayElem );
+            } else {
+                formatDay( [ "normalday", _("Dia normal")], dayElem );
+            }
+        }
+
+        /**
+        * Adds style and title attribute to a day on the calendar
+        * @param  {object} settings - span class attribute ([0]) and title attribute ([1])
+        * @param  {node}   dayElem  - HTML node passed from Flatpickr
+        * @return {void}
+        */
+        function formatDay( settings, dayElem ){
+            $(dayElem).attr("title", settings[1]).addClass( settings[0]);
+        }
+
+        /**
+        * Triggers an action based on a click on a calendar day: If a holiday exists on
+        * that day it loads an edit form. If there is no existing holiday one can be created
+        * @param  {object} calendar - a Date object corresponding to the clicked day
+        * @return {void}
+        */
+        function dateChanged( calendar ) {
+            var day = calendar.getDate();
+            var month = calendar.getMonth() + 1;
+            var year = calendar.getFullYear();
+            var weekDay = calendar.getDay();
+            var dayName = weekdays[weekDay];
+            var dayMonth = month + '/' + day;
+            var dateString = year + '/' + month + '/' + day;
+            if (holidays[dateString] != null) {
+                showHoliday(0, dayName, day, month, year, weekDay, holidays[dateString].title,     holidays[dateString].description, 'ymd');
+            } else if (exception_holidays[dateString] != null) {
+                showHoliday(0, dayName, day, month, year, weekDay, exception_holidays[dateString].title, exception_holidays[dateString].description, 'exception');
+            } else if (week_days[weekDay] != null) {
+                showHoliday(1, dayName, day, month, year, weekDay, week_days[weekDay].title,     week_days[weekDay].description, 'weekday');
+            } else if (day_month_holidays[dayMonth] != null) {
+                showHoliday(1, dayName, day, month, year, weekDay, day_month_holidays[dayMonth].title, day_month_holidays[dayMonth].description, 'daymonth');
+            } else {
+                newHoliday(dayName, day, month, year, weekDay);
+            }
+        };
+
+        /* Custom table search configuration: If a table row
+            has an "expired" class, hide it UNLESS the
+            show_expired checkbox is checked */
+        $.fn.dataTable.ext.search.push(
+            function( settings, searchData, index, rowData, counter ) {
+                var table = settings.nTable.id;
+                var row = $(settings.aoData[index].nTr);
+                if( row.hasClass("date_past") && !$("#show_past_" + table ).prop("checked") ){
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        );
+
+        // Create current date variable
+        var date = new Date();
+        var datestring = date.toISOString().substring(0, 10);
+
+        $(document).ready(function() {
+
+            $(".helptext + .hint").hide();
+            $("#branch").change(function(){
+                changeBranch();
+            });
+            $("#holidayweeklyrepeatable>tbody>tr").each(function(){
+                var first_td = $(this).find('td').first();
+                first_td.html(weekdays[first_td.html()]);
+            });
+            $("#holidayweeklyrepeatable").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "sDom": 't',
+                "bPaginate": false
+            }));
+            var tables = $("#holidayexceptions, #holidaysyearlyrepeatable, #holidaysunique").DataTable($.extend(true, {}, dataTablesDefaults, {
+                "sDom": 't',
+                "bPaginate": false,
+                "createdRow": function( row, data, dataIndex ) {
+                    var holiday = $(row).data("date");
+                    if( holiday < datestring ){
+                        $(row).addClass("date_past");
+                    }
+                }
+            }));
+
+            $(".show_past").on("change", function(){
+                tables.draw();
+            });
+
+            $("a.helptext").click(function(){
+                $(this).parent().find(".helptext + .hint").toggle(); return false;
+            });
+
+            const dateofrange = document.querySelector("#dateofrange")._flatpickr;
+            const datecancelrange = document.querySelector("#datecancelrange")._flatpickr;
+
+            $("#dateofrange").each(function () { this.value = "" });
+            $("#datecancelrange").each(function () { this.value = "" });
+
+            var maincalendar = $("#calendar-anchor").flatpickr({
+                inline: true,
+                onReady: function( selectedDates, dateStr, instance ){
+                    // We do not want to display the 'close' icon in this case
+                    $(instance.input).siblings('.flatpickr-input').hide();
+                },
+                onDayCreate: function( dObj, dStr, fp, dayElem ){
+                    /* for each day on the calendar, get the
+                      correct status information for the date */
+                    dateStatusHandler( dayElem );
+                },
+                onChange: function( selectedDates, dateStr, instance ){
+                    var fromdate = selectedDates[0];
+                    var enddate = dateofrange.selectedDates[0];
+
+                    dateChanged( fromdate );
+
+                    dateofrange.set( 'defaultDate', fromdate );
+                    dateofrange.set( 'minDate', fromdate );
+
+                    if ( enddate != undefined ) {
+                        if ( enddate < fromdate ) {
+                            dateofrange.set("defaultDate", fromdate);
+                            dateofrange.setDate(fromdate);
+                        }
+                    }
+
+                },
+                defaultDate: new Date("[% keydate | html %]")
+            });
+
+            $(".hidePanel").on("click",function(){
+                if( $(this).hasClass("showHoliday") ){
+                    hidePanel("showHoliday");
+                } else {
+                    hidePanel("newHoliday");
+                }
+            })
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

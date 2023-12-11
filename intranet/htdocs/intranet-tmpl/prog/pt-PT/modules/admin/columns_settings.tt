@@ -1,0 +1,451 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE TablesSettings %]
+[% SET footerjs = 1 %]
+[% BLOCK pagelist %]
+ [% IF module.keys and module.keys.size > 1 %]
+ <span>Saltar para a página:</span>
+ [% FOR pagename IN module.keys.sort %]
+ <a href="#[% pagename | url %]">[% pagename | html %]</a>
+ [% UNLESS loop.last %]<span class="separator"> | </span>[% END %]
+ [% END %]
+ [% END %]
+ <div class="pagelist">
+ <form method="post" action="/cgi-bin/koha/admin/columns_settings.pl">
+ <input type="hidden" name="action" value="save" />
+ <input type="hidden" name="module" value="[% modulename | html %]" />
+ [% IF module.keys and module.keys.size > 0 %]
+ [% FOR pagename IN module.keys.sort %]
+ <h4 class="page_name" id="[% pagename | html %]">Página: [% pagename | html %]</h4>
+ [% SET tables = module %] [% IF tables.$pagename.keys and tables.$pagename.keys.size > 1 %] Saltar para a tabela: [% FOR tablename IN tables.$pagename.keys.sort %] [% SET table_id = pagename _ '#' _ tablename %] <a href="#[% table_id | uri %]">[% tablename | html %]</a>
+ [% UNLESS loop.last %]<span class="separator"> | </span>[% END %]
+ [% END %]
+ [% END %]
+ [% IF tables.$pagename.keys and tables.$pagename.keys.size > 0 %]
+ [% FOR tablename IN tables.$pagename.keys.sort %]
+ [% SET table_id = pagename _ '#' _ tablename %]
+ <div class="datatable_config" id="[% table_id | html %]">
+ <input type="hidden" name="table_id" value="[% table_id| html %]" />
+ [% IF pagename == 'additem' AND tablename == 'itemst' %]
+ <div class="alert">As alterações realizadas abaixo apenas serão aplicadas aos subcampos de exemplar que são mapeados na tabela 'items'. <a href="/cgi-bin/koha/admin/koha2marclinks.pl?tablename=items">Ir para os mapeamentos MARC</a></div>
+ [% END %]
+ <table>
+ <caption>
+ [% IF tablename == 'currencies-table' %]
+ <span>Moeda</span>
+ [% ELSIF pagename == 'additem' AND tablename == 'itemst' %]
+ <span>Editor de exemplares</span>
+ [% ELSE %]
+ <span>Identificador da tabela: [% tablename | html %]</span>
+ [% END %]
+ </caption>
+ <thead>
+ <tr>
+ <th>Nome da coluna</th>
+ <th>Escondida por omissão</th>
+ <th>Não pode ser alternado</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOR column IN tables.$pagename.$tablename.columns %]
+ [% SET value = pagename _ '#' _ tablename _ '#' _ column.columnname %]
+ <tr>
+ <td>
+ [% column.columnname | html %]
+ <input type="hidden" name="columnid" value="[% value | html %]" />
+ </td>
+ <td>
+ [% IF column.is_hidden %]
+ [% IF column.cannot_be_modified %]
+ <input type="checkbox" name="[% value | html %]_hidden" value="1" checked="checked" disabled="disabled" />
+ <input type="hidden" name="[% value | html %]_hidden" value="1" />
+ [% ELSE %]
+ <input type="checkbox" name="[% value | html %]_hidden" value="1" checked="checked" />
+ [% END %]
+ [% ELSE %]
+ [% IF column.cannot_be_modified %]
+ <input type="checkbox" name="[% value | html %]_hidden" value="1" disabled="disabled" />
+ <input type="hidden" name="[% value | html %]_hidden" value="0" />
+ [% ELSE %]
+ <input type="checkbox" name="[% value | html %]_hidden" value="1" />
+ [% END %]
+ [% END %]
+ </td>
+ <td>
+ [% IF column.cannot_be_toggled %]
+ [% IF column.cannot_be_modified %]
+ <input type="checkbox" name="[% value | html %]_cannot_be_toggled" value="1" checked="checked" disabled="disabled" />
+ <input type="hidden" name="[% value | html %]_cannot_be_toggled" value="1" />
+ [% ELSE %]
+ <input type="checkbox" name="[% value | html %]_cannot_be_toggled" value="1" checked="checked" />
+ [% END %]
+ [% ELSE %]
+ [% IF column.cannot_be_modified %]
+ <input type="checkbox" name="[% value | html %]_cannot_be_toggled" value="1" disabled="disabled" />
+ <input type="hidden" name="[% value | html %]_cannot_be_toggled" value="0" />
+ [% ELSE %]
+ <input type="checkbox" name="[% value | html %]_cannot_be_toggled" value="1" />
+ [% END %]
+ [% END %]
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ [% SET table_settings = TablesSettings.GetTableSettings( modulename, pagename, tablename ) %]
+ [% IF table_settings.default_display_length %]
+ <p>
+ Largura de visualização por omissão: <select name="[% table_id | html %]_default_display_length">
+ [% IF table_settings.default_display_length == 10 %]
+ <option value="10" selected="selected">10</option>
+ [% ELSE %]
+ <option value="10">10</option>
+ [% END %]
+ [% IF table_settings.default_display_length == 20 %]
+ <option value="20" selected="selected">20</option>
+ [% ELSE %]
+ <option value="20">20</option>
+ [% END %]
+ [% IF table_settings.default_display_length == 50 %]
+ <option value="50" selected="selected">50</option>
+ [% ELSE %]
+ <option value="50">50</option>
+ [% END %]
+ [% IF table_settings.default_display_length == 100 %]
+ <option value="100" selected="selected">100</option>
+ [% ELSE %]
+ <option value="100">100</option>
+ [% END %]
+ [% IF table_settings.default_display_length == -1 %]
+ <option value="-1" selected="selected">Todos</option>
+ [% ELSE %]
+ <option value="-1">Todos</option>
+ [% END %]
+ </select>
+ </p>
+ [% END %]
+ [% IF table_settings.default_sort_order.defined %]
+ <p>
+ Ordenação por omissão: <select name="[% pagename | html %]#[% tablename | html %]_default_sort_order">
+ [% FOR column IN tables.$pagename.$tablename.columns %]
+ [% IF table_settings.default_sort_order == loop.count - 1 %]
+ <option value="[% loop.count - 1 %]" selected="selected">[% column.columnname | html %]</option>
+ [% ELSE %]
+ <option value="[% loop.count - 1 %]">[% column.columnname | html %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </p>
+ [% END %]
+
+ </div>
+ [% END %]
+ <fieldset class="action">
+ <input class="btn btn-primary" type="submit" value="Guardar" />
+ </fieldset>
+ [% ELSE %] Não existe tabela a configurar para este módulo. [% END %] [% END %] [% ELSE %] Não existe página a usar a configuração da tabela neste módulo. [% END %] </form>
+ </div>
+[% END %]
+
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Configurações da tabela &rsaquo; Administração &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+<style>
+    caption {
+        font-size: 115%;
+    }
+
+    .datatable_config {
+        margin-left: 1em;
+    }
+    .page_name {
+        border-top: 1px solid #b9d8d9;
+        margin-top: 1em;
+        padding-top: 1em;
+    }
+</style>
+</head>
+
+<body id="admin_tables" class="admin">
+
+ [% WRAPPER 'header.inc' %]
+ [% INCLUDE 'prefs-admin-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/admin-home.pl">Administração</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Configurações da tabela</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+ <div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ <h1>Configurações da tabela</h1>
+ <div class="panel-group" id="modules" role="tablist" aria-multiselectable="true">
+ <div class="panel panel-default">
+ <div class="panel-heading" role="tab" id="acquiHeading">
+ <h2 class="panel-title">
+ <a id="acquiToggle" class="collapsed" role="button" data-toggle="collapse" data-parent="#modules" href="#acqui" aria-expanded="false" aria-controls="collapseOne">
+ Aquisição </a>
+ </h2>
+ </div> <!-- /.panel-heading -->
+ <div id="acqui" class="panel-collapse collapse" role="tabpanel" aria-labelledby="acquiHeading">
+ <div class="panel-body">
+ <h3>Tabelas de aquisição</h3>
+ [% PROCESS pagelist module=modules.acqui modulename="acqui" %]
+ </div> <!-- /.panel-body -->
+ </div> <!-- /.panel-collapse -->
+ </div>
+
+ <div class="panel panel-default">
+ <div class="panel-heading" role="tab" id="adminHeading">
+ <h2 class="panel-title">
+ <a id="adminToggle" class="collapsed" role="button" data-toggle="collapse" data-parent="#modules" href="#admin" aria-expanded="false" aria-controls="collapseOne">
+ Administração </a>
+ </h2>
+ </div> <!-- /.panel-heading -->
+ <div id="admin" class="panel-collapse collapse" role="tabpanel" aria-labelledby="adminHeading">
+ <div class="panel-body">
+ <h3>Tabelas de administração</h3>
+ [% PROCESS pagelist module=modules.admin modulename="admin" %]
+ </div> <!-- /.panel-body -->
+ </div> <!-- /.panel-collapse -->
+ </div>
+
+ <div class="panel panel-default">
+ <div class="panel-heading" role="tab" id="authoritiesHeading">
+ <h2 class="panel-title">
+ <a id="authoritiesToggle" class="collapsed" role="button" data-toggle="collapse" data-parent="#modules" href="#authorities" aria-expanded="false" aria-controls="collapseOne">
+ Autoridades </a>
+ </h2>
+ </div> <!-- /.panel-heading -->
+ <div id="authorities" class="panel-collapse collapse" role="tabpanel" aria-labelledby="authoritiesHeading">
+ <div class="panel-body">
+ <h3>Tabelas de autoridades</h3>
+ [% PROCESS pagelist module=modules.authorities modulename="authorities" %]
+ </div> <!-- /.panel-body -->
+ </div> <!-- /.panel-collapse -->
+ </div>
+
+ <div class="panel panel-default">
+ <div class="panel-heading" role="tab" id="catalogueHeading">
+ <h2 class="panel-title">
+ <a id="catalogueToggle" class="collapsed" role="button" data-toggle="collapse" data-parent="#modules" href="#catalogue" aria-expanded="false" aria-controls="collapseOne">
+ Catálogo </a>
+ </h2>
+ </div> <!-- /.panel-heading -->
+ <div id="catalogue" class="panel-collapse collapse" role="tabpanel" aria-labelledby="catalogueHeading">
+ <div class="panel-body">
+ <h3>Tabelas de catalogação</h3>
+ [% PROCESS pagelist module=modules.catalogue modulename="catalogue" %]
+ </div> <!-- /.panel-body -->
+ </div> <!-- /.panel-collapse -->
+ </div>
+
+ <div class="panel panel-default">
+ <div class="panel-heading" role="tab" id="cataloguingHeading">
+ <h2 class="panel-title">
+ <a id="cataloguingToggle" class="collapsed" role="button" data-toggle="collapse" data-parent="#modules" href="#cataloguing" aria-expanded="false" aria-controls="collapseOne">
+ Catalogar </a>
+ </h2>
+ </div> <!-- /.panel-heading -->
+ <div id="cataloguing" class="panel-collapse collapse" role="tabpanel" aria-labelledby="cataloguingHeading">
+ <div class="panel-body">
+ <h3>Tabelas do catalogação</h3>
+ [% PROCESS pagelist module=modules.cataloguing modulename="cataloguing" %]
+ </div> <!-- /.panel-body -->
+ </div> <!-- /.panel-collapse -->
+ </div>
+
+ <div class="panel panel-default">
+ <div class="panel-heading" role="tab" id="circHeading">
+ <h2 class="panel-title">
+ <a id="circToggle" class="collapsed" role="button" data-toggle="collapse" data-parent="#modules" href="#circ" aria-expanded="false" aria-controls="collapseOne">
+ Empréstimo </a>
+ </h2>
+ </div> <!-- /.panel-heading -->
+ <div id="circ" class="panel-collapse collapse" role="tabpanel" aria-labelledby="circHeading">
+ <div class="panel-body">
+ <h3>Tabelas de empréstimo</h3>
+ [% PROCESS pagelist module=modules.circ modulename="circ" %]
+ </div> <!-- /.panel-body -->
+ </div> <!-- /.panel-collapse -->
+ </div>
+
+ <div class="panel panel-default">
+ <div class="panel-heading" role="tab" id="coursereservesHeading">
+ <h2 class="panel-title">
+ <a id="coursereservesToggle" class="collapsed" role="button" data-toggle="collapse" data-parent="#modules" href="#coursereserves" aria-expanded="false" aria-controls="collapseOne">
+ Reservas de curso </a>
+ </h2>
+ </div> <!-- /.panel-heading -->
+ <div id="coursereserves" class="panel-collapse collapse" role="tabpanel" aria-labelledby="coursereservesHeading">
+ <div class="panel-body">
+ <h3>Tabelas das reservas de curso</h3>
+ [% PROCESS pagelist module=modules.coursereserves modulename="coursereserves" %]
+ </div> <!-- /.panel-body -->
+ </div> <!-- /.panel-collapse -->
+ </div>
+
+ <div class="panel panel-default">
+ <div class="panel-heading" role="tab" id="ermHeading">
+ <h2 class="panel-title">
+ <a class="collapsed" role="button" data-toggle="collapse" data-parent="#modules" href="#erm" aria-expanded="false" aria-controls="collapseOne">
+ Gestão de recursos electrónicos </a>
+ </h2>
+ </div> <!-- /.panel-heading -->
+ <div id="erm" class="panel-collapse collapse" role="tabpanel" aria-labelledby="ermHeading">
+ <div class="panel-body">
+ <h3>Tabelas da gestão de recursos electrónicos</h3>
+ [% PROCESS pagelist module=modules.erm modulename="erm" %]
+ </div> <!-- /.panel-body -->
+ </div> <!-- /.panel-collapse -->
+ </div>
+
+ <div class="panel panel-default">
+ <div class="panel-heading" role="tab" id="illrequestsHeading">
+ <h2 class="panel-title">
+ <a id="illrequestsToggle" class="collapsed" role="button" data-toggle="collapse" data-parent="#modules" href="#illrequests" aria-expanded="false" aria-controls="collapseOne">
+ Empréstimos inter-bibliotecas </a>
+ </h2>
+ </div> <!-- /.panel-heading -->
+ <div id="illrequests" class="panel-collapse collapse" role="tabpanel" aria-labelledby="illrequestsHeading">
+ <div class="panel-body">
+ <h3>Tabelas dos empréstimos inter-bibliotecas</h3>
+ [% PROCESS pagelist module=modules.illrequests modulename="illrequests" %]
+ </div> <!-- /.panel-body -->
+ </div> <!-- /.panel-collapse -->
+ </div>
+
+ <div class="panel panel-default">
+ <div class="panel-heading" role="tab" id="membersHeading">
+ <h2 class="panel-title">
+ <a id="membersToggle" class="collapsed" role="button" data-toggle="collapse" data-parent="#modules" href="#members" aria-expanded="false" aria-controls="collapseOne">
+ Leitores </a>
+ </h2>
+ </div> <!-- /.panel-heading -->
+ <div id="members" class="panel-collapse collapse" role="tabpanel" aria-labelledby="membersHeading">
+ <div class="panel-body">
+ <h3>Tabelas de leitores</h3>
+ [% PROCESS pagelist module=modules.members modulename="members" %]
+ </div> <!-- /.panel-body -->
+ </div> <!-- /.panel-collapse -->
+ </div>
+
+ <div class="panel panel-default">
+ <div class="panel-heading" role="tab" id="posHeading">
+ <h2 class="panel-title">
+ <a id="posToggle" class="collapsed" role="button" data-toggle="collapse" data-parent="#modules" href="#pos" aria-expanded="false" aria-controls="collapseOne">
+ Ponto de venda </a>
+ </h2>
+ </div> <!-- /.panel-heading -->
+ <div id="pos" class="panel-collapse collapse" role="tabpanel" aria-labelledby="posHeading">
+ <div class="panel-body">
+ <h3>Tabelas dos pontos de venda</h3>
+ [% PROCESS pagelist module=modules.pos modulename="pos" %]
+ </div> <!-- /.panel-body -->
+ </div> <!-- /.panel-collapse -->
+ </div>
+
+ <div class="panel panel-default">
+ <div class="panel-heading" role="tab" id="toolsHeading">
+ <h2 class="panel-title">
+ <a id="toolsToggle" class="collapsed" role="button" data-toggle="collapse" data-parent="#modules" href="#tools" aria-expanded="false" aria-controls="collapseOne">
+ Ferramentas </a>
+ </h2>
+ </div> <!-- /.panel-heading -->
+ <div id="tools" class="panel-collapse collapse" role="tabpanel" aria-labelledby="toolsHeading">
+ <div class="panel-body">
+ <h3>Tabelas das ferramentas</h3>
+ [% PROCESS pagelist module=modules.tools modulename="tools" %]
+ </div> <!-- /.panel-body -->
+ </div> <!-- /.panel-collapse -->
+ </div>
+
+ <div class="panel panel-default">
+ <div class="panel-heading" role="tab" id="opacHeading">
+ <h2 class="panel-title">
+ <a id="opacToggle" class="collapsed" role="button" data-toggle="collapse" data-parent="#modules" href="#opac" aria-expanded="false" aria-controls="collapseOne">
+ OPAC </a>
+ </h2>
+ </div> <!-- /.panel-heading -->
+ <div id="opac" class="panel-collapse collapse" role="tabpanel" aria-labelledby="opacHeading">
+ <div class="panel-body">
+ <h3>Tabelas do OPAC</h3>
+ [% PROCESS pagelist module=modules.opac modulename="opac" %]
+ </div> <!-- /.panel-body -->
+ </div> <!-- /.panel-collapse -->
+ </div>
+
+ <div class="panel panel-default">
+ <div class="panel-heading" role="tab" id="reportsHeading">
+ <h2 class="panel-title">
+ <a id="reportsToggle" class="collapsed" role="button" data-toggle="collapse" data-parent="#modules" href="#reports" aria-expanded="false" aria-controls="collapseOne">
+ Relatórios </a>
+ </h2>
+ </div> <!-- /.panel-heading -->
+ <div id="reports" class="panel-collapse collapse" role="tabpanel" aria-labelledby="reportsHeading">
+ <div class="panel-body">
+ <h3>Tabelas de relatórios</h3>
+ [% PROCESS pagelist module=modules.reports modulename="reports" %]
+ </div> <!-- /.panel-body -->
+ </div> <!-- /.panel-collapse -->
+ </div>
+
+ <div class="panel panel-default">
+ <div class="panel-heading" role="tab" id="serialsHeading">
+ <h2 class="panel-title">
+ <a id="serialsToggle" class="collapsed" role="button" data-toggle="collapse" data-parent="#modules" href="#serials" aria-expanded="false" aria-controls="collapseOne">
+ Periódicos </a>
+ </h2>
+ </div> <!-- /.panel-heading -->
+ <div id="serials" class="panel-collapse collapse" role="tabpanel" aria-labelledby="serialsHeading">
+ <div class="panel-body">
+ <h3>Tabelas dos periódicos</h3>
+ [% PROCESS pagelist module=modules.serials modulename="serials" %]
+ </div> <!-- /.panel-body -->
+ </div> <!-- /.panel-collapse -->
+ </div>
+
+ </div>
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'admin-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/admin-menu.js") | $raw %]
+
+ [%- IF ( panel.defined ) -%]
+ <script>
+            $(document).ready( function() {
+                $("#[% panel | uri %]Toggle").click();
+                [%- IF page.defined -%]
+                $("#[% panel | uri %]").on('shown.bs.collapse', function () {
+                    $('html, body').animate({
+                        [%- IF table.defined -%]
+                        scrollTop: ($("#[% page | uri %]\\#[% table | uri %]").offset().top)
+                        [%- ELSE -%]
+                        scrollTop: ($("#[% page | uri %]").offset().top)
+                        [%- END -%]
+                    }, 500);
+                });
+                [%- END -%]
+            });
+        </script>
+ [%- END -%]
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

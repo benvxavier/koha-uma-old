@@ -1,0 +1,226 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE AuthorisedValues %]
+[% USE Branches %]
+[% USE Categories %]
+[% USE KohaDates %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Atualizar registos de leitores &rsaquo; Leitores &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="pat_update" class="pat">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'patron-search-header.inc' %]
+[% END %]
+
+[% BLOCK display_names %]
+[% SWITCH field %]
+[% CASE 'branchcode'          %]<span>Biblioteca (código)</span>
+[% CASE 'surname'             %]<span>Apelido</span>
+[% CASE 'firstname'           %]<span>Primeiro nome</span>
+[% CASE 'middle_name'         %]<span>Nome do meio</span>
+[% CASE 'title'               %]<span>Título</span>
+[% CASE 'othernames'          %]<span>Outros nomes</span>
+[% CASE 'initials'            %]<span>Iniciais</span>
+[% CASE 'pronouns'            %]<span>Pronomes</span>
+[% CASE 'streetnumber'        %]<span>Número de rua</span>
+[% CASE 'streettype'          %]<span>Tipo de rua</span>
+[% CASE 'address'             %]<span>Morada</span>
+[% CASE 'address2'            %]<span>Morada 2</span>
+[% CASE 'city'                %]<span>Cidade</span>
+[% CASE 'state'               %]<span>Estado</span>
+[% CASE 'zipcode'             %]<span>Código postal</span>
+[% CASE 'country'             %]<span>País</span>
+[% CASE 'email'               %]<span>Email</span>
+[% CASE 'phone'               %]<span>Telefone primário</span>
+[% CASE 'mobile'              %]<span>Outro telefone</span>
+[% CASE 'fax'                 %]<span>Fax</span>
+[% CASE 'emailpro'            %]<span>Email secundário</span>
+[% CASE 'phonepro'            %]<span>Telefone secundário</span>
+[% CASE 'B_streetnumber'      %]<span>Endereço alternativo: Número de rua</span>
+[% CASE 'B_streettype'        %]<span>Endereço alternativo: Tipo de rua</span>
+[% CASE 'B_address'           %]<span>Endereço alternativo: Morada</span>
+[% CASE 'B_address2'          %]<span>Endereço alternativo: Morada 2</span>
+[% CASE 'B_city'              %]<span>Endereço alternativo: Cidade</span>
+[% CASE 'B_state'             %]<span>Endereço alternativo: Estado</span>
+[% CASE 'B_zipcode'           %]<span>Endereço alternativo: Código postal</span>
+[% CASE 'B_email'             %]<span>Endereço alternativo: Email</span>
+[% CASE 'B_phone'             %]<span>Endereço alternativo: Telefone</span>
+[% CASE 'contactnote'         %]<span>Endereço alternativo: Nota</span>
+[% CASE 'dateofbirth'         %]<span>Data de nascimento</span>
+[% CASE 'contactname'         %]<span>Contacto: Último nome</span>
+[% CASE 'contactfirstname'    %]<span>Contacto: Primeiro nome</span>
+[% CASE 'contacttitle'        %]<span>Contacto: Título</span>
+[% CASE 'relationship'        %]<span>Contacto: Relação</span>
+[% CASE 'sex'                 %]<span>Sexo</span>
+[% CASE 'autorenew_checkouts' %]<span>Renovação automática</span>
+[% CASE 'altcontactfirstname' %]<span>Contacto alternativo: Primeiro nome</span>
+[% CASE 'altcontactsurname'   %]<span>Contacto alternativo: Apelido</span>
+[% CASE 'altcontactaddress1'  %]<span>Contacto alternativo: Morada</span>
+[% CASE 'altcontactaddress2'  %]<span>Contacto alternativo: Morada 2</span>
+[% CASE 'altcontactaddress3'  %]<span>Contacto alternativo: Cidade</span>
+[% CASE 'altcontactstate'     %]<span>Contacto alternativo: Estado</span>
+[% CASE 'altcontactzipcode'   %]<span>Contacto alternativo: Código postal</span>
+[% CASE 'altcontactcountry'   %]<span>Contacto alternativo: País</span>
+[% CASE 'altcontactphone'     %]<span>Contacto alternativo: Telefone</span>
+[% CASE 'smsalertnumber'      %]<span>Número para SMS</span>
+[% CASE 'extended_attributes' %]<span>Atributos e identificadores adicionais</span>
+[% CASE %][% field | html %]
+[% END %]
+[% END %]
+
+[% BLOCK display_extended_attributes %]
+ [% IF attrs and attrs.size > 1 %]
+ <ul>
+ [% FOREACH attr IN attrs %]
+ <li>[% PROCESS display_attribute attr=attr type=type %]</li>
+ [% END %]
+ <ul>
+ [% ELSIF attrs %]
+ [% PROCESS display_attribute attr=attrs.0 type=type %]
+ [% END %]
+[% END %]
+
+[% BLOCK display_attribute %]
+ [% IF type.authorised_value_category %]
+ [% AuthorisedValues.GetByCode(type.authorised_value_category,attr.attribute) | html %]
+ [% ELSE %]
+ [% attr.attribute | html %]
+ [% END %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/members/members-home.pl">Leitores</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Atualizar registos de leitor</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-md-8 col-md-offset-2">
+
+ <h1>Atualizar registos de leitor</h1>
+ [% IF PendingModifications %]
+ <form method="post" action="members-update-do.pl">
+ <div id="pending_updates" class="panel-group" role="tablist" aria-multiselectable="true">
+ [% FOREACH pm IN PendingModifications %]
+ [% SET borrowernumber = pm.borrowernumber %]
+ <div class="panel panel-default">
+ <div class="panel-heading" role="tab" id="panel-header-[% pm.borrowernumber | html %]">
+ <h3 class="panel-title">
+ <a role="button" class="collapsed" data-toggle="collapse" data-parent="#pending_updates" aria-controls="panel_modify_[% pm.borrowernumber | html %]" href="#panel_modify_[% pm.borrowernumber | uri %]">[% borrowers.$borrowernumber.surname | html %][% IF ( borrowers.$borrowernumber.firstname ) %], [% borrowers.$borrowernumber.firstname | html %][% END %] - [% Categories.GetName( borrowers.$borrowernumber.categorycode ) | html %] ([% Branches.GetName( borrowers.$borrowernumber.branchcode ) | html %]) ([% borrowers.$borrowernumber.cardnumber | html %]) - Requisitado em [% pm.timestamp | $KohaDates with_hours = 1 %]</a>
+ </h3>
+ </div> <!-- /.panel-heading -->
+ <div id="panel_modify_[% pm.borrowernumber | html %]" class="panel-collapse collapse" role="tabpanel" aria-labelledby="panel-header-[% pm.borrowernumber | html %]">
+ <div class="panel-body">
+ <div class="btn-toolbar">
+
+ <label for="approve_modify_[% pm.borrowernumber | html %]"><input type="radio" id="approve_modify_[% pm.borrowernumber | html %]" name="modify_[% pm.borrowernumber | html %]" value="approve" /> Aprovar</label>
+
+
+ <label for="deny_modify_[% pm.borrowernumber | html %]"><input type="radio" id="deny_modify_[% pm.borrowernumber | html %]" name="modify_[% pm.borrowernumber | html %]" value="deny" /> Não autorizar</label>
+
+
+ <label for="ignore_modify_[% pm.borrowernumber | html %]"><input type="radio" id="ignore_modify_[% pm.borrowernumber | html %]" name="modify_[% pm.borrowernumber | html %]" value="ignore" checked="checked"/> Ignorar</label>
+ &nbsp;|&nbsp; <a target="_blank" href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% pm.borrowernumber | html %]" >Detalhes do leitor</a>
+ </div>
+
+ [% IF borrowers.$borrowernumber.gonenoaddress > 0 %]
+ <div class="dialog message" style="margin-top:.8em">
+ <h4>Endereço do leitor em dúvida</h4>
+ <p>O <strong>Perdido sem endereço</strong> está definido para este leitor. Se esta modificação resolve o problema, por favor remova esse estado.</p>
+ <input type="checkbox" id="unset_gna_[% pm.borrowernumber | html %]" name="unset_gna_[% pm.borrowernumber | html %]" value="unset_gna_[% pm.borrowernumber | html %]"/>
+ <label for="unset_gna_[% pm.borrowernumber | html %]">Remover estado Perdido sem endereço para este leitor</label>
+ </div>
+ [% END %]
+
+ [% IF !pm.extended_attributes and pm.size > 3 or pm.extended_attributes and pm.size > 4 %]
+ [%# timestamp+verification_token+borrowernumber=3 %]
+ <div class="members-update-table">
+ <table>
+ <tr>
+ <th>Campo</th>
+ <th>Valor antigo</th>
+ <th>Novo valor</th>
+ </tr>
+
+
+ [% FOREACH key IN pm.keys %]
+ [% IF ( key != "timestamp" and key != "extended_attributes" ) %]
+ [% IF ( ( pm.$key OR borrowers.$borrowernumber.$key ) && ( pm.$key != borrowers.$borrowernumber.$key ) ) %]
+ <tr>
+ <td>[% PROCESS display_names field = key %]</td>
+ [% IF ( key == "dateofbirth" ) %]
+ <td>[% borrowers.$borrowernumber.$key | $KohaDates %]</td>
+ <td>[% pm.$key | $KohaDates %]</td>
+ [% ELSIF key == 'branchcode' %]
+ <td>[% Branches.GetName( borrowers.$borrowernumber.$key ) | html %]</td>
+ <td>[% Branches.GetName( pm.$key ) | html %]</td>
+ [% ELSE %]
+ <td>[% borrowers.$borrowernumber.$key | html %]</td>
+ <td>[% pm.$key | html %]</td>
+ [% END %]
+ </tr>
+ [% END %]
+ [% END %]
+ [% END %]
+ </table>
+ </div> <!-- /.members-update-table -->
+ [% END # /!pm.extended_attributes %]
+ [% IF borrowers.$borrowernumber.modified_attributes %]
+ <div class="members-update-table">
+ <h4>[% PROCESS display_names field='extended_attributes' %]</h4>
+ <table>
+ <tr>
+ <th>Campo</th>
+ <th>Valor antigo</th>
+ <th>Novo valor</th>
+ </tr>
+ [% FOREACH attribute_group IN borrowers.$borrowernumber.modified_attributes %]
+ <tr>
+ <td>[% attribute_group.type.description | html %]</td>
+ <td>[% PROCESS display_extended_attributes attrs=attribute_group.before type=attribute_group.type %]</td>
+ <td>[% PROCESS display_extended_attributes attrs=attribute_group.after type=attribute_group.type %]</td>
+ </tr>
+ [% END %]
+ </table>
+ </div> <!-- /.members-update-table -->
+ [% END # / borrowers.$borrowernumber.modified_attributes %]
+ </div> <!-- /.panel-body -->
+ </div> <!-- /.panel-collapse.collapse -->
+ </div> <!-- /panel.panel-default -->
+ [% END # /FOREACH pm %]
+ </div> <!-- /#pending-updates -->
+ <fieldset class="action"><input class="btn btn-primary" type="submit" value="Submeter" /></fieldset>
+ </form>
+ [% ELSE %]
+ <div class="dialog message">
+ <p>Não existem modificações de leitor pendentes.</p>
+ </div>
+ [% END %]
+
+ </div>
+ </div>
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'str/members-menu.inc' %]
+ [% Asset.js("js/members-menu.js") | $raw %]
+ <script>
+        $(document).ready(function(){
+            [%- IF ( active ) -%]
+                $("#pending_updates a[href='#panel_modify_" + [% active | html %] + "']").click();
+            [%- ELSE -%]
+                $("#pending_updates a.collapsed:eq(0)").click();
+            [%- END -%]
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

@@ -1,0 +1,96 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Price %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Eliminar leitor [% patron.firstname | html %] [% patron.surname | html %] &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="pat_deletemem" class="pat">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'patron-search-header.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/members/members-home.pl">Leitores</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/members/moremember.pl?borrowernumber=[% patron.borrowernumber | uri %]">[% INCLUDE 'patron-title.inc' %]</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Eliminar leitor</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ [% INCLUDE 'members-toolbar.inc' %]
+ [% IF ItemsOnIssues || debits || is_guarantor %]
+ <div class="dialog alert">
+ <h1>Não é possível eliminar o leitor</h1>
+ <ul>
+ [% IF ( ItemsOnIssues ) %]
+ <li>Leitor tem [% ItemsOnIssues | html %] documento(s) emprestados.</li>
+ [% END %]
+ [% IF debits %]
+ <li>Leitor tem [% debits | $Price %] em multas.</li>
+ [% END %]
+ [% IF is_guarantor %]
+ <li>O registo de leitor tem outras contas associadas.</li>
+ [% END %]
+ </ul>
+ </div>
+ [% ELSIF op == 'delete_confirm' and patron %]
+ [%# TODO add "patron does not exist" unless patron %]
+ <div class="dialog alert">
+ [% IF ItemsOnHold or credits or pending_suggestions > 0 %]
+ <ul>
+ [% IF ItemsOnHold %]
+ <li>O leitor tem [% ItemsOnHold | html %] reserva(s). Ao eliminar o leitor está a cancelar todas as reservas.</li>
+ [% END %]
+ [% IF credits %]
+ <li>O leitor tem um crédito de [% credits | $Price %].</li>
+ [% END %]
+ [% IF pending_suggestions > 0 %]
+ <li>Leitor tem [% pending_suggestions | html %] sugestões pendentes.</li>
+ [% END %]
+ </ul>
+ [% END %]
+ <h1>Tem a certeza que pretende eliminar o leitor [% patron.firstname | html %] [% patron.surname | html %]?</h1>
+ <p>Esta operação não pode ser desfeita.</p>
+ <form action="/cgi-bin/koha/members/deletemem.pl">
+ <input type="hidden" name="csrf_token" value="[% csrf_token | html %]" />
+ <input type="hidden" name="member" value="[% patron.borrowernumber | html %]"/>
+ <input type="hidden" name="op" value="delete_confirmed" />
+ <button type="submit" class="approve"><i class="fa fa-fw fa-check"></i> Sim, eliminar</button>
+ </form>
+ <form action="/cgi-bin/koha/members/moremember.pl">
+ <input type="hidden" name="borrowernumber" value="[% patron.borrowernumber | html %]"/>
+ <button type="submit" class="deny"><i class="fa fa-fw fa-remove"></i> Não, não eliminar</button>
+ </form>
+ </div>
+ [% END %]
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'circ-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'str/members-menu.inc' %]
+ [% Asset.js("js/members-menu.js") | $raw %]
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

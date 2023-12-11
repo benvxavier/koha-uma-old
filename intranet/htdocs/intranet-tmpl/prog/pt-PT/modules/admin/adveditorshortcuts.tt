@@ -1,0 +1,81 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Koha %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Atalhos do editor avançado &rsaquo; Administração &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="adveditor_shortcuts" class="admin">
+ [% WRAPPER 'header.inc' %]
+ [% INCLUDE 'prefs-admin-search.inc' %]
+[% END %]
+ [% PROCESS 'keyboard_shortcuts.inc' %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/admin-home.pl">Administração</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Atalhos de teclado do editor avançado</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+ <h1>Atalhos de teclado do editor avançado</h1>
+ [% IF Koha.Preference('EnableAdvancedCatalogingEditor') %]
+ <ul>
+ <li>Separar as teclas usando um hífen "-"</li>
+ <li>A tecla Control é "Ctrl"</li>
+ <li>A tecla Alt é "Alt"</li>
+ <li>A tecla Shift é "Shift"</li>
+ <li>Se combinar múltiplas teclas, as mesmas devem estar numa ordem específica: Shift-Cmd-Ctrl-Alt</li>
+ <li><a href="https://codemirror.net/doc/manual.html#keymaps">Mais documentação em como definir os mapeamentos de teclas</a></li>
+ </ul>
+
+ <form id="adveditor_shortcuts" method="post" action="/cgi-bin/koha/admin/adveditorshortcuts.pl">
+ <fieldset>
+ <input type=hidden name="op" value="save" />
+
+ <table id="adv_editor_keyboard_shortcuts">
+ <thead>
+ <th>Descrição</th>
+ <th>Teclas de atalho</th>
+ </thead>
+ <tbody>
+ [% FOREACH shortcut IN shortcuts %]
+ <tr>
+ <td><label for="shortcut_keys">[% PROCESS keyboard_shortcut_descriptions shortcut_name=shortcut.shortcut_name %]</label></td>
+ <td>
+ <input type="hidden" name="shortcut_name" value="[% shortcut.shortcut_name | html %]">
+ <input type="text" name="shortcut_keys" value="[% shortcut.shortcut_keys | html %]">
+ </td>
+ </tr>
+ [% END %]
+ </table>
+ </fieldset>
+ <fieldset class="action"><input class="btn btn-primary" type="submit" value="Guardar atalhos"></fieldset>
+ </form>
+ [% ELSE %]
+ <p>Ative o editor de catalogação avançado (preferência de sistema EnableAdvancedCatalogingEditor) para definir os atalho de tecaldo</p>
+ [% END %]
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'admin-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/tools-menu.js") | $raw %]
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

@@ -1,0 +1,146 @@
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Construtor do campo 124c UNIMARC</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="cat_unimarc_field_124c" class="cat" style="padding:1em;">
+ <h1>Construtor do campo 124c UNIMARC</h1>
+ <div class="page-section">
+ <form name="f_pop" action="">
+ <table>
+ <tr>
+ <td><label for="f1"> Apresentação técnica da imagem fotográfica e não fotográfica:</label></td>
+ <td>
+ <select name="f1" id="f1">
+
+ [% IF ( f1aa ) %]
+ <option value="aa" selected="selected">anáglifo</option>
+ [% ELSE %]
+ <option value="aa">anáglifo</option>
+ [% END %]
+ [% IF ( f1ab ) %]
+ <option value="ab" selected="selected">polarizado</option>
+ [% ELSE %]
+ <option value="ab">polarizado</option>
+ [% END %]
+ [% IF ( f1ac ) %]
+ <option value="ac" selected="selected">planimétrico</option>
+ [% ELSE %]
+ <option value="ac">planimétrico</option>
+ [% END %]
+ [% IF ( f1ad ) %]
+ <option value="ad" selected="selected">mapa de diagrama</option>
+ [% ELSE %]
+ <option value="ad">mapa de diagrama</option>
+ [% END %]
+ [% IF ( f1ae ) %]
+ <option value="ae" selected="selected">mapa de fluxo</option>
+ [% ELSE %]
+ <option value="ae">mapa de fluxo</option>
+ [% END %]
+ [% IF ( f1af ) %]
+ <option value="af" selected="selected">mapa de pontos</option>
+ [% ELSE %]
+ <option value="af">mapa de pontos</option>
+ [% END %]
+ [% IF ( f1ag ) %]
+ <option value="ag" selected="selected">mapa de diagrama</option>
+ [% ELSE %]
+ <option value="ag">mapa de diagrama</option>
+ [% END %]
+ [% IF ( f1ah ) %]
+ <option value="ah" selected="selected">coropleto</option>
+ [% ELSE %]
+ <option value="ah">coropleto</option>
+ [% END %]
+ [% IF ( f1ai ) %]
+ <option value="ai" selected="selected">corocromático</option>
+ [% ELSE %]
+ <option value="ai">corocromático</option>
+ [% END %]
+ [% IF ( f1aj ) %]
+ <option value="aj" selected="selected">densimétrico</option>
+ [% ELSE %]
+ <option value="aj">densimétrico</option>
+ [% END %]
+ [% IF ( f1ak ) %]
+ <option value="ak" selected="selected">isopleto</option>
+ [% ELSE %]
+ <option value="ak">isopleto</option>
+ [% END %]
+ [% IF ( f1am ) %]
+ <option value="am" selected="selected">anamórfico</option>
+ [% ELSE %]
+ <option value="am">anamórfico</option>
+ [% END %]
+ [% IF ( f1an ) %]
+ <option value="an" selected="selected">mapa pictórico</option>
+ [% ELSE %]
+ <option value="an">mapa pictórico</option>
+ [% END %]
+ [% IF ( f1ao ) %]
+ <option value="ao" selected="selected">modelo espacial representado numa superfície a duas dimensões</option>
+ [% ELSE %]
+ <option value="ao">modelo espacial representado numa superfície a duas dimensões</option>
+ [% END %]
+ [% IF ( f1ap ) %]
+ <option value="ap" selected="selected">mapa mental ou cognitivo</option>
+ [% ELSE %]
+ <option value="ap">mapa mental ou cognitivo</option>
+ [% END %]
+ [% IF ( f1aq ) %]
+ <option value="aq" selected="selected">vistas com representação do horizonte</option>
+ [% ELSE %]
+ <option value="aq">vistas com representação do horizonte</option>
+ [% END %]
+ [% IF ( f1ar ) %]
+ <option value="ar" selected="selected">vistas sem representação do horizonte</option>
+ [% ELSE %]
+ <option value="ar">vistas sem representação do horizonte</option>
+ [% END %]
+ [% IF ( f1as ) %]
+ <option value="as" selected="selected">mapa de vistas</option>
+ [% ELSE %]
+ <option value="as">mapa de vistas</option>
+ [% END %]
+ [% IF ( f1da ) %]
+ <option value="da" selected="selected">pictomapa</option>
+ [% ELSE %]
+ <option value="da">pictomapa</option>
+ [% END %]
+ [% IF ( f1db ) %]
+ <option value="db" selected="selected">ponto de mapa aleatório</option>
+ [% ELSE %]
+ <option value="db">ponto de mapa aleatório</option>
+ [% END %]
+ [% IF ( f1dc ) %]
+ <option value="dc" selected="selected">rastreado</option>
+ [% ELSE %]
+ <option value="dc">rastreado</option>
+ [% END %]
+ [% IF ( f1dd ) %]
+ <option value="dd" selected="selected">não rastreado</option>
+ [% ELSE %]
+ <option value="dd">não rastreado</option>
+ [% END %]
+ </select>
+ </td></tr>
+ </table>
+ <fieldset class="action"><input type="button" class="btn btn-primary" value="OK" onclick="report();" /> <a href="#" class="cancel close">Anular</a></fieldset>
+ </form>
+ </div> <!-- /.page-section -->
+
+[% MACRO jsinclude BLOCK %]
+ <script>
+        function report() {
+            var doc = opener.document;
+            var field = doc.getElementById("[% index | html %]");
+            field.value = document.f_pop.f1.value;
+            window.close();
+            return false;
+        }
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' popup_window=1 %]

@@ -1,0 +1,33 @@
+[% USE raw %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Carregamento de plugin &rsaquo; Plugins &rsaquo; Ferramentas &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% INCLUDE 'calendar.inc' %]
+</head>
+
+<body id="plugins_plugins_disabled" class="plugins">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'circ-search.inc' %]
+[% END %]
+
+ [% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/admin-home.pl">Administração</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Plugins desativados</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+ [% END #/ WRAPPER sub-header.inc %]
+
+ <div class="container-fluid">
+ <div class="row">
+ <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3">
+ <h1>Plugins desativados!</h1>
+
+ <p>Para ativar os plugins do Koha, o ficheiro de configuração do Koha deve conter a entrada enable_plugins</p>
+ </div>
+ </div>
+
+[% INCLUDE 'intranet-bottom.inc' %]

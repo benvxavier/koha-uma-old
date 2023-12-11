@@ -1,0 +1,41 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Enviar o seu carrinho &rsaquo; [% IF ( LibraryNameTitle ) %][% LibraryNameTitle | html %][% ELSE %]Koha online[% END %] catálogo</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body style="padding: 1em;" id="cart_sendbasketform" class="cart">
+<div class="container">[% IF ( email_add ) %]
+
+ [% IF ( SENT ) %]
+ <h3>Mensagem enviada</h3>
+ <p>O carrinho foi enviado para: [% email_add | html %]</p>
+ <p><a class="focus close" href="#">Fechar a janela</a></p>
+ [% END %]
+ [% IF ( error ) %]
+ <p>Problema ao enviar carrinho...</p>
+ [% END %]
+ 
+[% ELSE %]
+
+[% INCLUDE 'blocking_errors.inc' %]
+<form action="/cgi-bin/koha/basket/sendbasket.pl" method="post">
+
+<fieldset class="rows"> 
+<legend>Enviar carrinho</legend>
+<ol> <li>
+ <label for="email_add">Email:</label>
+ <input type="text" id="email_add" name="email_add" size="43" class="focus" />
+ </li>
+ <li>
+ <label for="comment">Comentário:</label>
+ <textarea id="comment" name="comment" rows="4" cols="40"></textarea>
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action"> <input class="btn btn-primary" type="submit" value="Enviar" /> <a class="cancel close" href="#">Anular</a> </fieldset>
+ <input type="hidden" name="bib_list" value="[% bib_list | html %]" />
+ <input type="hidden" name="csrf_token" value="[% csrf_token | html %]" />
+</form>
+
+[% END %]</div>
+</body>
+</html>

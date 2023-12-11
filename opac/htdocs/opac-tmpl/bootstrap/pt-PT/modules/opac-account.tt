@@ -1,0 +1,196 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Koha %]
+[% USE KohaDates %]
+[% USE AuthorisedValues %]
+[% USE Price %]
+[% SET ENABLE_OPAC_PAYMENTS = payment_methods %]
+[% USE AdditionalContents %]
+[% SET DISPLAY_PAYMENT_BLOCK = 0 %]
+[% SET OpacNav = AdditionalContents.get( location => "OpacNav", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
+[% SET OpacNavBottom = AdditionalContents.get( location => "OpacNavBottom", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>As suas multas &rsaquo; [% IF ( LibraryNameTitle ) %][% LibraryNameTitle | html %][% ELSE %]Koha online[% END %] catálogo</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% BLOCK cssinclude %]
+ [% Asset.css("css/datatables.css") | $raw %]
+[% END %]
+</head>
+
+[% INCLUDE 'bodytag.inc' bodyid='opac-account' bodyclass='scrollto' %]
+[% INCLUDE 'masthead.inc' %]
+
+<div class="main">
+ <nav aria-label="Caminho de navegação" class="breadcrumbs" id="breadcrumbs">
+ <ol class="breadcrumb">
+ <li class="breadcrumb-item">
+ <a href="/cgi-bin/koha/opac-main.pl">Início</a>
+ </li>
+ <li class="breadcrumb-item">
+ <a href="/cgi-bin/koha/opac-user.pl">[% INCLUDE 'patron-title.inc' patron = logged_in_user %]</a>
+ </li>
+ <li class="breadcrumb-item active">
+ <a href="#" aria-current="page">As suas multas</a>
+ </li>
+ </ol>
+ </nav> <!-- /#breadcrumbs -->
+
+ <div class="container-fluid">
+ <div class="row">
+ <div class="col col-lg-2 order-2 order-lg-1">
+ <div id="navigation">
+ [% INCLUDE 'navigation.inc' IsPatronPage=1 %]
+ </div>
+ </div>
+ <div class="col-md-12 col-lg-10 order-1">
+ <div id="useraccount" class="maincontent">
+
+ <h1>Encargos</h1>
+ [% IF message %]
+ <div class="alert alert-info">
+ [% IF message == 'valid_payment' %]
+ <p>O seu pagamento de $[% message_value | html %] foi efetuado com sucesso!</p>
+ [% ELSIF message == 'duplicate_payment' %]
+ <p>Um pagamento com o identificador de transição '[% message_value | html %]' já foi adicionado à sua conta.</p>
+ <p>Por favor contacte a biblioteca para mais informação.</p>
+ [% ELSIF message == 'invalid_payment' %]
+ <p>O identificador da transição '[% message_value | html %]' para este pagamento é inválido.</p>
+ <p>Por favor contacte a biblioteca para mais informação.</p>
+ [% END %]
+ </div>
+ [% END %]
+
+ [% IF payment_error %]
+ <div id="error" class="alert alert-warning">
+ <p><strong>Erro:</strong> houve um problema ao processar o seu pedido</p>
+ </div>
+ [% ELSIF payment %]
+ <div class="alert alert-info">
+ <p><strong>Pagamento aplicado:</strong> o seu pagamento de [% payment | html %] foi aplicado à sua conta</p>
+ </div>
+ [% END %]
+
+ [% PROCESS 'account-table.inc' ACCOUNT_LINES = ACCOUNT_LINES, ENABLE_OPAC_PAYMENTS = ENABLE_OPAC_PAYMENTS, plugins = plugins %]
+
+ </div> <!-- / #useraccount -->
+ </div> <!-- / .col-10 -->
+ </div> <!-- / .row -->
+ </div> <!-- / .container-fluid -->
+</div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %]
+[% INCLUDE 'datatables.inc' %]
+<script>
+$( document ).ready(function() {
+
+    var MSG_MIN_THRESHOLD = _("O montante mínimo necessário para este serviço é %s");
+    var txtActivefilter = _("Filtrar transações pagas");
+    var txtInactivefilter = _("Mostrar todas as transições");
+
+    var fines_table = $("#finestable").dataTable($.extend(true, {}, dataTablesDefaults, {
+         [% IF ENABLE_OPAC_PAYMENTS %]
+         "order": [[ 1, "desc" ]],
+         [% ELSE %]
+         "order": [[ 0, "desc" ]],
+         [% END %]
+         "dom": '<"#filter_p">',
+         "autoWidth": false,
+         "responsive": {
+            "details": { "type": 'column',"target": -1 }
+         },
+         "columnDefs": [
+            { "className": 'dtr-control', "orderable": false, "targets": -1 }
+         ],
+         'fnDrawCallback': function() {
+            show_hiddentfoot('#finestable');
+         }
+    } ));
+
+    $('table[id^="finestable-"]').dataTable($.extend(true, {}, dataTablesDefaults, {
+         "autoWidth": false,
+         "responsive": {
+            "details": { "type": 'column',"target": -1 }
+         },
+         "columnDefs": [
+            { "className": 'dtr-control', "orderable": false, "targets": -1 }
+         ],
+         'fnDrawCallback': function() {
+            show_hiddentfoot('table[id^="finestable-"]');
+         }
+    } ));
+
+    function show_hiddentfoot(selector) {
+        $('.finestable tfoot .sum').show();
+        if ($(".finestable tfoot td.dtr-hidden").length > 0) {
+            $(selector+" tfoot th").removeAttr( "colspan" );
+            $(".finestable tfoot .dtr-control").hide();
+        }
+    }
+    $("#filter_p").html('<p><a href="#" id="filter_paid"><i class="fa fa-filter" aria-hidden="true"></i> '+txtActivefilter+'</a>');
+    $('#filter_paid').click(function(e) {
+        e.preventDefault();
+        if ($(this).hasClass('filtered')) {
+            var filteredValue = '';
+            $(this).html('<i class="fa fa-filter" aria-hidden="true"></i> '+txtActivefilter);
+        } else { //Not filtered. Let's do it!
+            var filteredValue = '^((?!0.00).*)$'; //Filter not matching 0.00 http://stackoverflow.com/a/406408
+            $(this).html('<i class="fa fa-filter" aria-hidden="true"></i> '+txtInactivefilter);
+        }
+        fines_table.fnFilter(filteredValue, -2, true, false);
+        $(this).toggleClass('filtered');
+    });
+
+    //Start filtered
+    $('#filter_paid').click();
+
+    $(".pay-online").removeClass("hidden");
+
+    $("#amount-to-pay-label").hide();
+
+    $(".checkbox-pay, input[name='payment_method']").change( function() {
+        // Disable the pay button if no fees are selected
+        //$("#submit-pay").prop("disabled", ! $(".checkbox-pay:checked").length );
+
+        // Calculate the total amount to be paid based on selected fees
+        var total = 0;
+        $(".checkbox-pay").each( function() {
+            if ( $(this).is(":checked") ) {
+                var id = this.id.split("checkbox-pay-")[1];
+                total += parseFloat( $("#amount-" + id).val() );
+            }
+        });
+
+        var p = Promise.resolve();
+        if ( total ) {
+            p = Promise.all(
+                $('input[name="payment_method"]').map(function() {
+                    var self = this;
+                    return new Promise(function(resolve, reject) {
+                        var threshold = $(self).data('threshold');
+                        var help = $(self).parent().siblings('.help-block');
+                        if(!threshold || threshold == '' || threshold <= total) {
+                            $(self).prop('disabled', false);
+                            help.addClass('hide');
+                        } else {
+                            $(self).prop('disabled', true);
+                            help.html(MSG_MIN_THRESHOLD.format(parseInt(threshold,10).toFixed(2))).removeClass('hide');
+                        }
+                        resolve();
+                    })
+                }).toArray()
+            );
+
+            $("#amount-to-pay").html( total.toFixed(2) );
+            $("#amount-to-pay-label").show();
+        } else {
+            $('input[name="payment_method"]').prop('disabled', false).parent().siblings('.help-block').addClass('hide');
+            $("#amount-to-pay-label").hide();
+        }
+        p.then(function() {
+            $("#submit-pay").prop("disabled", ! $(".checkbox-pay:checked").length || ! $('input[name="payment_method"]:checked:not(:disabled)').length);
+        })
+    });
+});
+</script>
+[% END %]

@@ -1,0 +1,678 @@
+---
+description:
+- MARC code list for relators, as of http://www.loc.gov/marc/relators/relaterm.html
+tables:
+- authorised_values:
+    multiline: []
+    rows:
+    - authorised_value: acp
+      category: RELTERMS
+      lib: Copista de arte
+    - authorised_value: act
+      category: RELTERMS
+      lib: Ator
+    - authorised_value: adp
+      category: RELTERMS
+      lib: Adaptador
+    - authorised_value: aft
+      category: RELTERMS
+      lib: Autor de posfácio, colofão, etc.
+    - authorised_value: anl
+      category: RELTERMS
+      lib: Analista
+    - authorised_value: anm
+      category: RELTERMS
+      lib: Animador
+    - authorised_value: ann
+      category: RELTERMS
+      lib: Anotador
+    - authorised_value: ant
+      category: RELTERMS
+      lib: Antecedente bibliográfico
+    - authorised_value: app
+      category: RELTERMS
+      lib: Candidato
+    - authorised_value: aqt
+      category: RELTERMS
+      lib: Autor nas citações e resumos
+    - authorised_value: arc
+      category: RELTERMS
+      lib: Arquitecto
+    - authorised_value: ard
+      category: RELTERMS
+      lib: Diretor artístico
+    - authorised_value: arr
+      category: RELTERMS
+      lib: Arranjador
+    - authorised_value: art
+      category: RELTERMS
+      lib: Artista
+    - authorised_value: asg
+      category: RELTERMS
+      lib: Responsável
+    - authorised_value: asn
+      category: RELTERMS
+      lib: Nome associado
+    - authorised_value: att
+      category: RELTERMS
+      lib: Nome atribuído
+    - authorised_value: auc
+      category: RELTERMS
+      lib: Leiloeiro
+    - authorised_value: aud
+      category: RELTERMS
+      lib: Autor do diálogo
+    - authorised_value: aui
+      category: RELTERMS
+      lib: Autor da introdução
+    - authorised_value: aus
+      category: RELTERMS
+      lib: Autor do roteiro
+    - authorised_value: aut
+      category: RELTERMS
+      lib: Autor
+    - authorised_value: bdd
+      category: RELTERMS
+      lib: Designer de encadernação
+    - authorised_value: bjd
+      category: RELTERMS
+      lib: Designer da capa
+    - authorised_value: bkd
+      category: RELTERMS
+      lib: Designer de livro
+    - authorised_value: bkp
+      category: RELTERMS
+      lib: Produtor
+    - authorised_value: blw
+      category: RELTERMS
+      lib: Escritor da sinopse
+    - authorised_value: bnd
+      category: RELTERMS
+      lib: Encadernador
+    - authorised_value: bpd
+      category: RELTERMS
+      lib: Designer de placa de livro
+    - authorised_value: bsl
+      category: RELTERMS
+      lib: Livreiro
+    - authorised_value: ccp
+      category: RELTERMS
+      lib: Autor da ideia original
+    - authorised_value: chr
+      category: RELTERMS
+      lib: Coreógrafo
+    - authorised_value: clb
+      category: RELTERMS
+      lib: Colaborador
+    - authorised_value: cli
+      category: RELTERMS
+      lib: Cliente
+    - authorised_value: cll
+      category: RELTERMS
+      lib: Calígrafo
+    - authorised_value: clr
+      category: RELTERMS
+      lib: Colorista
+    - authorised_value: clt
+      category: RELTERMS
+      lib: Colótipo
+    - authorised_value: cmm
+      category: RELTERMS
+      lib: Comentador
+    - authorised_value: cmp
+      category: RELTERMS
+      lib: Compositor
+    - authorised_value: cmt
+      category: RELTERMS
+      lib: Compositor
+    - authorised_value: cng
+      category: RELTERMS
+      lib: Cinematográfico
+    - authorised_value: cnd
+      category: RELTERMS
+      lib: Condutor
+    - authorised_value: cns
+      category: RELTERMS
+      lib: Censor
+    - authorised_value: coe
+      category: RELTERMS
+      lib: Contestante -apelado
+    - authorised_value: col
+      category: RELTERMS
+      lib: Colecionador
+    - authorised_value: com
+      category: RELTERMS
+      lib: Compilador
+    - authorised_value: con
+      category: RELTERMS
+      lib: Conservador
+    - authorised_value: cos
+      category: RELTERMS
+      lib: Concorrente
+    - authorised_value: cot
+      category: RELTERMS
+      lib: contestante -apelante
+    - authorised_value: cov
+      category: RELTERMS
+      lib: Designer da capa
+    - authorised_value: cpc
+      category: RELTERMS
+      lib: Requerente de direitos autorais
+    - authorised_value: cpe
+      category: RELTERMS
+      lib: Complainant-appellee
+    - authorised_value: cph
+      category: RELTERMS
+      lib: Detentor dos direitos autorais
+    - authorised_value: cpl
+      category: RELTERMS
+      lib: Queixoso
+    - authorised_value: cpt
+      category: RELTERMS
+      lib: Complainant-appellant
+    - authorised_value: cre
+      category: RELTERMS
+      lib: Autor
+    - authorised_value: crp
+      category: RELTERMS
+      lib: Correspondente
+    - authorised_value: crr
+      category: RELTERMS
+      lib: Corretor
+    - authorised_value: csl
+      category: RELTERMS
+      lib: Consultor
+    - authorised_value: csp
+      category: RELTERMS
+      lib: Consultor de um projeto
+    - authorised_value: cst
+      category: RELTERMS
+      lib: Designer de guarda-roupa
+    - authorised_value: ctb
+      category: RELTERMS
+      lib: Contributor
+    - authorised_value: cte
+      category: RELTERMS
+      lib: Contestee-appellee
+    - authorised_value: ctg
+      category: RELTERMS
+      lib: Cartógrafo
+    - authorised_value: ctr
+      category: RELTERMS
+      lib: Contratante
+    - authorised_value: cts
+      category: RELTERMS
+      lib: Contestado
+    - authorised_value: ctt
+      category: RELTERMS
+      lib: Contestee-appellant
+    - authorised_value: cur
+      category: RELTERMS
+      lib: Curador
+    - authorised_value: cwt
+      category: RELTERMS
+      lib: Comentador de texto escrito
+    - authorised_value: dfd
+      category: RELTERMS
+      lib: Defendant
+    - authorised_value: dfe
+      category: RELTERMS
+      lib: Defendant-appellee
+    - authorised_value: dft
+      category: RELTERMS
+      lib: Defendant-appellant
+    - authorised_value: dgg
+      category: RELTERMS
+      lib: Outorgante do grau
+    - authorised_value: dis
+      category: RELTERMS
+      lib: Dissertante
+    - authorised_value: dln
+      category: RELTERMS
+      lib: Delineador
+    - authorised_value: dnc
+      category: RELTERMS
+      lib: Dançarino
+    - authorised_value: dnr
+      category: RELTERMS
+      lib: Doador
+    - authorised_value: dpb
+      category: RELTERMS
+      lib: Local de distribuição
+    - authorised_value: dpc
+      category: RELTERMS
+      lib: Retratado
+    - authorised_value: dpt
+      category: RELTERMS
+      lib: Depositante
+    - authorised_value: drm
+      category: RELTERMS
+      lib: Desenhista
+    - authorised_value: drt
+      category: RELTERMS
+      lib: Diretor
+    - authorised_value: dsr
+      category: RELTERMS
+      lib: Designer
+    - authorised_value: dst
+      category: RELTERMS
+      lib: Distribuidor
+    - authorised_value: dtc
+      category: RELTERMS
+      lib: Contribuidor de dados
+    - authorised_value: dte
+      category: RELTERMS
+      lib: Dedicado
+    - authorised_value: dtm
+      category: RELTERMS
+      lib: Gestor de dados
+    - authorised_value: dto
+      category: RELTERMS
+      lib: Dedicador
+    - authorised_value: dub
+      category: RELTERMS
+      lib: Autor duvidoso
+    - authorised_value: edt
+      category: RELTERMS
+      lib: Editor
+    - authorised_value: egr
+      category: RELTERMS
+      lib: Gravador
+    - authorised_value: elg
+      category: RELTERMS
+      lib: Eletricista
+    - authorised_value: elt
+      category: RELTERMS
+      lib: Electrotyper
+    - authorised_value: eng
+      category: RELTERMS
+      lib: Engenheiro
+    - authorised_value: etr
+      category: RELTERMS
+      lib: Gravador
+    - authorised_value: evp
+      category: RELTERMS
+      lib: Local do evento
+    - authorised_value: exp
+      category: RELTERMS
+      lib: Especialista
+    - authorised_value: fac
+      category: RELTERMS
+      lib: Fac-símiles
+    - authorised_value: fld
+      category: RELTERMS
+      lib: Diretor de campo
+    - authorised_value: flm
+      category: RELTERMS
+      lib: Editor de filmes
+    - authorised_value: fmo
+      category: RELTERMS
+      lib: Former owner
+    - authorised_value: fpy
+      category: RELTERMS
+      lib: First party
+    - authorised_value: fnd
+      category: RELTERMS
+      lib: Funder
+    - authorised_value: frg
+      category: RELTERMS
+      lib: Forger
+    - authorised_value: gis
+      category: RELTERMS
+      lib: Geographic information specialist
+    - authorised_value: -grt
+      category: RELTERMS
+      lib: Graphic technician
+    - authorised_value: hnr
+      category: RELTERMS
+      lib: Honoree
+    - authorised_value: hst
+      category: RELTERMS
+      lib: Servidor
+    - authorised_value: ill
+      category: RELTERMS
+      lib: Illustrator
+    - authorised_value: ilu
+      category: RELTERMS
+      lib: Illuminator
+    - authorised_value: ins
+      category: RELTERMS
+      lib: Inscriber
+    - authorised_value: inv
+      category: RELTERMS
+      lib: Inventor
+    - authorised_value: itr
+      category: RELTERMS
+      lib: Instrumentalist
+    - authorised_value: ive
+      category: RELTERMS
+      lib: Interviewee
+    - authorised_value: ivr
+      category: RELTERMS
+      lib: Interviewer
+    - authorised_value: lbr
+      category: RELTERMS
+      lib: Laboratory
+    - authorised_value: lbt
+      category: RELTERMS
+      lib: Librettist
+    - authorised_value: ldr
+      category: RELTERMS
+      lib: Laboratory director
+    - authorised_value: led
+      category: RELTERMS
+      lib: Lead
+    - authorised_value: lee
+      category: RELTERMS
+      lib: Libelee-appellee
+    - authorised_value: lel
+      category: RELTERMS
+      lib: Libelee
+    - authorised_value: len
+      category: RELTERMS
+      lib: Lender
+    - authorised_value: let
+      category: RELTERMS
+      lib: Libelee-appellant
+    - authorised_value: lgd
+      category: RELTERMS
+      lib: Lighting designer
+    - authorised_value: lie
+      category: RELTERMS
+      lib: Libelant-appellee
+    - authorised_value: lil
+      category: RELTERMS
+      lib: Libelant
+    - authorised_value: lit
+      category: RELTERMS
+      lib: Libelant-appellant
+    - authorised_value: lsa
+      category: RELTERMS
+      lib: Landscape architect
+    - authorised_value: lse
+      category: RELTERMS
+      lib: Licensee
+    - authorised_value: lso
+      category: RELTERMS
+      lib: Licensor
+    - authorised_value: ltg
+      category: RELTERMS
+      lib: Lithographer
+    - authorised_value: lyr
+      category: RELTERMS
+      lib: Lyricist
+    - authorised_value: mcp
+      category: RELTERMS
+      lib: Music copyist
+    - authorised_value: mfp
+      category: RELTERMS
+      lib: Manufacture place
+    - authorised_value: mfr
+      category: RELTERMS
+      lib: Manufacturer
+    - authorised_value: mdc
+      category: RELTERMS
+      lib: Metadata contact
+    - authorised_value: mod
+      category: RELTERMS
+      lib: Moderator
+    - authorised_value: mon
+      category: RELTERMS
+      lib: Monitor
+    - authorised_value: mrb
+      category: RELTERMS
+      lib: Marbler
+    - authorised_value: mrk
+      category: RELTERMS
+      lib: Markup editor
+    - authorised_value: msd
+      category: RELTERMS
+      lib: Musical director
+    - authorised_value: mte
+      category: RELTERMS
+      lib: Metal-engraver
+    - authorised_value: mus
+      category: RELTERMS
+      lib: Musician
+    - authorised_value: nrt
+      category: RELTERMS
+      lib: Narrator
+    - authorised_value: opn
+      category: RELTERMS
+      lib: Opponent
+    - authorised_value: org
+      category: RELTERMS
+      lib: Originator
+    - authorised_value: orm
+      category: RELTERMS
+      lib: Organizer of meeting
+    - authorised_value: oth
+      category: RELTERMS
+      lib: Outros
+    - authorised_value: own
+      category: RELTERMS
+      lib: Dono
+    - authorised_value: pat
+      category: RELTERMS
+      lib: Leitor
+    - authorised_value: pbd
+      category: RELTERMS
+      lib: Publishing director
+    - authorised_value: pbl
+      category: RELTERMS
+      lib: Editor
+    - authorised_value: pdr
+      category: RELTERMS
+      lib: Project director
+    - authorised_value: pfr
+      category: RELTERMS
+      lib: Proofreader
+    - authorised_value: pht
+      category: RELTERMS
+      lib: Photographer
+    - authorised_value: plt
+      category: RELTERMS
+      lib: Platemaker
+    - authorised_value: pma
+      category: RELTERMS
+      lib: Permitting agency
+    - authorised_value: pmn
+      category: RELTERMS
+      lib: Production manager
+    - authorised_value: pop
+      category: RELTERMS
+      lib: Printer of plates
+    - authorised_value: ppm
+      category: RELTERMS
+      lib: Papermaker
+    - authorised_value: ppt
+      category: RELTERMS
+      lib: Puppeteer
+    - authorised_value: prc
+      category: RELTERMS
+      lib: Process contact
+    - authorised_value: prd
+      category: RELTERMS
+      lib: Production personnel
+    - authorised_value: prf
+      category: RELTERMS
+      lib: Performer
+    - authorised_value: prg
+      category: RELTERMS
+      lib: Programmer
+    - authorised_value: prm
+      category: RELTERMS
+      lib: Printmaker
+    - authorised_value: pro
+      category: RELTERMS
+      lib: Producer
+    - authorised_value: prp
+      category: RELTERMS
+      lib: Production place
+    - authorised_value: prt
+      category: RELTERMS
+      lib: Printer
+    - authorised_value: pta
+      category: RELTERMS
+      lib: Patent applicant
+    - authorised_value: pte
+      category: RELTERMS
+      lib: Plaintiff -appellee
+    - authorised_value: ptf
+      category: RELTERMS
+      lib: Plaintiff
+    - authorised_value: pth
+      category: RELTERMS
+      lib: Patent holder
+    - authorised_value: ptt
+      category: RELTERMS
+      lib: Plaintiff-appellant
+    - authorised_value: pup
+      category: RELTERMS
+      lib: Publication place
+    - authorised_value: rbr
+      category: RELTERMS
+      lib: Rubricator
+    - authorised_value: rce
+      category: RELTERMS
+      lib: Recording engineer
+    - authorised_value: rcp
+      category: RELTERMS
+      lib: Recipient
+    - authorised_value: red
+      category: RELTERMS
+      lib: Redactor
+    - authorised_value: ren
+      category: RELTERMS
+      lib: Renderer
+    - authorised_value: res
+      category: RELTERMS
+      lib: Researcher
+    - authorised_value: rev
+      category: RELTERMS
+      lib: Revisor
+    - authorised_value: rps
+      category: RELTERMS
+      lib: Repository
+    - authorised_value: rpt
+      category: RELTERMS
+      lib: Reporter
+    - authorised_value: rpy
+      category: RELTERMS
+      lib: Responsible party
+    - authorised_value: rse
+      category: RELTERMS
+      lib: Respondent-appellee
+    - authorised_value: rsg
+      category: RELTERMS
+      lib: Restager
+    - authorised_value: rsp
+      category: RELTERMS
+      lib: Respondent
+    - authorised_value: rst
+      category: RELTERMS
+      lib: Respondent-appellant
+    - authorised_value: rth
+      category: RELTERMS
+      lib: Research team head
+    - authorised_value: rtm
+      category: RELTERMS
+      lib: Research team member
+    - authorised_value: sad
+      category: RELTERMS
+      lib: Scientific advisor
+    - authorised_value: sce
+      category: RELTERMS
+      lib: Scenarist
+    - authorised_value: scl
+      category: RELTERMS
+      lib: Sculptor
+    - authorised_value: scr
+      category: RELTERMS
+      lib: Scribe
+    - authorised_value: sds
+      category: RELTERMS
+      lib: Sound designer
+    - authorised_value: sec
+      category: RELTERMS
+      lib: Secretary
+    - authorised_value: sgn
+      category: RELTERMS
+      lib: Assinante
+    - authorised_value: sht
+      category: RELTERMS
+      lib: Supporting host
+    - authorised_value: sng
+      category: RELTERMS
+      lib: Cantor
+    - authorised_value: spk
+      category: RELTERMS
+      lib: Orador
+    - authorised_value: spn
+      category: RELTERMS
+      lib: Patrocinador
+    - authorised_value: spy
+      category: RELTERMS
+      lib: Second party
+    - authorised_value: srv
+      category: RELTERMS
+      lib: Surveyor
+    - authorised_value: std
+      category: RELTERMS
+      lib: Set designer
+    - authorised_value: stl
+      category: RELTERMS
+      lib: Storyteller
+    - authorised_value: stm
+      category: RELTERMS
+      lib: Stage manager
+    - authorised_value: stn
+      category: RELTERMS
+      lib: Standards body
+    - authorised_value: str
+      category: RELTERMS
+      lib: Stereotyper
+    - authorised_value: tcd
+      category: RELTERMS
+      lib: Technical director
+    - authorised_value: tch
+      category: RELTERMS
+      lib: Teacher
+    - authorised_value: ths
+      category: RELTERMS
+      lib: Orientador de tese
+    - authorised_value: trc
+      category: RELTERMS
+      lib: Transcriber
+    - authorised_value: trl
+      category: RELTERMS
+      lib: Translator
+    - authorised_value: tyd
+      category: RELTERMS
+      lib: Type designer
+    - authorised_value: tyg
+      category: RELTERMS
+      lib: Typographer
+    - authorised_value: uvp
+      category: RELTERMS
+      lib: University place
+    - authorised_value: vdg
+      category: RELTERMS
+      lib: Videographer
+    - authorised_value: voc
+      category: RELTERMS
+      lib: Vocalist
+    - authorised_value: wam
+      category: RELTERMS
+      lib: Escritor do material acompanhante
+    - authorised_value: wdc
+      category: RELTERMS
+      lib: Lenhador
+    - authorised_value: wde
+      category: RELTERMS
+      lib: Xilogravura
+    - authorised_value: wit
+      category: RELTERMS
+      lib: Testemunha
+    translatable:
+    - lib

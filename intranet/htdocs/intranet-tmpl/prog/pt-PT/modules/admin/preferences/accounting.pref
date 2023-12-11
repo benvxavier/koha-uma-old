@@ -1,0 +1,64 @@
+---
+Contabilidade:
+  Funcionalidades:
+  - - choices:
+        '0': Não usar
+        '1': Usar
+      default: no
+      pref: UseCashRegisters
+    - as caixas registadoras com o sistema de contabilidade para efetuar os pagamentos.
+    - <p class='text-danger'><strong>Aviso:</strong> Ao ativar esta preferência de
+      sistema vai tornar o campo caixa registadora como obrigatório para todas as
+      transações CASH; Também estão incluídas as transações SIP00, por isso certifique-se
+      que as configurações SIP estão atualizadas para mapear uma caixa registada ao
+      seu dispositivo SIP.</p>
+  - - 'Quando receber um pagamento, '
+    - choices:
+        '0': exigir uma caixa registadora apenas quando um pagamento do tipo CASH
+          estiver selecionado
+        '1': exigir sempre uma caixa registadora
+      default: no
+      pref: RequireCashRegister
+    - . (Necessita da preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=UseCashRegisters">UseCashRegisters</a>)
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      default: no
+      pref: EnablePointOfSale
+    - a funcionalidade ponto de venda para permitir transações anónimas no sistema
+      de contabilidade. (Necessita da preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=UseCashRegisters">UseCashRegisters</a>)
+  - - choices:
+        '': Não gerar automaticamente números de crédito
+        annual: Gerar automaticamente números de crédito no formato <year>-0001
+        branchyyyymmincr: Gerar automaticamente números de crédito no formato <branchcode>aaaamm0001
+        incremental: Gerar automaticamente números de crédito no formato 1, 2, 3
+      pref: AutoCreditNumber
+    - A geração automática também tem que estar activa para cada tipo de crédito (<a
+      href="/cgi-bin/koha/admin/credit_types.pl">Configurar tipos de crédito</a>)
+  Política:
+  - - choices:
+        '0': Não reconciliar
+        '1': Conciliar
+      pref: AccountAutoReconcile
+    - os saldos dos leitores automaticamente em cada transação na adição de débitos
+      ou créditos.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: FinePaymentAutoPopup
+    - automaticamente uma janela de impressão do pagamento quando receber uma pagamento.
+  - - choices:
+        '0': Não exigir
+        '1': Exigir
+      pref: RequirePaymentType
+    - que os técnicos escolham o tipo de pagamento quando um pagamento é feito.
+    - Esta preferência não tem efeito quando a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=UseCashRegisters">UseCashRegisters</a>
+      estiver ativa ou quando não existem tipos de pagamentos definidos na categoria
+      de valor autorizado <a href="/cgi-bin/koha/admin/authorised_values.pl?searchfield=PAYMENT_TYPE">PAYMENT_TYPE</a>.
+  - - choices:
+        '0': Não arredondar
+        '1': Arredondar
+      pref: RoundFinesAtPayment
+    - as multas para o cêntimo mais próximo ao receber os pagamentos. Ativar essa
+      preferência permite pagar multas de cêntimos parciais que podem não estar visíveis
+      na interface.

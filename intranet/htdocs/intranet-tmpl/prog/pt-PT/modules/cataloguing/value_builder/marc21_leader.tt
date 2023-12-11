@@ -1,0 +1,376 @@
+[% SET footerjs = 1 %]
+[% USE Koha %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>000 - Construtor do campo &rsaquo; Catalogação &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="cat_marc21_leader" class="cat" style="padding:1em;">
+ <form name="f_pop" onsubmit="report()" action="">
+ <input type="hidden" name="plugin_name" value="marc21_leader.pl" />
+ <h1>000 - Leader</h1>
+
+ <div class="page-section">
+ <table>
+ <tr>
+ <td><span class="label">0-4 Dimensão do registo</span></td>
+ <td>(preenchimento automático)</td>
+ </tr>
+ <tr>
+ <td><label for="f5">5- Estado do registo</label></td>
+ <td>
+ <select name="f5" id="f5">
+ [% IF ( f5a ) %]
+ <option value="a" selected="selected">a- Aumento do nível de codificação</option>
+ [% ELSE %]
+ <option value="a">a- Aumento do nível de codificação</option>
+ [% END %]
+
+ [% IF ( f5c ) %]
+ <option value="c" selected="selected">c- Corrigido ou revisto</option>
+ [% ELSE %]
+ <option value="c">c- Corrigido ou revisto</option>
+ [% END %]
+ [% IF ( f5d ) %]
+ <option value="d" selected="selected">d- Eliminado</option>
+ [% ELSE %]
+ <option value="d">d- Eliminado</option>
+ [% END %]
+ [% IF ( f5n ) %]
+ <option value="n" selected="selected">n- Novo</option>
+ [% ELSE %]
+ <option value="n">n- Novo</option>
+ [% END %]
+ [% IF ( f5p ) %]
+ <option value="p" selected="selected">p- Aumento do nível de codificação de pré-publicação</option>
+ [% ELSE %]
+ <option value="p">p- Aumento do nível de codificação de pré-publicação</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td><label for="f6" title="Esta seleção afeta a configuração por omissão do campo 008">6 - Tipo de registo</label></td>
+ <td>
+ <select id="f6" name="f6" title="Esta seleção afeta a configuração por omissão do campo 008">
+ [% IF ( f6a ) %]
+ <option value="a" selected="selected">a- Material de idioma</option>
+ [% ELSE %]
+ <option value="a">a- Material de idioma</option>
+ [% END %]
+ [% IF ( f6c ) %]
+ <option value="c" selected="selected">c- Música anotada</option>
+ [% ELSE %]
+ <option value="c">c- Música anotada</option>
+ [% END %]
+ [% IF ( f6d ) %]
+ <option value="d" selected="selected">d- Manuscrito de música anotada</option>
+ [% ELSE %]
+ <option value="d">d- Manuscrito de música anotada</option>
+ [% END %]
+ [% IF ( f6e ) %]
+ <option value="e" selected="selected">e- Material cartográfico</option>
+ [% ELSE %]
+ <option value="e">e- Material cartográfico</option>
+ [% END %]
+ [% IF ( f6f ) %]
+ <option value="f" selected="selected">f - Manuscrito de material cartográfico</option>
+ [% ELSE %]
+ <option value="f">f - Manuscrito de material cartográfico</option>
+ [% END %]
+ [% IF ( f6g ) %]
+ <option value="g" selected="selected">g - Meio de projecção</option>
+ [% ELSE %]
+ <option value="g">g - Meio de projecção</option>
+ [% END %]
+ [% IF ( f6i ) %]
+ <option value="i" selected="selected">i - Gravação de som não-musical</option>
+ [% ELSE %]
+ <option value="i">i - Gravação de som não-musical</option>
+ [% END %]
+ [% IF ( f6j ) %]
+ <option value="j" selected="selected">j - Gravação de som musical</option>
+ [% ELSE %]
+ <option value="j">j - Gravação de som musical</option>
+ [% END %]
+ [% IF ( f6k ) %]
+ <option value="k" selected="selected">k - Gráfico não-projectado 2D</option>
+ [% ELSE %]
+ <option value="k">k - Gráfico não-projectado 2D</option>
+ [% END %]
+ [% IF ( f6m ) %]
+ <option value="m" selected="selected">m - Ficheiro informático</option>
+ [% ELSE %]
+ <option value="m">m - Ficheiro informático</option>
+ [% END %]
+ [% IF ( f6o ) %]
+ <option value="o" selected="selected">o - Kit</option>
+ [% ELSE %]
+ <option value="o">o - Kit</option>
+ [% END %]
+ [% IF ( f6p ) %]
+ <option value="p" selected="selected">p - Materiais mistos</option>
+ [% ELSE %]
+ <option value="p">p - Materiais mistos</option>
+ [% END %]
+ [% IF ( f6r ) %]
+ <option value="r" selected="selected">r - Artefacto tridimensional ou objecto natural</option>
+ [% ELSE %]
+ <option value="r">r - Artefacto tridimensional ou objecto natural</option>
+ [% END %]
+ [% IF ( f6t ) %]
+ <option value="t" selected="selected">t- Material de idioma manuscrito</option>
+ [% ELSE %]
+ <option value="t">t- Material de idioma manuscrito</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td><label for="f7">7- Nível bibliográfico</label></td>
+ <td>
+ <select name="f7" id="f7">
+ [% IF ( f7a ) %]
+ <option value="a" selected="selected">a- Parte componente monográfico</option>
+ [% ELSE %]
+ <option value="a">a- Parte componente monográfico</option>
+ [% END %]
+ [% IF ( f7b ) %]
+ <option value="b" selected="selected">b- Parte componente de periódico</option>
+ [% ELSE %]
+ <option value="b">b- Parte componente de periódico</option>
+ [% END %]
+ [% IF ( f7c ) %]
+ <option value="c" selected="selected">c- Coleção</option>
+ [% ELSE %]
+ <option value="c">c- Coleção</option>
+ [% END %]
+ [% IF ( f7d ) %]
+ <option value="d" selected="selected">d- Sub-unidade</option>
+ [% ELSE %]
+ <option value="d">d- Sub-unidade</option>
+ [% END %]
+ [% IF ( f7i ) %]
+ <option value="i" selected="selected">i- Recurso integrado</option>
+ [% ELSE %]
+ <option value="i">i- Recurso integrado</option>
+ [% END %]
+ [% IF ( f7m ) %]
+ <option value="m" selected="selected">m- Monografia</option>
+ [% ELSE %]
+ <option value="m">m- Monografia</option>
+ [% END %]
+ [% IF ( f7s ) %]
+ <option value="s" selected="selected">s- Periódico</option>
+ [% ELSE %]
+ <option value="s">s- Periódico</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+
+ <tr>
+ <td><label for="f8">8- Tipo de controlo</label></td>
+ <td>
+ <select name="f8" id="f8">
+ [% IF ( f8 ) %]
+ <option value=" " selected="selected">Nenhum tipo especifico</option>
+ [% ELSE %]
+ <option value=" ">Nenhum tipo especifico</option>
+ [% END %]
+ [% IF ( f8a ) %]
+ <option value="a" selected="selected">a- Arquivo</option>
+ [% ELSE %]
+ <option value="a">a- Arquivo</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+
+ <tr>
+ <td>9- Esquema de codificação de caracteres</td>
+ <td>a- UCS/Unicode</td>
+ </tr>
+ <tr>
+ <td>10-16 indicador/subcampo/tamanho</td>
+ <td>(preenchimento automático)</td>
+ </tr>
+ <tr>
+ <td><label for="f17">17- Nível de Codificação</label></td>
+ <td>
+ <select name="f17" id="f17">
+ [% IF ( f17 ) %]
+ <option value=" " selected="selected">nível completo</option>
+ [% ELSE %]
+ <option value=" ">Nível completo</option>
+ [% END %]
+ [% IF ( f171 ) %]
+ <option value="1" selected="selected">1- Nível completo, documento não examinado</option>
+ [% ELSE %]
+ <option value="1">1- Nível completo, documento não examinado</option>
+ [% END %]
+ [% IF ( f172 ) %]
+ <option value="2" selected="selected">2 - Nível incompleto, material não examinado</option>
+ [% ELSE %]
+ <option value="2">2- Nível incompleto, material não examinado</option>
+ [% END %]
+ [% IF ( f173 ) %]
+ <option value="3" selected="selected">3- Nível abreviado</option>
+ [% ELSE %]
+ <option value="3">3- Nível abreviado</option>
+ [% END %]
+ [% IF ( f174 ) %]
+ <option value="4" selected="selected">4- Nível central</option>
+ [% ELSE %]
+ <option value="4">4- Nível central</option>
+ [% END %]
+ [% IF ( f175 ) %]
+ <option value="5" selected="selected">5- Nível parcial (preliminar)</option>
+ [% ELSE %]
+ <option value="5">5- Nível parcial (preliminar)</option>
+ [% END %]
+ [% IF ( f177 ) %]
+ <option value="7" selected="selected">7- Nível mínimo</option>
+ [% ELSE %]
+ <option value="7">7- Nível mínimo</option>
+ [% END %]
+ [% IF ( f178 ) %]
+ <option value="8" selected="selected">8- Nível de pré-publicação</option>
+ [% ELSE %]
+ <option value="8">8- Nível de pré-publicação</option>
+ [% END %]
+ [% IF Koha.Preference('UseOCLCEncodingLevels') %]
+ [% IF ( f17I ) %]
+ <option value="I" selected="selected">I- Nível completo de entrada por participantes OCLC</option>
+ [% ELSE %]
+ <option value="I">I- Nível completo de entrada por participantes OCLC</option>
+ [% END %]
+ [% IF ( f17J ) %]
+ <option value="J" selected="selected">J- Registo eliminado</option>
+ [% ELSE %]
+ <option value="J">J- Registo eliminado</option>
+ [% END %]
+ [% IF ( f17K ) %]
+ <option value="K" selected="selected">I- Nível incompleto de entrada por participantes OCLC</option>
+ [% ELSE %]
+ <option value="K">I- Nível incompleto de entrada por participantes OCLC</option>
+ [% END %]
+ [% IF ( f17K ) %]
+ <option value="M" selected="selected">M- Adicionado por um processo em lote</option>
+ [% ELSE %]
+ <option value="M">M- Adicionado por um processo em lote</option>
+ [% END %]
+ [% END %]
+ [% IF ( f17u ) %]
+ <option value="u" selected="selected">u- Desconhecido</option>
+ [% ELSE %]
+ <option value="u">u- Desconhecido</option>
+ [% END %]
+ [% IF ( f17z ) %]
+ <option value="z" selected="selected">z- Não aplicável</option>
+ [% ELSE %]
+ <option value="z">z- Não aplicável</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+
+ <tr>
+ <td><label for="f18">18 - Forma descritiva de catalogação</label></td>
+ <td>
+ <select name="f18" id="f18">
+ [% IF ( f18 ) %]
+ <option value=" " selected="selected">Non-ISBD</option>
+ [% ELSE %]
+ <option value=" ">Non-ISBD</option>
+ [% END %]
+ [% IF ( f18a ) %]
+ <option value="a" selected="selected">a- AACR 2</option>
+ [% ELSE %]
+ <option value="a">a- AACR 2</option>
+ [% END %]
+ [% IF ( f18c ) %]
+ <option value="c" selected="selected">c- Pontuação ISBD omitida</option>
+ [% ELSE %]
+ <option value="c">c- Pontuação ISBD omitida</option>
+ [% END %]
+ [% IF ( f18i ) %]
+ <option value="i" selected="selected">i- Pontuação ISBD incluída</option>
+ [% ELSE %]
+ <option value="i">i- Pontuação ISBD incluída</option>
+ [% END %]
+ [% IF ( f18n ) %]
+ <option value="n" selected="selected">n- Pontuação não-ISBD omitida</option>
+ [% ELSE %]
+ <option value="n">n- Pontuação não-ISBD omitida</option>
+ [% END %]
+ [% IF ( f18u ) %]
+ <option value="u" selected="selected">u- Desconhecido</option>
+ [% ELSE %]
+ <option value="u">u- Desconhecido</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+
+ <tr>
+ <td><label for="f19">19 - Nível recorde de recursos</label></td>
+ <td>
+ <select name="f19" id="f19">
+ [% IF ( f19 ) %]
+ <option value=" " selected="selected">Não especificado ou aplicável </option>
+ [% ELSE %]
+ <option value=" ">Não especificado ou aplicável</option>
+ [% END %]
+ [% IF ( f19a ) %]
+ <option value="a" selected="selected">a- Conjunto</option>
+ [% ELSE %]
+ <option value="a">a- Conjunto</option>
+ [% END %]
+ [% IF ( f19b ) %]
+ <option value="b" selected="selected">b- Parte com título independente</option>
+ [% ELSE %]
+ <option value="b">b- Parte com título independente</option>
+ [% END %]
+ [% IF ( f19c ) %]
+ <option value="c" selected="selected">c- Parte com título independente</option>
+ [% ELSE %]
+ <option value="c">c- Parte com título independente</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td>20-24 mapa de entrada &amp; comprimentos</td>
+ <td>(preenchimento automático)</td>
+ </tr>
+ </table>
+
+ <fieldset class="action"><input type="submit" class="btn btn-primary" value="OK" /> <a href="#" class="cancel close">Anular</a></fieldset>
+ </div> <!-- /.page-section -->
+ </form>
+
+[% MACRO jsinclude BLOCK %]
+ <script>
+        function report() {
+            var doc   = opener.document;
+            var field = doc.getElementById("[% index | html %]");
+            field.value =
+            '     '+
+            document.f_pop.f5.value +
+            document.f_pop.f6.value +
+            document.f_pop.f7.value +
+            document.f_pop.f8.value +
+            'a'+ // MARC21 UNICODE flag - must be 'a' for Koha
+            '22     '+
+            document.f_pop.f17.value +
+            document.f_pop.f18.value +
+            document.f_pop.f19.value +
+            '4500';
+            self.close();
+            return false;
+        }
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' popup_window=1 %]

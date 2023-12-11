@@ -1,0 +1,53 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Pesquisa &rsaquo; Periódicos &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="ser_subscription-bib-search" class="ser">
+
+<div class="main container-fluid">
+
+<h1>Pesquisar no catálogo</h1>
+[% IF ( no_query ) %]
+ <div class="warning">Deve introduzir o termo a pesquisar </div>
+[% END %]
+<form name="f" action="/cgi-bin/koha/serials/subscription-bib-search.pl" method="get">
+ <input type="hidden" name="op" value="do_search" />
+ <input type="hidden" name="type" value="intranet" />
+ <fieldset class="brief">
+ <ol>
+ <li>
+ <label for="q">Palavra-chave: </label>
+ <input type="text" id="q" name="q" autofocus="autofocus" />
+ </li>
+ <li>
+ <label for="itemtypelimit">Limitar tipo de documento a: </label>
+ <select name="itemtypelimit" id="itemtypelimit">
+ <option value="">Todos</option>
+ [%- FOREACH itemtypeloo IN itemtypeloop %]
+ <option value="[% itemtypeloo.code | html %]">
+ [% itemtypeloo.description | html %]
+ </option>
+ [%- END %]
+ </select>
+ </li>
+ [%- IF ccodeloop %]
+ <li>
+ <label for="ccodelimit">Limitar código de coleção a: </label>
+ <select name="ccodelimit" id="ccodelimit">
+ <option value="">Todos</option>
+ [%- FOREACH ccodeloo IN ccodeloop %]
+ <option value="[% ccodeloo.code | html %]">
+ [% ccodeloo.description | html %]
+ </option>
+ [%- END %]
+ </select>
+ </li>
+ [%- END %]
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input class="btn btn-primary" type="submit" value="Pesquisar" />
+ </fieldset>
+</form>
+
+[% INCLUDE 'intranet-bottom.inc' popup_window=1 %]

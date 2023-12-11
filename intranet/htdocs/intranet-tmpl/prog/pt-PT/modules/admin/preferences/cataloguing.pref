@@ -1,0 +1,400 @@
+---
+Catalogação -:
+  Estrutura do registo:
+  - - 'Preencher o idioma por omissão do campo 008 na posição 35-37 dos registos MARC21
+      (exemplo: eng, nor, ger, ver a <a href=''http://www.loc.gov/marc/languages/language_code.html''>Lista
+      de códigos de idiomas MARC</a>):'
+    - pref: DefaultLanguageField008
+    - Vazio usa eng por omissão.
+  - - 'Preencha o código do país por omissão para o campo 008 do MARC21 no intervalo
+      15-17 - Local de publicação, produção ou execução. (Veja <a href=''http://www.loc.gov/marc/countries/countries_code.html''>a
+      lista de códigos MARC para os países</a>):'
+    - pref: DefaultCountryField008
+    - Se estiver vazio o valor por omissão é ||| - Nenhuma tentativa de codificação.
+  - - interpretar e armazenar registos MARC no formato
+    - choices:
+        MARC21: MARC21
+        UNIMARC: UNIMARC
+      pref: marcflavour
+    - .
+  - - Usar o tipo de documento do
+    - choices:
+        '0': registo bibliográfico
+        '1': exemplar específico
+      pref: item-level_itypes
+    - como o tipo de documento autoritário (para determinar regras de circulação e
+      multas, para mostrar um ícone do tipo na página de detalhes ou de resultados,
+      etc).
+  - - Mapear os subcampos MARC
+    - pref: itemcallnumber
+    - 'para a cota de um exemplar. Insira uma lista de subcampos separados por vírgulas
+      para verificação sequencial. Cada campo pode incluir múltiplos subcampos. A
+      ordem dos subcampos no registo será preservada. Por exemplo: ''082ab,092ab''
+      vai procurar nos subcampos 082$a e 082$b, e depois nos subcampos 092$a e 092$b.'
+    - 'Exemplos MARC21: Dewey: 082ab,092ab; LOC: 050ab,090ab; do registo Koha: 942hi.
+      Exemplos UNIMARC: Dewey: 676a; LOC: 680ab.'
+  - - Mostrar o subcampo MARC
+    - pref: AlternateHoldingsField
+    - como informação de reservas para os registos bibliográficos que não tenham exemplares
+      (pode conter múltiplos subcampos para pesquisa, por exemplo <code>852abhi</code>
+      irá pesquisar nos subcampos a, b, h e i do campo 852), com os subcampos separados
+      por
+    - pref: AlternateHoldingsSeparator
+    - .
+  - - Preencha o <a href="http://www.loc.gov/marc/organizations/orgshome.html">código
+      MARC da instituição</a>
+    - pref: MARCOrgCode
+    - por omissão nos novos registos MARC21 (deixe vazio para desactivar). Também
+      pode ser definido ao nível das bibliotecas.
+  - - Quanto os exemplares são criados, atribuir-lhes a localização temporária
+    - class: short
+      pref: NewItemsDefaultLocation
+    - (deve ser um código de localização, ou vazio para desativar).
+  - - choices:
+        '0': Não copiar
+        '1': Copiar
+      pref: z3950NormalizeAuthor
+    - autores dos campos UNIMARC
+    - class: multi
+      pref: z3950AuthorAuthFields
+    - (separados por virgulas) para os campos de autor correctos quando importar um
+      registo usando Z39.50.
+  - - Códigos de barras são
+    - choices:
+        EAN13: códigos de barras EAN-13 incrementais.
+        OFF: gerados não automaticamente.
+        annual: gerados na forma <year>-0001, <year>-0002.
+        hbyymmincr: gerados na forma <branchcode>yymm0001.
+        incremental: gerados na forma 1, 2, 3.
+      pref: autoBarcode
+  - - Quando um novo exemplar for adicionado,
+    - choices:
+        '0': o novo exemplar não será pré-preenchido com os valores do último exemplar
+          criado.
+        '1': o novo exemplar é preenchido com os valores do último exemplar criado
+      pref: PrefillItem
+  - - 'Defina a lista de subcampos a usar no pré-preenchimento dos exemplares (separados
+      por espaço):'
+    - pref: SubfieldsToUseWhenPrefill
+    - Se deixar o valor vazio, todos os subcampos serão pré-preenchidos.
+  - - Usar o idioma (ISO 690-2)
+    - class: short
+      pref: UNIMARCField100Language
+    - como idioma por omissão no campo 100 do UNIMARC aquando da criação de um novo
+      registo ou no plugin do campo.
+  - - 'Lista de subcampos para os quais a edição é permitida quando a permissão edit_items_restricted
+      está activa, separados por espaços:'
+    - pref: SubfieldsToAllowForRestrictedEditing
+    - 'Exemplos:'
+    - 'UNIMARC: "995$f 995$h 995$j"'
+    - 'MARC21: "952$a 952$b 952$c"'
+    - Note que o modelo FA está excluído desta permissão.
+    - Se a preferência estiver vazia, nenhum campo está restrito.
+  - - 'Lista de subcampos com edição autorizada quando a permissão items_batchmod_restricted
+      estiver activa, separados por espaços:'
+    - pref: SubfieldsToAllowForRestrictedBatchmod
+    - 'Exemplos:'
+    - 'UNIMARC: "995$f 995$h 995$j"'
+    - 'MARC21: "952$a 952$b 952$c"'
+    - Note que o modelo FA está excluído desta permissão.
+    - Se a preferência estiver vazia, nenhum campo está restrito.
+  - - Guardar o número de leitor do criador do registo no subcampo MARC
+    - pref: MarcFieldForCreatorId
+    - e o nome do mesmo no subcampo MARC
+    - pref: MarcFieldForCreatorName
+    - .
+    - Guardar o número de leitor do técnico da última alteração no registo no subcampo
+      MARC
+    - pref: MarcFieldForModifierId
+    - e o nome do mesmo no subcampo MARC
+    - pref: MarcFieldForModifierName
+    - . <br/><strong>NOTA:</strong> Use o sinal do dólar entre o campo e o subcampo,
+      como por exemplo 123$a.
+  - - O Número de Controlo (001) é
+    - choices:
+        OFF: gerado não automaticamente.
+        biblionumber: gerado como número de registo.
+      pref: autoControlNumber
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: UseOCLCEncodingLevels
+    - os valores OCLC definidos para o nível de codificação do construtor do campo
+      de etiqueta de registo na posição 17.
+  - - Aplicar os valores por omissão do modelo
+    - multiple:
+        changed: na mudança de modelo na edição de um registo existente
+        duplicate: na edição de registos como novos (duplicação)
+        imported: na importação de registos via z39.50
+        new: na catalogação de novos registos
+      pref: ApplyFrameworkDefaults
+  - - Usar o campo MARC
+    - pref: ContentWarningField
+    - para guardar os avisos sobre o conteúdo.
+    - <br/><strong>NOTA:</strong> O campo tem que aparecer nos modelos MARC para ser
+      acessível.
+  - - choices:
+        '0': Não retirar
+        '1': Retirar
+      pref: StripWhitespaceChars
+    - os caracteres de espaço em branco iniciais ou finais (espaços, tabulações, quebras
+      de linha e retorno) ou as novas linhas iniciais dos campos de dados quando estiver
+      a catalogar registos bibliográficos ou de autoridade. Os campos de etiqueta
+      e de controlo não são afetados.
+  Etiquetas de lombada:
+  - - Quando usar a impressão rápida de etiqueta de lombada,
+    - choices:
+        '0': não criar
+        '1': criar
+      pref: SpineLabelAutoPrint
+    - automaticamente uma janela flutuante para impressão.
+  - - 'Incluir os seguintes campos na impressão rápida de etiquetas de lombada:'
+    - (Insira colunas das tabelas <code>biblio</code>, <code>biblioitems</code> ou
+      <code>items</code>, rodeadas por &lt; e &gt;.)
+    - pref: SpineLabelFormat
+      type: textarea
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: SpineLabelShowPrintOnBibDetails
+    - botões na página dos detalhes bibliográficos para a impressão de etiquetas de
+      lombada para exemplares.
+  - []
+  Exportar:
+  - - 'Incluir os seguintes campos quando exportar no formato BibTeX:'
+    - pref: BibtexExportAdditionalFields
+      syntax: text/x-yaml
+      type: textarea
+    - 'Use uma linha por etiqueta no formato BT_TAG: TAG$SUBFIELD ( por exemplo: lccn:
+      010$a ).'
+    - <br/>
+    - 'Para especificar múltiplos campos/subcampos marc como destinos para um etiqueta
+      BibTeX repetível, use o seguinte formato: BT_TAG: [TAG2$SUBFIELD1, TAG2$SUBFIELD2]
+      (por exemplo: notas: [501$a, 505$g] ).'
+    - <br/>
+    - Todos os valores de campos e subcampos repetidos serão impressos no campo BibTeX
+      dado.
+    - <br/>
+    - Use '@' (com aspas) como BT_TAG para substituir o tipo de registo BibTex pelo
+      valor de um campo à sua escolha.
+  - - 'Incluir os seguintes campos quando exportar para o formato RIS:'
+    - pref: RisExportAdditionalFields
+      syntax: text/x-yaml
+      type: textarea
+    - 'Use uma linha por etiqueta no formato RIS_TAG: TAG$SUBFIELD ( por exemplo:
+      LC: 010$a ).'
+    - <br/>
+    - 'Para especificar múltiplos campos/subcampos como destinos para uma etiqueta
+      RIS repetível, use o seguinte formato: RIS_TAG: [TAG2$SUBFIELD1, TAG2$SUBFIELD2]
+      ( por exemplo: NT: [501$a, 505$g] ).'
+    - <br/>
+    - Todos os valores de campos e subcampos repetidos serão impressos no campo RIS
+      identificado.
+    - <br/>
+    - A utilização do TY ( tipo de registo ) como chave irá <em>substituir</em> o
+      tipo de registo de omissão pelo valor do campo da sua escolha.
+  Importação:
+  - - Na tentativa de correspondência ISBN com a ferramenta de importação de registo,
+    - choices:
+        '0': não tentar
+        '1': tentar
+      pref: AggressiveMatchOnISBN
+    - corresponder agressivamente tentando todas as variações de ISBNs do registo
+      importado como frase nos campos ISBN dos registos já importados.
+  - - Mostrar os campos/subcampos MARC
+    - pref: AdditionalFieldsInZ3950ResultSearch
+    - na coluna 'Campo adicionais' nos resultados de pesquisa Z39.50 (use a vírgula
+      como delimitador, por exemplo; "<code>001, 082$ab, 090$ab</code>")
+  - - Na tentativa de correspondência ISSN com a ferramenta de importação de registo,
+    - choices:
+        '0': não tentar
+        '1': tentar
+      pref: AggressiveMatchOnISSN
+    - corresponder agressivamente tentando todas as variações de ISBNs do registo
+      importado como frase nos campos ISBN dos registos já importados.
+  - - choices:
+        '0': Não usar
+        '1': Usar
+      pref: MARCOverlayRules
+    - regras de sobreposição MARC para os registos seguintes, de forma a definir que
+      ação deve ser tomada para cada campo.
+  Interface:
+  - - Usar
+    - choices: class-sources
+      pref: DefaultClassificationSource
+    - como fonte padrão da classificação.
+  - - choices:
+        '0': Mostrar
+        '1': Não mostrar
+      pref: advancedMARCeditor
+    - descrições de campos e subcampos no editor MARC.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: EasyAnalyticalRecords
+    - formas simples de criar relações analíticas entre registos.
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      default: 0
+      pref: EnableAdvancedCatalogingEditor
+    - o editor avançado de catalogação.
+    - <br/> <strong>NOTA:</strong>
+    - Atualmente, não inclui suporte para campos fixos UNIMARC.
+  - - Quando guardar um ficheiro MARC/MARCML no editor avançado de catalogação ou
+      na exportação na página de detalhes do interface dos técnicos, usar o
+    - choices:
+        biblionumber: número de registo bibliográfico
+        controlnumber: número de controlo
+      default: biblionumber
+      pref: DefaultSaveRecordFileID
+    - como nome do ficheiro.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      default: 1
+      pref: CreateAVFromCataloguing
+    - que os valores autorizados sejam criados a partir do módulo de catalogação.
+      Os bibliotecários necessitam de ter a permissão manage_auth_values.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      default: 0
+      pref: CatalogConcerns
+    - que os técnicos reportem problemas/preocupações sobre os registos bibliográficos.
+    - <p><strong>NOTA:</strong> Pode também ativar a preferência `<a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OpacCatalogConcerns">OpacCatalogConcerns</a>`
+      para permitir que a mesma opção para os utilizadores do OPAC.</p>
+  - - 'Usar '
+    - class: email
+      default: ''
+      pref: CatalogerEmails
+    - ' como o endereço para a notificação dos problemas de catalogação.'
+  Visualização:
+  - - 'Separar entrada principal e subdivisões com '
+    - class: short
+      pref: AuthoritySeparator
+    - (somente na visualização não XSLT).
+  - - Mostrar
+    - pref: URLLinkText
+    - como o texto das ligações inseridas nos registos MARC e exemplares.
+  - - choices:
+        '0': Não usar
+        '1': Usar
+      pref: UseControlNumber
+    - o número do registo (subcampos $w) e o número de controlo (001) para ligar registos
+      bibliográficos.
+  - - Usar
+    - class: url
+      pref: MarcFieldDocURL
+    - como o URL para a documentação do campo MARC.
+    - 'Substituições possíveis são <tt>{MARC}</tt> (formato usado: "MARC21" ou "UNIMARC"),
+      <tt>{FIELD}</tt> (número do campo: "000" ou "048"), <tt>{LANG}</tt> (idioma:
+      "en" ou "fi-FI").'
+    - Se vazio, é usado o formato de documento do http://loc.gov (MARC21) ou http://archive.ifla.org
+      (UNIMARC).
+    - Por exemplo <tt>http://fielddoc.example.com/?marc={MARC}&field={FIELD}&language={LANG}</tt>
+  - - choices:
+        '0': Mostrar
+        '1': Não mostrar
+      pref: hide_marc
+    - números dos campos MARC, códigos dos subcampos e indicadores nas vistas MARC.
+  - - choices:
+        economical: Fazer
+        standard: Não fazer
+      pref: LabelMARCView
+    - o colapso de campos repetidos do mesmo tipo numa só entrada ao visualizar.
+  - - Por omissão, mostrar registos da biblioteca na
+    - choices:
+        isbd: forma ISBD (veja abaixo).
+        labeled_marc: forma MARC etiquetado.
+        marc: forma MARC.
+        normal: forma normal.
+      pref: IntranetBiblioDefaultView
+  - - 'Usar o seguinte modelo ISBD no interface dos técnicos:'
+    - class: code
+      pref: ISBD
+      syntax: text/html
+      type: textarea
+  - - choices:
+        '0': Não esconder
+        '1': Esconder
+      pref: OpacSuppression
+    - os registos marcados como suprimidos nos resultados de pesquisa do OPAC.
+    - <br />Restringir a supressão para endereços IP fora do intervalo de endereços
+    - class: short
+      pref: OpacSuppressionByIPRange
+    - (Deixe vazio se não for utilizada. Defina uma faixa como <code>192.168.</code>.)
+    - <br />Redirecionar o página de detalhes dos registos suprimidos para
+    - choices:
+        '0': uma página de erro 404 ('Não encontrado').
+        '1': uma página informativa ('Este registo está bloqueado').
+      pref: OpacSuppressionRedirect
+    - '<br />Mostrar a seguinte mensagem na página de redireccionamento dos registos
+      bibliográficos suprimidos:'
+    - class: code
+      pref: OpacSuppressionMessage
+      type: textarea
+  - - choices:
+        '0': Não separar
+        '1': Separar
+      pref: SeparateHoldings
+    - a visualização de exemplares em dois separadores, onde o primeiro contem os
+      exemplares cuja
+    - choices:
+        holdingbranch: biblioteca de empréstimo
+        homebranch: biblioteca de origem
+      pref: SeparateHoldingsBranch
+    - é a biblioteca do utilizador. O segundo separador irá conter todos os outros
+      exemplares.
+  - - Não mostrar
+    - class: multi
+      pref: NotesToHide
+    - 'campos de notas no separador ''Notas do título'' e no separador ''Descrição''
+      nas páginas de detalhes do OPAC e do interface dos técnicos. Use uma vírgula
+      para separar os vários campos. Exemplos: 500,502 (MARC21); 300,328 (UNIMARC).'
+    - <br />
+    - Para esconder os campos noutras páginas, como por exemplo na vista normal, use
+      as configurações de visibilidade dos subcampos, na secção dos modelos bibliográficos
+      MARC do módulo administração.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: AcquisitionDetails
+    - detalhes de aquisição na página de detalhes do registo.
+  - - 'Mostrar os seguintes campos para os registos eliminados após unificação:'
+    - pref: MergeReportFields
+    - '.<br />Por exemplo: ''001,245ab,600'''
+    - 'Mostrar:'
+    - <ul>
+    - <li>valor do 001</li>
+    - <li>subcampos a e b dos campos 245</li>
+    - <li>todos os subcampos dos campos 600</li>
+  - - Mostrar uma lista de registos componente, ligados via campo 773,
+    - choices:
+        both: na interface do técnicos e no OPAC
+        nowhere: em nenhuma interface
+        opac: no OPAC
+        staff: na interface do técnicos
+      pref: ShowComponentRecords
+    - (página de detalhes do registo).
+    - Um máximo de
+    - pref: MaxComponentRecords
+    - registos serão mostrados.
+    - <br/> UNIMARC não é suportado.
+    - Por omissão, ordenar os resultados de componentes por
+    - choices:
+        acqdate: data de adição
+        author: autor
+        biblionumber: número de registo
+        call_number: cota
+        pubdate: data de publicação
+        title: título
+      default: title
+      pref: ComponentSortField
+    - ','
+    - choices:
+        asc: ascendente.
+        az: de A até Z.
+        dsc: descendente.
+        za: de Z até A.
+      pref: ComponentSortOrder

@@ -1,0 +1,131 @@
+[% USE KohaDates %]
+
+[% IF enrollments %]
+
+ <h2>Grupos em que você está inscrito</h2>
+
+ <table id="clubs-table-enrolled" class="table table-bordered table-striped">
+ <caption class="sr-only">Grupos</caption>
+ <thead>
+ <tr>
+ <th class="all">Nome</th>
+ <th>Descrição</th>
+ <th>Data de inscrição</th>
+ <th class="NoSort all">&nbsp;</th>
+ <th></th>
+ </tr>
+ </thead>
+
+ <tbody>
+ [% FOREACH e IN enrollments %]
+ <tr>
+ <td>[% e.club.name | html %]</td>
+ <td>[% e.club.description | html %]</td>
+ <td>[% e.date_enrolled | $KohaDates %]</td>
+ <td>
+ [% IF e.club.club_template.is_enrollable_from_opac %]
+ <button class="btn btn-sm btn-danger cancel_enrollment cancel_enrollment">
+ <i class="fa fa-remove" aria-hidden="true"></i> Cancelar a inscrição </button>
+ [% ELSE %] Entre em contacto com a biblioteca para ser removido deste grupo. [% END %] </td>
+ <td></td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+[% END %]
+
+[% IF clubs %]
+
+ <h2>Grupos onde se pode inscrever </h2>
+
+ <table id="clubs-table-unenrolled" class="table table-bordered table-striped">
+ <thead>
+ <tr>
+ <th class="all">Nome</th>
+ <th>Descrição</th>
+ <th class="NoSort all">&nbsp;</th>
+ <th></th>
+ </tr>
+ </thead>
+
+ <tbody>
+ [% FOREACH c IN clubs %]
+ <tr>
+ <td>[% c.name | html %]</td>
+ <td>[% c.description | html %]</td>
+ <td>
+ [% IF !c.club_template.is_email_required || ( c.club_template.is_email_required && borrower.notice_email_address ) %]
+ <button class="btn btn-sm btn-primary load_enrollment" data-id="[% c.id | html%]">
+ <i class="fa fa-plus" aria-hidden="true"></i> Inscrever </button>
+ [% ELSE %]
+ <span class="hint">Tem que possuir um endereço de email para se conseguir inscrever</span>
+ [% END %]
+ </td>
+ <td></td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+[% END %]
+
+<script>
+function loadEnrollmentForm( id ) {
+    $("body").css("cursor", "progress");
+    $('#opac-user-clubs').load('/cgi-bin/koha/clubs/enroll.pl?borrowernumber=[% borrower.borrowernumber | html %]&id=' + id, function() {
+        $("body").css("cursor", "default");
+    });
+
+    return false;
+}
+
+function cancelEnrollment( id ) {
+    $("body").css("cursor", "progress");
+    $.ajax({
+        type: "POST",
+        url: '/cgi-bin/koha/svc/club/cancel_enrollment',
+        data: { id: id },
+        success: function( data ) {
+            if ( data.success ) {
+                $('#opac-user-clubs').load('/cgi-bin/koha/clubs/clubs-tab.pl?borrowernumber=[% borrower.borrowernumber | html %]', function() {
+                    $("body").css("cursor", "default");
+                });
+            } else {
+                alert(_("Não foi possível cancelar a inscrição!"));
+            }
+        },
+        dataType: 'json'
+    });
+    return false;
+}
+
+    var Tables = $("#clubs-table-enrolled,#clubs-table-unenrolled");
+    Tables.each(function(){
+        $(this).dataTable($.extend(true, {}, dataTablesDefaults, {
+            "searching": false,
+            "paging": false,
+            "info": false,
+            "autoWidth": false,
+            "responsive": {
+                "details": { "type": "column", "target": -1 }
+            },
+            "columnDefs": [
+                { "orderable": false, "searchable": false, "targets": [ 'NoSort' ] },
+                { "className": "dtr-control", "orderable": false, "targets": -1 },
+            ],
+        }));
+    });
+
+    $(".cancel_enrollment").on("click", function(e){
+        e.preventDefault();
+        let clubid = $(this).data("id");
+        cancelEnrollment( clubid );
+    });
+
+    $(".load_enrollment").on("click", function(e){
+        e.preventDefault();
+        let clubid = $(this).data("id");
+        loadEnrollmentForm( clubid );
+    });
+
+
+</script>

@@ -1,0 +1,307 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Koha %]
+[% USE KohaDates %]
+[% USE Branches %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Modificar exemplares em lote &rsaquo; Catalogação &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+<style>input[type=checkbox]{ margin : 0 .5em; }</style>
+[% Asset.css("css/addbiblio.css") | $raw %]
+[% Asset.css("css/humanmsg.css") | $raw %]
+</head>
+
+<body id="tools_batchMod-edit" class="tools">
+ [% WRAPPER 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+ [% END %]
+
+ [% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/cataloguing/cataloging-home.pl">Catalogar</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Modificar exemplares em lote</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+ [% END #/ WRAPPER sub-header.inc %]
+
+ <div class="main container-fluid">
+
+ <h1>Modificar exemplares em lote</h1>
+ [% IF op == 'enqueued' %]
+ <div class="dialog message">
+ <p>A tarefa foi colocada na lista de tarefas! Será iniciada assim que possível.</p>
+ <p><a href="/cgi-bin/koha/admin/background_jobs.pl?op=view&id=[% job_id | uri %]" title="Ver detalhes da tarefa agendada">Ver detalhes da tarefa agendada</a>
+ | <a href="/cgi-bin/koha/tools/batchMod.pl" title="Novo lote de modificação de exemplares">Novo lote de modificação de exemplares</a></p>
+ </div>
+
+ <fieldset class="action">
+ [% IF src == 'CATALOGUING' # from catalogue/detail.pl > Edit items in a batch%]
+ [% IF searchid %]
+ <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% biblionumber | uri %]&searchid=[% searchid | uri %]">Voltar ao registo</a>
+ [% ELSE %]
+ <a href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% biblionumber | uri %]">Voltar ao registo</a>
+ [% END %]
+ [% ELSIF src %]
+ <a href="[% src | url %]">Voltar à página anterior</a>
+ [% ELSE %]
+ <a href="/cgi-bin/koha/tools/batchMod.pl">Voltar à modificação em exemplares em lote</a>
+ [% END %]
+ </fieldset>
+ [% END %]
+
+ [% FOREACH message IN messages %]
+ [% IF message.type == 'success' %]
+ <div class="dialog message">
+ [% ELSIF message.type == 'warning' %]
+ <div class="dialog alert">
+ [% ELSIF message.type == 'error' %]
+ <div class="dialog alert" style="margin:auto;">
+ [% END %]
+ [% IF message.code == 'cannot_enqueue_job' %]
+ <span>Não é possível retirar esta tarefa da lista.</span>
+ [% END %]
+ [% IF message.error %]
+ <span>(O erro foi: [% message.error | html %], veja os registos do sistema do Koha para mais informação).</span>
+ [% END %]
+ </div>
+ [% END %]
+
+ [% IF ( barcode_not_unique ) %]
+ <div class="dialog alert">
+ <strong>Erro guardando exemplar</strong>: O código de barras tem de ser único. </div>
+ [% END %]
+ [% IF ( no_next_barcode ) %]
+ <div class="dialog alert">
+ <strong>Erro guardando exemplares</strong>: Não é possível determinar automaticamente os valores para os códigos de barras. Não foi inserido nenhum item. </div>
+ [% END %]
+
+ [% IF ( notfoundbarcodes.size ) %]
+ <div class="dialog alert">
+ <p>Atenção, os códigos de barras a seguir não foram encontrados:</p>
+ <br/>
+ <table style="margin:auto;">
+ <thead>
+ <tr><th>Não foi encontrado o código de barras</th></tr>
+ </thead>
+ <tbody>
+ [% FOREACH notfoundbarcode IN notfoundbarcodes %]
+ <tr><td>[% notfoundbarcode |html %]</td></td>
+ [% END %]
+ </tbody>
+ </table>
+ </div>
+
+ [% IF ( item_loop ) %]
+ [% UNLESS ( too_many_items_display ) %]
+ <h4>Os seguintes códigos de barras foram encontrados: </h4>
+ [% END %]
+ [% END %]
+ [% END # /IF notfoundbarcodes.size %]
+
+ [% IF ( notfounditemnumbers.size ) %]
+ <div class="dialog alert">
+ <p>Atenção, os seguintes números de exemplar não foram encontrados:</p>
+ <br/>
+ <table style="margin:auto;">
+ <thead>
+ <tr><th>Números de exemplar não encontrados</th></tr>
+ </thead>
+ <tbody>
+ [% FOREACH notfounditemnumber IN notfounditemnumbers %]
+ <tr><td>[% notfounditemnumber |html %]</td></td>
+ [% END %]
+ </tbody>
+ </table>
+ </div>
+ [% IF ( item_loop ) %]
+ [% UNLESS ( too_many_items_display ) %]
+ <h4>Os seguintes números de exemplar foram encontrados: </h4>
+ [% END %]
+ [% END %]
+ [% END # /IF notfounditemnumbers.size %]
+
+
+ <form name="f" action="batchMod.pl" method="post">
+ <input type="hidden" name="op" value="[% op | html %]" />
+ <input type="hidden" name="searchid" value="[% searchid | html %]" />
+ <input type="hidden" name="uploadedfileid" id="uploadedfileid" value="" />
+ <input type="hidden" name="src" id="src" value="[% src | html %]" />
+ [% IF biblionumber %]
+ <input type="hidden" name="biblionumber" id="biblionumber" value="[% biblionumber | html %]" />
+ [% END %]
+
+ [% IF items.size %]
+ [% PROCESS items_table_batchmod headers => item_header_loop, items => items, checkboxes_edit => 1, display_columns_selection => 1 %]
+ [% END %]
+
+ [% IF ( simple_items_display || job_completed ) %]
+ [% IF ( too_many_items_display ) %]
+ <p>Demasiados itens ([% too_many_items_display | html %]): Editou mais do que [% Koha.Preference('MaxItemsToDisplayForBatchMod') | html %] itens em lote, os mesmos não serão mostrados.</p>
+ [% ELSE %]
+ <p>Os seguintes documentos foram modificados:</p>
+ <ul>
+ [% FOREACH simple_items_displa IN simple_items_display %]
+ <li>
+ [% IF ( CAN_user_editcatalogue_edit_items ) %]<a href="/cgi-bin/koha/cataloguing/additem.pl?op=edititem&amp;biblionumber=[% simple_items_displa.biblionumber | uri %]&amp;itemnumber=[% simple_items_displa.itemnumber | uri %]">[% simple_items_displa.barcode | html %]</a>[% ELSE %][% simple_items_displa.barcode | html %][% END %]
+ </li>
+ [% END %]
+ </ul>
+ [% END # /IF too_many_items_display %]
+ [% END # /IF simple_items_display %]
+
+ [% IF ( show ) %]
+
+ [% IF ( too_many_items_process ) %]
+ <p>Demasiados items ([% too_many_items_process | html %]): Não pode editar mais que [% Koha.Preference('MaxItemsToProcessForBatchMod') | html %] itens num lote.</p>
+ [% ELSIF ( too_many_items_display ) %]
+ <p>Demasiados itens ([% too_many_items_display | html %]): Está a editar mais do que [% Koha.Preference('MaxItemsToDisplayForBatchMod') | html %] itens em lote, os mesmos não serão mostrados.</p>
+ [% FOREACH itemnumber IN itemnumbers_array %]
+ <input type="hidden" name="itemnumber" value="[% itemnumber | html %]" />
+ [% END %]
+ [% END # /IF too_many_items_process %]
+
+ [% UNLESS (too_many_items_process) %]
+ <div id="cataloguing_additem_newitem" class="item_edit_form">
+ <h2>Editar exemplares</h2>
+ <div class="hint">Ao marcar a caixa à direita da descrição do subcampo irá desactivar a entrada e eliminar os valores do subcampo para os exemplares seleccionados. Deixe os campos em branco para não haver alterações.</div>
+ <fieldset class="rows">
+ [%# no_plugin from batchMod-edit, jQuery is included at the end of the template and cataloguing plugins are not working in this situation %]
+ [% PROCESS subfields_for_item subfields => subfields, add_regex => 1, add_delete_checkbox => 1, no_plugin => 1 %]
+ </fieldset>
+
+ <fieldset class="rows">
+ <legend>Outros atributos</legend>
+ <ol>
+ <li>
+ <div class="subfield_line">
+ <label for="exclude_from_local_holds_priority">Excluir da prioridade de reservas locais:</label>
+ <select id="exclude_from_local_holds_priority" name="exclude_from_local_holds_priority" class="input_marceditor select2" style="width: 50px">
+ <option selected></option>
+ <option value="1">Sim</option>
+ <option value="0">Não</option>
+ </select>
+ </div>
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="rows">
+ <legend>Opções</legend>
+ <ol>
+ <li>
+ <div class="hint">Esta opção devolve os exemplares para os remover das contas dos leitores.</br>Os exemplares não sao marcados como encontrados, nem os estados danificados/retirados impedem essa devolução, nem os locais dos exemplares são atualizados. Este recurso destina-se a permitir a remoção de empréstimos das contas dos leitores sem afetar as multas ou outros estados.</div></br>
+ <div class="subfield_line">
+ <label for="mark_items_returned">Devolver exemplares:</label>
+ <select id="mark_items_returned" name="mark_items_returned" class="input_marceditor select2" style="width: 50px">
+ <option value="1">Sim</option>
+ <option value="0" selected>Não</option>
+ </select>
+ </div>
+ </li>
+ </ol>
+ </fieldset>
+
+ <fieldset class="action">
+ <input class="btn btn-primary" id="mainformsubmit" type="submit" value="Guardar" />
+ <a href="/cgi-bin/koha/tools/batchMod.pl" class="cancel">Anular</a>
+ </fieldset>
+ </div> <!-- /#cataloguing_additem_newitem -->
+ [% ELSE %]
+ <p><a href="/cgi-bin/koha/tools/batchMod.pl">Voltar à modificação em exemplares em lote</a></p>
+ [% END # /UNLESS too_many_items_process %]
+ [% ELSE # IF show %]
+ <fieldset class="action">
+ [% IF src == 'CATALOGUING' # from catalogue/detail.pl > Edit items in a batch%]
+ [% IF searchid %]
+ <a class="btn btn-default" href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% biblionumber | uri %]&searchid=[% searchid | uri %]"><i class="fa fa-check-square-o"></i> Voltar ao registo</a>
+ [% ELSE %]
+ <a class="btn btn-default" href="/cgi-bin/koha/catalogue/detail.pl?biblionumber=[% biblionumber | uri %]"><i class="fa fa-check-square-o"></i> Voltar ao registo</a>
+ [% END %]
+ [% ELSIF src %]
+ <a class="btn btn-default" href="[% src | url %]"><i class="fa fa-check-square-o"></i> Voltar à página anterior</a>
+ [% ELSE %]
+ <a class="btn btn-default" href="/cgi-bin/koha/tools/batchMod.pl"><i class="fa fa-check-square-o"></i> Voltar à modificação em exemplares em lote</a>
+ [% END %]
+ </fieldset> <!-- /.action -->
+ [% END %]
+ </form>
+
+ [% MACRO jsinclude BLOCK %]
+ [% Asset.js("lib/jquery/plugins/humanmsg.js") | $raw %]
+ [% Asset.js("js/cataloging.js") | $raw %]
+ [% INCLUDE 'datatables.inc' %]
+ [% INCLUDE 'columns_settings.inc' %]
+ [% Asset.js("js/pages/batchMod.js") | $raw %]
+ [% INCLUDE 'select2.inc' %]
+ [% INCLUDE 'calendar.inc' %]
+ <script>
+            // Prepare array of all column headers, incrementing each index by
+            // two to accommodate control and title columns
+            var allColumns = new Array([% FOREACH item_header_loo IN item_header_loop %]'[% loop.count | html %]'[% UNLESS ( loop.last ) %],[% END %][% END %]);
+            for( x=0; x<allColumns.length; x++ ){
+                allColumns[x] = Number(allColumns[x]) + 2;
+            }
+
+            $(document).ready(function(){
+                $("input[name='disable_input']").click(function() {
+                    var row = $(this).attr("id");
+                    row = row.replace("row","hint");
+                    var todisable = $(this).parent().find(".input_marceditor,.tag,.subfield,.mandatory");
+                    var regex_link = $(this).parent().find(".field_regex");
+                    if ($(this).is(":checked")) {
+                        $(todisable).prop('disabled', true);
+                        $("#"+row).html(_("Este subcampos será eliminado"));
+                        $(regex_link).hide();
+                    } else {
+                        $(todisable).prop('disabled', false);
+                        $("#"+row).html("");
+                        $(regex_link).show();
+                    }
+                });
+                $('a.field_regex').click(function() {
+                    var editor = $(this).parent().find(".input_marceditor");
+                    var tag_editor = $(this).parent().find(".buttonDot");
+                    var regex = $(this).parent().find("[name='regex_fields']");
+                    var disable_input = $(this).parent().find(".disable_input");
+                    if ($(this).html() == 'RegEx') {
+                        $(editor).hide();
+                        $(regex).show();
+                        $(tag_editor).hide();
+                        $(this).html('Text');
+                        $(disable_input).prop('disabled', true);
+                        let input_name = $(editor).attr('name');
+                        let cloned = $("input[name='"+input_name+"']");
+                        if ( cloned.length > 1 ) {
+                            for( i = 1 ; i < cloned.length ; i++){
+                                $(cloned[i]).parent().remove();
+                            }
+                        }
+                    } else {
+                        $(editor).show();
+                        $(tag_editor).show();
+                        $(regex).hide();
+                        $(this).html('RegEx');
+                        $(disable_input).prop('disabled', false);
+                    }
+                    return false;
+                });
+            });
+        </script>
+ [% IF ( show ) %]
+ [%- # Loop over fields which may have plugin JavaScript -%]
+ [%- UNLESS (too_many_items_process) -%]
+ [%- FOREACH subfield IN subfields -%]
+ [% SET mv = subfield.marc_value %]
+ [%- IF ( mv.type == 'text_plugin' ) -%]
+ <!-- subfield[% subfield.tag | html %][% subfield.subfield | html %][% subfield.random | html %] -->
+ [% mv.javascript | $raw %]
+ [%- END -%]
+ [%- END -%]
+ [%- END -%]
+ [%- END -%]
+ [% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

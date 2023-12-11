@@ -1,0 +1,195 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Construtor da etiqueta de registo UNIMARC</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="cat_unimarc_leader_authorities" class="cat" style="padding:1em;">
+ <h3>000 - Leader</h3>
+ <div class="page-section">
+ <form name="f_pop" onsubmit="report()" action="">
+ <input name="plugin_name" value="unimarc_leader_authorities.pl" type="hidden">
+ <table>
+ <tr>
+ <td>1-4 Comprimento do registo</td>
+ <td>(calculado automaticamente)</td>
+ </tr>
+ <tr>
+ <td><label for="f5">5- Estado do registo</label></td>
+ <td>
+ <select name="f5" id="f5">
+ [% IF ( f5c ) %]
+ <option value="c" selected="selected">c - Corrigido ou revisto</option>
+ [% ELSE %]
+ <option value="c">c - Corrigido ou revisto</option>
+ [% END %]
+ [% IF ( f5d ) %]
+ <option value="d" selected="selected">d - Eliminado</option>
+ [% ELSE %]
+ <option value="d">d - Eliminado</option>
+ [% END %]
+ [% IF ( f5n ) %]
+ <option value="n" selected="selected">n - Novo</option>
+ [% ELSE %]
+ <option value="n">n - Novo</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td><label for="f6">6 - Tipo de registo</label></td>
+ <td>
+ <select name="f6" id="f6">
+ [% IF ( f6x ) %]
+ <option value="x" selected="selected">x - Registo de autoridade</option>
+ [% ELSE %]
+ <option value="x">x - Registo de autoridade</option>
+ [% END %]
+
+ [% IF ( f6y ) %]
+ <option value="y" selected="selected">y - Registo de referência</option>
+ [% ELSE %]
+ <option value="y">y - Registo de referência</option>
+ [% END %]
+
+ [% IF ( f6z ) %]
+ <option value="z" selected="selected">z - Registo de entrada explicativo geral</option>
+ [% ELSE %]
+ <option value="z">z - Registo de entrada explicativo geral</option>
+ [% END %]
+
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td><label for="f7">7-8 Indefinido</label></td>
+ <td></td>
+ </tr>
+
+ <tr>
+ <td><label for="f9">9- Tipo de entidade</label></td>
+ <td>
+ <select name="f9" id="f9">
+ [% IF ( f9a ) %]
+ <option value="a" selected="selected">a - Entrada de nome pessoal</option>
+ [% ELSE %]
+ <option value="a">a - Entrada de nome pessoal</option>
+ [% END %]
+
+ [% IF ( f9b ) %]
+ <option value="b" selected="selected">b - Entrada de coletividade</option>
+ [% ELSE %]
+ <option value="b">b - Entrada de coletividade</option>
+ [% END %]
+
+ [% IF ( f9c ) %]
+ <option value="c" selected="selected">c - Nome geográfico</option>
+ [% ELSE %]
+ <option value="c">c - Nome geográfico</option>
+ [% END %]
+
+ [% IF ( f9d ) %]
+ <option value="d" selected="selected">d - Marca registada</option>
+ [% ELSE %]
+ <option value="d">d - Marca registada</option>
+ [% END %]
+
+ [% IF ( f9e ) %]
+ <option value="e" selected="selected">e - Nome de família</option>
+ [% ELSE %]
+ <option value="e">e - Nome de família</option>
+ [% END %]
+
+ [% IF ( f9f ) %]
+ <option value="f" selected="selected">f - Nome uniforme</option>
+ [% ELSE %]
+ <option value="f">f - Nome uniforme</option>
+ [% END %]
+
+ [% IF ( f9g ) %]
+ <option value="g" selected="selected">g - Nome de coletividade uniforme</option>
+ [% ELSE %]
+ <option value="g">g - Nome de coletividade uniforme</option>
+ [% END %]
+
+ [% IF ( f9h ) %]
+ <option value="h" selected="selected">h - Nome/título</option>
+ [% ELSE %]
+ <option value="h">h - Nome/título</option>
+ [% END %]
+
+ [% IF ( f9i ) %]
+ <option value="i" selected="selected">i - Nome/título do uniforme coletivo</option>
+ [% ELSE %]
+ <option value="i">i - Nome/título do uniforme coletivo</option>
+ [% END %]
+
+ [% IF ( f9j ) %]
+ <option value="j" selected="selected">j - Assunto</option>
+ [% ELSE %]
+ <option value="j">j - Assunto</option>
+ [% END %]
+
+ [% IF ( f9k ) %]
+ <option value="k" selected="selected">k - Local</option>
+ [% ELSE %]
+ <option value="k">k - Local</option>
+ [% END %]
+
+ [% IF ( f9l ) %]
+ <option value="l" selected="selected">l - Forma ou características físicas</option>
+ [% ELSE %]
+ <option value="l">l - Forma ou características físicas</option>
+ [% END %]
+
+ </select>
+ </td>
+ </tr>
+ <tr>
+ <td><label for="f10">10-16 indicador/subcampo/tamanho</label></td>
+ <td>(calculado automaticamente)</td>
+ </tr>
+
+ <tr>
+ <td><label for="f17">17- Nível de Codificação</label></td>
+ <td>
+ <select name="f17" id="f17">
+ [% IF ( f17space ) %]
+ <option value=" " selected="selected"> - Completo</option>
+ [% ELSE %]
+ <option value=" "> - Completo</option>
+ [% END %]
+ [% IF ( f183 ) %]
+ <option value="3" selected="selected">3 - Parcial</option>
+ [% ELSE %]
+ <option value="3">3 - Parcial</option>
+ [% END %]
+ </select>
+ </td>
+ </tr>
+
+ <tr>
+ <td>18-19 Indefinido</td>
+ <td></td>
+ </tr>
+
+ <tr>
+ <td>20-24 Mapa de entrada &amp; comprimentos</td>
+ <td>(preenchimento automático)</td>
+ </tr>
+ </table>
+ <fieldset class="action"><input type="submit" value="OK" onclick="report();" /> <a href="#" class="cancel close">Anular</a></fieldset>
+ </form>
+ </div> <!-- /.page-section -->
+
+<script>
+    function report() {
+        var doc   = opener.document;
+        var field = doc.getElementById("[% index | html %]");
+
+        field.value ='     '+document.f_pop.f5.value+document.f_pop.f6.value+'  '+document.f_pop.f9.value+'22     '+document.f_pop.f17.value+'  '+'45  ';
+
+        self.close();
+        return false;
+    }
+</script>
+
+[% INCLUDE 'popup-bottom.inc' %]

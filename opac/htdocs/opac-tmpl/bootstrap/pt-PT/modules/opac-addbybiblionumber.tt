@@ -1,0 +1,116 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Adicionar à lista &rsaquo; [% IF ( LibraryNameTitle ) %][% LibraryNameTitle | html %][% ELSE %]Koha online[% END %] catálogo</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% BLOCK cssinclude %][% END %]
+</head>
+[% INCLUDE 'bodytag.inc' bodyid='addtolist' bodyclass='popup' %]
+ <div class="main">
+ <div class="container-fluid">
+ <div class="row">
+ <div class="col order-first order-md-first order-lg-2">
+ <div id="useraddbybiblionumber" class="maincontent">
+ [% IF ( authorized ) %]
+ [% UNLESS ( newshelf ) %]
+ [% IF ( multiple ) %]
+ <h1>Adicionar [% total | html %] exemplares a [% IF ( singleshelf ) %]<em>[% shelfname | html %]</em>: [% ELSE %]<span>à lista:</span>[% END %]</h1>
+ [% ELSE %]
+ <h1>Adicionar a [% IF ( singleshelf ) %]<em>[% shelfname | html %]</em>[% ELSE %]<span>à lista:</span>[% END %]</h1>
+ [% END %]
+ <ul>
+ [% FOREACH biblio IN biblios %]
+ <li>[% INCLUDE 'biblio-title.inc' %]
+ [% IF ( biblio.author ) %]<span class="author"> [% biblio.author | html %][% END %]
+ </li>
+ [% END %]
+ </ul>
+ [% IF private_shelves.count or public_shelves.count or private_shelves_shared_with_me.count %]
+ <form name="f1" action="/cgi-bin/koha/opac-addbybiblionumber.pl" method="post">
+ <fieldset>
+ <legend>Selecionar uma lista</legend>
+ <label for="shelfnumber">Adicionar à lista:</label> <select name="shelfnumber" id="shelfnumber">
+ [% IF private_shelves.count %]<optgroup label="Listas privadas">
+ [% FOREACH private_shelf IN private_shelves %]
+ <option value="[% private_shelf.shelfnumber | html %]">[% private_shelf.shelfname | html %]</option>
+ [% END %]
+ </optgroup>[% END %]
+ [% IF private_shelves_shared_with_me.count %]<optgroup label="Listas privadas partilhadas comigo">
+ [% FOREACH private_shelf IN private_shelves_shared_with_me %]
+ <option value="[% private_shelf.shelfnumber | html %]">[% private_shelf.shelfname | html %]</option>
+ [% END %]
+ </optgroup>[% END %]
+ [% IF public_shelves.count %]<optgroup label="Listas públicas">
+ [% FOREACH public_shelf IN public_shelves %]
+ <option value="[% public_shelf.shelfnumber | html %]">[% public_shelf.shelfname | html %]</option>
+ [% END %]
+ </optgroup>[% END %]
+ </select>
+ [% FOREACH biblio IN biblios %]
+ <input type="hidden" name="biblionumber" value="[% biblio.biblionumber | html %]" />
+ [% END %]
+ <input type="hidden" name="modifyshelfcontents" value="1" />
+ </fieldset>
+ <fieldset class="action">
+ <input class="btn btn-primary" type="submit" value="Guardar" />
+ <a class="close cancel" href="#">Anular</a>
+ </fieldset>
+ </form>
+ <p>...ou...</p>
+ [% ELSE %]
+ [% IF ( singleshelf ) %]
+ <form name="f1" action="/cgi-bin/koha/opac-addbybiblionumber.pl" method="post">
+ [% FOREACH biblio IN biblios %]
+ <input type="hidden" name="biblionumber" value="[% biblio.biblionumber | html %]">
+ [% END %]
+ <input type="hidden" name="shelfnumber" value="[% shelfnumber | html %]" />
+ <input type="hidden" name="modifyshelfcontents" value="1" /></fieldset>
+ <fieldset class="action">
+ <input class="btn btn-primary" type="submit" value="Guardar" />
+ <a class="close cancel" href="#">Anular</a>
+ </fieldset>
+ </form>
+ [% END %]
+ [% END # IF / existingshelves %]
+ [% END # / UNLESS newshelf %]
+
+ [% UNLESS ( singleshelf ) %]
+ <form name="f2" method="post" action="/cgi-bin/koha/opac-addbybiblionumber.pl">
+ <fieldset>
+ <legend>Adicionar a uma nova lista:</legend>
+ <label for="newvirtualshelf">Nome da lista:</label>
+ <input type="text" name="newvirtualshelf" id="newvirtualshelf" size="40" />
+ <label for="category">Categoria:</label>
+ <select name="public" id="public">
+ <option value="0">Privada</option>
+ [% IF (OpacAllowPublicListCreation) %]
+ <option value="1">Público</option>
+ [% END %]
+ </select>
+ </fieldset>
+ [% FOREACH biblio IN biblios %]
+ <input type="hidden" name="biblionumber" value="[% biblio.biblionumber | html %]" />
+ [% END %]
+ <fieldset class="action">
+ <input type="hidden" name="sortfield" value="title" />
+ <input class="btn btn-primary" type="submit" value="Guardar" />
+ <a class="close cancel" href="#">Anular</a>
+ </fieldset>
+ </form>
+ [% END # / UNLESS singleshelf %]
+ [% ELSE %]
+ <p>
+ [% IF (errcode==1) %]
+ <span>Não foi possível criar uma nova lista. Por favor verifique se o nome é único.</span>
+ [% ELSE %]
+ <span>Desculpe, não pode adicionar exemplares a esta lista.</span>
+ [% END %]
+ </p>
+ [% END # IF authorized %]
+ <p><a href="#" class="close">Fechar a janela.</a></p>
+ </div> <!-- / #useraddbybiblionumber -->
+ </div> <!-- / .span12 -->
+ </div> <!-- / .row -->
+ </div> <!-- / .container-fluid -->
+ </div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' is_popup=1 %]
+[% BLOCK jsinclude %][% END %]

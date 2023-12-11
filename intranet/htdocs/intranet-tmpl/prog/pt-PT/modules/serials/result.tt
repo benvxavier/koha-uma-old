@@ -1,0 +1,84 @@
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Resultados de pesquisa &rsaquo; Periódicos &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="ser_result" class="ser">
+
+<div class="main container-fluid">
+
+[% IF ( total ) %]
+<h1>Resultados [% from | html %] a [% to | html %] de [% total | html %]</h1>
+<div class="page-section">
+<table>
+ <tr>
+ <th>Título</th>
+ <th>Autor</th>
+ <th>Editor</th>
+ <th>Ano de publicação</th>
+ <th>ISSN</th>
+ <th>&nbsp;</th>
+ </tr>
+ [% FOREACH resultsloo IN resultsloop %]
+ <tr>
+ <td class="title">
+ [% INCLUDE 'biblio-title.inc' biblio=resultsloo %]
+ </td>
+ <td>
+ [% resultsloo.author | html %]
+ </td>
+ <td>
+ [% resultsloo.publishercode | html %]
+ </td>
+ <td>
+ [% resultsloo.publicationyear | html %]
+ </td>
+ <td>
+ [% resultsloo.issn | html %]
+ </td>
+ <td><a class="btn btn-default btn-xs select_title" data-biblionumber="[% resultsloo.biblionumber | html %]" href="#" title="Seleccionar este registo">Escolher</a></td>
+ </tr>
+ [% END %]
+ </table>
+</div>
+[% ELSE %]
+
+ <div class="dialog message">
+ <p>Nenhum resultado encontrado para <strong>[% query | html %]</strong></p>
+ </div>
+
+[% END %]
+
+<div class="pages">
+ [% IF ( displayprev ) %]
+ <a class="nav" href="/cgi-bin/koha/serials/subscription-bib-search.pl?op=do_search&amp;type=intranet&amp;startfrom=[% startfromprev |url %]&amp;q=[% query |url %]">&lt;&lt; Anterior</a>
+ [% END %]
+ [% IF ( displaynext ) %]
+ <a class="nav" href="/cgi-bin/koha/serials/subscription-bib-search.pl?op=do_search&amp;type=intranet&amp;startfrom=[% startfromnext |url %]&amp;q=[% query |url %]">Seguinte &gt;&gt;</a>
+ [% END %]
+</div>
+
+<p><a href="subscription-bib-search.pl">Pesquisar por outro registo</a></p>
+
+<div id="closewindow"><a class="btn btn-default btn-default close" href="#">Fechar</a></div>
+
+[% MACRO jsinclude BLOCK %]
+ <script>
+        $(document).ready(function(){
+            $(".select_title").on("click",function(e){
+                e.preventDefault();
+                var biblionumber = $(this).data("biblionumber");
+                GetIt( biblionumber, $(this) );
+            });
+        });
+        function GetIt(bibno,title) {
+            title = title.parents('tr').find('.title').text();
+            opener.document.f.biblionumber.value = bibno;
+            opener.document.f.title.value = title;
+            window.close();
+        }
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' popup_window=1 %]

@@ -1,0 +1,158 @@
+[% USE raw %]
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>
+ [%- IF ( action == "new" ) %] Adicionar nova coleção [% ELSE %] Editar coleção [% editColTitle | html %] [% END -%] &rsaquo; Coleções rotativas &rsaquo; Ferramentas &rsaquo; Koha </title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="rcoll_editCollections" class="tools rcoll">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/tools/tools-home.pl">Ferramentas</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/rotating_collections/rotatingCollections.pl">Coleções</a>
+ [% END %]
+
+ [%- IF ( action == "new" ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Adicionar nova coleção</span>
+ [% END %]
+ [% ELSIF ( action == "delete" ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Coleção eliminada</span>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/rotating_collections/addItems.pl?colId=[% editColId | uri %]">Coleção <em>[% editColTitle | html %]</em></a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Editar coleção</span>
+ [% END %]
+ [% END -%]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ [% IF ( previousActionCreate ) %]
+ [% IF ( createSuccess ) %]
+ <div class="dialog message">
+ <p>Coleção <em>[% createdTitle | html %]</em> adicionado com sucesso</p>
+ <p><a href="/cgi-bin/koha/rotating_collections/rotatingCollections.pl">Voltar às coleções</a></p>
+ </div>
+ [% ELSE %]
+ <div class="dialog alert">
+ <p>Coleção <em>[% createdTitle | html %]</em> falhou a adição</p>
+ <p>
+ [% IF failureMessage == "NO_TITLE" %]
+ <span>Nenhum título inserido.</span>
+ [% ELSIF failureMessage == "DUPLICATE_TITLE" %]
+ <span>O título já está a ser usado.</span>
+ [% ELSIF failureMessage == "NO_DESCRIPTION" %]
+ <span>Nenhuma descrição inserida</span>
+ [% ELSE %]
+ [% failureMessage | html %]
+ [% END %]
+ </p>
+ </div>
+ [% END %]
+ [% END %]
+
+ [% IF ( previousActionDelete ) %]
+ [% IF ( deleteSuccess ) %]
+ <div class="dialog message">
+ <p>Coleção eliminada com sucesso</p>
+ <p><a href="/cgi-bin/koha/rotating_collections/rotatingCollections.pl">Voltar às coleções</a></p>
+ </div>
+ [% ELSE %]
+ <div class="dialog alert">Coleção não foi eliminada</div>
+ [% END %]
+ [% END %]
+
+ [% IF ( previousActionUpdate ) %]
+ [% IF ( updateSuccess ) %]
+ <div class="dialog message">
+ <p>Coleção <em>[% updatedTitle | html %]</em> atualização com sucesso</p>
+ <p><a href="/cgi-bin/koha/rotating_collections/rotatingCollections.pl">Voltar às coleções</a></p>
+ </div>
+ [% ELSE %]
+ <div class="dialog alert">
+ <p>Coleção <em>[% updatedTitle | html %]</em> falhou ao atualizar</p>
+ <p>
+ [% IF failureMessage == "NO_ID" %] Nem identificador de coleção dado. [% ELSIF failureMessage == "DUPLICATE_TITLE" %] Título já em uso. [% ELSE %] [% failureMessage | html %] [% END %] </p>
+ </div>
+ [% END %]
+ [% END %]
+
+ <div>
+
+ [% IF action == "new" || action == "edit" %]
+ [% IF ( previousActionEdit ) %]
+ <h1>Editar coleção <em>[% editColTitle | html %]</em></h1>
+ [% ELSE %]
+ <h1>Adicionar nova coleção</h1>
+ [% END %]
+
+ <form action="editCollections.pl" method="post" class="validated">
+ [% IF ( previousActionEdit ) %]
+ <input type="hidden" name="action" value="update" />
+ <input type="hidden" name="colId" value="[% editColId | html %]" />
+ [% ELSE %]
+ <input type="hidden" name="action" value="create" />
+ [% END %]
+
+ <fieldset class="rows">
+ <ol>
+ <li>
+ <label class="required" for="title">Título: </label>
+ [% IF ( editColTitle ) %]
+ <input type="text" name="title" value="[% editColTitle | html %]" required="required" />
+ <span class="required">Obrigatório</span>
+ [% ELSE %]
+ <input type="text" name="title" required="required" />
+ <span class="required">Obrigatório</span>
+ [% END %]
+ </li>
+ <li>
+ <label for="description">Descrição: </label>
+ [% IF (editColDescription ) %]
+ <input type="text" size="50" name="description" value="[% editColDescription | html %]" />
+ [% ELSE %]
+ <input type="text" size="50" name="description" />
+ [% END %]
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <p><input class="btn btn-primary" type="submit" value="Submeter" /> <a href="/cgi-bin/koha/rotating_collections/rotatingCollections.pl" class="cancel">Anular</a></p>
+ </fieldset>
+ </form>
+ [% END %]
+ </div>
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'tools-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/tools-menu.js") | $raw %]
+ [% Asset.js("js/rotating-collections.js") | $raw %]
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

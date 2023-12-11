@@ -1,0 +1,162 @@
+[% USE Koha %]
+[% USE KohaDates %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>O seu histórico de reclamações &rsaquo; [% IF ( LibraryNameTitle ) %][% LibraryNameTitle | html %][% ELSE %]Koha online[% END %] catálogo</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% BLOCK cssinclude %][% END %]
+</head>
+[% INCLUDE 'bodytag.inc' bodyid='opac-recalls' bodyclass='scrollto' %]
+[% INCLUDE 'masthead.inc' %]
+<div class="main">
+ <nav aria-label="caminho de navegação">
+ <ul class="breadcrumb">
+ <li class="breadcrumb-item">
+ <a href="/cgi-bin/koha/opac-main.pl">Início</a>
+ </li>
+ <li class="breadcrumb-item">
+ <a href="#">O seu histórico de reclamações</a>
+ </li>
+ </ul>
+ </nav>
+ <div class="container-fluid">
+ <div class="row">
+ <div class="col col-lg-2 order-2 order-lg-1">
+ <div id="navigation">
+ [% INCLUDE 'navigation.inc' IsPatronPage=1 %]
+ </div>
+ </div>
+ <div class="col-md-12 col-lg-10 order-1 order-lg-2">
+ <div id="recalls" class="maincontent">
+ <h2>Histórico de reclamações</h2>
+ [% IF Koha.Preference('UseRecalls') %]
+ [% IF RECALLS.count %]
+ <div id="opac-user-recalls">
+ <table id="recalls-table" class="table table-bordered table-striped">
+ <thead>
+ <tr>
+ <th class="anti-the">Título</th>
+ <th class="psort">Colocado em</th>
+ <th>Expira em</th>
+ <th>Biblioteca de levantamento</th>
+ <th>Estado</th>
+ <th>Data de devolução</th>
+ <th class="nosort">&nbsp;</th>
+ <th></th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH RECALL IN RECALLS %]
+ <tr>
+ <td class="title">
+ <a class="title" href="/cgi-bin/koha/opac-detail.pl?biblionumber=[% RECALL.biblio_id | html %]">
+ [% RECALL.biblio.title | html %]
+ [% FOREACH s IN RECALL.biblio.subtitle %]
+ [% s | html %]
+ [% END %]
+ </a>
+ [% RECALL.biblio.author | html %]
+ </td>
+ <td class="recalldate" data-order="[% RECALL.created_date | html %]">
+ <span title="[% RECALL.created_date | html %]">
+ <span class="tdlabel">Data de reclamação:</span>
+ [% RECALL.created_date | $KohaDates %]
+ </span>
+ </td>
+ <td class="expirationdate" data-order="[% RECALL.expiration_date | html %]">
+ [% IF ( RECALL.expiration_date ) %]
+ <span title="[% RECALL.expiration_date | html %]">
+ <span class="tdlabel">Fim:</span>
+ [% RECALL.expiration_date | $KohaDates %]
+ </span>
+ [% ELSIF ( !RECALL.completed ) %]
+ <span title="0000-00-00">
+ <span class="tdlabel">Fim:</span>
+ Nunca expira </span>
+ [% ELSE %]
+ <span title="0000-00-00">-</span>
+ [% END %]
+ </td>
+ <td class="branch">
+ <span class="tdlabel">Biblioteca de levantamento:</span>
+ [% RECALL.library.branchname | html %]
+ </td>
+ <td class="status">
+ <span class="tdlabel">Estado:</span>
+ [% IF ( RECALL.in_transit ) %]
+ <span>Em trânsito para [% RECALL.library.branchname | html %]</span>
+ [% ELSIF ( RECALL.waiting ) %]
+ <span>Pronta para levantamento</span>
+ [% ELSIF ( RECALL.overdue ) %]
+ <span>Devolução atrasada</span>
+ [% ELSIF ( RECALL.expired ) %]
+ <span>Expirou em [% RECALL.expiration_date | $KohaDates %]</span>
+ [% ELSIF ( RECALL.cancelled ) %]
+ <span>Cancelado em [% RECALL.completed_date | $KohaDates %]</span>
+ [% ELSIF ( RECALL.fulfilled ) %]
+ <span>Completo</span>
+ [% ELSE %]
+ <span>Pedido</span>
+ [% END %]
+ </td>
+ <td class="due_date">
+ <span class="tdlabel">Data de devolução</span>
+ [% IF ( RECALL.requested ) %]
+ <span>Em espera de ser devolvido até [% RECALL.checkout.date_due | $KohaDates as_due_date => 1 %]</span>
+ [% ELSIF ( RECALL.waiting and RECALL.expiration_date ) %]
+ <span>Levantamento até [% RECALL.expiration_date | $KohaDates %]</span>
+ [% ELSE %]
+ -
+ [% END %]
+ </td>
+
+ <td class="cancelrecall">
+ [% IF ( RECALL.requested or RECALL.overdue ) %]
+ <form action="/cgi-bin/koha/opac-recall.pl" method="post">
+ <input type="hidden" name="op" value="cancel">
+ <input type="hidden" name="recall_id" value="[% RECALL.id | html %]">
+ <input type="hidden" name="biblionumber" value="[% RECALL.biblio_id | html %]">
+ <input class="btn btn-danger cancel_recall" name="submit" type="submit" value="Anular">
+ </form>
+ [% END %]
+ </td>
+ [% END %]
+ <td></td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ [% ELSE %]
+ <span>Não foram feitas reclamações.</span>
+ [% END # / # RECALLS.count %]
+ [% ELSE %]
+ <span>As reclamações não estão ativas. Por favor contacte a sua biblioteca.</span>
+ [% END %]
+ </div> <!-- /#recalls -->
+ </div> <!-- /.col-md-12 -->
+ </div> <!-- /.row -->
+ </div> <!-- /.container-fluid -->
+</div> <!-- /#main -->
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %]
+ [% INCLUDE 'datatables.inc' %]
+ <script type="text/JavaScript">
+        //<![CDATA[
+            $(document).ready(function(){
+                $(".cancel_recall").click(function(){
+                    return confirmDelete(_("Tem a certeza que pretende remover esta reclamação?"));
+                });
+                $("#recalls-table").dataTable($.extend(true, {}, dataTablesDefaults, {
+                    "responsive": {
+                        "details": { "type": 'column', "target": -1 }
+                    },
+                    "aoColumnDefs": [
+                        { "aTargets": [ "nosort" ],"bSortable": false,"bSearchable": false },
+                        { "sType": "anti-the", "aTargets" : [ "anti-the" ] },
+                        { "sType": "title-string", "aTargets" : [ "title-string" ] },
+                        { "className": "dtr-control", "orderable": false, "targets": -1 }
+                    ]
+                }));
+            });
+    </script>
+[% END %]

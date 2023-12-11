@@ -1,0 +1,59 @@
+[% USE raw %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Carregamento de plugin &rsaquo; Plugins &rsaquo; Ferramentas &rsaquo; Koha </title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% INCLUDE 'calendar.inc' %]
+</head>
+
+<body id="plugins_plugins_upload" class="plugins">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'circ-search.inc' %]
+[% END %]
+
+ [% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/plugins/plugins-home.pl">Plugins</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <wrap>Carregar plugins</wrap>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+ [% END #/ WRAPPER sub-header.inc %]
+
+ <div class="container-fluid">
+ <div class="row">
+ <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3">
+
+ <h1>Carregar plugin do Koha</h1>
+ [% IF ( ERRORS ) %]
+ <div class="dialog alert">
+ [% FOREACH ERROR IN ERRORS %]
+ [% IF ( ERROR.NOTKPZ ) %]<li><strong>O ficheiro carregado não parece um ficheiro kpz. A extensão não é '.kpz'.</strong></li>
+ [% ELSIF ( ERROR.NOWRITETEMP ) %]<li><strong>Este script não é capaz de criar / gravar no diretório temporário necessário.</strong></li>
+ [% ELSIF ( ERROR.EMPTYUPLOAD ) %]<li><strong>O ficheiro carregado parece estar vazio.</strong></li>
+ [% ELSIF ( ERROR.UZIPFAIL ) %]<li><strong>[% ERROR.UZIPFAIL | html %] não é possível descomprimir<br />Por favor, verifique a integridade do arquivo ZIP e tente novamente.</strong></li>
+ [% ELSIF ( ERROR.NOWRITEPLUGINS ) %]<li><strong>Não é possível abrir arquivo para o diretório plugins.<br />Por favor verifique que o utilizador do Apache pode escreve na diretoria dos plugins.</strong></li>
+ [% ELSE %]<li><strong>[% ERROR.CORERR | html %] Ocorreu um erro desconhecido.<br />Por favor, examine o log de erro para mais detalhes.</strong></li>[% END %]
+ [% END %]
+ </div>
+ [% END %]
+ <form method="post" action="/cgi-bin/koha/plugins/plugins-upload.pl" enctype="multipart/form-data">
+ <fieldset class="brief">
+ <div class="hint"><strong>NOTA:</strong> Apenas o formato KPZ é suportado.</div>
+ <ol>
+ <li>
+ <label for="uploadfile">Seleccionar o ficheiro a carregar: </label><input type="file" id="uploadfile" name="uploadfile" accept=".kpz" />
+ </li>
+ </ol>
+ </fieldset>
+ <fieldset class="action">
+ <input type="hidden" name="op" value="Upload" />
+ <input class="btn btn-primary" type="submit" value="Carregar" />
+ </fieldset>
+ </form>
+
+ </div>
+ </div>
+
+[% INCLUDE 'intranet-bottom.inc' %]

@@ -1,0 +1,174 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>
+ [% IF all_done %] Completo [% ELSE %] Criar regra de circulação [% END %] &rsaquo; Instalador Web &rsaquo; Koha </title>
+[% INCLUDE 'installer-doc-head-close.inc' %]
+</head>
+
+<body id="installer" class="installer">
+ <div class="container-fluid">
+ <div class="row">
+ <div id="onboarding-step5" class="installer-main col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
+ <div id="logo"><a href="#">Koha</a></div>
+
+ [% IF all_done %]
+
+ <h1>Instalador Web &rsaquo; Instalação terminada</h1>
+ [% INCLUDE 'onboarding_messages.inc' %]
+
+ <div id="steps">
+ <ol>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Instalação</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Integração</li>
+ </ol>
+ </div>
+
+ <h3>Parabéns, terminou o processo e está pronto a usar o Koha</h3>
+ <a class="btn btn-success" href="/cgi-bin/koha/mainpage.pl">Iniciar o Koha</a>
+
+ [% ELSE %]
+
+ <h2>Instalador Web &rsaquo; Criar uma nova regra de circulação </h2>
+
+ [% INCLUDE 'onboarding_messages.inc' %]
+
+ <div id="steps">
+ <ol>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Instalação</li>
+ <li class="current open"><i class="fa fa-square-o" aria-hidden="true"></i> Integração <ol>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Criar a biblioteca</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Criar uma categoria de leitor</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Criar leitor de administração do Koha</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Criar um novo tipo de documento</li>
+ <li class="current open"><i class="fa fa-square-o" aria-hidden="true"></i> Criar uma nova regra de circulação</li>
+ </ol>
+ </li>
+ </ol>
+ </div>
+
+ <form name="createcirculationrule" method="post" action="onboarding.pl">
+ <fieldset class="rows">
+ <input type="hidden" name="step" value="5"/>
+ <input type="hidden" name="op" value="add_validate_circ_rule" />
+ <ol>
+ <li>
+ <label for="branchname" class="required"> Biblioteca</label>
+ <select name="branch" id="branchname" required="required">
+ <option value=""> Escolher</option>
+ <option value="*" selected="selected">Todos</option>
+ [% FOREACH library IN libraries %]
+ <option value="[% library.branchcode | html %]"> [% library.branchname | html %]</option>
+ [% END %]
+ </select>
+ <span class="required">Obrigatório</span>
+ </li>
+ <li>
+ <label for="categorycode" class="required">Categoria de leitor: </label>
+ <select name="categorycode" id="categorycode" required="required">
+ <option value=""> Escolher</option>
+ <option value="*" selected="selected">Todos</option>
+ [% FOREACH category IN categories %]
+ <option value = "[% category.categorycode | html %]"> [% category.description | html %]</option>
+ [%END%]
+ </select>
+ <span class="required">Obrigatório</span>
+ </li>
+
+ <li>
+ <label for="itemtype" class="required">Tipo de documento: </label>
+ <select id="itemtype" name="itemtype" required="required">
+ <option value=""> Escolher </option>
+ <option value="*" selected="selected">Todos</option>
+ [% FOREACH item IN itemtypes %]
+ <option value = "[% item.itemtype | html %]"> [% item.itemtype | html %]
+ [%END%]
+ </select>
+ <span class="required"> Obrigatório</span>
+ </li>
+ <li>
+ <label for="maxissueqty" class="required">Empréstimos autorizados: </label>
+ <input type="text" inputmode="numeric" pattern="[0-9]*" name="maxissueqty" id="maxissueqty" size="10" value="50" class="required" required="required" />
+ <span class="required">Obrigatório</span>
+ </li>
+
+ <li>
+ <label for="issuelength" class="required">Período de empréstimo: </label>
+ <input type="text" inputmode="numeric" pattern="[0-9]*" name="issuelength" id="issuelength" size="10" value="14" class="required" required="required" />
+ <span class="required">Obrigatório</span>
+ </li>
+ <li>
+ <label for="lengthunit" class="required">Unidades: </label>
+ <select name="lengthunit" id="lengthunit" required="required">
+ <option value=""> Escolher </option>
+ [% SET units = 'days' %]
+ [% IF category %]
+ [% SET default_privacy = category.default_privacy %]
+ [% END %]
+
+ [% SWITCH units %]
+ [% CASE 'days' %]
+ <option value="days" selected="selected">Dias</option>
+ <option value="hours">Horas</option>
+ [% CASE 'hours' %]
+ <option value="days">Dias</option>
+ <option value="hours" selected="selected">Horas</option>
+ [% END %]
+ </select>
+ <span class="required">Obrigatório</span>
+ </li>
+ <li>
+ <label for="renewalsallowed" class="required">Renovações permitidas: </label>
+ <input type="text" inputmode="numeric" pattern="[0-9]*" name="renewalsallowed" id="renewalsallowed" size="10" value="10" class="required" required="required" />
+ <span class="required">Obrigatório</span>
+ </li>
+
+ <li>
+ <label for="renewalperiod" class="required">Período de renovação: </label>
+ <input type="text" inputmode="numeric" pattern="[0-9]*" name="renewalperiod" id="renewalperiod" size="10" value="14" class="required" required="required" />
+ <span class="required">Obrigatório</span>
+ </li>
+
+ <li>
+ <label for="reservesallowed">Reservas permitidas (total): </label>
+ <input type="text" inputmode="numeric" pattern="[0-9]*" name="reservesallowed" id="reservesallowed" size="10" value="10" />
+ </li>
+
+ <li>
+ <label for="holds_per_day">Reservas permitidas (diárias): </label>
+ <input type="text" inputmode="numeric" pattern="[0-9]*" name="holds_per_day" id="holds_per_day" size="10" value="10" />
+ </li>
+
+ <li>
+ <label for="holds_per_record">Reservas por registo (soma): </label>
+ <input type="text" inputmode="numeric" pattern="[0-9]*" name="holds_per_record" id="holds_per_record" size="10" value="1" />
+ </li>
+
+ <li>
+ <label for="onshelfholds">Permitir reservas de exemplares disponíveis: </label>
+ <select name="onshelfholds" id="onshelfholds" required="required">
+ <option value="">Escolher</option>
+ <option value="1" selected="selected">Sim</option>
+ <option value="0">Se qualquer indisponível</option>
+ <option value="2">Se todos indisponíveis</option>
+ </select>
+ </li>
+ </ol>
+ <p>
+ Para adicionar outra regra de circulação, vá a: <span class="breadcrumbs">Administração &rsaquo; Regras de empréstimo e multas </span>
+ </p>
+
+ </fieldset>
+
+ <input class="btn btn-primary" type="submit" value="Submeter" />
+ </form>
+ [% END %]
+ </div> <!-- / #onboarding-step5 -->
+ </div> <!-- / .row -->
+ </div><!-- / .container-fluid -->
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'validator-strings.inc' %]
+ [% INCLUDE 'installer-strings.inc' %]
+ <script src="[% interface | html %]/[% theme | html %]/js/onboarding.js"></script>
+[% END %]
+
+[% INCLUDE 'installer-intranet-bottom.inc' %]

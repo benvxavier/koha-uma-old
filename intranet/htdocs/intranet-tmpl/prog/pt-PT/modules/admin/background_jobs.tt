@@ -1,0 +1,351 @@
+[% USE raw %]
+[% USE KohaDates %]
+[% USE Asset %]
+[% USE KohaDates %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>
+ [% IF op == 'view' %] Detalhes da tarefa #[% job.id | html %] &rsaquo; [% END %] Tarefas &rsaquo; Administração &rsaquo; Koha </title>
+
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="admin_background_jobs" class="admin">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'prefs-admin-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% IF CAN_user_parameters_manage_background_jobs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/admin-home.pl">Administração</a>
+ [% END %]
+ [% IF op == 'view' %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/background_jobs.pl">Tarefas</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Detalhes da tarefa #[% job.id | html %]</span>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Tarefas</span>
+ [% END %]
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Administração</span>
+ [% END %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+[% FOR m IN messages %]
+ <div class="dialog message">
+ [% SWITCH m.code %]
+ [% CASE 'cannot_view_job' %]
+ <div><i class="fa fa-exclamation error"></i>Permissões insuficientes para ver a tarefa.</div>
+ [% CASE %]
+ [% m.code | html %]
+ [% END %]
+ </div>
+[% END %]
+
+[% IF op == 'view' %]
+ <h1>Detalhes da tarefa #[% job.id | html %]</h1>
+
+ [% PROCESS "background_jobs/${job.type}.inc" %]
+
+ <div id="job_details" style="display:none">
+ <fieldset class="rows">
+ <ol>
+ <li><span class="label">ID da tarefa: </span>[% job.id | html %]</li>
+ <li>
+ <label for="job_status">Estado: </label>
+ <span id="job_status_description"></span>
+ </li>
+ <li><label for="job_progress">Progresso: </label>[% job.progress || 0 | html %] / [% job.size | html %]</li>
+ <li>
+ <label for="job_type">Tipo: </label>
+ <span id="job_type_description"></span>
+ </li>
+ <li>
+ <label for="job_enqueued_on">Em fila em espera:</label>
+ [% job.enqueued_on | $KohaDates with_hours = 1 %]
+ </li>
+ <li>
+ <label for="job_started_on">Iniciada: </label>
+ [% job.started_on | $KohaDates with_hours = 1 %]
+ </li>
+ <li>
+ <label for="job_ended_on">Terminou: </label>
+ [% job.ended_on | $KohaDates with_hours = 1 %]
+ </li>
+ </ol>
+ </fieldset>
+ <div class="page-section">
+ <h2>Relatório</h2>
+ [% IF job.status != 'new' %][% PROCESS 'report' %][% END %]
+ </div>
+ <div class="page-section">
+ <h2>Mensagens detalhadas</h2>
+ [% IF job.status != 'new' %][% PROCESS 'detail' %][% END %]
+ </div>
+ </div> <!-- /#job_details -->
+
+ [% IF CAN_user_parameters_manage_background_jobs %]
+ <fieldset class="action">
+ <a href="/cgi-bin/koha/admin/background_jobs.pl">Voltar à lista das tarefas</a>
+ </fieldset>
+ [% END %]
+[% END %]
+
+[% IF op == 'list' %]
+
+ <h1>Tarefas</h1>
+
+ <div>
+ <input type="checkbox" id="only_current" checked />
+ <label for="only_current">Apenas tarefas atuais</label>
+ </div>
+
+ <div>
+ <input type="checkbox" id="include_last_hour" checked />
+ <label for="include_last_hour">Apenas incluir tarefas criadas na última hora</label>
+ </div>
+
+ <div class="page-section">
+ <table id="table_jobs">
+ <thead>
+ <tr>
+ <th>ID da tarefa</th>
+ <th data-filter="job_statuses">Estado</th>
+ <th>Progresso</th>
+ <th data-filter="job_types">Tipo</th>
+ <th>Em fila em espera</th>
+ <th>Iniciada</th>
+ <th>Terminou</th>
+ <th class="noExport">Ações</th>
+ </tr>
+ </thead>
+ </table>
+ </div>
+[% END %]
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'admin-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/admin-menu.js") | $raw %]
+ [% INCLUDE 'js-date-format.inc' %]
+ [% INCLUDE 'datatables.inc' %]
+ <script>
+        const job_statuses = [
+            {'_id': 'new',       '_str': _("Novo")},
+            {'_id': 'cancelled', '_str': _("Cancelado")},
+            {'_id': 'finished',  '_str': _("Terminado")},
+            {'_id': 'started',   '_str': _("Iniciada")},
+            {'_id': 'running',   '_str': _("Em execução")},
+            {'_id': 'failed',    '_str': _("Falhou")},
+        ];
+        function get_job_status (status) {
+            let status_lib = job_statuses.find( s => s._id == status );
+            if (status_lib) {
+                return status_lib._str;
+            }
+            return status;
+        }
+
+        const job_types = [
+            {
+                '_id': 'batch_biblio_record_modification',
+                '_str': _("Modificação de registos bibliográficos em lote")
+            },
+            {
+                '_id': 'batch_biblio_record_deletion',
+                '_str': _("Eliminação de registos bibliográficos em lote")
+            },
+            {
+                '_id': 'batch_authority_record_modification',
+                '_str': _("Modificação de autoridades em lote")
+            },
+            {
+                '_id': 'batch_authority_record_deletion',
+                '_str': _("Eliminação de autoridades em lote")
+            },
+            {
+                '_id': 'batch_item_record_modification',
+                '_str': _("Modificação de exemplares em lote")
+            },
+            {
+                '_id': 'batch_item_record_deletion',
+                '_str': _("Eliminação de exemplares em lote")
+            },
+            {
+                '_id': 'batch_hold_cancel',
+                '_str': _("Cancelamento de reservas em lote")
+            },
+            {
+                '_id': 'create_eholdings_from_biblios',
+                '_str': _("Criar títulos electrónicos")
+            },
+            {
+                '_id': 'update_elastic_index',
+                '_str': _("Atualizar índice do Elasticsearch")
+            },
+            {
+                '_id': 'update_holds_queue_for_biblios',
+                '_str': _("Fila de reservas atualizada")
+            },
+            {
+                '_id': 'stage_marc_for_import',
+                '_str': _("Importação de registos bibliográficos")
+            },
+            {
+                '_id': 'marc_import_commit_batch',
+                '_str': _("Importar registos MARC")
+            },
+            {
+                '_id': 'marc_import_revert_batch',
+                '_str': _("Reverter importação de registos MARC")
+            },
+        ];
+
+        function get_job_type (job_type) {
+            let job_type_lib = job_types.find( t => t._id == job_type );
+            if ( job_type_lib ) {
+                return job_type_lib._str;
+            }
+            return _("Tipo de tarefa desconhecido '%s'").format(job_type);
+        }
+
+        $(document).ready(function() {
+            [% IF op == 'view' %]
+                $("#job_status_description").html( get_job_status("[% job.status | html %]") );
+                $("#job_type_description").html( get_job_type("[% job.type | html %]") );
+                $("#job_details").show();
+            [% END %]
+
+            let additional_filters = {
+                enqueued_on: function(){
+                    let now = new Date();
+                    if ( $("#include_last_hour").is(":checked") ) {
+                        now.setHours(now.getHours() - 1);
+                        return { ">": now.toISOString() };
+                    } else {
+                        return { "<": now.toISOString() };
+                    }
+                }
+            };
+
+            let only_current_filter = function(){
+                if ( $("#only_current").is(":checked") ) {
+                    return 'only_current=1';
+                } else {
+                    return 'only_current=0';
+                }
+            }
+
+            let jobs_table = $("#table_jobs").kohaTable({
+                "ajax": {
+                    "url": "/api/v1/jobs?" + only_current_filter()
+                },
+                "order": [[ 1, "desc" ]],
+                "columns": [
+                    {
+                        "data": "job_id",
+                        "searchable": true,
+                        "orderable": true
+                    },
+                    {
+                        "data": "status",
+                        "searchable": true,
+                        "orderable": true,
+                        "render": function(data, type, row, meta) {
+                            return get_job_status(row.status).escapeHtml();
+                        }
+                    },
+                    {
+                        "data": "progress,size",
+                        "searchable": false,
+                        "orderable": true,
+                        "render": function(data, type, row, meta) {
+                            return "%s/%s".format(row.progress, row.size).escapeHtml();
+                        }
+                    },
+                    {
+                        "data": "type",
+                        "searchable": true,
+                        "orderable": true,
+                        "render": function(data, type, row, meta) {
+                            return get_job_type(row.type).escapeHtml();
+                        }
+                    },
+                    {
+                        "data": "enqueued_date",
+                        "searchable": true,
+                        "orderable": true,
+                        "render": function(data, type, row, meta) {
+                            return $datetime(row.enqueued_date);
+                        }
+                    },
+                    {
+                        "data": "started_date",
+                        "searchable": true,
+                        "orderable": true,
+                        "render": function(data, type, row, meta) {
+                            return $datetime(row.started_date);
+                        }
+                    },
+                    {
+                        "data": "ended_date",
+                        "searchable": true,
+                        "orderable": true,
+                        "render": function(data, type, row, meta) {
+                            return $datetime(row.ended_date);
+                        }
+                    },
+                    {
+                        "data": function( row, type, val, meta ) {
+                            var result = '<a class="btn btn-default btn-xs" role="button" href="/cgi-bin/koha/admin/background_jobs.pl?op=view&amp;id='+ encodeURIComponent(row.job_id) +'"><i class="fa fa-eye" aria-hidden="true"></i> '+_("Ver")+'</a>'+"\n";
+                            if ( row.status == 'new' || row.status == 'started' ) {
+                                result += '<a class="btn btn-default btn-xs" role="button" href="/cgi-bin/koha/admin/background_jobs.pl?op=cancel&amp;id='+ encodeURIComponent(row.job_id) +'"><i class="fa fa-trash" aria-hidden="true"></i> '+_("Anular")+'</a>';
+                            }
+                            return result;
+                        },
+                        "searchable": false,
+                        "orderable": false
+                    }
+                ]
+            }, null, 1, additional_filters);
+
+            $("#include_last_hour").on("change", function(){
+                jobs_table.DataTable().draw();
+                return false;
+            });
+
+            $("#only_current").on("change", function(){
+                jobs_table.DataTable().ajax.url("/api/v1/jobs?" + only_current_filter()).load();
+                return false;
+            });
+        });
+    </script>
+ [% IF op == 'view' %]
+ [% PROCESS 'js' %]
+ [% END %]
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

@@ -1,0 +1,133 @@
+[% USE Koha %]
+[% USE raw %]
+[% USE Asset %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Criar administrador do sistema &rsaquo; Instalador Web &rsaquo; Koha</title>
+[% INCLUDE 'installer-doc-head-close.inc' %]
+</head>
+
+<body id="installer" class="installer">
+ <div class="container-fluid">
+ <div class="row">
+ <div id="onboarding-step3" class="installer-main col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
+ <div id="logo"><a href="#">Koha</a></div>
+ <h1>Instalador Web &rsaquo; Criar leitor de administração do Koha</h1>
+
+ [% INCLUDE 'onboarding_messages.inc' %]
+
+ <div id="steps">
+ <ol>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Instalação</li>
+ <li class="current open"><i class="fa fa-square-o" aria-hidden="true"></i> Integração <ol>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Criar a biblioteca</li>
+ <li class="complete"><i class="fa fa-check-square-o" aria-hidden="true"></i> Criar uma categoria de leitor</li>
+ <li class="current open"><i class="fa fa-square-o" aria-hidden="true"></i> Criar leitor de administração do Koha</li>
+ <li class="open"><i class="fa fa-square-o" aria-hidden="true"></i> Criar um novo tipo de documento</li>
+ <li class="open"><i class="fa fa-square-o" aria-hidden="true"></i> Criar uma nova regra de circulação</li>
+ </ol>
+ </li>
+ </ol>
+ </div>
+
+ <p>
+ Agora vamos criar um leitor com permissões de super-bibliotecário. Entre com este utilizador para usar o Koha como membro do staff com todas as permissões. </p>
+ <form name="createpatron" id="createpatron" method="post" action="onboarding.pl">
+ <fieldset class="rows">
+ <input type="hidden" name="step" value="3" />
+ <input type="hidden" name="op" value="add_validate_patron" />
+ <h3>Administrador</h3>
+ <ol>
+ <li>
+ <label for="surname" class="required">Apelido: </label>
+ <input type="text" id="surname" name="surname" value="[% surname | html %]" class="required" required="required" />
+ <span class="required">Obrigatório</span>
+ </li>
+ <li>
+ <label for="firstname" class="required">Primeiro nome: </label>
+ <input  type="text" name="firstname" id="firstname" size="20" value="[% firstname | html %]" class="required" required="required">
+ <span class="required">Obrigatório</span>
+ </li>
+ </ol>
+
+ <ol>
+ <li>
+ <label for="cardnumber" class="required">Número de cartão: </label>
+ [% IF patrons && patrons > 1 %]
+ <input type="text" id="cardnumber" class="noEnterSubmit valid" name="cardnumber" value="[% newcardnumber | html %]" class="required" required="required">
+ [% ELSE %]
+ <input type="text" id="cardnumber" name="cardnumber" value="[% cardnumber | html %]" class="required" required="required">
+ [% END %]
+ <span class="required">Obrigatório</span>
+ </li>
+ <li>
+
+ <!--require a foreach loop to get all the values for the library that the user has either imported (in web installer) or created in the first step of this onboarding tool-->
+ <label for="libraries" class="required"> Biblioteca: </label>
+ <select name="libraries" id="libraries">
+ [% FOREACH library IN libraries %]
+ <option value="[% library.branchcode | html %]"> [% library.branchname | html %] </option>
+ [% END %]
+ </select>
+ <span class="required"> Obrigatório</span>
+ </li>
+ <li>
+ <label for="categorycode_entry" class="required"> Categoria de leitor</label>
+ <select id="categorycode_entry" name="categorycode_entry">
+ [% FOREACH category IN categories %]
+ <option value = "[% category.categorycode | html %]" data-pwd-length="[% category.effective_min_password_length | html %]" data-pwd-strong="[% category.effective_require_strong_password | html %]">[% category.description | html %]</option>
+ [% END %]
+ </select>
+ <span class="required">Obrigatório</span><br><br>
+ <strong>Nota:</strong> Se instalou os exemplos de categorias de leitor por favor selecione a opção "Staff" na caixa de seleção das categorias de leitor. </li>
+ </ol>
+
+ <h3>Permissões do leitor de administração</h3>
+ <ol>
+ <li>
+ <input type="hidden" name="newflags" value="1" />
+ <input type="hidden" class="flag parent" id="flag-0" name="flag" value="superlibrarian" />
+ <code> super-bibliotecário</code>
+ </li>
+ </ol>
+
+ <h3>Login de administrador</h3>
+ <ol>
+ <li>
+ <label for="userid" class="required">Nome do utilizador: </label>
+ <input type="text" name="userid" id ="userid" size="20" value="[% userid | html %]" class="required" required="required" />
+ <span class="required">Obrigatório</span>
+ </li>
+ <li>
+ <label for="password" class="required">Palavra-passe: </label>
+ <input type="password" name="password" id="password" size="20" value="[% member.password | html %]" class="required" required="required">
+ <span class="required">Obrigatório</span>
+ </li>
+ <li>
+ <label for="password2" class="required">Confirmar palavra-passe: </label>
+ <input type="password" id="password2" name="password2" size="20" value="" class="required" required="required">
+ <span class="required">Obrigatório</span>
+ </li>
+ </ol>
+ <p>
+ Para adicionar outro leitor, vá a: <span class="breadcrumbs">Leitores &rsaquo; Novo leitor</span>
+ </p>
+ <p>
+ Para editar as permissões do leitor, vá a: <span class="breadcrumbs">Mais &rsaquo; Definir as permissões</span>
+ </p>
+ </fieldset>
+
+ <input class="btn btn-primary" type="submit" value="Submeter" />
+ </form>
+ </div> <!-- / #onboarding-step3 -->
+ </div> <!-- / .row -->
+ </div><!-- / .container-fluid -->
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'validator-strings.inc' %]
+ [% INCLUDE 'installer-strings.inc' %]
+ [% Asset.js("js/onboarding.js") | $raw %]
+ [% PROCESS 'password_check.inc' new_password => 'password', category_selector => '#categorycode_entry', RequireStrongPassword => Koha.Preference('RequireStrongPassword') %]
+[% END %]
+
+[% INCLUDE 'installer-intranet-bottom.inc' %]
+

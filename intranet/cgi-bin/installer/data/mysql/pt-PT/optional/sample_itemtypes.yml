@@ -1,0 +1,57 @@
+---
+description:
+- Conjunto com tipos de documenot por omissão.
+tables:
+- itemtypes:
+    multiline: []
+    rows:
+    - description: Livros
+      imageurl: bridge/book.png
+      itemtype: BK
+      notforloan: 0
+      rentalcharge: 0
+      summary: ''
+    - description: Materiais Mistos
+      imageurl: bridge/kit.png
+      itemtype: MX
+      notforloan: 0
+      rentalcharge: 5
+      summary: ''
+    - description: Ficheiros informáticos
+      imageurl: bridge/computer_file.png
+      itemtype: CF
+      notforloan: 0
+      rentalcharge: 5
+      summary: ''
+    - description: Mapas
+      imageurl: bridge/map.png
+      itemtype: MP
+      notforloan: 0
+      rentalcharge: 5
+      summary: ''
+    - description: Material visual
+      imageurl: bridge/dvd.png
+      itemtype: VM
+      notforloan: 1
+      rentalcharge: 5
+      summary: ''
+    - description: Música
+      imageurl: bridge/sound.png
+      itemtype: MU
+      notforloan: 0
+      rentalcharge: 5
+      summary: ''
+    - description: Recursos continuados
+      imageurl: bridge/periodical.png
+      itemtype: CR
+      notforloan: 0
+      rentalcharge: 5
+      summary: ''
+    - description: Reference
+      imageurl: bridge/reference.png
+      itemtype: REF
+      notforloan: 1
+      rentalcharge: 0
+      summary: ''
+    translatable:
+    - description

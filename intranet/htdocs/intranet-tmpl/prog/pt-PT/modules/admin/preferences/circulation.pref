@@ -1,0 +1,1342 @@
+---
+Empréstimo -:
+  Conjuntos de exemplares:
+  - - Usar o seguinte valor autorizado <a href="/cgi-bin/koha/admin/authorised_values.pl?searchfield=LOST">LOST</a>
+    - pref: BundleLostValue
+    - para representar 'em falta no conjunto' na devolução.
+  - - Usar o seguinte valor autorizado <a href="/cgi-bin/koha/admin/authorised_values.pl?searchfield=NOT_LOAN">NOT_LOAN</a>
+    - pref: BundleNotLoanValue
+    - para representar 'adicionado ao conjunto' quando um exemplar é adicionado ao
+      conjunto.
+  Empréstimo em lote:
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: BatchCheckouts
+    - empréstimos em lote.
+  - - 'Categorias de leitores com permissão para empréstimo em lote:'
+    - choices: patron-categories
+      class: multiple
+      pref: BatchCheckoutsValidCategories
+  Interface:
+  - - choices:
+        '0': Desativar
+        '1': Ativar
+      pref: CircSidebar
+    - a lateral de navegação nas páginas de circulação.
+  - - choices:
+        '0': Não requer
+        '1': Requer
+      pref: CircConfirmItemParts
+    - que os técnicos confirmem que todas as partes do exemplar estão presentes no
+      momento do empréstimo/devolução.
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: AutoSwitchPatron
+    - o redirecionamento automático para outro leitor quando o código de barras do
+      leitor é digitalizado em vez de um exemplar.
+    - Esta preferência não deve estar ativa se existem leitores e exemplares com códigos
+      repetidos.
+  - - choices:
+        '0': Não tentar
+        '1': Tentar
+      pref: PatronAutoComplete
+    - adivinhar o leitor a ser inserido ao digitar uma pesquisa de leitor no ecrã
+      de empréstimo.
+    - Devolver apenas os primeiros 10 resultados de cada vez.
+  - - choices:
+        EAN13: forma EAN-13 ou UPC-A preenchido com zeros
+        OFF: Não filtrar
+        T-prefix: Remover o primeiro número do estilo T-prefix
+        cuecat: Converter da forma CueCat
+        libsuite8: Converter da forma Libsuite8
+        whitespace: Remover espaços
+      pref: itemBarcodeInputFilter
+    - os códigos de barras lidos. Note que qualquer espaço antes ou depois do código
+      de barras é removido antes deste filtro.
+  - - choices:
+        '0': Não activar
+        '1': Ativar
+      pref: itemBarcodeFallbackSearch
+    - o uso automático de uma pesquisa no catálogo se a frase inserida como código
+      de barras na página de empréstimo não retornar nenhum resulta durante uma pesquisa
+      por código de barras.
+  - - Ordenar empréstimos anteriores na página de circulação da
+    - choices:
+        asc: mais recente para a antiga
+        desc: mais antiga para a recente
+      pref: previousIssuesDefaultSortOrder
+    - data de término.
+  - - Ordenar os empréstimo de hoje na página de empréstimo da
+    - choices:
+        asc: mais recente para a antiga
+        desc: mais antiga para a recente
+      pref: todaysIssuesDefaultSortOrder
+      type: choice
+    - data de empréstimo.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: SpecifyDueDate
+    - que os técnicos especifiquem a data de término de um empréstimo.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: SpecifyReturnDate
+    - que os técnicos especifiquem uma data de retorno numa devolução.
+  - - Definir a data de início por omissão para a lista de reservas a levantar para
+    - class: integer
+      pref: HoldsToPullStartDate
+    - dia(s) atrás. Note que a data final por omissão é controlada pela preferência
+      <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=ConfirmFutureHolds">ConfirmFutureHolds</a>.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowAllMessageDeletion
+    - que os técnicos removam mensagens adicionadas por outras bibliotecas.
+  - - Mostrar os
+    - class: integer
+      pref: numReturnedItemsToShow
+    - últimos exemplares devolvidos na janela de devolução.
+  - - choices:
+        '0': Não notificar
+        '1': Notificar
+      pref: FineNotifyAtCheckin
+    - os técnicos das multas de atraso nos exemplares a serem devolvidos.
+  - - choices:
+        '0': Não notificar
+        '1': Notificar
+      pref: WaitingNotifyAtCheckin
+    - os técnicos de reservas à espera para os exemplares que se encontra a devolver.
+  - - choices:
+        '0': Não requer
+        '1': Requer
+      pref: FilterBeforeOverdueReport
+    - que os técnicos escolham quais os empréstimos a mostrar antes de correr o relatório
+      de atrasos.
+  - - choices:
+        issueqslip: Mostrar os botãos de impressão de talão rápido e de limpar o ecrã
+        issueslip: Mostrar os botãos de impressão de talão e de limpar o ecrã
+        no: Não mostrar o botão de limpar ecrã
+      pref: DisplayClearScreenButton
+    - para limpar o leitor corrente do ecrã de empréstimo.
+  - - choices:
+        '0': Não gravar
+        '1': Gravar
+      pref: RecordLocalUseOnReturn
+    - o uso local quando um exemplar não emprestado é devolvido.
+  - - Quando um código de barras for inserido no empréstimo
+    - choices:
+        clear: limpa o ecrã
+        qslip: abre uma janela de impressão
+        slip: abrir uma janela de impressão de talão
+      pref: CircAutoPrintQuickSlip
+    - .
+  - - Inclui a folha de estilos localizada em
+    - class: url
+      pref: NoticeCSS
+    - nos avisos. (Deve ser um URL completo, começando por <code>http://</code>)
+  - - choices:
+        '0': Não
+        '1': Fazer
+      pref: UpdateTotalIssuesOnCirc
+    - a actualização do total de empréstimos de um registo bibliográfico sempre que
+      um exemplar é emprestado (AVISO! Isto aumenta a carga do servidor significativamente;
+      se a performance é uma preocupação, use o cronjob update_totalissues.pl para
+      a actualização do total de empréstimos).
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: ExportCircHistory
+    - as opções de exportação do histórico de empréstimo do leitor.
+  - - 'Os campos seguintes devem ser excluídos da exportação para CSV or MARC (ISO
+      2709) do histórico de empréstimos do leitor:'
+    - pref: ExportRemoveFields
+    - (separar os campos com espaço, por exemplo, 100a 200b 300c).
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: ShowAllCheckins
+    - todos os exemplares na lista de exemplares devolvidos, mesmo exemplares que
+      não estavam emprestados.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowCheckoutNotes
+    - que os leitores submetam notas acerca dos exemplares emprestados.
+  - - choices:
+        '0': Não usar
+        '1': Usar
+      pref: UseCirculationDesks
+    - as mesas de circulação.
+  Módulo caseiro:
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: HouseboundModule
+    - o módulo caseiro.
+  Módulo de auto-devolução:
+  - - 'Incluir o seguinte HTML no ecrã do sistema de auto-devolução:'
+    - class: code
+      pref: SelfCheckInMainUserBlock
+      syntax: text/html
+      type: textarea
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: SelfCheckInModule
+    - 'o módulo de auto-devolução (disponível em: /cgi-bin/koha/sci/sci-main.pl).'
+  - - Recomeçar o processo de auto-devolução após inactividade de
+    - class: integer
+      pref: SelfCheckInTimeout
+    - segundo(s).
+  - - 'Incluir o seguinte CSS em todos os ecrãs do módulo de auto-devolução:'
+    - class: code
+      pref: SelfCheckInUserCSS
+      syntax: css
+      type: textarea
+  - - 'Incluir o seguinte JavaScript em todos os ecrãs do módulo de auto-devolução:'
+    - class: code
+      pref: SelfCheckInUserJS
+      syntax: javascript
+      type: textarea
+  Módulo de auto-empréstimo:
+  - - 'Incluir o seguinte JavaScript em todas as páginas do sistema de auto-requisição:'
+    - class: code
+      pref: SCOUserJS
+      syntax: javascript
+      type: textarea
+  - - 'Incluir o seguinte HTML no módulo web do sistema de auto-empréstimo:'
+    - class: code
+      pref: SCOMainUserBlock
+      syntax: text/html
+      type: textarea
+  - - 'Incluir o seguinte CSS em todas as páginas do sistema de auto-requisição:'
+    - class: code
+      pref: SCOUserCSS
+      syntax: css
+      type: textarea
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: ShowPatronImageInWebBasedSelfCheck
+    - a imagem do leitor (se alguma foi adicionada) quando o mesmo estiver a usar
+      o sistema de auto-requisição.
+  - - choices:
+        '0': Não activar
+        '1': Activar
+      pref: WebBasedSelfCheck
+    - 'o sistema web de auto-requisição (disponível em: /cgi-bin/koha/sco/sco-main.pl).'
+  - - Os leitores devem autenticar-se no sistema de auto-requisição com
+    - choices:
+        '0': número de cartão
+        '1': nome de utilizador e palavra-passe
+      pref: SelfCheckoutByLogin
+    - '.</br>NOTA: Se estiver a usar o ''número de cartão'' e a preferência AutoSelfCheckAllowed,
+      deve definir também a preferência SelfCheckAllowByIPRanges para prevenir ataques
+      que obtenham as informações do leitor fora da biblioteca.'
+  - - Expirar a autenticação do leitor no sistema de auto-requisição após
+    - class: integer
+      pref: SelfCheckTimeout
+    - segundos.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: SCOAllowCheckin
+    - que os leitores devolvam exemplares pelo sistema de auto-devolução.
+  - - 'Incluir o seguinte HTML na página de ajuda do sistema de auto-requisição:'
+    - class: code
+      pref: SelfCheckHelpMessage
+      syntax: text/html
+      type: textarea
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AutoSelfCheckAllowed
+    - que o sistema web de auto-empréstimo se autentique automaticamente com este
+      nome de utilizador de técnico
+    - pref: AutoSelfCheckID
+    - e esta palavra-passe
+    - class: password
+      pref: AutoSelfCheckPass
+    - .
+    - 'Nota: Qualquer leitor aqui introduzido não será capaz de fazer login no OPAC.'
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: SelfCheckReceiptPrompt
+    - a janela de pop-up para imprimir recibo quando um auto-empréstimo é concluído.
+  - - 'Permitir o acesso ao sistema de auto-requisição a partir dos seguintes endereços
+      IP:'
+    - class: short
+      pref: SelfCheckAllowByIPRanges
+    - (Deixe em branco se não for usado. Use intervalos ou endereços IP simples separados
+      por espaços, como por exemplo <code>192.168.1.1 192.168.0.0/24</code>.)
+  Módulo de levantamentos:
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: CurbsidePickup
+    - o módulo de levantamentos na rua.
+  Módulo de rotação de stock:
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: StockRotation
+    - o módulo de rotação de stock.
+  Pedidos de artigo:
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: ArticleRequests
+    - que os leitores coloquem pedidos de artigo.
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: ArticleRequestsOpacHostRedirection
+    - ' o redirecionamento no OPAC para o registo hospedeiro de acordo com o subcampo
+      773$w do MARC21 quando o registo filho não tem exemplares para os pedidos de
+      artigos.'
+  - - choices:
+        always: Mostrar sempre
+        calc: Usar o algoritmo para mostrar ou esconder
+      pref: ArticleRequestsLinkControl
+    - o link para o pedido de artigo nos resultados de pesquisa.
+  - - 'Para registos com nível de registo ou nível de exemplar requisitável, torne
+      os seguintes campos obrigatórios:'
+    - multiple:
+        author: Autor
+        chapters: Capítulos
+        date: Data
+        issue: Número
+        pages: Páginas
+        title: Título
+        volume: Volume
+      pref: ArticleRequestsMandatoryFields
+    - ''
+  - - 'Para registos só com o nível de registo requisitável, torne os seguintes campos
+      obrigatórios:'
+    - multiple:
+        author: Autor
+        chapters: Capítulos
+        date: Data
+        issue: Número
+        pages: Páginas
+        title: Título
+        volume: Volume
+      pref: ArticleRequestsMandatoryFieldsRecordOnly
+    - ''
+  - - 'Para registos com nível de exemplar requisitável, torne os seguintes campos
+      obrigatórios:'
+    - multiple:
+        author: Autor
+        chapters: Capítulos
+        date: Data
+        issue: Número
+        pages: Páginas
+        title: Título
+        volume: Volume
+      pref: ArticleRequestsMandatoryFieldsItemOnly
+    - ''
+  - - 'Os seguintes formatos são suportados para os pedidos de artigo:'
+    - pref: ArticleRequestsSupportedFormats
+    - '(As opções válidas são: PHOTOCOPY e SCAN. Separe os formatos suportados por
+      uma barra vertical. O primeiro elemento da lista será o valor selecionado por
+      omissão nos pedidos via OPAC.)'
+  Politica de reservas:
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: EnableItemGroups
+    - a funcionalidade de grupos de exemplares para permitir a coleta de grupos de
+      exemplares num registo.
+  - - No interface dos técnicos, dividir a fila de espera das reservas em tabelas
+      separadas por
+    - choices:
+        branch: pela biblioteca de levantamento
+        branch_itemtype: biblioteca de levantamento e tipo de documento
+        itemtype: tipo de documento da reserva
+        nothing: por nenhum critério
+      pref: HoldsSplitQueue
+    - .
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: EnableItemGroupHolds
+    - a funcionalidade de reservar nos grupos de exemplares.
+  - - Se a fila de espera das reservas estiver dividida, o sistema mostra aos bibliotecários
+    - choices:
+        actual: a prioridade atual, que pode estar desatualizada
+        virtual: as prioridades 'virtuais', onde cada grupo é numerado de forma individual
+      pref: HoldsSplitQueueNumbering
+    - .
+  - - choices:
+        '0': Desativar
+        '1': Ativar
+      pref: RealTimeHoldsQueue
+    - a atualização das filas de espera das reservas em tempo real.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowHoldItemTypeSelection
+    - que o preenchimento da reserva possa ser limitado por tipo de documento.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowRenewalIfOtherItemsAvailable
+    - que um leitor renove um exemplar com reservas se outros exemplares estiverem
+      disponíveis para preencher essa reserva.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowHoldPolicyOverride
+    - que os técnicos sobreponham as políticas de reserva.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowHoldsOnDamagedItems
+    - que sejam feitos pedidos de reserva em exemplares danificados.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowHoldDateInFuture
+    - que os pedidos de reserva sejam feitos sem entrar na lista de espera até um
+      data futura.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: OPACAllowHoldDateInFuture
+    - que os leitores façam reservas que não entrem na lista de espera até determinada
+      data. (<a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=AllowHoldDateInFuture">AllowHoldDateInFuture</a>
+      deve estar activa).
+  - - Quando adicionar uma reserva no OPAC, definir
+    - choices:
+        '': nenhuma data
+        both: ambas as datas
+        end: a data de fim da reserva
+        start: a data de início da reserva
+      pref: OPACMandatoryHoldDates
+    - como obrigatórias.
+    - <br><strong>NOTA:</strong> A data de início de reserva apenas tem efeito e é
+      mostrada no formulário de reserva se as preferências <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=AllowHoldDateInFuture">AllowHoldDateInFuture</a>
+      e <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OPACAllowHoldDateInFuture">OPACAllowHoldDateInFuture</a>
+      estiverem ativas.
+  - - Confirmar futuros pedidos de reserva (a começar antes de
+    - class: integer
+      pref: ConfirmFutureHolds
+    - dias a partir de hoje) na altura da devolução. Note que este número de dias
+      também será usado para calcular a data de término por omissão para o relatório
+      de reservas a levantar. Mas não interfere com o empréstimo, renovação ou transferência
+      de exemplares.
+  - - Verificar a regra da
+    - choices:
+        ItemHomeLibrary: biblioteca de origem do exemplar
+        PatronLibrary: biblioteca de origem do leitor
+      pref: ReservesControlBranch
+    - para verificar se o leitor pode reservar um exemplar.
+  - - Marcar uma reserva como problemática se está à espera à mais de
+    - class: integer
+      pref: ReservesMaxPickUpDelay
+    - dias.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: ExpireReservesMaxPickUpDelay
+    - que as reservas expirem automaticamente se não foram levantadas dentro do tempo
+      especificado na preferência de sistema <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=ReservesMaxPickUpDelay">ReservesMaxPickUpDelay</a>.</br>
+    - choices:
+        '0': Não fazer
+        '1': Fazer
+      pref: ExpireReservesAutoFill
+    - o preenchimento automático da próxima reserva do exemplar.
+    - Enviar a notificação de email de uma nova reserva preenchida após cancelamento
+      de outra para
+    - class: email
+      pref: ExpireReservesAutoFillEmail
+    - . Se não for definido um endereço neste campo, o email será enviado para o endereço
+      reply-to da biblioteca.
+    - <br><strong>NOTA:</strong> Estas preferências de sistema necessitam que a tarefa
+      <code>misc/cronjobs/holds/cancel_expired_holds.pl</code> esteja em funcionamento.
+      Peça ao administrador do sistema para a configurar.<br>
+  - - Se usar a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=ExpireReservesMaxPickUpDelay">ExpireReservesMaxPickUpDelay</a>,
+      cobrar ao leitor que deixou a reserva em espera expirar uma multa de
+    - class: currency
+      pref: ExpireReservesMaxPickUpDelayCharge
+    - .
+  - - A fila de espera das reservas deve priorizar o preenchimento da reserva combinando
+      a biblioteca do leitor com um exemplar correspondendo à
+    - choices:
+        holdingbranch: biblioteca de empréstimo do exemplar (holdingbranch).
+        homebranch: biblioteca de origem do exemplar (homebranch).
+      pref: HoldsQueuePrioritizeBranch
+      type: choice
+  - - Satisfazer as reservas usando os exemplares das bibliotecas
+    - class: multi
+      pref: StaticHoldsQueueWeight
+    - (códigos das bibliotecas, separados por vírgulas, se estiver vazia, usa todas
+      as bibliotecas)
+    - quando estão
+    - choices:
+        '0': abertas ou fechadas
+        '1': abertas
+      pref: HoldsQueueSkipClosed
+    - choices:
+        '0': nessa ordem.
+        '1': por ordem aleatória.
+      pref: RandomizeHoldsQueueWeight
+    - <br><strong>NOTA:</strong> Esta preferência de sistema necessita que a tarefa
+      <code>misc/cronjobs/holds/build_holds_queue.pl</code> esteja em funcionamento.
+      Peça ao administrador do sistema para a configurar.
+    - ''
+  - - choices:
+        '0': Não permitir (com bibliotecas independentes)
+        '1': Permitir
+      pref: canreservefromotherbranches
+    - que um leitor de uma biblioteca reserve um exemplar de outra biblioteca
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: OPACAllowUserToChooseBranch
+    - que o utilizador escolha a biblioteca de levantamento.
+  - - 'Permitir que os leitores alterem a biblioteca de levantamento de uma reserva
+      para os seguintes estados:'
+    - multiple:
+        intransit: Em trânsito
+        pending: Pendente
+        suspended: Suspensa
+      pref: OPACAllowUserToChangeBranch
+  - - choices:
+        '0': Automaticamente
+        '1': Não
+      pref: ReservesNeedReturns
+    - marcar uma reserva como encontrada e em espera quando uma reserva é feita num
+      exemplar específico e o exemplar está disponível.
+  - - Os leitores só podem ter um máximo de
+    - class: integer
+      pref: maxreserves
+    - reservas de uma vez (deixe vazio ou defina como 0 para desativar). Limites adicionais
+      podem ser definidos nas regras de circulação.
+  - - choices:
+        '0': Não activar
+        '1': Activar
+      pref: emailLibrarianWhenHoldIsPlaced
+    - o envio de um email para o endereço de email do administrador do Koha sempre
+      que um pedido de reserva é feito.
+  - - choices:
+        '0': Não ligar
+        '1': Ligar
+      pref: DisplayMultiPlaceHold
+    - a funcionalidade de reservar múltiplos registos dos resultados de pesquisa
+  - - choices:
+        '0': Não transferir
+        '1': Transferir
+      pref: TransferWhenCancelAllWaitingHolds
+    - os exemplares quando as reservas em espera forem canceladas.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AutoResumeSuspendedHolds
+    - que as reservas suspensas sejam automaticamente retomadas após certa data.
+    - <br><strong>NOTA:</strong> Esta preferência de sistema necessita que a tarefa
+      <code>misc/cronjobs/holds/auto_unsuspend_holds.pl</code> esteja em funcionamento.
+      Peça ao administrador do sistema para a configurar.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: SuspendHoldsIntranet
+    - que as reservas sejam suspensas no interface dos técnicos.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: SuspendHoldsOpac
+    - que as reservas sejam suspensas no OPAC.
+  - - Se a preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=ExpireReservesMaxPickUpDelay">ExpireReservesMaxPickUpDelay</a>
+      estiver a ser usada,
+    - choices:
+        '0': não permitir
+        '1': permitir
+      pref: ExpireReservesOnHolidays
+    - que as reservas expiradas sejam canceladas nos dias que a biblioteca está fechada
+      de acordo com o calendário.
+  - - choices:
+        '0': Ignorar o calendário
+        '1': Usar o calendário
+      pref: ExcludeHolidaysFromMaxPickUpDelay
+    - quando calcular o período para o atraso máximo no levantamento de uma reserva.
+  - - choices:
+        '0': Não activar
+        '1': Activar
+      pref: decreaseLoanHighHolds
+    - a redução do período de empréstimo para
+    - class: integer
+      pref: decreaseLoanHighHoldsDuration
+    - dias para registos com mais de
+    - class: integer
+      pref: decreaseLoanHighHoldsValue
+    - reservas
+    - choices:
+        dynamic: acima do número de exemplares reserváveis do registo
+        static: no registo
+      pref: decreaseLoanHighHoldsControl
+    - '. Ignorar os exemplares com os seguintes estados na contagem de exemplares:'
+    - multiple:
+        damaged: Danificado
+        itemlost: Perdido
+        notforloan: Não emprestável
+        withdrawn: Retirado
+      pref: decreaseLoanHighHoldsIgnoreStatuses
+    - 'Nota: O período de empréstimo reduzido também pode ser configurado nas condições
+      de circulação e, então, sobrescreverá esta configuração.'
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowHoldsOnPatronsPossessions
+    - que os leitores reservem exemplares de um registo quando o leitor já tem em
+      seu poder um ou mais exemplares do registo.
+  - - choices:
+        '0': Não fornecer
+        '1': Fornecer
+      pref: LocalHoldsPriority
+    - prioridade para preencher as reservas dos leitores cuja
+    - choices:
+        HomeLibrary: biblioteca de origem
+        PickupLibrary: biblioteca de levantamento
+      pref: LocalHoldsPriorityPatronControl
+    - Não permitir
+    - choices:
+        holdingbranch: biblioteca de empréstimo
+        homebranch: biblioteca de origem
+      pref: LocalHoldsPriorityItemControl
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: OPACHoldsIfAvailableAtPickup
+    - que o leitor efetue reservas em localizações (bibliotecas) onde o exemplar está
+      disponível.
+  - - 'Categorias de leitor não afectadas pela preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OPACHoldsIfAvailableAtPickup">OPACHoldsIfAvailableAtPickup</a>:'
+    - choices: patron-categories
+      class: multiple
+      pref: OPACHoldsIfAvailableAtPickupExceptions
+  - - choices:
+        allow: Permitir marcar exemplares como perdidos
+        allow_and_notify: Permitir marcar exemplares como perdidos e notificar o leitor
+        do_not_allow: Não permitir marcar os exemplares como perdidos
+      pref: CanMarkHoldsToPullAsLost
+    - a partir da página 'Reservas a levantar'. Os valores a aplicar devem ser definidos
+      em <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=UpdateItemWhenLostFromHoldList">UpdateItemWhenLostFromHoldList</a>.
+  - - Uma lista de valores para actualizar valores do exemplar quando o mesmo for
+      marcado como perdido na página "Reservas a levantar".
+    - 'Exemplo: "itemlost: 1" para definir items.itemlost igual a 1 quando o exemplar
+      for marcado como perdido. (Requer <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=CanMarkHoldsToPullAsLost">CanMarkHoldsToPullAsLost</a>)'
+    - pref: UpdateItemWhenLostFromHoldList
+      syntax: text/x-yaml
+      type: textarea
+  - - choices:
+        '0': Não definir
+        '1': Definir
+      default: 0
+      pref: DefaultHoldExpirationdate
+    - a data de expiração para as reservas automaticamente.
+    - Se ativo, definir a data de expiração da reserva após
+    - class: integer
+      default: 0
+      pref: DefaultHoldExpirationdatePeriod
+    - choices:
+        days: dias
+        months: meses
+        years: anos
+      default: days
+      pref: DefaultHoldExpirationdateUnitOfTime
+    - da data de reserva.
+  - - Quando adicionar uma reserva via interface dos técnicos a biblioteca de levantamento
+      dever ser a
+    - choices:
+        holdingbranch: biblioteca de empréstimo do exemplar
+        homebranch: biblioteca de origem do exemplar
+        loggedinlibrary: biblioteca da sessão
+      default: loggedinlibrary
+      pref: DefaultHoldPickupLocation
+    - .
+  Política de devolução:
+  - - choices:
+        '0': Não prender
+        '1': Prender
+      pref: TrapHoldsOnOrder
+    - os exemplares que não são emprestáveis mas que podem ser reservados ( notforloan
+      < 0 ) para preencher as reservas.
+  - - 'Nunca prender os exemplares com os seguintes valores de não emprestáveis '
+    - class: integer
+      pref: SkipHoldTrapOnNotForLoanValue
+    - para preencher as reservas.
+    - (lista de valores de não emprestado separados por '|')
+  - - choices:
+        '0': Não preencher
+        '1': Preencher
+      pref: HoldsAutoFill
+    - automaticamente as reservas em vez de perguntar ao bibliotecário.
+  - - choices:
+        '0': Preencher
+        '1': Não preencher
+      pref: HoldsNeedProcessingSIP
+    - reservas automaticamente se o exemplar correspondente é devolvido via protocolo
+      SIP.
+  - - choices:
+        '0': Não mostrar
+        '1': Mostrar
+      pref: HoldsAutoFillPrintSlip
+    - automaticamente a caixa de diálogo do recibo de reserva para as reservas automaticamente
+      preenchidas.
+  - - choices:
+        '0': Não bloquear
+        '1': Bloquear
+      pref: BlockReturnOfWithdrawnItems
+    - a devolução de exemplares que foram retirados.
+  - - choices:
+        '0': Não bloquear
+        '1': Bloquear
+      pref: BlockReturnOfLostItems
+    - a devolução de exemplares que foram marcados como perdidos.
+  - - choices:
+        '0': Não calcular
+        '1': Calcular
+      pref: CalculateFinesOnReturn
+    - e atualizar as multas de atraso quando um exemplar é devolvido.
+    - <br /><strong>NOTA:</strong> Se está a efectuar empréstimos por horas deve ter
+      esta opção activa.
+    - <br /><strong>NOTA:</strong> Esta preferência de sistema necessita que a preferência
+      <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=FinesMode">FinesMode</a>
+      esteja definida como 'Calcular e cobrar'.
+  - - choices:
+        '0': Não calcular
+        '1': Calcular
+      pref: CalculateFinesOnBackdate
+    - e atualizar as multas de atraso quando um exemplar é devolvido com uma data
+      de devolução antiga e forçada.
+  - - class: code
+      pref: UpdateItemLocationOnCheckin
+      syntax: text/x-yaml
+      type: textarea
+    - Esta é uma lista de pares, onde o primeiro valor é seguido imediatamente de
+      dois pontos, um espaço e o segundo valor.<br/><br/>
+    - Exemplos:<br/>
+    - 'PROC: FIC - alterar um exemplar que está localizado em PROC (centro de processamento)
+      para a localização FIC na devolução.<br/>'
+    - 'FIC: GEN - alterar um exemplar que está localizado em FIC para a localização
+      GEN na devolução.<br/>'
+    - '_BLANK_: FIC - alterar um exemplar que não tem localizado definida para a localização
+      FIC na devolução.<br/>'
+    - 'FIC: _BLANK_ - alterar um exemplar que está localizado em FIC para uma localização
+      vazia na devolução.<br/>'
+    - '_ALL_: FIC - alterar todos os exemplar para a localização FIC na devolução.<br/>'
+    - 'PROC: _PERM_ - alterar um exemplar que está localizado em PROC (centro de processamento)
+      para a localização permanente.<br/><br/>'
+    - 'Regra geral: se a localização à esquerda dos dois pontos (:) corresponde à
+      localização corrente do exemplar, este será atualizado para a localização que
+      aparece à direita dos dois pontos (:).<br/>'
+    - 'Nota: os valores PROC e CART são valores especiais, para estas localizações
+      apenas a localização e a localização permanente podem diferir, para todos os
+      outros casos uma actualização afecta os dois valores. Os exemplares na localização
+      CART serão devolvidos à sua localização permanente na devolução.<br/>'
+    - circulation.pref#UpdateItemLocationOnCheckin# O termo especial _BLANK_ pode
+      ser usado em quaisquer dos lados de um par de valores para atualizar ou remover
+      a localização dos exemplares sem localização atribuída.<br/>
+    - O termo especial _ALL_ é usado no lado esquerdo dos dois pontos (:) para afectar
+      todos os exemplares <strong>e sobrepor todas as outras regras.</strong>
+  - - class: code
+      pref: UpdateNotForLoanStatusOnCheckin
+      syntax: text/x-yaml
+      type: textarea
+    - É uma lista de pares de valores. Quando um exemplar é devolvido, se o valor
+      de tipo de circulação à esquerda corresponde ao tipo de circulação do exemplar
+    - 'o exemplar será actualizado com o valor à direita. Por exemplo, ''-1: 0'' irá
+      fazer com que um exemplar previamente definido como ''Requisitado'' para agora
+      ficar disponível para empréstimo.'
+    - 'Pode ser usado para mostrar apenas a descrição de não emprestável. Exemplo:
+      ''-1: ONLYMESSAGE''.'
+    - Cada para de valores deve ser colocado numa linha diferente.
+  - - choices:
+        '0': Não esconder
+        '1': Esconder
+      pref: HidePersonalPatronDetailOnCirculation
+    - o número de telefone, endereço de e-mail e morada do leitor na página de circulação.
+  - - choices:
+        '0': Não bloquear
+        '1': Bloquear
+      pref: TransfersBlockCirc
+    - novas devoluções por parte do staff quando uma transferência é detectada.
+  - - choices:
+        '0': Não fazer
+        '1': Fazer
+      pref: AutomaticConfirmTransfer
+    - a confirmação automática da transferência quando a janela é fechada sem clicar
+      em 'Sim'.
+  - - choices:
+        '0': Não guardar
+        '1': Guardar
+      default: 0
+      pref: StoreLastBorrower
+    - o último leitor a devolver um exemplar. Esta configuração é independente das
+      preferências <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=opacreadinghistory">opacreadinghistory</a>
+      e <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=AnonymousPatron">AnonymousPatron</a>.
+  Política de empréstimo:
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: OnSiteCheckoutAutoCheck
+    - empréstimo on-site por omissão se o último empréstimo foi on-site.
+  - - choices:
+        '0': Exigir
+        '1': Não exigir
+      pref: AutoReturnCheckedOutItems
+    - que os bibliotecários confirmam um empréstimo de um exemplar que esteja emprestado
+      a outro leitor.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowSetAutomaticRenewal
+    - que os técnicos marquem empréstimos para auto-renovação na página de empréstimos.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowTooManyOverride
+    - que o staff sobreponha e empreste exemplares quando o leitor atingir o máximo
+      de empréstimos permitidos.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowNotForLoanOverride
+    - que os técnicos ultrapassem e emprestem exemplares marcados como não emprestáveis.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowRenewalLimitOverride
+    - que o staff sobreponha bloqueios de renovações e renove um empréstimo quando
+      for para ultrapassar o limite de renovação ou quando seja prematuro em relação
+      à definição "Sem renovação antes de" da política de empréstimos ou tenha sido
+      agendado para renovação automática.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowRenewalOnHoldOverride
+    - que os técnicos renovem exemplares que estão reservados especificando a data
+      de término do empréstimo.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowItemsOnHoldCheckoutSIP
+    - o empréstimo de exemplares reservados para outras pessoas usando as mensagens
+      SIP de empréstimo.
+    - Se a preferência estiver activa o sistema não vai gerar os avisos RESERVED.
+    - Permite auto-empréstimos para os exemplares reservados. Se estiver a usar a
+      fila de espera de reservas, os exemplares com reservas pendentes serão marcados
+      como "indisponíveis" se esta preferência estiver definida como "Não permitir".
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowItemsOnHoldCheckoutSCO
+    - empréstimos de exemplares reservados a outros no módulo SCO. Se permitir não
+      gera os avisos RESERVE_WAITING e RESERVED. Isto permite os empréstimos desses
+      exemplares.
+  - - choices:
+        '0': Não requer
+        '1': Requer
+      pref: AllFinesNeedOverride
+    - que os técnicos sobrescrevam manualmente toda as multas, até multas menores
+      que a multa definida da preferência do sistema <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=noissuescharge">noissuescharge</a>.
+      Ao ativar esta preferência de sistema, todos os empréstimos via módulo de auto-empréstimo
+      ou via SIP para os leitores com multas serão bloqueados.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowFineOverride
+    - que os técnicos sobrescrevam e emprestem exemplares a leitores com valores de
+      multas maiores que o valor de multa definida na preferência do sistema <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=noissuescharge">noissuescharge</a>.
+  - - choices:
+        '0': Não fazer
+        '1': Fazer
+      pref: AutomaticItemReturn
+    - a transferência automática dos exemplares para a biblioteca de origem quando
+      forem devolvidos.
+  - - choices:
+        '0': Não aplicar
+        '1': Aplicar
+      pref: UseBranchTransferLimits
+    - os limites de transferência da biblioteca baseados no
+    - choices:
+        ccode: código de coleção
+        itemtype: tipo de documento
+      pref: BranchTransferLimitsType
+    - .
+  - - choices:
+        '0': Não usar
+        '1': Usar
+      pref: UseTransportCostMatrix
+    - a matriz de custo de transporte para calcular o preenchimento óptimo dos pedidos
+      de reserva entre bibliotecas.
+  - - Usar o calendário e as regras de empréstimo de
+    - choices:
+        ItemHomeLibrary: biblioteca de onde vem o exemplar.
+        PatronLibrary: biblioteca do leitor.
+        PickupLibrary: biblioteca à qual está ligado.
+      pref: CircControl
+      type: choice
+  - - Para determinar se um exemplar é transferido ou fica na biblioteca após a devolução,
+      devem ser usadas as regras de circulação
+    - choices:
+        CheckInLibrary: da biblioteca onde o exemplar é devolvido.
+        ItemHoldingLibrary: da biblioteca onde o exemplar foi emprestado.
+        ItemHomeLibrary: da biblioteca de origem do exemplar.
+      pref: CircControlReturnsBranch
+      type: choice
+  - - Use as regras de empréstimo e multas da
+    - choices:
+        holdingbranch: biblioteca de empréstimo do exemplar (holdingbranch).
+        homebranch: biblioteca de origem do exemplar (homebranch).
+      pref: HomeOrHoldingBranch
+      type: choice
+  - - Permitir a devolução de exemplares
+    - choices:
+        anywhere: em qualquer biblioteca.
+        holdingbranch: apenas na biblioteca de onde o exemplar foi emprestado.
+        homebranch: apenas à biblioteca de origem do exemplar.
+        homeorholdingbranch: à biblioteca de origem ou à biblioteca de onde o exemplar
+          foi emprestado.
+      pref: AllowReturnToBranch
+      type: choice
+  - - Para os resultados de pesquisa no interface dos técnicos, mostrar
+    - choices:
+        holdingbranch: da biblioteca de empréstimo do exemplar.
+        homebranch: da biblioteca de origem do exemplar.
+      pref: StaffSearchResultsDisplayBranch
+      type: choice
+  - - choices:
+        Calendar: Usar o calendário para não contar os dias que a biblioteca está
+          fechada
+        Datedue: Usar o calendário para puxar a data de término para o próximo dia
+          aberto
+        Days: Ignorar o calendário
+        Dayweek: Usar o calendário para passar a data de término para o próximo dia
+          da semana correspondente aberto para períodos de empréstimo semanal, ou
+          para o próximo dia aberto nos outros casos
+      pref: useDaysMode
+    - quando calcular a data de fim.
+  - - Calcular "Não renovável antes" de acordo com
+    - choices:
+        date: a data.
+        exact_time: o tempo exato.
+      pref: NoRenewalBeforePrecision
+    - Apenas relevantes para empréstimos calculado em dias, empréstimo de horas não
+      são afetados.
+  - - Quando renovar empréstimos, a base da nova data de término é
+    - choices:
+        date_due: a data antiga de término do empréstimo.
+        now: a date atual.
+      pref: RenewalPeriodBase
+  - - choices:
+        '0': Não enviar
+        '1': Enviar
+      pref: RenewalSendNotice
+    - um aviso de renovação de acordo com as preferências de mensagens do leitor para
+      "Empréstimo de exemplar".
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: UnseenRenewals
+    - renovações serem guardadas como "não vistas" pela biblioteca, e contar para
+      o limite de renovações não vistas do leitor.
+  - - Impedir os leitores de colocar reservas no OPAC se deverem mais que
+    - class: currency
+      pref: maxoutstanding
+    - '[% local_currency %] em multas.'
+  - - Mostrar um aviso na página "Transferências a receber" se a transferência não
+      foi recebida
+    - class: integer
+      pref: TransfersMaxDaysWarning
+    - dia(s) depois de ser enviada.
+  - - choices:
+        '0': Evitar
+        '1': Não evitar
+      pref: IssuingInProcess
+    - que os técnicos emprestem um exemplar cuja taxa de empréstimo faça o leitor
+      ultrapassar o limite.
+  - - 'Restringir leitores com os seguintes valores alvo de audiência de requisitar
+      materiais inapropriados:'
+    - pref: AgeRestrictionMarker
+    - '. Por exemplo, insira a(s) palavra(s) chave da audiência destino, separadas
+      por | (barra) FSK|PEGI|Age| (sem espaço junto ao separador |). Ter a certeza
+      que mapeia a restrição de idade nos mapeamentos Koha para MARC (por exemplo
+      521$a). O valor do campo MARC igual a FSK 12 ou PEGI 12 significa: Os leitores
+      devem ser maiores de 12 anos. Deixe vazio para não aplicar a restrição por idade.'
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AgeRestrictionOverride
+    - ao técnico emprestar exemplares com a restrição de idade.
+  - - Impedir que os leitores requisitem exemplares se tiverem mais que
+    - class: integer
+      pref: noissuescharge
+    - '[% local_currency %] em multas.'
+  - - Evitar que um leitor receba mais empréstimos se o leitor tiver assegurados a
+      dever mais que
+    - class: integer
+      pref: NoIssuesChargeGuarantees
+    - '[% local_currency %] em multas.'
+  - - Impedir empréstimos ao leitor, se o leitor tem fiadores a dever mais do que
+    - class: integer
+      pref: NoIssuesChargeGuarantorsWithGuarantees
+    - '[% local_currency %] em multas.'
+  - - choices:
+        '0': Não requer
+        '1': Requer
+      pref: ReturnBeforeExpiry
+    - que os leitores devolvam os exemplares antes das suas contas expirarem (restringindo
+      as datas de fim de empréstimo para antes da data de expiração do leitor).
+  - - 'Enviar todos os avisos como BCC para este endereço de email:'
+    - class: email
+      pref: NoticeBcc
+  - - choices:
+        '0': Ignorar calendário
+        '1': Usar calendário
+      pref: OverdueNoticeCalendar
+    - quando calcular o período para os avisos de atrasos.
+  - - Organizar e enviar os avisos de atraso usando
+    - choices:
+        cron: a opção da linha de comando
+        item-homebranch: a biblioteca de origem do exemplar
+        item-issuebranch: a biblioteca de empréstimo
+      pref: OverdueNoticeFrom
+    - .
+  - - Incluir até
+    - class: integer
+      pref: PrintNoticesMaxLines
+    - linhas de exemplar a serem impressas num aviso de atraso. Se o número de exemplares
+      for mais que este número, o aviso irá terminar com uma mensagem para que o leitor
+      consulte a sua conta online para ver a lista completa dos exemplares em atraso.
+      Se definir como 0, todos os exemplares serão colocados no aviso.
+  - - choices:
+        block: Bloquear
+        confirmation: Pedir confirmação
+        noblock: Não bloquear
+      pref: OverduesBlockCirc
+    - quando emprestar a um leitor que tenha multas pendentes.
+  - - 'Quando emprestar um exemplar com taxas de empréstimo, '
+    - choices:
+        '0': não perguntar
+        '1': perguntar
+      pref: RentalFeesCheckoutConfirmation
+    - por confirmação.
+  - - Por omissão, definir o valor Perdido de um exemplar para
+    - class: integer
+      pref: DefaultLongOverdueLostValue
+    - quando um exemplar tiver em atraso à mais de
+    - class: integer
+      pref: DefaultLongOverdueDays
+    - dias
+    - <br>AVISO — Estas preferências vão ativar o processo automático de perda de
+      exemplar. Deixe estes campos vazios se não desejar ativar esta funcionalidade.
+    - '<br>Exemplo: [1] [30] Define um exemplar com o valor Perdido a 1 quando está
+      em atraso à mais de 30 dias.'
+    - <br>(Usado quando o script ongoverdue.pl é chamado sem o parâmetro --lost)
+    - <br><strong>NOTA:</strong> Esta preferência de sistema necessita que a tarefa
+      <code>misc/cronjobs/longoverdue.pl</code> esteja em funcionamento. Peça ao administrador
+      do sistema para a configurar.
+  - - 'Cobrar um exemplar perdido na conta do leitor quando o valor LOST do exemplar
+      for alterado para:'
+    - class: integer
+      pref: DefaultLongOverdueChargeValue
+    - <br>Deixe este campo em branco se não deseja cobrar ao leitor os exemplares
+      perdidos.
+    - <br>(Usado quando o script longoverdue.pl é invocado sem o parâmetro --charge)
+    - <br><strong>NOTA:</strong> Esta preferência de sistema necessita que a tarefa
+      <code>misc/cronjobs/longoverdue.pl</code> esteja em funcionamento. Peça ao administrador
+      do sistema para a configurar.
+  - - Ao usar o processo automático de perda de exemplares, saltar os exemplares com
+      valores de perdido que correspondam a qualquer um dos
+    - pref: DefaultLongOverdueSkipLostStatuses
+    - .
+    - <br>Deixe este campo vazio se você não quiser saltar nenhum status perdido.
+    - <br>Definir uma lista de valores separados por vírgulas, por exemplo <em>5,6,7</em>.
+  - - 'Quando emprestar um exemplar que está marcado como perdido, '
+    - choices:
+        alert: mostrar uma mensagem
+        confirm: pedir confirmação
+        nothing: não fazer nada
+      pref: IssueLostItem
+    - .
+  - - 'No empréstimo de um exemplar, '
+    - choices:
+        '0': não gravar
+        '1': gravar
+      pref: RecordStaffUserOnCheckout
+    - o utilizador que efectuou o empréstimo do exemplar.
+  - - Marcar os exemplares como devolvidos quando forem marcados como perdidos
+    - multiple:
+        additem: quando catalogar um exemplar
+        batchmod: a partir da ferramenta de modificação de exemplares em lote
+        claim_returned: quando marcar um exemplar como reclamação de devolução
+        cronjob: a partir da rotina longoverdue
+        moredetail: a partir do separador dos exemplares no módulo de catalogação
+        onpayment: quando receber o pagamento pelo exemplar
+        pendingreserves: a partir da lista 'Reservas a levantar'
+      pref: MarkLostItemsAsReturned
+    - .
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: AllowMultipleIssuesOnABiblio
+    - que os leitores requisitem múltiplos exemplares do mesmo registo bibliográfico.
+      (<strong>NOTA:</strong> Isto apenas irá afectar registos sem assinatura associada.)
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: OnSiteCheckouts
+    - a funcionalidade de empréstimos on-site.
+  - - choices:
+        '0': Não ativar
+        '1': Ativar
+      pref: OnSiteCheckoutsForce
+    - os empréstimos on-site para todos os casos (mesmo se um leitor estiver interdito,
+      etc.).
+  - - choices:
+        '0': Não considerar
+        '1': Considerar
+      pref: ConsiderOnSiteCheckoutsAsNormalCheckouts
+    - empréstimos online como empréstimos normais.
+    - Se activa empréstimos on-site serão contabilizados no limite de empréstimos
+      definido para os empréstimos regulares. O limite on-site continuará a ser aplicado
+      para empréstimos on-site.
+    - Se desativo, ambos os valores serão marcados de forma separada.
+  - - choices:
+        '0': Não trocar
+        '1': Trocar
+      pref: SwitchOnSiteCheckouts
+    - os empréstimos on-site em empréstimos normais quando o empréstimo for realizado.
+  - - Quando um empréstimo de um leitor está em atraso,
+    - choices:
+        allow: permite renovar.
+        block: a renovação para todos os empréstimos do leitor está bloqueada.
+        blockitem: a renovação para esse exemplar está bloqueada.
+      pref: OverduesBlockRenewing
+      type: choice
+  - - Se um leitor dever mais que o valor definido na preferência <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=OPACFineNoRenewals">OPACFineNoRenewals</a>,
+    - choices:
+        '0': permitir
+        '1': bloquear
+      pref: OPACFineNoRenewalsBlockAutoRenew
+    - as suas auto renovações.
+  - - Se um leitor pagar todas as multas de um exemplar em atraso que está a acumular
+      multas,
+    - choices:
+        '0': não renovar
+        '1': renovar
+      pref: RenewAccruingItemWhenPaid
+    - o exemplar automaticamente. Se a preferência de sistema <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=RenewalPeriodBase">RenewalPeriodBase</a>
+      estiver definida como "data de devolução", os exemplares renovados podem continuar
+      em atraso.
+  - - Se um leitor pagar todas as multas no OPAC, de um exemplar em atraso que está
+      a acumular multas, utilizando um plugin de pagamento, o sistema deve,
+    - choices:
+        '0': não renovar
+        '1': renovar
+      pref: RenewAccruingItemInOpac
+    - o exemplar automaticamente. Se a preferência de sistema <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=RenewalPeriodBase">RenewalPeriodBase</a>
+      estiver definida como "data de devolução", os exemplares renovados podem continuar
+      em atraso.
+  - - class: code
+      pref: ItemsDeniedRenewal
+      syntax: text/x-yaml
+      type: textarea
+    - Definir regras personalizadas para negar a renovação de determinados exemplares.
+    - <br />Pode introduzir qualquer campo da tabela items seguido de dois pontos,
+      de um espaço em branco e
+    - uma lista de valores separados entre vírgulas e entre parêntesis rectos.
+    - 'Por exemplo:'
+    - '<br />ccode: [NEWFIC,null,DVD]'
+    - '<br />itype: [NEWBK,""]'
+    - <br /> <strong>NOTA:</strong> A palavra 'null' pode ser usada para bloquear
+      a renovação em campos indefinidos, enquanto a expressão vazia "" vai bloquear
+      as renovações num campo em branco (mas definido).
+  - - class: code
+      pref: UpdateNotForLoanStatusOnCheckout
+      syntax: text/x-yaml
+      type: textarea
+    - É uma lista de pares de valores. Quando um exemplar é emprestado, se o valor
+      de tipo de circulação à esquerda corresponde ao tipo de circulação do exemplar
+    - 'o exemplar será actualizado com o valor à direita. Por exemplo, ''-1: 0'' irá
+      fazer com que um exemplar previamente definido como ''Requisitado'' para agora
+      ficar disponível para empréstimo.'
+    - Cada para de valores deve ser colocado numa linha diferente.
+  Política de multas:
+  - - choices:
+        ignoreCalendar: Ignorar o calendário
+        noFinesWhenClosed: Usar o calendário
+      pref: finesCalendar
+      type: choice
+    - quando calcular o período das multas.
+  - - choices:
+        ignoreCalendar: Ignorar o calendário
+        noSuspensionsWhenClosed: Usar o calendário
+      pref: SuspensionsCalendar
+      type: choice
+    - quando calcular o período para expirar as suspensões.
+  - - choices:
+        off: Não calcular
+        production: Calcular e cobrar
+      pref: finesMode
+      type: choice
+    - multas (quando <code>misc/cronjobs/fines.pl</code> está a ser executado).
+    - <br><strong>NOTA:</strong> Se a tarefa cronjobs/fines.pl estiver a ser executada,
+      as multas correntes e finais serão calculadas quando a tarefa correr e as multas
+      correntes serão finalizadas quando o exemplar for devolvido. Se a preferência
+      <a href="/cgi-bin/koha/admin/preferences.pl?op=search&searchfield=CalculateFinesOnReturn">CalculateFinesOnReturn</a>
+      estiver ativa, as multas finais serão calculadas quando o exemplar for devolvido.<br/>
+    - choices:
+        '0': Não cobrar
+        '1': Cobrar
+      pref: ChargeFinesOnClosedDays
+      type: choice
+    - nos dias marcados como fechados. Se definido, o cronjob fines.pl não gerará
+      multas quando executado em dias marcados como fechados no calendário.
+  - - Se um exemplar perdido é devolvido, aplicar as regras de reembolso definidas
+      para
+    - choices:
+        CheckinLibrary: biblioteca de autenticação.
+        ItemHoldingBranch: biblioteca de empréstimo do exemplar.
+        ItemHomeBranch: biblioteca de origem do exemplar.
+      pref: RefundLostOnReturnControl
+  - - choices:
+        '0': Não incluir
+        '1': Incluir
+      pref: FinesIncludeGracePeriod
+    - o período de graça quando calcular a multa para um exemplar em atraso.
+  - - choices:
+        '0': Não perdoar
+        '1': Perdoar
+      pref: WhenLostForgiveFine
+    - as multas de um exemplar quando é marcado como perdido.
+  - - Não reembolsar multas por perdas se o exemplar perdido for devolvido em mais
+      de
+    - class: integer
+      pref: NoRefundOnLostReturnedItemsAge
+    - dias após ter sido marcado como perdido.
+  - - choices:
+        '0': Não cobrar
+        '1': Cobrar
+      pref: WhenLostChargeReplacementFee
+    - o preço de substituição quando um leitor perde um exemplar.
+  - - Cobrar uma taxa de reserva
+    - choices:
+        any_time_is_collected: sempre que uma reserva for levantada.
+        any_time_is_placed: sempre que uma reserva for efetuada.
+        not_always: apenas se todos os exemplares estão emprestados e se o registo
+          já tem pelo menos uma reserva.
+      pref: HoldFeeMode
+  - - choices:
+        '0': Não usar
+        '1': Usar
+      pref: useDefaultReplacementCost
+    - o custo de substituição por omissão definido no tipo de documento.
+  - - 'Define o texto a ser registado na coluna ''note'' da tabela ''accountlines''
+      quando a multa de processamento (definida para o tipo de documento) é aplicada:'
+    - class: code
+      pref: ProcessingFeeNote
+      type: textarea
+  Reclamação de devoluções:
+  - - Quando marcar um empréstimo como "reclamado como devolvido",
+    - choices:
+        ask: perguntar se a taxa de perdido deve ser cobrada
+        charge: cobrar a taxa de perdido
+        no_charge: não cobrar a taxa de perdido
+      default: ask
+      pref: ClaimReturnedChargeFee
+    - .
+  - - Usar o seguinte valor autorizado <a href="/cgi-bin/koha/admin/authorised_values.pl?searchfield=LOST">LOST</a>
+    - pref: ClaimReturnedLostValue
+    - para representar as 'reclamações de devolução'.
+  - - Avisar os bibliotecários que um leitor tem demasiadas reclamações de devolução
+      se um leitor tiver reclamado a devolução de mais do que
+    - class: integer
+      pref: ClaimReturnedWarningThreshold
+    - exemplares.
+  - - Remover os pedidos de devolução não resolvidos mais antigos que
+    - class: integer
+      pref: CleanUpDatabaseReturnClaims
+    - dias.
+    - <span class="hint">Esta preferência de sistema é usada pela rotina cleanup_database.pl.</span>
+  Reclamações:
+  - - Marcar uma reclamação como problemática se está à espera há mais de
+    - pref: RecallsMaxPickUpDelay
+    - class: integer
+    - dias.
+  - - choices:
+        '0': Não usar
+        '1': Usar
+      pref: UseRecalls
+    - a funcionalidade de reclamações. Assegure-se que configura <a href="/cgi-bin/koha/admin/smart-rules.pl">as
+      regras de empréstimo e multas</a> para as reclamações caso ative este preferência.
+  Reservas de curso:
+  - - choices:
+        '0': Não usar
+        '1': Usar
+      pref: UseCourseReserves
+    - reservas de curso.
+  Restrições do leitor:
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: PatronRestrictionTypes
+    - que o tipo da restrição do leitor seja especificado quando a restrição é aplicada
+      manualmente.
+  - - choices:
+        '0': Não acumular
+        '1': Acumular
+      pref: CumulativeRestrictionPeriods
+    - os períodos de restrição.
+  - - choices:
+        '0': Não
+        '1': Permitir
+      pref: AutoRemoveOverduesRestrictions
+    - que as restrições de ATRASO feitas pelo envio de avisos sejam limpas automaticamente
+      quando todos os exemplares em atraso sejam retornados por um leitor.
+  - - Se o leitor está restrito,
+    - choices:
+        '0': permitir
+        '1': bloquear
+      pref: RestrictionBlockRenewing
+    - renovar exemplares no interface dos técnicos e recorrendo à tarefa automática
+      <code>misc/cronjobs/automatic_renewals.pl</code>.
+  SIP2:
+  - - Usar os seguintes mapeamentos para determinar o valor 'sort_bin' de um exemplar
+      devolvido.<br/>
+    - O mapeamento deve na forma 'branchcode:item field:comparator:item field value:sort
+      bin number', usando um mapeamento por linha.<br/>
+    - '- ''branchcode'' é a localização onde a devolução está a ser feita (biblioteca
+      do utilizador SIP)<br/>'
+    - '- ''item field'' é a coluna da tabela de base de dados items<br/>'
+    - '- ''comparator'' é o tipo de comparação, possíveis valores são: eq,<,<=,>,>=,ne<br/>'
+    - '- ''item field value'' é o valor a ser comparado com o valor especificado em
+      ''item field''<br/>'
+    - '- ''sort bin number'' é o valor de devolução esperado no campo CL da resposta
+      SIP para um exemplar que corresponda à regra<br/><br/>'
+    - 'NOTA: Ao especificar um ''item_field_value'' com o prefixo ''\$'' e um nome
+      de um campo do exemplar, será usado o valor desse campo no exemplar para a comparação:<br/>'
+    - por exemplo \$holdingbranch<br/></br>
+    - Exemplos:<br/>
+    - CPL:itype:eq:BOOK:1 - Vai retornar '1' para um exemplar do tipo de documento
+      'BOOK' devolvido à CPL.<br/>
+    - CPL:itemcallnumber:<:339.6:3 - Vai retornar '3' para um exemplar com a cota
+      inferior que 339.6 e que seja devolvido à CPL.<:339.6:3 - Will return sort bin
+      3 for an item with a callnumber less than 339.6 returned to CPL .<br/>
+    - CPL:homebranch:ne:\$holdingbranch:X - Vai retornar 'X' para um exemplar devolvido
+      à biblioteca CPL onde a holdingbranch não é igual à homebranch (qualquer exemplar
+      que não pertença à CPL).<br/><br/>
+    - class: long
+      pref: SIP2SortBinMapping
+      type: textarea
+  - - Usar
+    - choices:
+        '0': homebranch
+        '1': permanent_location
+      pref: UseLocationAsAQInSIP
+    - como campo AQ no protocolo SIP.

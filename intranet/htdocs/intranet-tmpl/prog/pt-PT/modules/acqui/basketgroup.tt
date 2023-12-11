@@ -1,0 +1,434 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Branches %]
+[% USE Price %]
+[% USE Koha %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Grupo de cesto para [% booksellername | html %] &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% INCLUDE 'datatables.inc' %]
+<script>
+
+    var MSG_CONFIRM_CLOSE_BASKETGROUP = _("Tem a certeza que pretende fechar este grupo de cesto?");
+    var MSG_CLOSE_EMPTY_BASKET = _("Porquê fechar um cesto vazio?");
+    var MSG_SAVE_BEFORE_PRINTING = _("Necessita de guardar a página antes de imprimir");
+    var MSG_REOPEN_BASKETGROUP = _("reabrir grupo de cesto");
+    var MSG_FILE_DOWNLOAD_ERROR = _("Erro ao transferir o ficheiro");
+
+    function submitForm(form) {
+        if (form.close.checked == true) {
+            var input = document.createElement("input");
+            input.setAttribute("type", "hidden");
+            input.setAttribute("name", "closed");
+            input.setAttribute("value", "1");
+            form.appendChild(input);
+        }
+    }
+
+    function closeandprint(bg){
+        if(document.location = '/cgi-bin/koha/acqui/basketgroup.pl?op=closeandprint&amp;basketgroupid=' + bg ){
+            setTimeout("window.location.reload();", 3000);
+        } else {
+            alert(MSG_FILE_DOWNLOAD_ERROR);
+        }
+    }
+
+    $(document).ready(function() {
+        [% IF ( listclosed) %]
+            $("#basket_groups a[href='#closed']").tab("show");
+        [% ELSE %]
+            $("#basket_groups a[href='#opened']").tab("show");
+        [% END %]
+        [% UNLESS ( grouping ) %]
+            $("table").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "aoColumnDefs": [
+                    { "aTargets": [ -1 ], "bSortable": false, "bSearchable": false },
+                ],
+                "bAutoWidth": false,
+                "sPaginationType": "full"
+            } ));
+        [% ELSE %]
+            grouped = $("#grouped").DataTable($.extend(true, {}, dataTablesDefaults, {
+                "dom": 't',
+                "columnDefs": [
+                    { 'sortable': false, 'targets': [ 'NoSort' ] }
+                ],
+                'autoWidth': false,
+                "language": {
+                    "emptyTable": _("Não existem cestos neste grupo")
+                }
+            } ));
+            ungrouped = $("#ungrouped").DataTable($.extend(true, {}, dataTablesDefaults, {
+                "dom": 't',
+                "columnDefs": [
+                    { 'sortable': false, 'targets': [ 'NoSort' ] }
+                ],
+                'autoWidth': false,
+                "language": {
+                    "emptyTable": _("Não existem cestos não agrupados")
+                }
+            } ));
+        [% END %]
+
+        $("#basketgroupcolumns").on("click", ".addtogroup", function(){
+            const row = $("#" + $(this).data("basketid") );
+            if( row ){
+                $(this).removeClass("addtogroup").addClass("removefromgroup").html("<i class=\"fa fa-trash\" aria-hidden=\"true\"></i> " + _("Remover") );
+                row.removeClass("ungrouped").addClass("grouped");
+                ungrouped.row( row ).remove().draw();
+                grouped.row.add( row ).draw();
+            }
+        });
+
+        $("#basketgroupcolumns").on("click", ".removefromgroup", function(){
+            const row = $("#" + $(this).data("basketid") );
+            if( row ){
+                $(this).removeClass("removefromgroup").addClass("addtogroup").html("<i class=\"fa fa-plus\" aria-hidden=\"true\"></i> " + _("Adicionar ao grupo") );
+                $(this).removeClass("").addClass("");
+                row.removeClass("grouped").addClass("ungrouped");
+                grouped.row( row ).remove().draw();
+                ungrouped.row.add( row ).draw();
+            }
+        });
+    });
+</script>
+
+</head>
+<body id="acq_basketgroup" class="acq">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'acquisitions-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/acqui/acqui-home.pl">Aquisições</a>
+ [% END %]
+ [% IF ( grouping ) %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid | uri %]">[% booksellername | html %]</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/acqui/basketgroup.pl?booksellerid=[% booksellerid | uri %]">Grupo de cestos</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Adicionar grupo de cesto para [% booksellername | html %]</span>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid | uri %]">[% booksellername | html %]</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Grupo de cestos</span>
+ [% END %]
+ [% END  # /IF grouping %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ [% IF ( grouping ) %]
+ [% IF (closedbg) %]
+ <div id="toolbar" class="btn-toolbar">
+ <div class="btn-group"><a href="[% script_name | url %]?op=reopen&amp;basketgroupid=[% basketgroupid | uri %]&amp;booksellerid=[% booksellerid | uri %]&amp;mode=singlebg" class="btn btn-default" id="reopenbutton"><i class="fa fa-download"></i> Reabrir grupo de cesto</a></div>
+ <div class="btn-group"><a href="[% script_name | url %]?op=export&amp;basketgroupid=[% basketgroupid | uri %]&amp;booksellerid=[% booksellerid | uri %]" class="btn btn-default" id="exportbutton"><i class="fa fa-download"></i> Exportar o grupo de cestos em CSV</a></div>
+ <div class="btn-group"><a href="[% script_name | url %]?op=print&amp;basketgroupid=[% basketgroupid | uri %]&amp;booksellerid=[% booksellerid | uri %]" class="btn btn-default" id="printbutton"><i class="fa fa-download"></i> Imprimir grupo de cestos em PDF</a></div>
+ [% IF (ediaccount) %]
+ <div class="btn-group"><a href="[% script_name | url %]?op=ediprint&amp;basketgroupid=[% basketgroupid | uri %]&amp;booksellerid=[% booksellerid | uri %]" class="btn btn-default" id="printbutton"><i class="fa fa-download"></i> Gerar encomenda EDIFACT</a></div>
+ [% END %]
+ </div>
+ [% END %]
+ [% IF (name && closedbg) %]
+ <h1>Agrupamento de cesto [% name | html %] ([% basketgroupid | html %]) para <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid | uri %]">[% booksellername | html %]</a></h1>
+ [% ELSIF (name) %]
+ <h1>Editar grupo de cesto [% name | html %] ([% basketgroupid | html %]) para <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid | uri %]">[% booksellername | html %]</a></h1>
+ [% ELSE %]
+ <h1>Adicionar grupo de cesto para <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid | uri %]">[% booksellername | html %]</a></h1>
+ [% END %]
+ <div id="basketgroupcolumns" class="row">
+ [% UNLESS (closedbg) %]
+ <div class="col-xs-6 col-xs-push-6">
+ <div id="groups">
+ <div class="workarea_alt" >
+ <h3>Cestos não agrupados</h3>
+ <div class="page-section">
+ <table id="ungrouped" class="basketgroup_baskets">
+ <thead>
+ <tr>
+ <th>Cesto</th>
+ <th>Total</th>
+ <th class="NoSort"></th>
+ </tr>
+ </thead>
+ <tbody>
+ [% IF ( baskets ) %]
+ [% FOREACH basket IN baskets %]
+ <tr class="ungrouped" id="b-[% basket.basketno | html %]">
+ <td>
+ <a href="basket.pl?basketno=[% basket.basketno | uri %]">
+ [% IF ( basket.basketname ) %]
+ [% basket.basketname | html %]
+ [% ELSE %]
+ <span>Sem nome, número do cesto: [% basket.basketno | html %]</span>
+ [% END %]
+ </a>
+ </td>
+ <td data-sort="[% basket.total | html %]">
+ [% basket.total | $Price %]
+ <input type="hidden" class="basket" name="basket" value="[% basket.basketno | html %]" />
+ </td>
+ <td>
+ <a class="addtogroup btn btn-default btn-xs" data-basketid="b-[% basket.basketno | html %]">
+ <i class="fa fa-plus" aria-hidden="true"></i> Adicionar ao grupo </a>
+ </td>
+ </tr>
+ [% END %]
+ [% END %]
+ </tbody>
+ </table>
+ </div><!--/.page-section -->
+ </div><!-- /#groups -->
+ </div><!-- /.col-xs-6 -->
+
+ </div>
+ [% END %]
+ [% IF ( closedbg ) %]
+ <div class="col-xs-12">
+ [% ELSE %]
+ <div class="col-xs-6 col-xs-pull-6">
+ [% END %]
+ <form action="/cgi-bin/koha/acqui/basketgroup.pl" method="post" id="groupingform" onsubmit="return submitForm(this)">
+ <fieldset id="various" class="brief">
+ <ol>
+ [% UNLESS (closedbg) %]
+ <li>
+ <label for="basketgroupname">Nome do grupo:</label>
+ <input type="text" name="basketgroupname" id="basketgroupname" value="[% name | html %]" class="focus" />
+ </li>
+ [% ELSE %]
+ <input type="hidden" name="basketgroupname" id="basketgroupname" value="[% name | html %]" />
+ [% END %]
+ <li>
+ [% UNLESS (closedbg) %]
+ <label for="billingplace">Local de factura:</label>
+ <select name="billingplace" id="billingplace">
+ <option value="">--</option>
+ [% PROCESS options_for_libraries libraries => Branches.all( selected => billingplace ) %]
+ </select>
+ [% ELSE %]
+ <span class="label">Local de factura:</span>
+ <input name="billingplace" id="billingplace" type ="hidden" value="[% billingplace | html %]" />[% Branches.GetName( billingplace ) | html %]
+ [% END %]
+ </li>
+ [% UNLESS (closedbg) %]
+ <li>
+ <label for="deliveryplace">Local de entrega:</label>
+ <select name="deliveryplace" id="deliveryplace">
+ <option value="">--</option>
+ [% PROCESS options_for_libraries libraries => Branches.all( selected => deliveryplace ) %]
+ </select>
+ </li>
+ </ol>
+ <p>ou</p>
+ <ol>
+ <li>
+ <label for="freedeliveryplace">Local de entrega:</label>
+ <textarea cols="26" rows="3" name="freedeliveryplace" id="freedeliveryplace">[% freedeliveryplace | html %]</textarea>
+ </li>
+ [% ELSE %]
+ <li>
+ <span class="label">Local de entrega:</span>
+ [% IF (freedeliveryplace) %]
+ <input name="freedeliveryplace" id="freedeliveryplace" type ="hidden" value="[% freedeliveryplace | html %]" />[% freedeliveryplace | html %]
+ <input name="deliveryplace" id="deliveryplace" type ="hidden" value="" />
+ [% ELSE %]
+ <input name="deliveryplace" id="deliveryplace" type ="hidden" value="[% deliveryplace | html %]" />[% Branches.GetName( deliveryplace ) | html %]
+ <input name="freedeliveryplace" id="freedeliveryplace" type ="hidden" value="" />
+ [% END %]
+ </li>
+ [% END %]
+ <li>
+ [% UNLESS (closedbg) %]
+ <label for="deliverycomment">Comentário de entrega:</label>
+ <textarea cols="26" rows="3" name="deliverycomment" id="deliverycomment">[% deliverycomment | html %]</textarea>
+ [% ELSE %]
+ <span class="label">Comentário de entrega:</span>[% deliverycomment | html %]
+ <input name="deliverycomment" id="deliverycomment" type="hidden" value = "[% deliverycomment | html %]" />
+ [% END %]
+ </li>
+ </ol>
+ <h3>Cestos neste grupo:</h3>
+ <table id="grouped" class="basketgroup_baskets">
+ <thead>
+ <tr>
+ <th>Cesto</th>
+ <th>Total</th>
+ <th class="NoSort"></th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH selectedbasket IN selectedbaskets %]
+ <tr id="b-[% selectedbasket.basketno | html %]">
+ <td>
+ <a href="basket.pl?basketno=[% selectedbasket.basketno | uri %]">
+ [% IF ( selectedbasket.basketname ) %]
+ [% selectedbasket.basketname | html %]
+ [% ELSE %]
+ <span>Sem nome, número do cesto: [% selectedbasket.basketno | html %]</span>
+ [% END %]
+ </a>
+ </td>
+ <td data-sort="[% selectedbasket.total | html %]">
+ [% selectedbasket.total | $Price %]
+ <input type="hidden" class="basket" name="basket" value="[% selectedbasket.basketno | html %]" />
+ </td>
+ <td>
+ [% IF ( closedbg ) %]
+ [% ELSE %]
+ <a class="removefromgroup btn btn-default btn-xs" data-basketid="b-[% selectedbasket.basketno | html %]" id="addtogroup[% selectedbasket.basketno | html %]">
+ <i class="fa fa-trash" aria-hidden="true"></i> Remover </a>
+ [% END %]
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+ [% UNLESS (closedbg) %]
+ <ol>
+ <li><label for="closedbg">Fechar grupo de cesto</label><input type="checkbox" id="closedbg" name="closedbg" /></li>
+ </ol>
+ [% ELSE %]
+ <input type="hidden" id="closedbg" name="closedbg" value ="1"/>
+ [% END %]
+ </fieldset>
+
+ [% UNLESS (closedbg) %]
+ <fieldset class="action"><input type="hidden" name="booksellerid" value="[% booksellerid | html %]" />
+ [% IF ( basketgroupid ) %]
+ <input type="hidden" name="basketgroupid" value="[% basketgroupid | html %]" />
+ [% END %]
+ <input type="hidden" name="op" value="attachbasket" />
+ <input class="btn btn-primary" type="submit" value="Guardar" /> <a href="/cgi-bin/koha/acqui/basketgroup.pl?booksellerid=[% booksellerid | uri %]" class="cancel">Anular</a>
+ </fieldset>
+ [% END %]
+ </form>
+ </div>
+ </div>
+ [% ELSE %]
+ <div id="toolbar" class="btn-toolbar">
+ <div class="btn-group"><a href="/cgi-bin/koha/acqui/basketgroup.pl?op=add&amp;booksellerid=[% booksellerid | uri %]" class="btn btn-default" id="newbasketgroup"><i class="fa fa-plus"></i> Novo grupo de cestos</a></div>
+ </div>
+ <h1>Agrupamento de cesto para <a href="/cgi-bin/koha/acqui/supplier.pl?booksellerid=[% booksellerid | uri %]">[% booksellername | html %]</a></h1>
+ [% IF (NoEDIMessage && Koha.Preference('EDIFACT')) %]<div><strong>Não existe configuração EDIFACT para [% booksellername | html %]</strong></div>[% END %]
+
+ [% WRAPPER tabs id= "basket_groups" %]
+ [% WRAPPER tabs_nav %]
+ [% WRAPPER tab_item tabname= "opened" bt_active= 1 %] <span>Abrir</span> [% END %]
+ [% WRAPPER tab_item tabname= "closed" %] <span>Fechado</span> [% END %]
+ [% END %]
+ [% WRAPPER tab_panels %]
+ [% WRAPPER tab_panel tabname="opened" bt_active= 1 %]
+ <table id="basket_group_opened">
+ <thead>
+ <tr>
+ <th>Nome</th>
+ <th>Número</th>
+ <th>Local de factura</th>
+ <th>Local de entrega</th>
+ <th>Número de cestos</th>
+ <th>Ação</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH basketgroup IN basketgroups %]
+ [% UNLESS ( basketgroup.closed ) %]
+ <tr>
+ <td>[% IF ( basketgroup.name ) %]
+ [% basketgroup.name | html %]
+ [% ELSE %]
+ <span>Grupos de cestos nº [% basketgroup.id | html %]</span>
+ [% END %]
+ </td>
+ <td>[% basketgroup.id | html %]</td>
+ <td>[% Branches.GetName( basketgroup.billingplace ) | html %]</td>
+ <td>[% IF (basketgroup.freedeliveryplace) %]Local de entrega grátis[% ELSE %][% Branches.GetName( basketgroup.deliveryplace ) | html %][% END %]</td>
+ <td>[% basketgroup.basketsqty | html %]</td>
+ <td>
+ <input onclick="closeandprint('[% basketgroup.id | html %]');" type="button" value="Fechar e exportar como PDF" />
+ <form action="/cgi-bin/koha/acqui/basketgroup.pl" method="get"><input type="hidden" name="op" value="add" /><input type="hidden" name="booksellerid" value="[% basketgroup.booksellerid | html %]" /><input type="hidden" name="basketgroupid" value="[% basketgroup.id | html %]" /><input class="btn btn-primary" type="submit" value="Alterar" /></form>
+ [% UNLESS basketgroup.basketsqty %]
+ <form action="/cgi-bin/koha/acqui/basketgroup.pl" method="get"><input type="hidden" name="op" value="delete" /><input type="hidden" name="booksellerid" value="[% basketgroup.booksellerid | html %]" /><input type="hidden" name="basketgroupid" value="[% basketgroup.id | html %]" /><input class="btn btn-primary" type="submit" value="Apagar" /></form>
+ [% END %]
+ </td>
+ </tr>
+ [% END %]
+ [% END %]
+ </tbody>
+ </table>
+ [% END #/opened %]
+
+ [% WRAPPER tab_panel tabname="closed" %]
+ <table id="basket_group_closed">
+ <thead>
+ <tr>
+ <th>Nome</th>
+ <th>Número</th>
+ <th>Local de factura</th>
+ <th>Local de entrega</th>
+ <th>Número de cestos</th>
+ <th>Ação</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH basketgroup IN basketgroups %]
+ [% IF ( basketgroup.closed ) %]
+ <tr>
+ <td>
+ [% IF ( basketgroup.name ) %]
+ [% basketgroup.name | html %]
+ [% ELSE %]
+ <span>Grupos de cestos nº [% basketgroup.id | html %]</span>
+ [% END %]
+ </td>
+ <td>[% basketgroup.id | html %]</td>
+ <td>[% Branches.GetName( basketgroup.billingplace ) | html %]</td>
+ <td>[% IF (basketgroup.freedeliveryplace) %]Local de entrega grátis[% ELSE %][% Branches.GetName( basketgroup.deliveryplace ) | html %][% END %]</td>
+ <td>[% basketgroup.basketsqty | html %]</td>
+ <td>
+ <form action="/cgi-bin/koha/acqui/basketgroup.pl" method="get"><input type="hidden" name="op" value="add" /><input type="hidden" name="booksellerid" value="[% basketgroup.booksellerid | html %]" /><input type="hidden" name="basketgroupid" value="[% basketgroup.id | html %]" /><input class="btn btn-primary" type="submit" value="Ver" /></form>
+ <form action="/cgi-bin/koha/acqui/basketgroup.pl" method="get"><input type="hidden" name="op" value="reopen" /><input type="hidden" name="booksellerid" value="[% basketgroup.booksellerid | html %]" /><input type="hidden" name="basketgroupid" value="[% basketgroup.id | html %]" /><input class="btn btn-primary" type="submit" value="Reabrir" /></form>
+ <form action="/cgi-bin/koha/acqui/basketgroup.pl" method="get"><input type="hidden" name="op" value="print" /><input type="hidden" name="basketgroupid" value="[% basketgroup.id | html %]" /><input class="btn btn-primary" type="submit" value="Exportar para PDF" /></form>
+ <form action="/cgi-bin/koha/acqui/basketgroup.pl" method="get"><input type="hidden" name="op" value="export" /><input type="hidden" name="basketgroupid" value="[% basketgroup.id | html %]" /><input class="btn btn-primary" type="submit" value="Exportar para CSV" /></form>
+ [% IF Koha.Preference('EDIFACT') %]
+ [% IF (ediaccount) %]
+ <form action="/cgi-bin/koha/acqui/basketgroup.pl" method="get"><input type="hidden" name="op" value="ediprint" /><input type="hidden" name="basketgroupid" value="[% basketgroup.id | html %]" /><input class="btn btn-primary" type="submit" value="Gerar encomenda EDIFACT" /></form>
+ [% ELSE %]
+ <div>Não existe configuração EDIFACT para [% booksellername | html %]</div>
+ [% END %]
+ [% END %]
+ </td>
+ </tr>
+ [% END %]
+ [% END %]
+ </tbody>
+ </table>
+ [% END #/closed %]
+ [% END # /WRAPPER tab_panels %]
+ [% END # /#basket_groups %]
+ [% END %]
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% IF ( booksellerid ) %]
+ [% INCLUDE 'vendor-menu.inc' %]
+ [% END %]
+ [% INCLUDE 'acquisitions-menu.inc' %]
+ </aside>
+ </div>
+ </div> <!-- /.row -->
+ [% INCLUDE 'intranet-bottom.inc' %]

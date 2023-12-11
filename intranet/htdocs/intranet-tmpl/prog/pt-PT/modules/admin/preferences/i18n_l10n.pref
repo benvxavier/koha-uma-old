@@ -1,0 +1,72 @@
+---
+Regionalização -:
+  Global:
+  - - Formatar datas como
+    - choices:
+        dmydot: dd.mm.yyyy
+        iso: aaaa-mm-dd
+        metric: dd/mm/aaaa
+        us: mm/dd/aaaa
+      default: us
+      pref: dateformat
+    - .
+  - - Formatar datas no
+    - choices:
+        12hr: formato 12 horas ("02:18 PM" )
+        24hr: formato 24 horas ("14:18" )
+      default: 24hr
+      pref: TimeFormat
+    - .
+  - - Usar
+    - choices:
+        '0': domingo
+        '1': segunda-feira
+        '2': terça-feira
+        '3': quarta-feira
+        '4': quinta-feira
+        '5': sexta-feira
+        '6': sábado
+      default: 0
+      pref: CalendarFirstDayOfWeek
+    - como primeiro dia da semana no calendário.
+  - - 'Activar os seguintes idiomas no interface dos técnicos:'
+    - pref: language
+      type: staff-languages
+    - Esta lista pode ser ordenada para modificar a ordem de idiomas no interface.
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      default: 0
+      pref: opaclanguagesdisplay
+    - que os leitores alterem o idioma de visualização no OPAC.
+  - - 'Ativar os seguintes idiomas no OPAC:'
+    - pref: OPACLanguages
+      type: opac-languages
+    - Esta lista pode ser ordenada para modificar a ordem de idiomas no interface.
+  - - Usar o alfabeto
+    - class: long
+      pref: alphabet
+    - para as lista de letras pesquisáveis. Deve ser uma lista de letras maiúsculas
+      separadas por espaços.
+    - '<br/> Dica: Alterar o agrupamento na base de dados para a coluna ''surname''
+      na tabela ''borrowers'' é útil para por a funcionar a navegação por último nome
+      na página members-home.pl quando usar um alfabeto fora de A-Z.'
+  - - Formatar datas no
+    - choices:
+        de: estilo alemão ([Address] [Street number] - [ZIP/Postal Code] [City] -
+          [Country])
+        fr: estilo francês ([Street number] [Address] - [ZIP/Postal Code] [City] -
+          [Country])
+        us: estilo americano ([Street number], [Address] - [City], [ZIP/Postal Code],
+          [Country])
+      default: us
+      pref: AddressFormat
+    - .
+  - - choices:
+        '0': Não permitir
+        '1': Permitir
+      pref: TranslateNotices
+    - que os avisos possam ser traduzidos.
+    - Se estiver definido, os avisos podem ser traduzidos no interface "Avisos e recibos".
+      O idioma usado para enviar um aviso a um leitor será o idioma definido para
+      o leitor.

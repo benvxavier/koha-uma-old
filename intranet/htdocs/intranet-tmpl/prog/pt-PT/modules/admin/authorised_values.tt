@@ -1,0 +1,496 @@
+[% USE raw %]
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>
+ [% IF op == 'add_form' %] [% IF ( action_modify ) %]Modificar valor autorizado &rsaquo; [% END %] [% IF ( action_add_value ) %]Novo valor autorizado &rsaquo; [% END %] [% IF ( action_add_category ) %]Nova categoria &rsaquo; [% END %] [% IF ( action_modify || action_add_value ) %] Valores autorizados da categoria [% category_name | html %] &rsaquo; [% END %] [% END %] Valores autorizados &rsaquo; Administração &rsaquo; Koha </title>
+[% INCLUDE 'doc-head-close.inc' %]
+
+[% FILTER collapse %]
+ <style>
+        fieldset.rows div.toptabs li {
+            clear: none;
+            margin-right:.4em;
+            padding-bottom: 0;
+            width: auto;
+        }
+        #lib,
+        #lib_opac {
+            width: 75%;
+        }
+        .authval-icons {
+            display: flex;
+            flex-wrap: wrap;
+            clear: both;
+        }
+        .authval-icons label {
+            float: none;
+            width: auto;
+        }
+    </style>
+[% END %]
+</head>
+
+<body id="admin_authorised_values" class="admin">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'prefs-admin-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/admin-home.pl">Administração</a>
+ [% END %]
+
+ [% IF ( op == 'add_form' || loop || searchfield ) %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/authorised_values.pl">Valores Autorizados</a>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Valores Autorizados</span>
+ [% END %]
+ [% END %]
+
+ [% IF op == 'add_form' %]
+ [% IF ( action_modify || action_add_value ) %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/authorised_values.pl?searchfield=[% category_name | uri %]">Valores autorizados para a categoria [% category_name | html %]</a>
+ [% END %]
+ [% IF ( action_modify ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Modificar valor autorizado</span>
+ [% END %]
+ [% END %]
+ [% IF ( action_add_value ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Novo valor autorizado</span>
+ [% END %]
+ [% END %]
+ [% END %]
+ [% IF ( action_add_category ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Nova Categoria</span>
+ [% END %]
+ [% END %]
+
+ [% ELSIF ( loop || searchfield ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Valores autorizados para a categoria [% category.category_name | html %]</span>
+ [% END %]
+ [% END # /IF op == 'add_form' %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ [% IF op == 'add_form' %]
+ <h1>
+ [% IF ( action_modify ) %]<span>Modificar valor autorizado</span>[% END %]
+ [% IF ( action_add_value ) %]<span>Novo valor autorizado</span>[% END %]
+ [% IF ( action_add_category ) %]<span>Nova Categoria</span>[% END %]
+ </h1>
+
+ [% IF ( action_modify ) %]
+ <div class="note">
+ <i class="fa fa-exclamation"></i> <strong>NOTA:</strong> Se alterar o código de um valor autorizado, os registos existentes não serão atualizados. Atualizações à descrição são mostradas imediatamente.</div>
+ [% END %]
+
+ <form action="/cgi-bin/koha/admin/authorised_values.pl" name="Aform" method="post" class="validated">
+ <fieldset class="rows">
+ [% IF action_add_category %]
+ <ol>
+ <li>
+ <label for="category" class="required">Categoria: </label>
+ <input type="text" name="category"  id="category" size="32" maxlength="32" class="focus required" />
+ <span class="required">Obrigatório</span>
+ <input type="hidden" name="op" value="add_category" />
+ </li>
+ </ol>
+ [% ELSE %]
+ <ol>
+ <li>
+ <span class="label">Categoria</span>
+ <input type="hidden" name="op" value="add" />
+ <input type="hidden" name="category" value="[% category_name | html %]" /> [% category_name | html %]
+ </li>
+ <li>
+ <label for="authorised_value">Valor autorizado: </label>
+ [% IF ( action_modify ) %]
+ <input type="hidden" id="id" name="id" value="[% av.id | html %]" />
+ [% END %]
+ <input type="text" id="authorised_value" name="authorised_value" value="[% av.authorised_value | html %]" maxlength="80" class="focus" />
+ </li>
+ <li>
+ <label for="lib">Descrição: </label>
+ <input type="text" name="lib" id="lib" value="[% av.lib | html %]" maxlength="200" />
+ </li>
+ <li>
+ <label for="lib_opac">Descrição (OPAC): </label>
+ <input type="text" name="lib_opac" id="lib_opac" value="[% av.lib_opac | html %]" maxlength="200" />
+ </li>
+ <li><label for="branches">Limitações das bibliotecas: </label>
+ <select id="branches" name="branches" multiple size="10">
+ <option value="">Todas as bibliotecas</option>
+ [% FOREACH branch IN branches_loop %]
+ [% IF ( branch.selected ) %]
+ <option selected="selected" value="[% branch.branchcode | html %]">[% branch.branchname | html %]</option>
+ [% ELSE %]
+ <option value="[% branch.branchcode | html %]">[% branch.branchname | html %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ <div class="hint">Selecione 'Todas as bibliotecas' se este valor autorizado deve ser mostrado sempre. Senão selecione as bibliotecas que deseja associar a este valor.</div>
+ </li>
+ </ol>
+
+ [% INCLUDE 'admin-icon-selection.inc' context = "authval" %]
+
+ [% END # /IF action_add_category %]
+ </fieldset>
+
+ <fieldset class="action">
+ <input type="hidden" name="id" value="[% av.id | html %]" />
+ <input class="btn btn-primary" type="submit" value="Guardar" />
+ <a class="cancel" href="/cgi-bin/koha/admin/authorised_values.pl?searchfield=[% category_name | url %]">Anular</a>
+ </fieldset>
+ </form>
+ [% END # /IF op == 'add_form' %]
+
+ [% IF op == 'list' %]
+ <div id="toolbar" class="btn-toolbar">
+ <a id="addcat" class="btn btn-default" href= "/cgi-bin/koha/admin/authorised_values.pl?op=add_form"><i class="fa fa-plus"> </i> Nova Categoria</a>
+ [% IF ( searchfield ) %]
+ <a id="addauth" class="btn btn-default" href= "/cgi-bin/koha/admin/authorised_values.pl?op=add_form&amp;category=[% category.category_name | url %]"><i class="fa fa-plus"> </i> Novo valor autorizado para [% category.category_name | html %]</a>
+ [% END %]
+ </div>
+
+ [% IF ( searchfield ) %]
+ <h1>Valores autorizados para a categoria [% category.category_name | html %]</h1>
+ [% PROCESS category_descriptions code_category = category.category_name %]
+ [% ELSE %]
+ <h1>Valores Autorizados</h1>
+ [% END %]
+
+ [% IF ( searchfield ) %]
+ <div class="note">
+ <i class="fa fa-exclamation"></i> <strong>NOTA:</strong> Se alterar o código de um valor autorizado, os registos existentes não serão atualizados. Atualizações à descrição são mostradas imediatamente.</div>
+ [% END %]
+
+ [% FOR m IN messages %]
+ <div class="dialog [% m.type | html %]">
+ [% SWITCH m.code %]
+ [% CASE 'error_on_update' %]
+ <span>Ocorreu um erro ao atualizar este valor autorizado. O valor pode já existir no sistema.</span>
+ [% CASE 'error_on_insert' %]
+ <span>Ocorreu um erro ao inserir este valor autorizado. O valor ou a categoria podem já existir no sistema.</span>
+ [% CASE 'error_on_insert_cat' %]
+ <span>Ocorreu um erro ao inserir esta categoria de valor autorizado. O nome da categoria pode já existir no sistema.</span>
+ [% CASE 'error_on_delete' %]
+ <span>Ocorreu um erro ao eliminar este valor autorizado. Verifique os registos do sistema.</span>
+ [% CASE 'error_on_delete_category' %]
+ <span>Ocorreu um erro ao eliminar esta categoria de valor autorizado. Verifique os registos do sistema.</span>
+ [% CASE 'success_on_update' %]
+ <span>Valor autorizado modificado com sucesso.</span>
+ [% CASE 'success_on_insert' %]
+ <span>Valor autorizado adicionado com sucesso.</span>
+ [% CASE 'success_on_insert_cat' %]
+ <span>Categoria de valor autorizado adicionada com sucesso.</span>
+ [% CASE 'success_on_delete' %]
+ <span>Valor autorizado eliminado com sucesso.</span>
+ [% CASE 'success_on_delete_category' %]
+ <span>Categoria de valor autorizado eliminada com sucesso.</span>
+ [% CASE 'cat_already_exists' %]
+ <span>Esta categoria de valores autorizados já existe.</span>
+ [% CASE 'invalid_category_name' %]
+ <span>As categorias de valores autorizadores 'branches', 'itemtypes' e 'cn_source' são usadas internamente pelo o sistema e não são válidas.</span>
+ [% CASE %]
+ <span>[% m.code | html %]</span>
+ [% END %]
+ </div>
+ [% END # /FOR m IN messages %]
+
+ <div class="page-section">
+ [% IF ( searchfield ) %]
+
+ <form action="/cgi-bin/koha/admin/authorised_values.pl" method="get" id="category">
+ <p>
+ <label for="category_search">Ver categoria: </label>
+ <select name="searchfield" id="category_search">
+ [% FOR c IN category_names %]
+ [% IF c == searchfield %]
+ <option value="[% c | html %]" selected="selected">[% c | html %]</option>
+ [% ELSE %]
+ <option value="[% c | html %]">[% c | html %]</option>
+ [% END %]
+ [% END %]
+ </select>
+ </p>
+ </form> <!-- /#category -->
+
+ [% IF loop %]
+ <table id="categoriest" class="authorized_values_table">
+ <thead>
+ <tr>
+ <th>Valor autorizado</th>
+ <th>Descrição</th>
+ <th>Descrição (OPAC)</th>
+ <th>Ícone</th>
+ <th>Limitações das bibliotecas</th>
+ <th class="noExport NoSort">Ações</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOREACH loo IN loop %]
+ <tr>
+ <td>[% loo.authorised_value | html %]</td>
+ <td>[% loo.lib | html %]</td>
+ <td>[% loo.lib_opac | html %]</td>
+ <td>
+ [% IF ( loo.image ) %]<img src="[% loo.image | url %]" alt=""/>[% ELSE %]&nbsp;[% END %]</td>
+ <td>
+ [% IF loo.branches.size > 0 %]
+ [% branches_str = "" %]
+ [% FOREACH branch IN loo.branches %]
+ [%- IF loop.first -%]
+ [% branches_str = branch.branchname _ " (" _ branch.branchcode _ ")" %]
+ [% ELSE %]
+ [% branches_str = branches_str _ "\n" _ branch.branchname _ " (" _ branch.branchcode _ ")" %]
+ [% END %]
+ [% END %]
+ <span class="library_limitation" title="[% branches_str | html %]">
+ [% IF loo.branches.size > 1 %]
+ <span>[% loo.branches.size | html %] limitações de biblioteca</span>
+ [% ELSE %]
+ <span>[% loo.branches.size | html %] limitaçao de biblioteca</span>
+ [% END %]
+ [% ELSE %]
+ <span>Sem limitação</span>
+ [% END # /IF loo.branches.size > 0 %]
+ </td>
+ <td class="actions"><a href="/cgi-bin/koha/admin/authorised_values.pl?op=add_form&amp;id=[% loo.id | uri %]" class="btn btn-default btn-xs"><i class="fa fa-pencil"></i> Alterar</a>
+ <a class="delete btn btn-default btn-xs" href="/cgi-bin/koha/admin/authorised_values.pl?op=delete&amp;searchfield=[% searchfield | uri %]&amp;id=[% loo.id | uri %]"><i class="fa fa-trash"></i> Apagar</a></td>
+ </tr>
+ [% END # /FOREACH loop %]
+ </tbody>
+ </table> <!-- /#categoriest -->
+ [% ELSE %]
+ <div class="dialog message">
+ <p>Não existem valores autorizados definidos para [% category.category_name | html %]</p>
+ <form action="/cgi-bin/koha/admin/authorised_values.pl" method="get">
+ <input type="hidden" name="op" value="add_form" />
+ <input type="hidden" name="category" value="[% category.category_name | html %]" />
+ <button type="submit"><i class="fa fa-plus"></i> Adicionar um valor autorizado</button>
+ </form>
+ [% UNLESS category.is_system %]
+ <form id="delete_category" action="/cgi-bin/koha/admin/authorised_values.pl" method="post">
+ <input type="hidden" name="op" value="delete_category" />
+ <input type="hidden" name="category_name" value="[% category.category_name | html %]" />
+ <button type="submit"><i class="fa fa-plus"></i> Eliminar categoria '[% category.category_name | html %]' </button>
+ </form>
+ [% END %]
+ </div>
+ [% END # /IF loop %]
+
+ [% ELSE # category was selected %]
+ <table id="categoriest" class="authorized_values_table">
+ <thead>
+ <tr>
+ <th>Categoria</th>
+ <th>Descrição</th>
+ <th class="noExport">&nbsp;</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOR c IN category_names %]
+ <tr>
+ <td><a href="/cgi-bin/koha/admin/authorised_values.pl?searchfield=[% c | uri %]">[% c | html %]</a></td>
+ <td>
+ [% PROCESS category_descriptions code_category = c %]
+ </td>
+ <td>
+ <a id="addauth" class="btn btn-default btn-xs" href= "/cgi-bin/koha/admin/authorised_values.pl?op=add_form&amp;category=[% c | uri %]"><i class="fa fa-plus"> </i> Adicionar</a>
+ </td>
+ </tr>
+ [% END # /FOR c %]
+ </tbody>
+ </table> <!-- /#categoriest -->
+ [% END # /IF ( searchfield  )%]
+ </div>
+
+ [% END # /IF op == 'list' %]
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'admin-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/admin-menu.js") | $raw %]
+ [% INCLUDE 'datatables.inc' %]
+ [% INCLUDE 'columns_settings.inc' %]
+ <script>
+        $(document).ready(function() {
+
+            KohaTable("categoriest", {
+                "aaSorting": [[ 0, "asc" ]],
+                "sPaginationType": "full"
+            });
+
+            if ( $("#branches option:selected").length < 1 ) {
+                $("#branches option:first").attr("selected", "selected");
+            }
+
+            $("a.delete").click(function(){
+                return confirm(_("Tem a certeza que pretende eliminar este valor autorizado?"));
+            });
+            $('#category_search').change(function() {
+                $('#category').submit();
+            });
+            $(".library_limitation").tooltip();
+
+            $("#delete_category").on('submit', function(){
+                return confirm(_("Tem a certeza que pretende eliminar esta categoria de valor autorizado?"));
+            });
+
+            if( $("#icons .tab-pane.active").length < 1 ){
+                $("#icons a:first").tab("show");
+            }
+        });
+    </script>
+[% END %]
+
+[% BLOCK category_descriptions %]
+ [% SWITCH code_category %]
+ [% CASE 'Asort1' %]
+ <p>Usado para estatísticas das aquisições</p>
+ [% CASE 'Asort2' %]
+ <p>Usado para estatísticas das aquisições</p>
+ [% CASE 'BOR_NOTES' %]
+ <p>Valores usados nas mensagens dos leitores que aparecem no ecrã de circulação ou no OPAC. O valor no campo da descrição deve ser o texto da mensagem e está limitado a 200 caracteres</p>
+ [% CASE 'branches' %]
+ <p></p>
+ [% CASE 'Bsort1' %]
+ <p>Valores que podem ser inseridos no campo de ordenação 1 dos leitores, que podem ser usados para estatísticas</p>
+ [% CASE 'Bsort2' %]
+ <p>Valores que podem ser inseridos no campo de ordenação 2 dos leitores, que podem ser usados para estatísticas</p>
+ [% CASE 'CAND' %]
+ <p></p>
+ [% CASE 'CCODE' %]
+ <p>Coleções (aparecem na edição de um exemplar)</p>
+ [% CASE 'cn_source' %]
+ <p></p>
+ [% CASE 'CONTROL_NUM_SEQUENCE' %]
+ <p></p>
+ [% CASE 'COUNTRY' %]
+ <p>Usado no subcampo 102$a do UNIMARC</p>
+ [% CASE 'DAMAGED' %]
+ <p>Descrições para exemplares marcados como danificados (aparece na catalogação de um exemplar)</p>
+ [% CASE 'DEPARTMENT' %]
+ <p>Os departamentos são necessário para o uso do módulo das Reservas de curso</p>
+ [% CASE 'ETAT' %]
+ <p>Usado em instalações UNIMARC no campo 995 $o para identificar o estado do exemplar. Idêntico ao NOT_LOAN</p>
+ [% CASE 'ERM_AGREEMENT_CLOSURE_REASON' %]
+ <p>Motivos para o fecho dos contratos (módulo de recursos electrónicos)</p>
+ [% CASE 'ERM_AGREEMENT_LICENSE_LOCATION' %]
+ <p>Localizações dos contratos de licenças (módulo de recursos electrónicos)</p>
+ [% CASE 'ERM_AGREEMENT_LICENSE_STATUS' %]
+ <p>Estados dos contratos de licenças (módulo de recursos electrónicos)</p>
+ [% CASE 'ERM_AGREEMENT_RENEWAL_PRIORITY' %]
+ <p>Prioridades de renovação dos contratos (módulo de recursos electrónicos)</p>
+ [% CASE 'ERM_AGREEMENT_STATUS' %]
+ <p>Estados dos contratos (módulo de recursos electrónicos)</p>
+ [% CASE 'ERM_USER_ROLES' %]
+ <p>Funções para utilizadores (módulo de gestão de recursos electrónicos)</p>
+ [% CASE 'ERM_LICENSE_STATUS' %]
+ <p>Estados das licenças (módulo de recursos electrónicos)</p>
+ [% CASE 'ERM_LICENSE_TYPE' %]
+ <p>Tipos de licenças (módulo de recursos electrónicos)</p>
+ [% CASE 'ERM_PACKAGE_CONTENT_TYPE' %]
+ <p>Tipo de conteúdos dos pacotes (módulo de recursos electrónicos)</p>
+ [% CASE 'ERM_PACKAGE_TYPE' %]
+ <p>Tipos de pacotes (módulo de recursos electrónicos)</p>
+ [% CASE 'ERM_TITLE_PUBLICATION_TYPE' %]
+ <p>Tipos de publicação dos títulos (módulo de gestão de recursos electrónicos)</p>
+ [% CASE 'HINGS_AS' %]
+ <p>Aquisições: designador do estado de aquisição :: Este elemento de dados especifica o estado de aquisição da unidade no momento do relatório de investimentos.</p>
+ [% CASE 'HINGS_C' %]
+ <p>Aquisições: designador de completude</p>
+ [% CASE 'HINGS_PF' %]
+ <p>Designadores de forma física</p>
+ [% CASE 'HINGS_RD' %]
+ <p>Aquisições: designador de retenção :: Este elemento de dados especifica a política de retenção para a unidade no momento do relatório de investimentos.</p>
+ [% CASE 'HINGS_UT' %]
+ <p>Aquisições: designador do tipo de unidade</p>
+ [% CASE 'HOLD_CANCELLATION' %]
+ <p>Motivos porque uma reserva possa ter sido cancelada</p>
+ [% CASE 'ILL_STATUS_ALIAS' %]
+ <p>Aliases de estados de solicitação ILL usados ​​pelo módulo de empréstimos inter-bibliotecas</p>
+ [% CASE 'AR_CANCELLATION' %]
+ <p>Motivos porque um pedido de artigo possa ter sido cancelado</p>
+ [% CASE 'HSBND_FREQ' %]
+ <p>Frequências usadas pelo módulo de empréstimos caseiros. São mostradas no separador na conta do leitor no interface dos técnicos.</p>
+ [% CASE 'ITEMTYPECAT' %]
+ <p>Permite que múltiplos tipos de documento sejam pesquisados como uma categoria. As categorias podem ser inseridos no vocabulário ITEMTYPECAT. Para combinar os tipos de documento com esta categoria, altere a categoria de pesquisa de cada um dos tipos de documento</p>
+ [% CASE 'itemtypes' %]
+ <p></p>
+ [% CASE 'LANG' %]
+ <p>Códigos de idioma ISO 639-2</p>
+ [% CASE 'LOC' %]
+ <p>Localização na prateleira (aparece na catalogação de exemplares). A categoria LOC é mapeada para items.location na base de dados do Koha.</p>
+ [% CASE 'LOST' %]
+ <p>Descrição para exemplares marcados como perdidos (aparece na catalogação de um exemplar)</p>
+ [% CASE 'NOT_LOAN' %]
+ <p>Razões porque um exemplar não é emprestável</p>
+ [% CASE 'OPAC_SUG' %]
+ <p>Lista de razões a ser mostrada no formulário de sugestões no OPAC.</p>
+ [% CASE 'ORDER_CANCELLATION_REASON' %]
+ <p>Razões porque uma encomenda possa ter sido cancelada</p>
+ [% CASE 'PAYMENT_TYPE' %]
+ <p>Valores usados para popular a lista dos tipos de pagamento no processo de pagar multas</p>
+ [% CASE 'qualif' %]
+ <p>Códigos de função (autor, editor, colaborador, etc.) usados nos subcampos 7XX $4 do UNIMARC</p>
+ [% CASE 'RELTERMS' %]
+ <p>Lista dos códigos e termos de função</p>
+ [% CASE 'REPORT_GROUP' %]
+ <p>Forma de ordenar e filtrar os relatórios, sendo que os valores por omissão incluem os módulos do Koha (Contas, Aquisições, Catalogação, Circulação, Leitores)</p>
+ [% CASE 'REPORT_SUBGROUP' %]
+ <p>Pode ser usado para ordenação e filtragem mais restrita dos relatórios. Está vazio por omissão. Os valores necessitam de inclui o código de um valor autorizado de REPORT_GROUP na descrição (OPAC) para ligar o subgrupo ao grupo apropriado.</p>
+ [% CASE 'RESTRICTED' %]
+ <p>Estados de exemplares restritos</p>
+ [% CASE 'ROADTYPE' %]
+ <p>Tipos de rua usados nos endereços dos leitores</p>
+ [% CASE 'SIP_MEDIA_TYPE' %]
+ <p>Usado na criação ou edição de um exemplar para atribuir um tipo de documento SIP específico para ser usado em diversos dispositivos.</p>
+ [% CASE 'STACK' %]
+ <p>Número de controlo de prateleira</p>
+ [% CASE 'SUGGEST' %]
+ <p>Lista de razões para aceitar ou rejeitar as sugestões dos leitores (aparecem na gestão das sugestões)</p>
+ [% CASE 'SUGGEST_FORMAT' %]
+ <p>Lista de tipos de documentos a mostrar no formulário das sugestões de aquisição no OPAC. Quando criar valores autorizados para a categoria SUGGEST_FORMAT, insira uma descrição neste formulário para que a mesma fique visível para os leitores no OPAC.</p>
+ [% CASE 'SUGGEST_STATUS' %]
+ <p>Lista de valores de estados adicionais para as sugestões que podem ser usados em adição aos valores por omissão.</p>
+ [% CASE 'TERM' %]
+ <p>Termos a serem usados no módulo de Reservas de curso. Insira os termos que vão aparecer na introdução de um curso. (Por exemplo: Primavera, Verão, Inverno, Outono).</p>
+ [% CASE 'UPLOAD' %]
+ <p>As categorias podem ser associadas aos carregamentos de ficheiros. Sem uma categoria, o carregamento é considerado temporário e pode ser removido durante uma limpeza agendada.</p>
+ [% CASE 'VENDOR_TYPE' %]
+ <p>Valores que podem ser usados para preencher o campo 'Tipo de fornecedor' no módulo de aquisições, para posterior uso em relatórios estatísticos</p>
+ [% CASE 'VENDOR_INTERFACE_TYPE' %]
+ <p>Valores que podem ser usados para preencher o campo 'Tipo de interface do fornecedor' no módulo de aquisições</p>
+ [% CASE 'WITHDRAWN' %]
+ <p>Descrição de um exemplar retirado (aparece na catalogação de um exemplar)</p>
+ [% CASE 'YES_NO' %]
+ <p>É um valor autorizado genérico que pode ser usado num menu simples sim/não.</p>
+ [% END %]
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

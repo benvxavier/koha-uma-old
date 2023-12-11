@@ -1,0 +1,298 @@
+[% USE raw %]
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Verificar MARC [% IF ( total ) %] :[% total | html %] erros encontrados[% ELSE %] : Configuração OK![% END %] &rsaquo; Administração &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="admin_checkmarc" class="admin">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'prefs-admin-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/admin/admin-home.pl">Administração</a>
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ [% IF ( total ) %]
+ <span>Verificação MARC: [% total | html %] erros encontrados</span>
+ [% ELSE %]
+ <span>Verificação MARC: Configuração OK!</span>
+ [% END %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+<h1>Teste do modelo bibliográfico MARC</h1>
+
+<div class="page-section">
+<table>
+ <tr>
+ <th>Teste</th>
+ <th>Resultado</th>
+ </tr>
+<!-- -->
+[% IF ( itemnum ) %]
+ <tr>
+ <td>itemnum</td>
+ <td><ul><li>O campo itemnum DEVE estar mapeado </li>
+ <li>O correspondente subcampo DEVE estar no separador -1 (ignorado)</li></ul></td>
+ </tr>
+[% ELSE %]
+ <tr>
+ <td>OK</td>
+ <td>itemnum : o campo é mapeado para um campo no separado -1</td>
+ </tr>
+[% END %]
+<!-- -->
+[% IF ( itemfields ) %]
+ <tr>
+ <td>campos do exemplar</td>
+ <td>TODOS os campos de exemplar DEVEM :<br />
+ <ul><li>ligado à mesma etiqueta,</li>
+ <li>e devem estar todos no 10 separador (exemplares)</li></ul></td>
+ </tr>
+[% ELSE %]
+ <tr>
+ <td>OK</td>
+ <td>Todos os campos dos exemplares estão no mesmo campo e separador</td>
+ </tr>
+[% END %]
+<!-- -->
+ [% IF ( itemtags ) %]
+ <tr>
+ <td>Etiqueta do exemplar</td>
+ <td>Há mais de um campo MARC relacionado com itens do separador (10): [% itemtags | html %]</td>
+ </tr>
+ [% ELSE %]
+ <tr>
+ <td>OK</td>
+ <td>Apenas 1 campo MARC ligado aos exemplares</td>
+ </tr>
+ [% END %]
+ <!-- -->
+[% IF ( itemtype ) %]
+ <tr>
+ <td>itemtype não mapeado</td>
+ <td>o campo biblioitems.itemtype DEVE :<br />
+ <ul><li>ser mapeado para um subcampo MARC, </li>
+ <li>o subcampo correspondente DEVE ter "Valor autorizado" definido para "itemtypes"</li></ul></td>
+ </tr>
+[% ELSE %]
+ <tr>
+ <td>OK</td>
+ <td>biblioitems.itemtype definido</td>
+ </tr>
+[% END %]
+<!-- -->
+[% IF ( branch ) %]
+ <tr>
+ <td>homebranch não mapeado</td>
+ <td>o campo items.homebranch DEVE :<br />
+ <ul><li>ser mapeado para um subcampo MARC,</li>
+ <li>o subcampo correspondente DEVE ter "Valor autorizado" definido para "branches"</li></ul></td>
+ </tr>
+[% ELSE %]
+ <tr>
+ <td>OK</td>
+ <td>homebranch definido</td>
+ </tr>
+[% END %]
+<!-- -->
+[% IF ( holdingbranch ) %]
+ <tr>
+ <td>holdingbranch não mapeado</td>
+ <td>o campo items.holdingbranch DEVE :<br />
+ <ul><li>ser mapeado para um subcampo MARC, </li>
+ <li>o subcampo correspondente DEVE ter "Valor autorizado" definido para "branches"</li></ul></td>
+ </tr>
+[% ELSE %]
+ <tr>
+ <td>OK</td>
+ <td>holdingbranch definido</td>
+ </tr>
+[% END %]
+<!-- -->
+[% IF ( itemtypes_empty ) %]
+ <tr>
+ <td>tipo de documento não definido</td>
+ <td>pelo menos 1 tipo de documento deve ser definido</td>
+ </tr>
+[% ELSE %]
+ <tr>
+ <td>OK</td>
+ <td>pelo menos 1 tipo de documento definido</td>
+ </tr>
+[% END %]
+<!-- -->
+[% IF ( branches_empty ) %]
+ <tr>
+ <td>biblioteca não definida</td>
+ <td>pelo menos 1 biblioteca deve ser definida</td>
+ </tr>
+[% ELSE %] 
+ <tr>
+ <td>OK</td> 
+ <td>pelo menos 1 biblioteca definida</td>
+ </tr> 
+[% END %]
+<!-- -->
+[% IF ( biblionumber ) %]
+ <tr>
+ <td>biblio e biblionumber</td>
+ <td>Os campos biblio.biblionumber e biblioitems.biblioitemnumber mapeados para um subcampo MARC,</td>
+ </tr>
+[% ELSE %]
+ <tr>
+ <td>OK</td>
+ <td>biblionumber e biblioitemnumber mapeados correctamente</td>
+ </tr>
+[% END %]
+
+ [% IF ( frameworknull ) %]
+ <tr>
+ <td>valores do modelo</td>
+ <td>existe um valor nulo no frameworkcode. Verifique as seguintes tabelas<br />
+ <li>select * from marc_subfield_structure where frameworkcode is NULL</li>
+ <li>select * from marc_tag_structure where frameworkcode is NULL</li>
+ </td>
+ </tr>
+ [% ELSE %]
+ <tr>
+ <td>OK</td>
+ <td>sem valor NULL em frameworkcode</td>
+ </tr>
+ [% END %]
+
+ [% IF ( inconsistent_tabs ) %]
+ <tr>
+ <td style="vertical-align:top;">os subcampos estão em separadores diferentes</td>
+ <td>Nem todos os subcampos dos seguintes campos estão no mesmo separador (ou 'ignorados'). <table>
+ <tr>
+ <th>Código</th>
+ <th>Descrição</th>
+ <th>Campo</th>
+ <th>Separadores em uso</th>
+ </tr>
+ [% FOREACH tab_inf IN tab_info %]
+ <tr>
+ <td>[% tab_inf.frameworkcode | html %]</td>
+ [% IF ( tab_inf.frameworkcode ) %]
+ <td>[% tab_inf.frameworktext | html %]</td>
+ [% ELSE %]
+ <td>Modelo geral</td>
+ [% END %]
+ <td>[% tab_inf.tagfield | html %]</td>
+ <td>[% tab_inf.tabs | html %]</td>
+ </tr>
+ [% END %]
+ </table>
+ </td>
+ </tr>
+ [% ELSE %]
+ <tr>
+ <td>OK</td>
+ <td>todos os subcampos para cada campo estão no mesmo separador (ou ignorados)</td>
+ </tr>
+ [% END %]
+
+ [% IF ( invalid_authtypecodes ) %]
+ <tr>
+ <td style="vertical-align:top;">tipos de autoridade inválidos</td>
+ <td>Nem todos os tipos de autoridade referenciados pelos modelos estão definidos. <table>
+ <tr>
+ <th>Código de modelo</th>
+ <th>Descrição de modelo</th>
+ <th>Campo</th>
+ <th>Subcampo</th>
+ <th>Tipo de autoridade inválido</th>
+ </tr>
+ [% FOREACH authtypecode_inf IN authtypecode_info %]
+ <tr>
+ <td>[% authtypecode_inf.frameworkcode | html %]</td>
+ [% IF ( authtypecode_inf.frameworkcode ) %]
+ <td>[% authtypecode_inf.frameworktext | html %]</td>
+ [% ELSE %]
+ <td>Modelo geral</td>
+ [% END %]
+ <td>[% authtypecode_inf.tagfield | html %]</td>
+ <td>[% authtypecode_inf.tagsubfield | html %]</td>
+ <td>[% authtypecode_inf.authtypecode | html %]</td>
+ </tr>
+ [% END %]
+ </table>
+ </td>
+ </tr>
+ [% ELSE %]
+ <tr>
+ <td>OK</td>
+ <td>todos os tipos de autoridade usados nos modelos estão definidos</td>
+ </tr>
+ [% END %]
+
+ [% IF ( permanent_location_mapped ) %]
+ <tr>
+ <td style="vertical-align:top;">items.permanent_location mapeado</td>
+ <td>Os seguintes mapeamentos existem para items.permanent_location, mas não deviam. <table>
+ <tr>
+ <th>Código de modelo</th>
+ <th>Descrição de modelo</th>
+ <th>Campo</th>
+ <th>Subcampo</th>
+ </tr>
+ [% FOREACH mapped_perm_loc IN mapped_permanent_location %]
+ <tr>
+ <td>[% mapped_perm_loc.frameworkcode | html %]</td>
+ [% IF ( mapped_perm_loc.frameworkcode ) %]
+ <td>[% mapped_perm_loc.frameworktext | html %]</td>
+ [% ELSE %]
+ <td>Modelo geral</td>
+ [% END %]
+ <td>[% mapped_perm_loc.tagfield | html %]</td>
+ <td>[% mapped_perm_loc.tagsubfield | html %]</td>
+ </tr>
+ [% END %]
+ </table>
+ </td>
+ </tr>
+ [% ELSE %]
+ <tr>
+ <td>OK</td>
+ <td>items.permanent_location não está mapeado nos modelos</td>
+ </tr>
+ [% END %]
+
+<!-- -->
+[% IF ( total ) %]
+ <tr>
+ <td>TOTAL</td>
+ <td>Tem [% total | html %] erro(s) na sua configuração MARC. Por favor corrija-os antes de usar o Koha</td>
+ </tr>
+</table>
+[% ELSE %]
+ </table>
+ <p><strong>Configuração sem problemas na tabela de parâmetros MARC</strong></p>
+ </div> <!-- /.page-section -->
+[% END %]
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'admin-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% Asset.js("js/admin-menu.js") | $raw %]
+[% END %]
+[% INCLUDE 'intranet-bottom.inc' %]

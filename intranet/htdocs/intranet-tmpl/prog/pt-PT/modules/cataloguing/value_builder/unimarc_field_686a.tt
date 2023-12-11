@@ -1,0 +1,72 @@
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Construtor do campo 686a UNIMARC</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="cat_unimarc_field_686a" class="cat">
+ <div class="container-fluid">
+
+ <h1>Construtor do campo 686a UNIMARC</h1>
+
+ <h2>Classificação</h2>
+ <p>Por favor, selecione um valor na classificação. Este valor do campo 686$a do registo de autoridade será copiado no campo 686$a do registo bibliográfico.</p>
+ <div class="page-section">
+ <form name="f" method="get" action="../authorities/auth_finder.pl">
+ <input type="hidden" name="op" value="do_search" />
+ <input type="hidden" name="type" value="intranet" />
+ <input type="hidden" name="nbstatements" value="[% nbstatements | html %]" />
+ <input type="hidden" name="index" value="[% index | html %]" />
+ <fieldset class="rows"><ol><li>
+ <span class="label">Tipo de autoridade</span>
+ [% authtypecode | html %]
+ <input type="hidden" name="authtypecode" value="[% authtypecode | html %]" />
+ </li>
+ <li>
+ <label for="mainmainentry">Entrada principal (só $a)</label>
+ <input type="hidden" name="marclist" value="mainmainentry" />
+ <input type="hidden" name="and_or" value="and" />
+ <input type="hidden" name="excluding" value="" />
+ <select name="operator" id="mainmainentry">
+ <option value="contains">contem</option>
+ <option value="start">começa por</option>
+ <option value="is">é exactamente</option>
+ </select>
+ <input type="text" name="value_mainstr" value="[% value_mainstr | html %]" />
+ </li>
+ <li>
+ <label for="mainentry">Entrada principal</label>
+ <input type="hidden" name="marclist" value="mainentry" />
+ <input type="hidden" name="and_or" value="and" />
+ <input type="hidden" name="excluding" value="" />
+ <select name="operator" id="mainentry">
+ <option value="contains">contem</option>
+ <option value="start">começa por</option>
+ <option value="is">é exactamente</option>
+ </select>
+ <input type="text" name="value_main" value="[% value_main | html %]" />
+ </li>
+ <li>
+ <label for="marclist">Qualquer lugar</label>
+ <input type="hidden" name="marclist" value="" />
+ <input type="hidden" name="and_or" value="and" />
+ <input type="hidden" name="excluding" value="" />
+ <select name="operator" id="marclist">
+ <option value="contains">contem</option>
+ <option value="start">começa por</option>
+ <option value="is">é exactamente</option>
+ </select>
+ <input type="text" name="value_any" value="[% value_any | html %]" />
+ </li>
+ <li>
+ <label for="orderby">Ordenar por </label>
+ <select name="orderby" id="orderby">
+ <option value="NoOrder">Sem ordenação</option>
+ <option value="HeadingAsc" selected="selected">Ordem crescente</option>
+ <option value="HeadingDsc">Ordem decrescente</option>
+ </select>
+ </li></ol></fieldset>
+ <fieldset class="action"> <input class="btn btn-primary" type="submit" value="Pesquisar" /> <a class="cancel close" href="#">Anular</a></fieldset>
+ </form>
+ </div> <!-- /.page-section -->
+ </div>
+[% INCLUDE 'popup-bottom.inc' %]

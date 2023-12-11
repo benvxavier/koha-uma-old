@@ -1,0 +1,91 @@
+[% USE raw %]
+[% USE Asset %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>[% IF ( del ) %]Eliminação de exemplares em lote[% ELSE %]Modificação de exemplares em lote[% END %] &rsaquo; Catalogação &rsaquo; Koha</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body id="tools_batchMod" class="tools">
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'cat-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/cataloguing/cataloging-home.pl">Catalogar</a>
+ [% END %]
+
+ [% IF ( del ) %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Eliminar exemplares em lote</span>
+ [% END %]
+ [% ELSE %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Modificar exemplares em lote</span>
+ [% END %]
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ <div class="col-sm-10 col-sm-push-2">
+ <main>
+
+ <h1>[% IF ( del ) %]Eliminar[% ELSE %]Modificar[% END %] exemplares em lote</h1>
+ <form method="post" enctype="multipart/form-data" action="/cgi-bin/koha/tools/batchMod.pl">
+ <fieldset class="rows">
+ <legend>Usar um ficheiro</legend>
+ <ol>
+ <li>
+ <label for="barcode_file">Ficheiro de códigos de barras: </label><input type="radio" name="filecontent" value="barcode_file" id="barcode_file" checked="checked" /></li>
+ <li>
+ <label for="itemid_file">Ficheiro com números de exemplares: </label><input type="radio" name="filecontent" value="itemid_file" id="itemid_file" />
+ </li>
+ <li><label for="uploadfile">Ficheiro: </label> <input type="file" id="uploadfile" name="uploadfile" /></li>
+ </ol>
+ </fieldset>
+ <fieldset class="rows">
+ <legend>Ou introduzir códigos um a um</legend>
+ <ol>
+ <li>
+ <label for="barcodelist">Lista de códigos de barra (um código de barras por linha): </label>
+ <textarea rows="10" cols="30" id="barcodelist" name="barcodelist"></textarea>
+ </li>
+ </ol>
+ <input type="hidden" name="op" value="show" />
+ </fieldset>
+
+ [% UNLESS del %]
+ <fieldset class="rows">
+ <legend>Usar valores por omissão</legend>
+ <ol class="radio">
+ <li>
+ <label for="use_default_values">Usar valores por omissão:</label>
+ <input type="checkbox" name="use_default_values" id="use_default_values" />
+ <span class="hint">Popular campos com os valores por omissão do modelo por omissão</span>
+ </li>
+ </ol>
+ </fieldset>
+ [% END %]
+
+ <fieldset class="action">
+ [% IF ( del ) %]<input type="hidden" name="del" value="1" />[% END %]
+ <input class="btn btn-primary" type="submit" value="Continuar" />
+ <a class="cancel" href="/cgi-bin/koha/cataloguing/cataloging-home.pl">Anular</a>
+ </fieldset>
+
+ </form>
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'cat-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ </div> <!-- /.row -->
+
+[% INCLUDE 'intranet-bottom.inc' %]

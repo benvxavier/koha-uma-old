@@ -1,0 +1,340 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Branches %]
+[% USE Koha %]
+[% USE KohaDates %]
+[% USE Price %]
+[% USE AuthorisedValues %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+[% SET destination = "circ" %]
+<title>
+ [% IF patron %] Empréstimo em lote para o leitor [% INCLUDE 'patron-title.inc' invert_name = 1 no_html = 1 %] &rsaquo; [% END %] Circulação &rsaquo; Koha </title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+
+<body id="circ_circulation_batch_checkouts" class="circ">
+
+[% WRAPPER 'header.inc' %]
+ [% INCLUDE 'circ-search.inc' %]
+[% END %]
+
+[% WRAPPER 'sub-header.inc' %]
+ [% WRAPPER breadcrumbs %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/circ/circulation-home.pl">Empréstimo</a>
+ [% END %]
+
+ [% IF patron %]
+ [% WRAPPER breadcrumb_item %]
+ <a href="/cgi-bin/koha/circ/circulation.pl?borrowernumber=[% borrowernumber | uri %]">Emprestar a [% INCLUDE 'patron-title.inc' %]</a>
+ [% END %]
+ [% END %]
+ [% WRAPPER breadcrumb_item bc_active= 1 %]
+ <span>Lote de empréstimo</span>
+ [% END %]
+ [% END #/ WRAPPER breadcrumbs %]
+[% END #/ WRAPPER sub-header.inc %]
+
+<div class="main container-fluid">
+ <div class="row">
+ [% IF patron %]
+ <div class="col-sm-10 col-sm-push-2">
+ [% ELSE %]
+ <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+ [% END %]
+ <main>
+ <h1>Lote de empréstimo</h1>
+
+[% IF patron %]
+[% INCLUDE 'members-toolbar.inc' %]
+[% END %]
+
+[% IF patron and not batch_allowed %]
+ <div class="dialog alert">Não tem permissões para usar o empréstimo em lote para este leitor</div>
+[% ELSIF patron and noissues and not checkout_infos %]
+ <div class="dialog alert">
+ Não é possível emprestar! [% IF ( charges ) %] [% INCLUDE 'blocked-fines.inc' fines = chargesamount %] [% END %] [% IF ( charges_guarantors_guarantees ) %] <li>
+ <span class="circ-hlt">Cobranças:</span> Os fiadores e os assegurados do leitores devem coletivamente [% charges_guarantors_guarantees | $Price %]. [% IF noissues %] <span class="circ-hlt">Empréstimos BLOQUEADOS porque as multas do leitor ULTRAPASSAM O LIMITE.</span>
+ [% END %]
+ </li>
+ [% END %]
+ [% IF ( charges_guarantees ) %]
+ <li>
+ <span class="circ-hlt">Cobranças:</span> Os assegurados do leitores devem coletivamente [% chargesamount_guarantees | $Price %]. [% IF noissues %] <span class="circ-hlt">Empréstimos BLOQUEADOS porque as multas do leitor ULTRAPASSAM O LIMITE.</span>
+ [% END %]
+ </li>
+ [% END %]
+ </div>
+[% ELSIF patron and not checkout_infos %]
+ <form method="post" enctype="multipart/form-data" action="/cgi-bin/koha/circ/circulation.pl">
+ <fieldset id="circ_circulation_issue">
+ <label for="barcode">Emprestando a [% INCLUDE 'patron-title.inc' %]</label>
+ <fieldset class="rows">
+ <legend>Usar um ficheiro</legend>
+ <ol>
+ <li><label for="uploadfile">Ficheiro: </label> <input type="file" id="uploadfile" name="uploadfile" /></li>
+ </ol>
+ </fieldset>
+ <fieldset class="rows">
+ <legend>Ou introduzir código de barras um a um</legend>
+ <ol>
+ <li>
+ <label for="barcodelist">Lista de códigos de barra (um código de barras por linha): </label>
+ <textarea rows="10" cols="30" id="barcodelist" name="barcodelist"></textarea>
+ </li>
+ </ol>
+ </fieldset>
+ [% IF Koha.Preference('SpecifyDueDate') %]
+ <fieldset class="rows">
+ <legend>Data de devolução: </legend>
+ <label for="duedatespec">Data de devolução a definir [% INCLUDE 'date-format.inc' %]:</label>
+ <input type="text" size="20" id="duedatespec" name="duedatespec" value="[% duedatespec | html %]" class="flatpickr" data-flatpickr-enable-time="true" />
+ </fieldset>
+ [% END %]
+ <input type="hidden" name="op" value="show" />
+ </fieldset>
+ <fieldset class="action">
+ <input type="hidden" name="borrowernumber" id="borrowernumber" value="[% patron.borrowernumber | html %]" />
+ <input type="hidden" name="branch" value="[% branch | html %]" />
+ <input type="hidden" name="batch" value="1" />
+ <input class="btn btn-primary" type="submit" value="Emprestar" />
+ </fieldset>
+ </form>
+
+[% ELSIF patron %]
+ [% IF confirmation_needed && CAN_user_circulate_force_checkout %]
+ <h3>Confirmação do empréstimo em lote [% IF patron %] para [% INCLUDE 'patron-title.inc' invert_name = 1 %] [% END %]</h3>
+ <form method="post" action="/cgi-bin/koha/circ/circulation.pl" id="mainform" name="mainform" autocomplete="off">
+ [% ELSE %]
+ <h3>Informação do empréstimo em lote [% IF patron.borrowernumber %] para [% INCLUDE 'patron-title.inc' invert_name = 1 %] |[% batch | html %]|[% END %]</h3>
+ [% END %]
+ <table id="checkout_infos">
+ <thead>
+ <tr>
+ [% IF confirmation_needed && CAN_user_circulate_force_checkout %]
+ <th class="NoSort"></th>
+ [% END %]
+ <th>Código de barras</th>
+ <th class="anti-the">Título</th>
+ <th>Informação</th>
+ </tr>
+ </thead>
+ <tbody>
+ [% FOR checkout_info IN checkout_infos %]
+ <tr>
+ [% IF confirmation_needed && CAN_user_circulate_force_checkout %]
+ <td>
+ [% IF checkout_info.NEEDSCONFIRMATION %]
+ <input type="checkbox" name="barcodes" value="[% checkout_info.barcode | html %]" checked="checked" />
+ [% END %]
+ </td>
+ [% END %]
+ <td>[% checkout_info.barcode | html %]</td>
+ <td>
+ [% INCLUDE 'biblio-title.inc' biblio=checkout_info.biblio link = 1 %] [% IF checkout_info.biblio.author %], por [% checkout_info.biblio.author | html %][% END %][% IF ( checkout_info.item.itemnotes ) %]- <span class="circ-hlt">[% checkout_info.item.itemnotes | $raw %]</span>[% END %] <a href="/cgi-bin/koha/catalogue/moredetail.pl?biblionumber=[% checkout_info.biblio.biblionumber | uri %]&amp;itemnumber=[% checkout_info.item.itemnumber | uri %]#item[% checkout_info.item.itemnumber | uri %]">[% checkout_info.item.barcode | html %]</a>
+ </td>
+ <td>
+ [% IF checkout_info.NEEDSCONFIRMATION %]
+ <ul class="fa-ul warn">
+ [% IF checkout_info.AGE_RESTRICTION %]
+ <li><i class="fa fa-li fa-warning"></i>Restrição de idade [% checkout_info.AGE_RESTRICTION | html %].</li>
+ [% END %]
+ [% IF checkout_info.RENEW_ISSUE %]
+ <li><i class="fa fa-li fa-warning"></i>Este exemplar está emprestado ao leitor. Renovar?</li>
+ [% END %]
+ [% IF checkout_info.RESERVE_WAITING %]
+ <li><i class="fa fa-li fa-warning"></i>O exemplar encontra-se em espera para outro leitor.</li>
+ [% END %]
+ [% IF checkout_info.TRANSFERRED %]
+ <li><i class="fa fa-li fa-warning"></i>O exemplar encontra-se em reservado e em transferência para outro leitor.</li>
+ [% END %]
+ [% IF checkout_info.PROCESSING %]
+ <li><i class="fa fa-li fa-warning"></i>O exemplar encontra-se em reservado e em processamento para outro leitor.</li>
+ [% END %]
+ [% IF checkout_info.ISSUED_TO_ANOTHER %]
+ <li><i class="fa fa-li fa-warning"></i>Este exemplar está emprestado a outro leitor. [% IF CAN_user_circulate_force_checkout %] Devolver e emprestar? [% END %]</li>
+ [% END %]
+ [% IF checkout_info.TOO_MANY %]
+ <li><i class="fa fa-li fa-warning"></i>Demasiados empréstimos.</li>
+ [% END %]
+ [% IF checkout_info.BORRNOTSAMEBRANCH %]
+ <li><i class="fa fa-li fa-warning"></i>O leitor é de um biblioteca diferente ([% Branches.GetName( checkout_info.BORRNOTSAMEBRANCH ) | html %]).</li>
+ [% END %]
+ [% IF checkout_info.PATRON_CANT %]
+ <li><i class="fa fa-li fa-warning"></i>Esta patrono não pode requisitar este exemplar pela política da circulação da biblioteca.</li>
+ [% END %]
+ [% IF checkout_info.NOT_FOR_LOAN_FORCING %]
+ [% IF checkout_info.itemtype_notforloan %]
+ <li><i class="fa fa-li fa-warning"></i>Tipo de exemplar não emprestável.</li>
+ [% ELSIF checkout_info.item_notforloan %]
+ [% item_notforloan_lib = AuthorisedValues.GetDescriptionByKohaField( kohafield => 'items.notforloan', authorised_value => checkout_info.item_notforloan ) %]
+ <li><i class="fa fa-li fa-warning"></i>Exemplar não emprestável por norma [% IF item_notforloan_lib %]([% item_notforloan_lib | html %])[% END %].</li>
+ [% END %]
+ [% END %]
+ [% IF checkout_info.USERBLOCKEDOVERDUE %]
+ <li><i class="fa fa-li fa-warning"></i>Leitor tem [% checkout_info.USERBLOCKEDOVERDUE | html %] empréstimo(s) em atraso.</li>
+ [% END %]
+ [% IF checkout_info.ITEM_LOST %]
+ <li><i class="fa fa-li fa-warning"></i>O exemplar foi perdido com o estado de "[% checkout_info.ITEM_LOST | html %]".</li>
+ [% END %]
+ [% IF checkout_info.HIGHHOLDS %]
+ <li><i class="fa fa-li fa-warning"></i>Exemplar muito requisitado. Período de empréstimo encurtado para [% checkout_info.HIGHHOLDS.duration | html %] dias (até [% checkout_info.HIGHHOLDS.returndate | html %]).</li>
+ [% END %]
+ [% IF checkout_info.HIGHHOLDS %] <!-- FIXME -->
+ <script>
+                          $(document).ready(function() {
+                              $("input[name=duedatespec]:hidden").val('[% checkout_info.HIGHHOLDS.returndate | html %]');
+                          });
+                      </script>
+ [% END %]
+
+ [% IF NOT checkout_info.IMPOSSIBLE && ( CAN_user_circulate_force_checkout || checkout_info.HIGHHOLDS ) && ( checkout_info.RESERVED || checkout_info.RESERVE_WAITING || checkout_info.TRANSFERRED || checkout_info.PROCESSING ) %] <!-- arbitrary choice, revert the hold is not possible-->
+ <li><i class="fa fa-li fa-warning"></i>O exemplar encontra-se em reservado para outro leitor. A reserva será sobreposta mas não será cancelada.</li>
+ [% ELSIF checkout_info.RESERVED %]
+ <li><i class="fa fa-li fa-warning"></i>O exemplar encontra-se em reservado para outro leitor.</li>
+ [% END %]
+
+ [% IF checkout_info.PREVISSUE %]
+ <li>Este exemplar está emprestado ao anteriormente a este leitor.</li>
+ [% END %]
+ </ul>
+ [% END %]
+
+
+ [% IF checkout_info.alert.ITEM_LOST || checkout_info.alert.OTHER_CHARGES %]
+ <ul class="info">
+ [% IF checkout_info.alert.ITEM_LOST %]
+ <li>O exemplar foi perdido com o estado de "[% checkout_info.alert.ITEM_LOST | html %]".</li>
+ [% END %]
+ [% IF checkout_info.alert.OTHER_CHARGES %]
+ <li>O leitor tem multas por pagar de reservas, empréstimos, etc de [% checkout_info.alert.OTHER_CHARGES | $Price %].</li>
+ [% END %]
+ </ul>
+ [% END %]
+
+ [% IF checkout_info.alert.RETURNED_FROM_ANOTHER %]
+ <div class="dialog alert">O exemplar estava emprestado a [% INCLUDE 'patron-title.inc' patron = checkout_info.alert.RETURNED_FROM_ANOTHER.patron %] e foi devolvido automaticamente.</div>
+ [% END %]
+
+ [% IF checkout_info.IMPOSSIBLE %]
+ <ul class="fa-ul error">
+ [% IF checkout_info.STATS  %]
+ <li><i class="fa fa-li fa-exclamation"></i>Uso local guardado.</li>
+ [% END %]
+
+ [% IF checkout_info.NOT_FOR_LOAN %]
+ [% IF checkout_info.itemtype_notforloan %]
+ <li><i class="fa fa-li fa-exclamation"></i>Tipo de exemplar não emprestável.</li>
+ [% ELSIF checkout_info.item_notforloan %]
+ [% item_notforloan_lib = AuthorisedValues.GetDescriptionByKohaField( kohafield => 'items.notforloan', authorised_value => checkout_info.item_notforloan ) %]
+ <li><i class="fa fa-li fa-exclamation"></i>Exemplar não emprestável [% IF item_notforloan_lib %]([% item_notforloan_lib | html %])[% END %].</li>
+ [% END %]
+ [% END %]
+ [% IF checkout_info.WTHDRAWN %]
+ <li><i class="fa fa-li fa-exclamation"></i>Exemplar retirado.</li>
+ [% END %]
+ [% IF checkout_info.RESTRICTED %]
+ <li><i class="fa fa-li fa-exclamation"></i>Exemplar restrito.</li>
+ [% END %]
+ [% IF checkout_info.GNA %]
+ <li><i class="fa fa-li fa-exclamation"></i>Endereço do leitor está em dúvida.</li>
+ [% END %]
+ [% IF checkout_info.CARD_LOST %]
+ <li><i class="fa fa-li fa-exclamation"></i>O cartão do leitor foi dado como perdido.</li>
+ [% END %]
+ [% IF checkout_info.DEBARRED %]
+ <li><i class="fa fa-li fa-exclamation"></i>Leitor está suspenso.</li>
+ [% END %]
+ [% IF checkout_info.NO_MORE_RENEWALS %]
+ <li><i class="fa fa-li fa-exclamation"></i>Não possui mais renovações disponíveis.</li>
+ [% END %]
+ [% IF checkout_info.EXPIRED %]
+ <li><i class="fa fa-li fa-exclamation"></i>O cartão de leitor expirou.</li>
+ [% END %]
+ [% IF checkout_info.ITEMNOTSAMEBRANCH %]
+ <li><i class="fa fa-li fa-exclamation"></i>Este item pertence a [% Branches.GetName( checkout_info.itemhomebranch ) | html %] e não pode ser emprestado a partir desta localização.</li>
+ [% END %]
+ [% IF checkout_info.USERBLOCKEDREMAINING %]
+ <li><i class="fa fa-li fa-exclamation"></i>Leitor tem documentos em atraso e está bloqueado por [% checkout_info.USERBLOCKEDREMAINING | html %] dia(s).</li>
+ [% END %]
+ [% IF checkout_info.USERBLOCKEDOVERDUE %]
+ <li><i class="fa fa-li fa-exclamation"></i>Empréstimos BLOQUEADOS porque o leitor possui exemplares em atraso.</li>
+ [% END %]
+ [% IF checkout_info.TOO_MANY %]
+ <li><i class="fa fa-li fa-exclamation"></i>Demasiados empréstimos.</li>
+ [% END %]
+ [% IF checkout_info.UNKNOWN_BARCODE %]
+ <li><i class="fa fa-li fa-exclamation"></i>O código de barras [% checkout_info.barcode | html %] não foi encontrado.</li>
+ [% END %]
+ [% IF checkout_info.DEBT %]
+ <li><i class="fa fa-li fa-exclamation"></i>O leitor tem um débito de [% checkout_info.DEBT | $Price %].</li> <!-- Need debt_confirmed -->
+ [% END %]
+ </p>
+ [% END %]
+
+ [% IF checkout_info.issue.date_due %]
+ <li>Termina a [% checkout_info.issue.date_due | $KohaDates as_due_date => 1 %]</li>
+ [% END %]
+ </td>
+ </tr>
+ [% END %]
+ </tbody>
+ </table>
+
+ [% IF confirmation_needed && CAN_user_circulate_force_checkout %]
+ <fieldset>
+ <legend>Por favor, confirme o empréstimo</legend>
+ <input type="hidden" name="borrowernumber" value="[% patron.borrowernumber | html %]" />
+ <input type="hidden" name="issueconfirmed" value="1" />
+ <input type="hidden" name="debt_confirmed" value="1" />
+ <input type="hidden" name="branch" value="[% branch | html %]" />
+ <input type="hidden" name="duedatespec" value="[% duedatespec | html %]" />
+ <input type="hidden" name="batch" value="1" />
+ <input class="btn btn-primary" id="checkoutrenew" type="submit" value="Emprestar ou renovar" />
+ </fieldset>
+ </form>
+ [% END %]
+
+[% ELSE %]
+ <div class="dialog message">O leitor não existe. <a href="/cgi-bin/koha/members/members-home.pl">Encontrar outro leitor?</a></div>
+[% END %]
+
+ </main>
+ </div> <!-- /.col-sm-10.col-sm-push-2 -->
+ [% IF patron %]
+ <div class="col-sm-2 col-sm-pull-10">
+ <aside>
+ [% INCLUDE 'circ-menu.inc' %]
+ </aside>
+ </div> <!-- /.col-sm-2.col-sm-pull-10 -->
+ [% END %]
+ </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+ [% INCLUDE 'calendar.inc' %]
+ [% INCLUDE 'datatables.inc' %]
+ <script>
+        $(document).ready(function() {
+            if($('#barcodelist').length) {
+                $('#barcodelist').focus();
+            } else if ($('#checkoutrenew').length) {
+                $('#checkoutrenew').focus();
+            }
+            $("#checkout_infos").dataTable($.extend(true, {}, dataTablesDefaults, {
+                "sDom": 't',
+                "aaSorting": [],
+                "aoColumnDefs": [
+                    { "bSortable": false, "bSearchable": false, 'aTargets': [ 'NoSort' ] },
+                    { "sType": "anti-the", "aTargets" : [ "anti-the" ] }
+                ],
+                "bPaginate": false
+            }));
+        });
+
+    </script>
+ [% INCLUDE 'str/members-menu.inc' %]
+ [% Asset.js("js/members-menu.js") | $raw %]
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]

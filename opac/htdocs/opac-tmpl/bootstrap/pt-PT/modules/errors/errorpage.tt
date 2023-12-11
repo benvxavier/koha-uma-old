@@ -1,0 +1,88 @@
+[% USE AdditionalContents %]
+[% SET OpacNav = AdditionalContents.get( location => "OpacNav", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
+[% SET OpacNavBottom = AdditionalContents.get( location => "OpacNavBottom", lang => lang, library => logged_in_user.branchcode || default_branch, blocktitle => 0 ) %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>Ocorreu um erro &rsaquo; [% IF ( LibraryNameTitle ) %][% LibraryNameTitle | html %][% ELSE %]Koha online[% END %] catálogo</title>
+[% INCLUDE 'doc-head-close.inc' %]
+[% BLOCK cssinclude %][% END %]
+</head>
+<body id="error[% errno | html %]" class="error">
+[% INCLUDE 'masthead.inc' %]
+
+ <div class="main">
+ <nav aria-label="Caminho de navegação" class="breadcrumbs" id="breadcrumbs">
+ <ol class="breadcrumb">
+ <li class="breadcrumb-item">
+ <a href="/cgi-bin/koha/opac-main.pl">Início</a>
+ </li>
+ <li class="breadcrumb-item active">
+ <a href="#" aria-current="page">Erro [% errno | html %]</a>
+ </li>
+ </ol>
+ </nav> <!-- /#breadcrumbs -->
+
+ <div class="container-fluid">
+ <div class="row">
+ [% IF ( OpacNav || OpacNavBottom ) %]
+ <div class="col-lg-2">
+ <div id="navigation">
+ [% INCLUDE 'navigation.inc' %]
+ </div>
+ </div>
+ <div class="col-10 order-first order-md-first order-lg-2">
+ [% ELSE %]
+ <div class="col order-first order-md-first order-lg-2">
+ [% END %]
+ <div id="errormsg[% errno | html %]">
+ <h1>Pedimos desculpa, a página requisitada não está disponível</h1>
+ <h2>Erro [% errno | html %]</h2>
+ <p><strong>Esta mensagem pode ter as seguintes razões:</strong></p>
+ <ul>
+ [% IF ( errno == 400 ) %]
+ <li>Este erro significa que o endereço está quebrado e que a página não existe.</li>
+ [% END %]
+
+ [% IF ( errno == 401 ) %]
+ <li>Não tem autorização para ver esta página.</li>
+ [% END %]
+
+ [% IF ( errno == 402 ) %]
+ <li>Endereço inválido.</li>
+ [% END %]
+
+ [% IF ( errno == 403 ) %]
+ <li>Não tem autorização para ver esta página.</li>
+ [% END %]
+
+ [% IF ( errno == 404 ) %]
+ <li>Usou uma ligação externa para um registo do catálogo que já não está disponível.</li>
+ <li>Seguiu uma ligação desatualizada de um mecanismo de pesquisa ou marcador.</li>
+ <li>Tentou aceder a uma página que necessita de autenticação.</li>
+ <li>Este erro significa que o endereço foi quebrado e que a página não existe.</li>
+ [% END %]
+ [% IF ( errno == 500 ) %]
+ <li>Ocorreu um erro ao processar o seu pedido.</li>
+ [% END %]
+ </ul>
+ <h2>O que se segue?</h2>
+ <ul>
+ [% IF ( errno == 401 ) && ( Koha.Preference( 'opacuserlogin' ) == 1 ) %]
+ <li>Por favor entre na sua conta e tente novamente. <a href="/cgi-bin/koha/opac-user.pl">Página de autenticação</a></li>
+ [% END %]
+ <li>Pode usar o menu ou os endereços no topo da página</li>
+ <li>Pode pesquisar o nosso catálogo usando o formulário de pesquisa no topo desta página.</li>
+ <li><a href="/cgi-bin/koha/opac-main.pl">Voltar à página principal do catálogo.</a></li>
+ </ul>
+ <h2>Reportar problemas e endereços quebrados</h2>
+ <ul>
+ <li>Para reportar este erro, por favor contacte o administrador do Koha. <a href="mailto:[% admin | uri %]">Enviar email</a>.</li>
+ </ul>
+ </div> <!-- / #errormsg[% errno | html %] -->
+ </div> <!-- / .col-lg10/12 -->
+ </div> <!-- / .row -->
+ </div> <!-- / .container-fluid -->
+ </div> <!-- / .main -->
+
+[% INCLUDE 'opac-bottom.inc' %]
+[% BLOCK jsinclude %]
+[% END %]
