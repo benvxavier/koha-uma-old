@@ -1,0 +1,13 @@
+{
+    "scripts": {
+       "watch:style1": "sass --quiet --no-source-map  --watch src/opac.scss:opac.css",
+       "watch": "npm-run-all --parallel watch:*",
+       "start": "npm-run-all --parallel watch"
+    },
+    "dependencies": {
+       "npm-run-all": "^4.1.5",
+       "sass": "^1.66.1",
+       "bootstrap": "^4.5.2"
+       
+    }
+ }
