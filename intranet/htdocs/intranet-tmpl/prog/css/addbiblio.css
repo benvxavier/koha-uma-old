@@ -291,7 +291,7 @@ fieldset.order_details ol li .label:first-child {
     margin-bottom: 1em;
 }
 
-tbody tr.active:nth-child( 2n+1 ) td,
+tbody tr.active:nth-child(2n+1) td,
 tbody tr.active td {
     background-color: #FFFFCC;
 }
@@ -309,7 +309,7 @@ tbody tr.active td {
 }
 
 #loading div {
-    background: transparent url( "../img/loading.gif" ) top left no-repeat;
+    background: transparent url("../img/loading.gif") top left no-repeat;
     font-size: 175%;
     font-weight: bold;
     height: 2em;
@@ -350,11 +350,11 @@ tbody tr.active td {
 }
 
 .toolbar-tabs-container .nav-tabs li a {
-    background-color: #71B443;
-    border: 1px solid #71B443;
+    background-color: var(--primary);
+    border: 1px solid var(--primary);
     border-left: 0;
     border-radius: 5px;
-    border-right: 1px solid #71B443;
+    border-right: 1px solid var(--primary);
     color: #FFF;
     display: block;
     font-weight: bold;
@@ -364,9 +364,9 @@ tbody tr.active td {
 }
 
 .toolbar-tabs-container .nav-tabs li.selected a {
-    background-color: #418940;
-    border-bottom: 1px solid #418940;
-    border-right: 1px solid #418940;
+    background-color: var(--primary);
+    border-bottom: 1px solid var(--primary);
+    border-right: 1px solid var(--primary);
     color: #FFF;
     display: block;
     font-weight: bold;
@@ -378,15 +378,15 @@ tbody tr.active td {
 
 .toolbar-tabs-container .nav-tabs li.selected a:hover,
 .toolbar-tabs-container .nav-tabs li.selected a:focus {
-    background-color: #418940;
-    border: 1px solid #418940;
+    background-color: var(--primary);
+    border: 1px solid var(--primary);
     border-left: 0;
 }
 
 .toolbar-tabs-container .nav-tabs li a:hover {
-    background-color: #418940;
-    border-bottom: 1px solid #418940;
-    border-right: 1px solid #418940;
+    background-color: var(--primary);
+    border-bottom: 1px solid var(--primary);
+    border-right: 1px solid var(--primary);
     color: #FFF;
     display: block;
     font-weight: bold;
@@ -425,7 +425,7 @@ tbody tr.active td {
 }
 
 .matching_authority {
-    color: #99FF99;
+    color: var(--primary);
 }
 
 .no_matching_authority {
@@ -433,7 +433,7 @@ tbody tr.active td {
 }
 
 .matching_authority_field {
-    background-color: #99FF99 !important;
+    background-color: var(--primary) !important;
 }
 
 .no_matching_authority_field {
@@ -452,7 +452,7 @@ tbody tr.active td {
     display: inline-block;
 }
 
-@media ( min-width: 768px ) {
+@media (min-width: 768px) {
     li.subfield_line label {
         width: 20em;
     }
@@ -466,7 +466,7 @@ tbody tr.active td {
     }
 }
 
-@media ( min-width: 1200px ) {
+@media (min-width: 1200px) {
     li.subfield_line label {
         width: 25em;
     }

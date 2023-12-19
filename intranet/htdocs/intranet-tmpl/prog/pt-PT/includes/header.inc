@@ -3,14 +3,18 @@
 [% USE Desks %]
 [% USE Registers %]
 [% USE Koha %]
-<nav class="navbar">
+<section class="container-xxl">
+<nav class="navbar u-flex">
  <div class="navbar-header">
  <a href="#" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#header" aria-expanded="false" aria-controls="header">
  <i class="fa fa-bars"></i> Menu </a>
- <a id="logo" class="navbar-brand" href="/cgi-bin/koha/mainpage.pl"><img src="[% interface | html %]/[% theme | html %]/img/picto-koha.svg" alt="Koha"></a>
+ <a id="logo" class="navbar-brand u-flex-center" href="/cgi-bin/koha/mainpage.pl">
+   <img src="http://www.uma.co.ao/static/media/lgH3c.cdc201af.png"
+    alt="uma logo" class="u-img-fluid" height="170px" width="170px">
+ </a>
  </div>
 
- <div id="header" class="navbar-collapse collapse">
+ <div id="header" class="navbar-collapse collapse" style="margin-left: auto;">
  <ul id="toplevelmenu" class="nav navbar-nav">
  [% IF ( CAN_user_circulate_circulate_remaining_permissions ) %]<li><a href="/cgi-bin/koha/circ/circulation-home.pl">Empréstimo</a></li>[% END %]
  [% IF CAN_user_borrowers_edit_borrowers %]<li><a href="/cgi-bin/koha/members/members-home.pl">Leitores</a></li>[% END %]
@@ -63,7 +67,7 @@
  [% IF ( CAN_user_parameters ) %]
  <li><a href="/cgi-bin/koha/admin/admin-home.pl">Administração</a></li>
  [% END %]
- <li><a href="/cgi-bin/koha/about.pl">Sobre o Koha</a></li>
+ <li><a href="/cgi-bin/koha/about.pl">Sobre a Biblioteca</a></li>
  </ul>
  </li>
  </ul>
@@ -217,5 +221,5 @@
  [% IF ( Koha.Preference('intranetbookbag') ) %]<div id="cartDetails">O seu carrinho está vazio.</div>[% END %]
 
 </nav>
-
+</section>
 [% content | $raw %]

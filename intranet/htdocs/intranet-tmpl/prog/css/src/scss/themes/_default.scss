@@ -1,0 +1,31 @@
+@use '../abstracts' as *;
+
+// scss variables
+$df-primary: map-get($abs-primary, 700);
+$df-secondary: map-get($abs-neutrals, 700);
+$df-text-primary: map-get($abs-neutrals, 700);
+$df-text-secondary: map-get($abs-neutrals, 500);
+
+// css variables
+:root {
+   // Main colors
+   --primary: #{$df-primary};
+   --secondary: #{$df-secondary};
+
+   --text-zero: #{map-get($abs-neutrals, 700)};
+   --text-primary: #{map-get($abs-neutrals, 700)};
+   --text-secondary: #{map-get($abs-neutrals, 500)};
+
+   --bg-primary: #{map-get($abs-neutrals, 300)};
+   --bg-secondary: #{map-get($abs-neutrals, 0)};
+   --bg-tertiary: #{map-get($abs-neutrals, 100)};
+
+   //  Borders
+   --border-01: #{map-get($abs-neutrals, 700)};
+
+   //  Link
+   --link-01: var(--primary);
+   --link-01-hover: var(--primary);
+
+   --link-02: #{map-get($abs-neutrals, 700)};
+}

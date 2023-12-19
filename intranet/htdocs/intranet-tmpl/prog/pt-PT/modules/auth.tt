@@ -9,16 +9,20 @@
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>
- [% IF TwoFA_prompt %]Autenticação dois fatores[% END %] [% IF TwoFA_setup %]Configuração da autenticação dois fatores[% END %] [% IF ( loginprompt ) %]Entrar no Koha[% END %] [% IF too_many_login_attempts %]Conta bloqueada. [% ELSIF invalid_username_or_password %]Nome de utilizador ou palavra-passe inválidos[% END %] [% IF ( different_ip ) %]O endereço IP mudou[% END %] [% IF ( timed_out ) %]A sessão expirou[% END %] [% IF ( nopermission ) %]Acesso negado[% END %] [% IF ( auth_error ) %]Erro ao autenticar no fornecedor externo[% END %] &rsaquo; Koha </title>
+ [% IF TwoFA_prompt %]Autenticação dois fatores[% END %] [% IF TwoFA_setup %]Configuração da autenticação dois fatores[% END %] [% IF ( loginprompt ) %]Biblioteca da Metodista[% END %] [% IF too_many_login_attempts %]Conta bloqueada. [% ELSIF invalid_username_or_password %]Nome de utilizador ou palavra-passe inválidos[% END %] [% IF ( different_ip ) %]O endereço IP mudou[% END %] [% IF ( timed_out ) %]A sessão expirou[% END %] [% IF ( nopermission ) %]Acesso negado[% END %] [% IF ( auth_error ) %]Erro ao autenticar no fornecedor externo[% END %] &rsaquo; UMA </title>
 [% INCLUDE 'doc-head-close.inc' %]
 [% PROCESS 'auth-two-factor.inc' %]
 </head>
 <body id="main_auth" class="main_main-auth">
 
-<div class="main container-fluid">
-
+<div class="main container-xxl u-flex-center">
 <div id="login">
-<h1><a href="http://koha-community.org">Koha</a></h1>
+<!--<h1><a href="http://koha-community.org">Koha</a></h1>-->
+<div class="logo u-flex-center">
+    <img src="http://www.uma.co.ao/static/media/lgH3c.cdc201af.png"
+    alt="uma logo" class="u-img-fluid" height="218px" width="218px">
+</div>
+<h1>Biblioteca da Metodista</h1>
 [% IF (Koha.Preference('StaffLoginInstructions')) %]<div id="login_instructions">[% Koha.Preference('StaffLoginInstructions') | $raw %]</div>[% END %]
 [% IF ( nopermission ) %]
 <div id="login_error">
@@ -95,20 +99,24 @@
  [% FOREACH INPUT IN INPUTS %]
  <input type="hidden" name="[% INPUT.name | html %]" value="[% INPUT.value | html %]" />
  [% END %]
- <p><label for="userid">Nome do utilizador:</label>
+ <p><label for="userid" class="pb-2 pt-3">Nome do utilizador:</label>
  <input type="text" name="userid" id="userid" class="input focus" value="[% userid | html %]" size="20" tabindex="1" autocomplete="off" />
  </p>
- <p><label for="password">Palavra-passe:</label>
+ <p><label for="password" class="pb-2 pt-3">Palavra-passe:</label>
  <input type="password" name="password" id="password" class="input" value="" size="20" tabindex="2" autocomplete="off" />
  </p>
 
  [% UNLESS IndependentBranches %]
  <p>
- <label for="branch">Biblioteca:</label>
+ <label for="branch" class="pb-2 pt-3">Biblioteca:</label>
  <select name="branch" id="branch" class="input" tabindex="3">
- <option value="">Biblioteca</option>
+ <!--<option value="">Biblioteca</option>-->
  [% FOREACH l IN Branches.all( unfiltered => 1 ) %]
- <option value="[% l.branchcode | html %]">[% l.branchname | html %]</option>
+    [% IF l.branchcode == 'UMA' %]
+        <option value="[% l.branchcode | html %]" selected="selected">[% l.branchname | html %]</option>
+    [% ELSE %]
+         <option value="[% l.branchcode | html %]">[% l.branchname | html %]</option>
+    [% END %]
  [% END %]
  </select>
  </p>
@@ -139,7 +147,7 @@
 
  <!-- <p><label><input name="rememberme" type="checkbox" id="rememberme" value="forever" tabindex="3" />Remember me</label></p> -->
 
- <p class="submit"><input class="btn btn-primary" id="submit-button" tabindex="4" type="submit" value="Iniciar sessão" /></p>
+ <p class="submit"><input class="btn btn-primary mt-3" id="submit-button" tabindex="4" type="submit" value="Iniciar sessão" /></p>
  </form>
 
  [% IF ( casAuthentication ) %]

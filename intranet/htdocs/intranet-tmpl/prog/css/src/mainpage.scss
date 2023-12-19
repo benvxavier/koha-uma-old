@@ -4,7 +4,7 @@
 #area-quote {
     h3 {
         margin: 0;
-        opacity: .7;
+        //opacity: .7;
         padding: .3em .3em 0 .3em;
     }
 }
@@ -14,12 +14,15 @@
     border-bottom: 1px solid #EEE;
     border-radius: 6px;
     margin: .3em;
-    opacity: .75;
+    //opacity: .75;
     padding: 3px;
+    text-align: justify;
+    //font-size: 1.60rem;
+    //width: 52rem;
 }
 
 .newsfooter {
-    color: #808080;
+    color: var(--text-secondary);
     font-size: 80%;
 }
 
@@ -44,11 +47,12 @@ ul {
                     text-decoration: none;
 
                     &:hover {
-                        background-color: $background-color-primary;
+                        //background-color: $background-color-primary;
+                        background: #201d6a;
                         color: #FFF;
 
                         img {
-                            filter: invert( 100% );
+                            filter: invert(100%);
                         }
                     }
 

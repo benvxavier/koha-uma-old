@@ -31,8 +31,8 @@
  </li>
  [% END %]
  [% IF ( CAN_user_catalogue ) %]
- <li role="presentation">
- <a aria-controls="catalog_search" class="keep_text" data-toggle="tab" href="#catalog_search" role="tab" title="Pesquisar no catálogo"><i class="fa fa-fw fa-search"></i> <span class="tab-title">Pesquisar no catálogo</span></a>
+  <li role="presentation">
+<a aria-controls="catalog_search" class="keep_text" data-toggle="tab" href="#catalog_search" role="tab" title="Pesquisar no catálogo"><i class="fa fa-fw fa-search"></i> <span class="tab-title">Pesquisar no catálogo</span></a>
  </li>
  [% END %]
  </ul>

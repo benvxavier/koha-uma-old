@@ -1,0 +1,24 @@
+@use 'sass:math';
+
+@function toRem($sizePx) {
+   @return math.div($sizePx, 16px) * 1rem;
+}
+
+// Gera tamanho de fonte com base na escala modular
+// em(n) = baseSize × ratio^expo
+@function typeScale($baseSize, $ratio, $expo) {
+   $baseSize: toRem($baseSize);
+   @return $baseSize * (math.pow($ratio, $expo));
+}
+
+// Versão personalisada da função 'clamp()' 
+@function clamped($minWidth, $maxWidth, $minValue, $maxValue) {
+   /* Finding the preferred value for clamp with Linear Interpolation */
+   $slope: math.div(($maxValue - $minValue ), ($maxWidth - $minWidth));
+   $interceptRem : toRem(-$minWidth * $slope + $minValue);
+
+   $minRem: toRem($minValue);
+   $maxRem: toRem($maxValue);
+
+   @return clamp(#{$minRem}, #{$interceptRem} + #{$slope * 100}vw, #{$maxRem});
+}

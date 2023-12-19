@@ -1,0 +1,147 @@
+@use '../abstracts' as *;
+
+body {
+   font-family: $abs-font-family-body ;
+   font-size: 1rem;
+   font-weight: 400;
+   line-height: 1.5;
+   color: rgba(0, 0, 0, 0.8);
+   -webkit-font-smoothing: antialiased;
+   text-rendering: optimizeLegibility;
+   word-break: break-word;
+}
+
+code {
+   font-family: $abs-font-family-code;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+   font-family: $abs-font-family-heading ;
+   line-height: 1.2;
+
+   &:not(:last-child) {
+      margin-bottom: 1rem;
+   }
+}
+
+h1.display-1 {
+   font-size: typeScale($abs-min-base-font-size, $abs-min-ratio, 7);
+
+   @include mq-size-up($abs-tablet-portrait) {
+      font-size: typeScale($abs-max-base-font-size, $abs-max-ratio, 7);
+   }
+
+   font-weight: 300;
+   letter-spacing: -0.75px;
+}
+
+h1.display-2 {
+   font-size: typeScale($abs-min-base-font-size, $abs-min-ratio, 6);
+
+   @include mq-size-up($abs-tablet-portrait) {
+      font-size: typeScale($abs-max-base-font-size, $abs-max-ratio, 6);
+
+   }
+
+   font-weight: 300;
+   letter-spacing: -0.75px;
+}
+
+h1 {
+   font-size: typeScale($abs-min-base-font-size, $abs-min-ratio, 5);
+
+   @include mq-size-up($abs-tablet-portrait) {
+      font-size: typeScale($abs-max-base-font-size, $abs-max-ratio, 5);
+   }
+
+   font-weight: 300;
+   letter-spacing: -0.75px;
+}
+
+h2 {
+   font-size: typeScale($abs-min-base-font-size, $abs-min-ratio, 4);
+
+   @include mq-size-up($abs-tablet-portrait) {
+      font-size: typeScale($abs-max-base-font-size, $abs-max-ratio, 4);
+   }
+
+   font-weight: 600;
+   letter-spacing: -0.5px;
+}
+
+h3 {
+   font-size: typeScale($abs-min-base-font-size, $abs-min-ratio, 3);
+
+   @include mq-size-up($abs-tablet-portrait) {
+      font-size: typeScale($abs-max-base-font-size, $abs-max-ratio, 3);
+   }
+
+   font-weight: 600;
+   letter-spacing: -0.5px;
+}
+
+h4 {
+   font-size: typeScale($abs-min-base-font-size, $abs-min-ratio, 2);
+
+   @include mq-size-up($abs-tablet-portrait) {
+      font-size: typeScale($abs-max-base-font-size, $abs-max-ratio, 2);
+   }
+
+   font-weight: 600;
+   letter-spacing: -0.25px;
+}
+
+h5,
+.headline {
+   font-size: typeScale($abs-min-base-font-size, $abs-min-ratio, 1);
+
+   @include mq-size-up($abs-tablet-portrait) {
+      font-size: typeScale($abs-max-base-font-size, $abs-max-ratio, 1);
+   }
+
+   font-weight: 500;
+   letter-spacing: -0.25px;
+}
+
+p {
+   font-size: typeScale($abs-min-base-font-size, $abs-min-ratio, 0);
+   line-height: $abs-min-line-height;
+
+   @include mq-size-up($abs-tablet-portrait) {
+      font-size: typeScale($abs-max-base-font-size, $abs-max-ratio, 0);
+      line-height: $abs-max-line-height;
+   }
+
+   &:not(:last-child) {
+      margin-bottom: 1rem;
+   }
+}
+
+.small,
+small {
+   font-size: typeScale($abs-min-base-font-size, $abs-min-ratio, -1);
+
+   @include mq-size-up($abs-tablet-portrait) {
+      font-size: typeScale($abs-max-base-font-size, $abs-max-ratio, -1);
+   }
+
+   &:not(:last-child) {
+      margin-bottom: .5rem;
+   }
+}
+
+.xsmall {
+   font-size: typeScale($abs-min-base-font-size, $abs-min-ratio, -2);
+
+   @include mq-size-up($abs-tablet-portrait) {
+      font-size: typeScale($abs-max-base-font-size, $abs-max-ratio, -2);
+   }
+
+   &:not(:last-child) {
+      margin-bottom: .25rem;
+   }
+}

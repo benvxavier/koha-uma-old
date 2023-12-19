@@ -20,6 +20,7 @@
  [% Asset.css("lib/jquery/jquery-ui-1.13.1.min.css") | $raw %]
 [% END %]
 [% Asset.css("lib/bootstrap/bootstrap.min.css") | $raw %]
+[% Asset.css("lib/bootstrap/custom.css") | $raw %]
 [% Asset.css("lib/bootstrap/bootstrap-theme.min.css") | $raw %]
 [% Asset.css("lib/font-awesome/css/font-awesome.min.css") | $raw %]
 [% Asset.css("lib/datatables/datatables.min.css") | $raw %]

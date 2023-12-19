@@ -13,11 +13,11 @@
 [% SET OpacMainUserBlock = AdditionalContents.get( location => "OpacMainUserBlock", lang => lang, library => logged_in_user.branchcode || default_branch ) %]
 [% SET OpacLoginInstructions = AdditionalContents.get( location => "OpacLoginInstructions", lang => lang, library => branchcode || default_branch ) %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>[% IF ( LibraryNameTitle ) %][% LibraryNameTitle | html %][% ELSE %]Koha online[% END %] catálogo</title>
+<title>[% IF ( LibraryNameTitle ) %][% LibraryNameTitle | html %][% ELSE %]Biblioteca online[% END %] catálogo</title>
 [% INCLUDE 'doc-head-close.inc' %]
 [% BLOCK cssinclude %][% END %]
 </head>
-[% INCLUDE 'bodytag.inc' bodyid='opac-main' %]
+
 [% INCLUDE 'masthead.inc' %]
 
 <div class="main">
@@ -25,10 +25,9 @@
  <ol class="breadcrumb">
  [% IF news_item %]
  <li class="breadcrumb-item">
- <a href="/cgi-bin/koha/opac-main.pl">Início</a>
  </li>
  <li class="breadcrumb-item active">
- <a href="#" aria-current="page">[% news_item.title | html %]</a>
+
  </li>
  [% ELSE %]
  <li class="breadcrumb-item active">

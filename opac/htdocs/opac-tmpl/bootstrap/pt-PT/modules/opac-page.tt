@@ -16,7 +16,7 @@
  <nav aria-label="Caminho de navegação" class="breadcrumbs" id="breadcrumbs">
  <ol class="breadcrumb">
  <li class="breadcrumb-item">
- <a href="/cgi-bin/koha/opac-main.pl">Início</a>
+ <!--<a href="/cgi-bin/koha/opac-main.pl">Início</a>-->
  </li>
  [% IF page %]
  <li class="breadcrumb-item active">
@@ -57,7 +57,7 @@
  A página não existe. </div>
 
  [% END %]
- </div> <!-- /.maincontent -->
+ </div> <!-- /.maincontent -->#" aria-current="page">[% page.title | html %]</a>
  </div> <!-- / .col -->
  </div> <!-- /.row -->
  </div> <!-- /.container-fluid -->

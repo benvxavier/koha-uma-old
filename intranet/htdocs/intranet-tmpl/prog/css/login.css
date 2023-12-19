@@ -1,4 +1,7 @@
-a.edit, a.delete, a.edit:hover, a.delete:hover {
+a.edit,
+a.delete,
+a.edit:hover,
+a.delete:hover {
 	border-bottom: none;
 	display: block;
 	padding: 5px 0;
@@ -15,41 +18,48 @@ a:visited {
 }
 
 a:hover {
-/*	border-bottom: 1px solid #3a75ae;*/
+	/*	border-bottom: 1px solid #3a75ae;*/
 	color: #069;
 }
 
-body	{
+body {
 	background: #f3f4f4;
 }
 
-form, label input {
+form,
+label input {
 	margin: 0;
 	padding: 0;
 }
 
-input:focus, textarea:focus, label:focus {
+input:focus,
+textarea:focus,
+label:focus {
 	background: #fff;
 	border: 1px solid #686868;
 }
 
 label {
-	display : block;
-	margin : .2em 0;
+	display: block;
+	margin: .2em 0;
 }
 
-#logo { margin-bottom: 2em; }
+#logo {
+	margin-bottom: 2em;
+}
 
 #login {
 	background: #fff;
 	border: none;
 	box-shadow: 8px 8px 12px rgb(170 170 170);
-	margin: 4em auto;
-	padding: 1.5em;
-	position : relative;
-	top : auto;
-	right : auto;
-	width: 25em;
+
+	padding: 2em;
+	position: absolute;
+	margin: auto;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 32em;
 }
 
 #login #login_error {
@@ -70,27 +80,28 @@ label {
 
 #login #login_error a:link,
 #login #login_error a:visited {
-	color : #FFC;
+	color: #FFC;
 }
 
 #login #login_error a:hover,
 #login #login_error a:active {
-	color : #FCFC4D;
+	color: #FCFC4D;
 }
 
 #login h1 {
-    background: url(../img/koha-logo.gif) no-repeat top center;
-	margin-top: 0;
-	margin-bottom : .5em;
+	/* background: url(../img/koha-logo.gif) no-repeat top center; */
+	margin-top: 1.5em;
+	margin-bottom: 1.5em;
+	text-align: center;
 }
 
 #login h1 a {
-    /* http://www.zeldman.com/2012/03/01/replacing-the-9999px-hack-new-image-replacement/ */
+	/* http://www.zeldman.com/2012/03/01/replacing-the-9999px-hack-new-image-replacement/ */
 	display: block;
 	height: 74px;
-    text-indent: 100%;
-    white-space: nowrap;
-    overflow: hidden;
+	text-indent: 100%;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 #login ul {
@@ -106,47 +117,49 @@ label {
 }
 
 #footer {
-        text-align: center;
-        border-top: 1px solid #ccc;
-        padding-top: 1em;
-        font-style: italic;
+	text-align: center;
+	border-top: 1px solid #ccc;
+	padding-top: 1em;
+	font-style: italic;
 }
 
 .submit {
-    text-align: right;
+	text-align: right;
 }
 
 #submit-button {
-    font-size: 135%;
+	font-size: 135%;
 }
 
 input[type="submit"]:active,
 input[type="submit"]:focus {
-    box-shadow: inset 0 0 0 1px #edb423;
+	box-shadow: inset 0 0 0 1px #edb423;
 }
 
 input[type="submit"]:active,
 input[type="submit"]:focus,
 input[type="submit"]:hover {
-    background: #ffd15e none;
-    border: 1px solid #ffc32b;
+	background: #ffd15e none;
+	border: 1px solid #ffc32b;
 }
 
-textarea, input, select {
-    background: #fff;
-    border: 1px solid #b2b2b2;
-    color: #000;
-    font:  13px Verdana, Arial, Helvetica, sans-serif;
-    margin: 1px;
-    padding: 3px;
+textarea,
+input,
+select {
+	background: #fff;
+	border: 1px solid #b2b2b2;
+	color: #000;
+	font: 13px Verdana, Arial, Helvetica, sans-serif;
+	margin: 1px;
+	padding: 3px;
 }
 
 select {
-    width: 97%;
+	width: 97%;
 }
 
 input[type='text'],
 input[type='password'] {
-    font-size: 1.7em;
-    width: 97%;
+	font-size: 1.7em;
+	width: 97%;
 }
