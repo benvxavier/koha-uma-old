@@ -4109,7 +4109,8 @@ input.renew {
             font-weight: bold;
 
             &:hover {
-                background-color: $background-color-primary;
+                //background-color: $background-color-primary;
+                background-color: var(--secondary);
                 color: white;
                 text-decoration: none;
             }

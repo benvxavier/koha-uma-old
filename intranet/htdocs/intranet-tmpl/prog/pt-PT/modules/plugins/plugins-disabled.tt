@@ -1,6 +1,6 @@
 [% USE raw %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Carregamento de plugin &rsaquo; Plugins &rsaquo; Ferramentas &rsaquo; Koha</title>
+<title>Carregamento de plugin &rsaquo; Plugins &rsaquo; Ferramentas &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 [% INCLUDE 'calendar.inc' %]
 </head>

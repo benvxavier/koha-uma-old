@@ -2,7 +2,7 @@
 [% USE Asset %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Carregamento do ficheiro de circulação offline &rsaquo; Empréstimo &rsaquo; Koha</title>
+<title>Carregamento do ficheiro de circulação offline &rsaquo; Empréstimo &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

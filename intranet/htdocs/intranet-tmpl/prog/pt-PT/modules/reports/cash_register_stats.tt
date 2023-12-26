@@ -9,7 +9,7 @@
 [% SET footerjs = 1 %]
 [% PROCESS 'accounts.inc' %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>[% IF ( do_it ) %]Estatísticas de registo de dinheiro &rsaquo; Resultados[% ELSE %]Estatísticas de registo de dinheiro[% END %] &rsaquo; Relatórios &rsaquo; Koha</title>
+<title>[% IF ( do_it ) %]Estatísticas de registo de dinheiro &rsaquo; Resultados[% ELSE %]Estatísticas de registo de dinheiro[% END %] &rsaquo; Relatórios &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

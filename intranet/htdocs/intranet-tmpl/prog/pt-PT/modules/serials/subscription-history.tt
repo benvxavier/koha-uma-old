@@ -2,7 +2,7 @@
 [% USE KohaDates %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Histórico da assinatura &rsaquo; Periódicos &rsaquo; Koha</title>
+<title>Histórico da assinatura &rsaquo; Periódicos &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

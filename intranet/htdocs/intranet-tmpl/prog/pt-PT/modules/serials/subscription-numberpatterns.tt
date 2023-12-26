@@ -2,7 +2,7 @@
 [% USE Asset %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Modelos de numeração &rsaquo; Periódicos &rsaquo; Koha</title>
+<title>Modelos de numeração &rsaquo; Periódicos &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

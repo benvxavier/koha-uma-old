@@ -6,7 +6,7 @@
 [% USE TablesSettings %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Histórico de empréstimo de [% INCLUDE 'biblio-title-head.inc' %] &rsaquo; Catálogo &rsaquo; Koha</title>
+<title>Histórico de empréstimo de [% INCLUDE 'biblio-title-head.inc' %] &rsaquo; Catálogo &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

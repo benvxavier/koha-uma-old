@@ -1,7 +1,7 @@
 [% USE To %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Detalhes da autoridade &rsaquo; Koha</title>
+<title>Detalhes da autoridade &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

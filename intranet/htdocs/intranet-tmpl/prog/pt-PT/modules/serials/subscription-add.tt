@@ -6,7 +6,7 @@
 [% USE Koha %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>[% IF ( modify ) %][% bibliotitle | html %] &rsaquo; Modificar assinatura[% ELSE %]Nova assinatura[% END %] &rsaquo; Periódicos &rsaquo; Koha</title>
+<title>[% IF ( modify ) %][% bibliotitle | html %] &rsaquo; Modificar assinatura[% ELSE %]Nova assinatura[% END %] &rsaquo; Periódicos &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 <style>
 fieldset.rows li.radio { width: 100%; } /* override staff-global.css */

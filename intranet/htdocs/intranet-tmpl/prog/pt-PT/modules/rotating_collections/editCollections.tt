@@ -3,7 +3,7 @@
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>
- [%- IF ( action == "new" ) %] Adicionar nova coleção [% ELSE %] Editar coleção [% editColTitle | html %] [% END -%] &rsaquo; Coleções rotativas &rsaquo; Ferramentas &rsaquo; Koha </title>
+ [%- IF ( action == "new" ) %] Adicionar nova coleção [% ELSE %] Editar coleção [% editColTitle | html %] [% END -%] &rsaquo; Coleções rotativas &rsaquo; Ferramentas &rsaquo; Biblioteca </title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 <body id="rcoll_editCollections" class="tools rcoll">

@@ -1,7 +1,7 @@
 [% USE Asset %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
- <title>Impressão/exportação dos cartões de leitor &rsaquo; Cartões de leitor &rsaquo; Ferramentas &rsaquo; Koha</title>
+ <title>Impressão/exportação dos cartões de leitor &rsaquo; Cartões de leitor &rsaquo; Ferramentas &rsaquo; Biblioteca</title>
  [% INCLUDE 'doc-head-close.inc' popup => 1%]
 </head>
 

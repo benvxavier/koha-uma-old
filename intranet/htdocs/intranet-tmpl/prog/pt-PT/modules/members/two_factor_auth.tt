@@ -3,7 +3,7 @@
 [% USE Asset %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Autenticação dois fatores &rsaquo; Leitores &rsaquo; Koha</title>
+<title>Autenticação dois fatores &rsaquo; Leitores &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 <body id="pat_two_factor_auth" class="pat">

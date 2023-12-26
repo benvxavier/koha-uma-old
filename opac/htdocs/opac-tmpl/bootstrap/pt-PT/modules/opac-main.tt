@@ -172,7 +172,7 @@
  [% END %]
  [% END %]
 
- </div> <!-- / .col 6/8 -->
+ </div> <!-- / .col 6/8 -->>
 
  [% IF ( ( Koha.Preference( 'opacuserlogin' ) == 1 ) || OpacNavRight ) %]
  <div class="col-12 col-lg-3 order-md-2">
@@ -212,7 +212,7 @@
  <input class="btn btn-primary" type="submit" value="Iniciar sessão" />
  </fieldset>
  </div>
- [% IF ( OpacLoginInstructions ) %]
+ [% IF ( OpacLoginInstructions ) %]>
  <div id="nologininstructions-main" class="nologininstructions">
  [% PROCESS koha_news_block news => OpacLoginInstructions %]
  </div>

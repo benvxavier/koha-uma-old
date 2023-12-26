@@ -5,7 +5,7 @@
 [% SET footerjs = 1 %]
 [% PROCESS 'i18n.inc' %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Reservas de curso &rsaquo; Koha</title>
+<title>Reservas de curso &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 
 </head>

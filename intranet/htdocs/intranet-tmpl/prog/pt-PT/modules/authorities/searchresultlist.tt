@@ -4,7 +4,7 @@
 [% SET footerjs = 1 %]
 [% PROCESS 'authorities-search-results.inc' %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Resultados da pesquisa de autoridades &rsaquo; Autoridades &rsaquo; Koha</title>
+<title>Resultados da pesquisa de autoridades &rsaquo; Autoridades &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 [% Asset.css("css/addbiblio.css") | $raw %]
 <style>

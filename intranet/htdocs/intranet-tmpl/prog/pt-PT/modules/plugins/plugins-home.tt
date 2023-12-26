@@ -4,7 +4,7 @@
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>
- Plugins &rsaquo; [% IF ( method == 'tool' ) %] Ferramentas [% ELSE %] Administração [% END %] &rsaquo; Koha </title>
+ Plugins &rsaquo; [% IF ( method == 'tool' ) %] Ferramentas [% ELSE %] Administração [% END %] &rsaquo; Biblioteca </title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

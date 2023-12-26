@@ -8,7 +8,7 @@
 [% USE TablesSettings %]
 
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Histórico de empréstimos inter-bibliotecas para [% INCLUDE 'patron-title.inc' no_html = 1 %] &rsaquo; Leitores &rsaquo; Koha</title>
+<title>Histórico de empréstimos inter-bibliotecas para [% INCLUDE 'patron-title.inc' no_html = 1 %] &rsaquo; Leitores &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

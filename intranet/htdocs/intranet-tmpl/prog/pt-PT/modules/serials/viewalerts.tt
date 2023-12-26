@@ -1,6 +1,6 @@
 [% USE raw %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Alertas de subscrição para [% bibliotitle | html %] &rsaquo; Periódicos &rsaquo; Koha</title>
+<title>Alertas de subscrição para [% bibliotitle | html %] &rsaquo; Periódicos &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 <body id="ser_viewalerts" class="ser">

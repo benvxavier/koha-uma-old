@@ -6,7 +6,7 @@
 [% USE Branches %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Sugestões de aquisição de [% INCLUDE 'patron-title.inc' no_html = 1 %] &rsaquo; Leitores &rsaquo; Koha</title>
+<title>Sugestões de aquisição de [% INCLUDE 'patron-title.inc' no_html = 1 %] &rsaquo; Leitores &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

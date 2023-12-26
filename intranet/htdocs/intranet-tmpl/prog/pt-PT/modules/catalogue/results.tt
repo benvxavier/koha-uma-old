@@ -12,7 +12,7 @@
 [% USE AuthorisedValues %]
 [% INCLUDE 'doc-head-open.inc' %]
 
-<title>[% IF ( searchdesc ) %]Resultados de pesquisa [% IF ( query_desc ) %]para '[% query_desc | html %]'[% END %][% IF ( limit_desc ) %]&nbsp;com limite(s):&nbsp;'[% limit_desc | html %]'[% END %][% ELSE %]Não especificou nenhum critério de pesquisa[% END %] &rsaquo; Catálogo &rsaquo; Koha</title>
+<title>[% IF ( searchdesc ) %]Resultados de pesquisa [% IF ( query_desc ) %]para '[% query_desc | html %]'[% END %][% IF ( limit_desc ) %]&nbsp;com limite(s):&nbsp;'[% limit_desc | html %]'[% END %][% ELSE %]Não especificou nenhum critério de pesquisa[% END %] &rsaquo; Catálogo &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

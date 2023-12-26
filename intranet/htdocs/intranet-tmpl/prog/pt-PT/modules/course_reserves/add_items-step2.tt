@@ -4,7 +4,7 @@
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 [% PROCESS 'i18n.inc' %]
-<title>[% IF is_edit || course_reserve %]Editar reserva[% ELSE %]Adicionar reservas[% END %] &rsaquo; [% course.course_name | html %] &rsaquo; Reservas de curso &rsaquo; Koha</title>
+<title>[% IF is_edit || course_reserve %]Editar reserva[% ELSE %]Adicionar reservas[% END %] &rsaquo; [% course.course_name | html %] &rsaquo; Reservas de curso &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

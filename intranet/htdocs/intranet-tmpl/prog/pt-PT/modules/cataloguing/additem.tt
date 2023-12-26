@@ -7,7 +7,7 @@
 [% USE TablesSettings %]
 [% PROCESS 'i18n.inc' %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Exemplares &rsaquo; [% biblio.title | html %] [% IF ( biblio.author ) %] por [% biblio.author | html %][% END %] (Registo nº [% biblio.biblionumber | html %]) &rsaquo; Catalogação &rsaquo; Koha</title>
+<title>Exemplares &rsaquo; [% biblio.title | html %] [% IF ( biblio.author ) %] por [% biblio.author | html %][% END %] (Registo nº [% biblio.biblionumber | html %]) &rsaquo; Catalogação &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 [% Asset.css("css/addbiblio.css") | $raw %]
 [% INCLUDE 'datatables.inc' %]

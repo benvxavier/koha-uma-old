@@ -4,7 +4,7 @@
 [% USE Koha %]
 [% USE TablesSettings %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Resultados de pesquisa Z39.50/SRU &rsaquo; Koha</title>
+<title>Resultados de pesquisa Z39.50/SRU &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 <style>
     #dataPreview {

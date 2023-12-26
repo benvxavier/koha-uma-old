@@ -1,0 +1,387 @@
+/* 
+##  How to Use
+### e.u-g.u- 1 - In your html files:
+```html
+  <div class="flex justify-around align-center">
+      .u-.u-.u-
+  </div>
+```
+
+### e.u-g.u- 2 - In your sass css files
+```scss
+  // style.u-scss
+  @use 'flex-layout'; //import it
+  
+  .u-some-div {
+    margin-right: 16px;
+
+    @include flex-layout.u-breakpoint('lt-sm') { //use the breakpoint mixin
+        margin-right: 0;
+    }
+  }
+```
+
+> Note: Modify this file with your own use cases/additions to handle unique flexbox requirements for your project.u-
+> Treat it as just another sass file in your project that you use for general flex styles
+
+Regards,
+www.u-ebenmonney.u-com
+*/
+
+
+// Breakpoints
+
+$xs: 599px;
+$sm: 959px;
+$md: 1279px;
+$lg: 1919px;
+$xl: 5000px;
+
+// Empty comments at ends is to prevent VS from Collapsing maps onto a single line
+$fx-media-queries: (
+   //
+   'xs': "screen and (max-width: #{$xs})",
+   //
+   'sm': "screen and (min-width: #{$xs + 1}) and (max-width: #{$sm})",
+   //
+   "md": "screen and (min-width: #{$sm + 1}) and (max-width: #{$md})",
+   //
+   "lg": 'screen and (min-width: #{$md + 1}) and (max-width: #{$lg})',
+   //
+   "xl": 'screen and (min-width: #{$lg + 1}) and (max-width: #{$xl})',
+   //
+   "lt-sm": 'screen and (max-width: #{$xs})',
+   //
+   "lt-md": 'screen and (max-width: #{$sm})',
+   //
+   "lt-lg": 'screen and (max-width: #{$md})',
+   //
+   "lt-xl": 'screen and (max-width: #{$lg})',
+   //
+   "gt-xs": 'screen and (min-width: #{$xs + 1})',
+   //
+   "gt-sm": 'screen and (min-width: #{$sm + 1})',
+   //
+   "gt-md": 'screen and (min-width: #{$md + 1})',
+   //
+   "gt-lg": 'screen and (min-width: #{$lg + 1})',
+   //
+);
+
+@mixin breakpoint($bp) {
+   @media #{map-get($fx-media-queries, $bp)} {
+      @content;
+   }
+}
+
+
+// Flex display
+
+
+.u-flex {
+   display: flex;
+   box-sizing: border-box;
+}
+
+.u-inline-flex {
+   display: inline-flex;
+   box-sizing: border-box;
+}
+
+.u-flex-center {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+
+// Flex direction
+
+.u-flex-row {
+   display: flex;
+   flex-direction: row;
+   box-sizing: border-box;
+}
+
+.u-flex-col {
+   display: flex;
+   flex-direction: column;
+   box-sizing: border-box;
+}
+
+.u-flex-wrap {
+   flex-wrap: wrap;
+}
+
+.u-flex-col-xs {
+   @include breakpoint('xs') {
+      flex-direction: column;
+   }
+}
+
+.u-flex-col-sm {
+   @include breakpoint('lt-md') {
+      flex-direction: column;
+   }
+}
+
+.u-flex-col-md {
+   @include breakpoint('lt-lg') {
+      flex-direction: column;
+   }
+}
+
+.u-flex-row-xs {
+   @include breakpoint('xs') {
+      flex-direction: row;
+   }
+}
+
+.u-flex-row-sm {
+   @include breakpoint('lt-md') {
+      flex-direction: row;
+   }
+}
+
+.u-flex-row-md {
+   @include breakpoint('lt-lg') {
+      flex-direction: row;
+   }
+}
+
+
+// Shorthands
+
+.u-flex-initial {
+   flex: initial; // 0 1 auto;
+}
+
+.u-flex-auto {
+   flex: auto; // 1 1 auto;
+}
+
+//https://www.u-w3.u-org/TR/css-flexbox-1/images/rel-vs-abs-flex.u-svg
+.u-flex-1 {
+   flex: 1 //flex: 1 1 0 i.u-e.u- fxFlex
+}
+
+.u-flex-2 {
+   flex: 2 //flex: 2 1 0
+}
+
+.u-flex-3 {
+   flex: 3 //flex: 3 1 0
+}
+
+.u-flex-4 {
+   flex: 4 //flex: 4 1 0
+}
+
+.u-flex-5 {
+   flex: 5 //flex: 5 1 0
+}
+
+.u-flex-none {
+   flex: none; // 0 0 auto
+}
+
+.u-flex-nogrow {
+   flex: 0 1 auto;
+}
+
+.u-flex-noshrink {
+   flex: 1 0 auto
+}
+
+.u-flex-grow {
+   flex: 1 1 100%;
+}
+
+.u-flex-grow25 {
+   flex: 0 1 25%;
+}
+
+.u-flex-grow50 {
+   flex: 0 1 50%;
+}
+
+.u-flex-grow75 {
+   flex: 0 1 75%;
+}
+
+
+//Justify-Content
+
+.u-justify-start {
+   justify-content: flex-start;
+}
+
+.u-justify-end {
+   justify-content: flex-end;
+}
+
+.u-justify-center {
+   justify-content: center;
+}
+
+.u-justify-between {
+   justify-content: space-between;
+}
+
+.u-justify-around {
+   justify-content: space-around;
+}
+
+.u-justify-evenly {
+   justify-content: space-evenly;
+}
+
+
+//Align-Content
+
+.u-content-start {
+   align-content: flex-start;
+}
+
+.u-content-end {
+   align-content: flex-end;
+}
+
+.u-content-center {
+   align-content: center
+}
+
+.u-content-stretch {
+   align-content: stretch
+}
+
+.u-content-between {
+   align-content: space-between;
+}
+
+.u-content-around {
+   align-content: space-around;
+}
+
+.u-content-evenly {
+   align-content: space-evenly;
+}
+
+
+//Align-Items
+
+.u-align-start {
+   align-items: flex-start;
+}
+
+.u-align-end {
+   align-items: flex-end;
+}
+
+.u-align-center {
+   align-items: center
+}
+
+.u-align-stretch {
+   align-items: stretch
+}
+
+.u-align-baseline {
+   align-items: baseline;
+}
+
+.u-center-center {
+   justify-content: center;
+   align-items: center;
+}
+
+
+//Align-Self
+
+.u-item-start {
+   align-self: flex-start;
+}
+
+.u-item-end {
+   align-self: flex-end;
+}
+
+.u-item-center {
+   align-self: center
+}
+
+.u-item-stretch {
+   align-self: stretch
+}
+
+.u-item-baseline {
+   align-self: baseline;
+}
+
+
+// Gap
+
+.u-gap-4 {
+   gap: 4px;
+}
+
+.u-gap-5 {
+   gap: 5px;
+}
+
+.u-gap-10 {
+   gap: 10px;
+}
+
+.u-gap-20 {
+   gap: 20px;
+}
+
+
+//Item Utilities
+
+.u-center {
+   display: block;
+   margin-left: auto;
+   margin-right: auto;
+}
+
+.u-fill {
+   margin: 0;
+   width: 100%;
+   height: 100%;
+   min-width: 100%;
+   min-height: 100%;
+}
+
+.u-center-text {
+   text-align: center;
+}
+
+.u-hide {
+   display: none;
+}
+
+.u-hide-xs {
+   @include breakpoint('xs') {
+      display: none;
+   }
+}
+
+.u-hide-gt-xs {
+   @include breakpoint('gt-xs') {
+      display: none;
+   }
+}
+
+.u-hide-sm {
+   @include breakpoint('lt-md') {
+      display: none;
+   }
+}
+
+.u-hide-gt-sm {
+   @include breakpoint('gt-sm') {
+      display: none;
+   }
+}

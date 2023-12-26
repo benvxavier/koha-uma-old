@@ -2,7 +2,7 @@
 [% USE Asset %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Imagens &rsaquo; [% INCLUDE 'biblio-title-head.inc' %] &rsaquo; Catálogo &rsaquo; Koha</title>
+<title>Imagens &rsaquo; [% INCLUDE 'biblio-title-head.inc' %] &rsaquo; Catálogo &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 <style>
 #largeCover {

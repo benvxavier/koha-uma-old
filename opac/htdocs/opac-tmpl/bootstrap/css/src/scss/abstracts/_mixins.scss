@@ -1,0 +1,22 @@
+// Media query para dispositivos menores que o tamanho do dispositivo atual
+@mixin mq-size-until($range) {
+   @media (max-width: $range) {
+      @content;
+   }
+}
+
+// Media query para dispositivos maiores que o tamanho do dispositivo atual
+@mixin mq-size-up($range) {
+   @media (min-width: #{$range + 1}) {
+      @content;
+   }
+}
+
+// Custom 
+
+@mixin custom-bg-linear-gradient($direction, $list-color, $optinos...) {
+   background: -webkit-linear-gradient($direction, $list-color), $optinos;
+   background: -moz-linear-gradient($direction, $list-color), $optinos;
+   background: -o-linear-gradient($direction, $list-color), $optinos;
+   background: linear-gradient($direction, $list-color), $optinos;
+}

@@ -2,7 +2,7 @@
 [% USE Asset %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>[% IF ( del ) %]Eliminação de exemplares em lote[% ELSE %]Modificação de exemplares em lote[% END %] &rsaquo; Catalogação &rsaquo; Koha</title>
+<title>[% IF ( del ) %]Eliminação de exemplares em lote[% ELSE %]Modificação de exemplares em lote[% END %] &rsaquo; Catalogação &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 <body id="tools_batchMod" class="tools">

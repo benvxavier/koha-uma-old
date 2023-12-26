@@ -7,7 +7,7 @@
 [% USE Asset %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Reclamações a processar &rsaquo; Empréstimo &rsaquo; Koha</title>
+<title>Reclamações a processar &rsaquo; Empréstimo &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 <body id="circ_recalls_to_pull" class="circ">

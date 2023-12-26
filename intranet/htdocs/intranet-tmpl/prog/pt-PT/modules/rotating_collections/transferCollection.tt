@@ -3,7 +3,7 @@
 [% USE Branches %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Transferência de coleção &rsaquo; Coleções rotativas &rsaquo; Ferramentas &rsaquo; Koha</title>
+<title>Transferência de coleção &rsaquo; Coleções rotativas &rsaquo; Ferramentas &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 <body id="rcoll_transferCollection" class="tools rcoll">

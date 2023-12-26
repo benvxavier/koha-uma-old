@@ -10,7 +10,7 @@
 [% IF plugin %]
  <title>Carregar plugin</title>
 [% ELSE %]
- <title>Carregamento &rsaquo; Ferramentas &rsaquo; Koha</title>
+ <title>Carregamento &rsaquo; Ferramentas &rsaquo; Biblioteca</title>
 [% END %]
 [% INCLUDE 'doc-head-close.inc' %]
 

@@ -4,7 +4,7 @@
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>
- [% IF ( import_batch_id ) %] Lote [% import_batch_id | html %] &rsaquo; [% END %] Gerir registos MARC &rsaquo; Ferramentas &rsaquo; Koha </title>
+ [% IF ( import_batch_id ) %] Lote [% import_batch_id | html %] &rsaquo; [% END %] Gerir registos MARC &rsaquo; Ferramentas &rsaquo; Biblioteca </title>
 [% INCLUDE 'doc-head-close.inc' %]
 [% Asset.css("css/humanmsg.css") | $raw %]
 <style>

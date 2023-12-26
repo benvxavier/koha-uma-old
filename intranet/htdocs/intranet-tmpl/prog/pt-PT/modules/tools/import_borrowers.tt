@@ -5,7 +5,7 @@
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>
- [% IF ( uploadborrowers ) %] Resultados &rsaquo; [% END %] Importar leitores &rsaquo; Ferramentas &rsaquo; Koha </title>
+ [% IF ( uploadborrowers ) %] Resultados &rsaquo; [% END %] Importar leitores &rsaquo; Ferramentas &rsaquo; Biblioteca </title>
 [% INCLUDE 'doc-head-close.inc' %]
 <style>
     label.description { width: 20em; }

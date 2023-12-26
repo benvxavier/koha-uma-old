@@ -4,7 +4,7 @@
 [% USE TablesSettings %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Catalogar [% IF ( total || breeding_loop ) %] &rsaquo; Resultados de pesquisa [% ELSIF ( query ) %] &rsaquo; Não foram encontrados resultados [% END %] &rsaquo; Koha</title>
+<title>Catalogar [% IF ( total || breeding_loop ) %] &rsaquo; Resultados de pesquisa [% ELSIF ( query ) %] &rsaquo; Não foram encontrados resultados [% END %] &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

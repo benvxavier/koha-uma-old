@@ -4,7 +4,7 @@
 [% USE ItemTypes %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Catálogo por tipo de documento &rsaquo; Relatórios &rsaquo; Koha</title>
+<title>Catálogo por tipo de documento &rsaquo; Relatórios &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 [% IF ( do_it ) %]
 [% END %]

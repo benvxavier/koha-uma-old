@@ -1,7 +1,7 @@
 [% USE Koha %]
 [% USE KohaDates %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Adicionar uma categoria de leitor &rsaquo; Instalador Web &rsaquo; Koha</title>
+<title>Adicionar uma categoria de leitor &rsaquo; Instalador Web &rsaquo; Biblioteca</title>
 [%# The following if statement checks if the categories variable handed to this template %]
 [%# by onboarding.pl has data in it. If the categories variable does have data %]
 [%# in it this means that the user has previously imported sample patron category %]

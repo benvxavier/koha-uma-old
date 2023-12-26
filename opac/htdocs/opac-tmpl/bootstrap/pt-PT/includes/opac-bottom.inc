@@ -33,9 +33,9 @@
  [% IF OpacKohaUrl %]
  <div class="col">
  <div id="koha_url" class="clearfix noprint">
- <p>Powered by [% IF template.name.match('opac-main.tt') %] <a class="koha_url" href="http://koha-community.org">Koha</a>
+ <p>Powered by [% IF template.name.match('opac-main.tt') %] <a class="koha_url" href="#">Biblioteca</a>
  [% ELSE %]
- <a class="koha_url" rel="nofollow" href="http://koha-community.org">Koha</a>
+ <a class="koha_url" rel="nofollow" href="http://koha-community.org">Biblioteca</a>
  [% END %]</p>
  </div> <!-- /#koha_url -->
  </div> <!-- /.col -->

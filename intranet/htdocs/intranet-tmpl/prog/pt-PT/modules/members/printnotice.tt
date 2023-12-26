@@ -4,7 +4,7 @@
 [% SET footerjs = 1 %]
 
 [% INCLUDE 'doc-head-open.inc' %]
-<title>[% title | html %] &rsaquo; Leitores &rsaquo; Koha</title>
+<title>[% title | html %] &rsaquo; Leitores &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />

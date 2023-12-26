@@ -3,7 +3,7 @@
 [% USE Branches %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Catalogação &rsaquo; Koha</title>
+<title>Catalogação &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 
@@ -32,7 +32,7 @@
  <button class="btn btn-default" id="newRecord"><i class="fa fa-plus"></i> Novo registo</button>
  <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
  <ul class="dropdown-menu">
- <li><a id="newRecordDefault" href="/cgi-bin/koha/cataloguing/addbiblio.pl?frameworkcode=">Modelo geral</a></li>
+ <li><a id="newRecordDefault" href="/cgi-bin/koha/cataloguing/addbiblio.pl?frameworkcode=BOOK">Modelo geral</a></li>
  [% FOREACH framework IN frameworks %]
  <li><a href="/cgi-bin/koha/cataloguing/addbiblio.pl?frameworkcode=[% framework.frameworkcode | uri %]">[% framework.frameworktext | html %]</a></li>
  [% END %]

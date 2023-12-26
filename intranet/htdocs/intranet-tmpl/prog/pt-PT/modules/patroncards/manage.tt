@@ -24,7 +24,7 @@
 [% END %]
 
  [% INCLUDE 'doc-head-open.inc' %]
- <title>[% PROCESS translate_card_element element=card_element_title %] &rsaquo; Cartões de leitor &rsaquo; Ferramentas &rsaquo; Koha</title>
+ <title>[% PROCESS translate_card_element element=card_element_title %] &rsaquo; Cartões de leitor &rsaquo; Ferramentas &rsaquo; Biblioteca</title>
  [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

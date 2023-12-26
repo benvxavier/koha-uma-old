@@ -4,7 +4,7 @@
 [% USE ItemTypes %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Leitores com mais empréstimos &rsaquo; Relatórios &rsaquo; Koha</title>
+<title>Leitores com mais empréstimos &rsaquo; Relatórios &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

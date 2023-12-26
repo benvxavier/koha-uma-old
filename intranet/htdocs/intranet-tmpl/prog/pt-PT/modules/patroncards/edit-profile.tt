@@ -1,7 +1,7 @@
 [% USE raw %]
 [% SET footerjs = 1 %]
  [% INCLUDE 'doc-head-open.inc' %]
- <title>[% IF ( profile_id ) %]Editar ([% profile_id | html %])[% ELSE %]Novo[% END%] &rsaquo; Perfil &rsaquo; Cartões de leitor &rsaquo; Ferramentas &rsaquo; Koha</title>
+ <title>[% IF ( profile_id ) %]Editar ([% profile_id | html %])[% ELSE %]Novo[% END%] &rsaquo; Perfil &rsaquo; Cartões de leitor &rsaquo; Ferramentas &rsaquo; Biblioteca</title>
  [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

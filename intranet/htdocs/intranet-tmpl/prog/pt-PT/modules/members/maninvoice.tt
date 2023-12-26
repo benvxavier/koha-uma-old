@@ -8,7 +8,7 @@
 [% PROCESS 'accounts.inc' %]
 
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Criar fatura manual &rsaquo; Leitores &rsaquo; Koha</title>
+<title>Criar fatura manual &rsaquo; Leitores &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

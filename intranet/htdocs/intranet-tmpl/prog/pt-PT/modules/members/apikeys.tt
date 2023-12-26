@@ -3,7 +3,7 @@
 [% USE Asset %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Chaves API &rsaquo; Leitores &rsaquo; Koha</title>
+<title>Chaves API &rsaquo; Leitores &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 <body id="pat_apikeys" class="pat">

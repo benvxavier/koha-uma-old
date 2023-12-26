@@ -5,7 +5,7 @@
 [% INCLUDE 'doc-head-open.inc' %]
 
 <title>
- [% IF ( unknownbiblionumber ) %] Registo desconhecido [% ELSE %] Detalhes etiquetados MARC de [% bibliotitle | html %] [% END %] &rsaquo; Catálogo &rsaquo; Koha </title>
+ [% IF ( unknownbiblionumber ) %] Registo desconhecido [% ELSE %] Detalhes etiquetados MARC de [% bibliotitle | html %] [% END %] &rsaquo; Catálogo &rsaquo; Biblioteca </title>
 
  [% INCLUDE 'doc-head-close.inc' %]
 </head>

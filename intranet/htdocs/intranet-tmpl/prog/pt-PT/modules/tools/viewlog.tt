@@ -8,7 +8,7 @@
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>
- [% IF ( do_it ) %] Resultados &rsaquo; [% END %] Logs &rsaquo; Ferramentas &rsaquo; Koha </title>
+ [% IF ( do_it ) %] Resultados &rsaquo; [% END %] Logs &rsaquo; Ferramentas &rsaquo; Biblioteca </title>
 [% INCLUDE 'doc-head-close.inc' %]
 [% Asset.css("css/humanmsg.css") | $raw %]
 [% FILTER collapse %]

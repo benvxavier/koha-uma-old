@@ -4,7 +4,7 @@
 [% PROCESS 'authorities.inc' %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>
- [% IF ( unknownauthid ) %] Registo de autoridade desconhecido [% ELSE %] Detalhes da autoridade #[% authid | html %] ([% authtypetext | html %]) [% END %] &rsaquo; Autoridades &rsaquo; Koha</title>
+ [% IF ( unknownauthid ) %] Registo de autoridade desconhecido [% ELSE %] Detalhes da autoridade #[% authid | html %] ([% authtypetext | html %]) [% END %] &rsaquo; Autoridades &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 [% Asset.css("css/addbiblio.css") | $raw %]
 [% IF ( displayhierarchy ) %]

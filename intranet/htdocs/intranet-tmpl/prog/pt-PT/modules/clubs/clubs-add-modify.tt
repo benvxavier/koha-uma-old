@@ -6,7 +6,7 @@
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>
- [% IF club %] Modificar grupo [% club.name | html %] [% ELSE %] Criar um novo grupo [% club_template.name | html %] [% END %] &rsaquo; Grupos de leitores &rsaquo; Ferramentas &rsaquo; Koha </title>
+ [% IF club %] Modificar grupo [% club.name | html %] [% ELSE %] Criar um novo grupo [% club_template.name | html %] [% END %] &rsaquo; Grupos de leitores &rsaquo; Ferramentas &rsaquo; Biblioteca </title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

@@ -3,7 +3,7 @@
 [% USE Koha %]
 [% USE HtmlTags %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>[% IF ( biblionumber ) %]A editar [% title | html %] (Registo número [% biblionumber | html %])[% ELSE %]Adicionar registo MARC[% END %] &rsaquo; Catalogação &rsaquo; Koha</title>
+<title>[% IF ( biblionumber ) %]A editar [% title | html %] (Registo número [% biblionumber | html %])[% ELSE %]Adicionar registo MARC[% END %] &rsaquo; Catalogação &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 [% INCLUDE 'calendar.inc' %]
 [% Asset.js("lib/hc-sticky.js") | $raw %]

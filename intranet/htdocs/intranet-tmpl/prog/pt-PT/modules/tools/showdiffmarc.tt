@@ -2,7 +2,7 @@
 [% USE Asset %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Comparar registos correspondentes &rsaquo; Gerir registos MARC &rsaquo; Catalogação &rsaquo; Koha</title>
+<title>Comparar registos correspondentes &rsaquo; Gerir registos MARC &rsaquo; Catalogação &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 <style>
     ins { background-color: #e6ffe6; }

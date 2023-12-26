@@ -2,7 +2,7 @@
 [% USE raw %]
 [% USE Asset %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Criar administrador do sistema &rsaquo; Instalador Web &rsaquo; Koha</title>
+<title>Criar administrador do sistema &rsaquo; Instalador Web &rsaquo; Biblioteca</title>
 [% INCLUDE 'installer-doc-head-close.inc' %]
 </head>
 
@@ -11,7 +11,7 @@
  <div class="row">
  <div id="onboarding-step3" class="installer-main col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
  <div id="logo"><a href="#">Koha</a></div>
- <h1>Instalador Web &rsaquo; Criar leitor de administração do Koha</h1>
+ <h1>Instalador Web &rsaquo; Criar leitor de administração da Biblioteca</h1>
 
  [% INCLUDE 'onboarding_messages.inc' %]
 

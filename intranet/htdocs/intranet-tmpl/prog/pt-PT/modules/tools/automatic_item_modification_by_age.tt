@@ -2,7 +2,7 @@
 [% USE Asset %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Modificação automática de exemplares por idade &rsaquo; Catalogação &rsaquo; Koha</title>
+<title>Modificação automática de exemplares por idade &rsaquo; Catalogação &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

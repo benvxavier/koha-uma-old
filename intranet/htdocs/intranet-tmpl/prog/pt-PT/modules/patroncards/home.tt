@@ -1,6 +1,6 @@
 [% USE raw %]
  [% INCLUDE 'doc-head-open.inc' %]
- <title>Cartões de leitor &rsaquo; Ferramentas &rsaquo; Koha</title>
+ <title>Cartões de leitor &rsaquo; Ferramentas &rsaquo; Biblioteca</title>
  [% INCLUDE 'doc-head-close.inc' %]
 </head>
 <body id="pcard_home" class="tools pcard">

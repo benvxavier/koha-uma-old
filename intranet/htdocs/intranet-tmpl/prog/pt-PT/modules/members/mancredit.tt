@@ -9,7 +9,7 @@
 
 [% INCLUDE 'doc-head-open.inc' %]
 [% SET registers = Registers.all( { filters => { current_branch => 1 } } ) %]
-<title>Criar crédito manual &rsaquo; Leitores &rsaquo; Koha</title>
+<title>Criar crédito manual &rsaquo; Leitores &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

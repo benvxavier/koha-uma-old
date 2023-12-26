@@ -5,7 +5,7 @@
 [% PROCESS 'permissions.inc' %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>
- Definir permissões para [% INCLUDE 'patron-title.inc' no_html = 1 %] &rsaquo; Leitores &rsaquo; Koha </title>
+ Definir permissões para [% INCLUDE 'patron-title.inc' no_html = 1 %] &rsaquo; Leitores &rsaquo; Biblioteca </title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

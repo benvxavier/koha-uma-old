@@ -5,7 +5,7 @@
 [% USE TablesSettings %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Encomendas por fundo &rsaquo; Relatórios &rsaquo; Koha</title>
+<title>Encomendas por fundo &rsaquo; Relatórios &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 <body id="rep_orders_by_budget" class="rep">

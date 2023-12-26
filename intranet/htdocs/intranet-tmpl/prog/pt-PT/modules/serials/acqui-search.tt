@@ -1,5 +1,5 @@
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Pesquisar por fornecedor &rsaquo; Periódicos &rsaquo; Koha</title>
+<title>Pesquisar por fornecedor &rsaquo; Periódicos &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

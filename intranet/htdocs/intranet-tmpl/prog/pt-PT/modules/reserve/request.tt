@@ -19,7 +19,7 @@
 [% SET columns = ['name', 'cardnumber', 'dateofbirth', 'category', 'branch', 'address', 'phone'] %]
 [% PROCESS "patron-search.inc" %]
 [% UNLESS ( multi_hold ) %]
- <title>Reservar [% INCLUDE 'biblio-title-head.inc' %] &rsaquo; Reservas &rsaquo; Empréstimo &rsaquo; Koha</title>
+ <title>Reservar [% INCLUDE 'biblio-title-head.inc' %] &rsaquo; Reservas &rsaquo; Empréstimo &rsaquo; Biblioteca</title>
 [% ELSE %]
  <title>Confirmar reservas &rsaquo; Reservas &rsaquo; Circulação &rsaquo; Koha</title>
 [% END %]

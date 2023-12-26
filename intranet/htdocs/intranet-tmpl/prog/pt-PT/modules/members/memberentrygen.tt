@@ -12,7 +12,7 @@
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
  <title>
- [% UNLESS blocking_error %] [% IF ( opadd ) %] Adicionar leitor [% ELSE %] Modificar leitor [% END %] [% INCLUDE 'patron-title.inc' no_html = 1 %] [% IF patron_category %]([% patron_category.description | html %])[% END %] [% END %] &rsaquo; Leitores &rsaquo; Koha </title>
+ [% UNLESS blocking_error %] [% IF ( opadd ) %] Adicionar leitor [% ELSE %] Modificar leitor [% END %] [% INCLUDE 'patron-title.inc' no_html = 1 %] [% IF patron_category %]([% patron_category.description | html %])[% END %] [% END %] &rsaquo; Leitores &rsaquo; Biblioteca </title>
 <style>
 legend:hover {
     cursor: pointer;
@@ -183,10 +183,10 @@ legend:hover {
  [% SWITCH field %]
  [% CASE 'identity' %] <span>Identidade do leitor</span> |
  [% CASE 'guarantor' %] <span>Informação do fiador</span> |
- [% CASE 'primary_address' %] <span>Endereço principal</span> |
+ [% CASE 'primary_address' %] <span>Endereço</span> |
  [% CASE 'primary_contact' %] <span>Informações do contacto</span> |
  [% CASE 'alt_address' %] <span>Endereço alternativo</span> |
- [% CASE 'alt_contact' %] <span>Contacto alternativo</span> |
+ 
  [% CASE 'lib_mgmt' %] <span>Gestão da biblioteca</span> |
  [% CASE 'lib_setup' %] <span>Configuração da biblioteca</span> |
  [% CASE 'login' %] <span>Acesso OPAC/interface dos técnicos</span> |
@@ -276,30 +276,6 @@ legend:hover {
  [% END # /UNLESS notitle %]
  [% END # /UNLESS ( I ) %]
 
- [% UNLESS nosurname %]
- <li>
- [% IF ( patron_category.category_type == 'I' ) %]
- <label for="surname" class="required">
- Nome: </label>
- [% ELSE %]
- [% IF ( mandatorysurname ) %]
- <label for="surname" class="required">
- [% ELSE %]
- <label for="surname">
- [% END %] Apelido: </label>
- [% END %]
-
- [% IF ( uppercasesurnames ) %]
- <input style="text-transform:uppercase;" type="text" id="surname" name="surname" size="20"  value="[% patron.surname | html %]" />
- [% ELSE %]
- <input type="text" id="surname" name="surname" size="20"  value="[% patron.surname | html %]" />
- [% END %]
- [% IF ( mandatorysurname ) %]
- <span class="required">Obrigatório</span>
- [% END %]
- </li>
- [% END # /UNLESS nosurname %]
-
  [% UNLESS ( patron_category.category_type == 'I' ) %]
  [% UNLESS nofirstname %]
  <li>
@@ -314,6 +290,34 @@ legend:hover {
  [% END %]
  </li>
  [% END #/UNLESS nofirstname %]
+
+
+[% UNLESS nosurname %]
+ <li>
+ [% IF ( patron_category.category_type == 'I' ) %]
+ <label for="surname" class="required">
+ Nome: </label>
+ [% ELSE %]
+ [% IF ( mandatorysurname ) %]
+ <label for="surname" class="required">
+ [% ELSE %]
+ <label for="surname">
+ [% END %] Sobrenome: </label>
+ [% END %]
+
+ [% IF ( uppercasesurnames ) %]
+ <input style="text-transform:uppercase;" type="text" id="surname" name="surname" size="20"  value="[% patron.surname | html %]" />
+ [% ELSE %]
+ <input type="text" id="surname" name="surname" size="20"  value="[% patron.surname | html %]" />
+ [% END %]
+ [% IF ( mandatorysurname ) %]
+ <span class="required">Obrigatório</span>
+ [% END %]
+ </li>
+ [% END # /UNLESS nosurname %]
+
+
+<!--
  [% UNLESS nomiddle_name %]
  <li>
  [% IF ( mandatorymiddle_name ) %]
@@ -327,6 +331,8 @@ legend:hover {
  [% END %]
  </li>
  [% END #/UNLESS nomiddle_name %]
+-->
+
  [% UNLESS nodateofbirth %]
  <li>
  [% IF ( mandatorydateofbirth ) %]
@@ -344,6 +350,8 @@ legend:hover {
  <div id="dateofbirth_hint" class="hint">[% INCLUDE 'date-format.inc' %]</div>
  </li>
  [% END # /UNLESS nodateofbirth %]
+
+ <!--
  [% UNLESS noinitials %]
  <li>
  [% IF ( mandatoryinitials ) %]
@@ -385,9 +393,10 @@ legend:hover {
  [% IF ( patron_category.category_type == 'I' ) %]<input type="hidden" name="sex" value="N" />[% END %]
  </li>
  [% END #/UNLESS noothernames %]
+-->
 
  [% UNLESS ( patron_category.category_type == 'I' ) %]
- [% UNLESS nosex %]
+ [% UNLESS nosex %] 
  <li class="radio">
  [% UNLESS ( opduplicate ) %]
  [% IF ( female ) %]
@@ -414,7 +423,8 @@ legend:hover {
  <label for="sex-female"><span class="patronsex-female">Feminino </span></label><input type="radio" name="sex" id="sex-female" value="F" />
  <label for="sex-male"><span class="patronsex-male">Masculino </span></label><input type="radio" name="sex" id="sex-male" value="M" />
  <label for="sex-other"><span class="patronsex-other">Outro </span></label><input type="radio" name="sex" id="sex-other" value="O" />
- <label for="sex-none"><span class="patronsex-none">Nenhuma especificada </span></label><input type="radio" name="sex" id="sex-none" value="" checked="checked" />
+ <label for="sex-none"><span class="patronsex-none">Nenhuma especificada</span></label><input type="radio" name="sex" id="sex-none" value="" checked="checked" />
+ 
  [% END # /UNLESS ( opduplicate )%]
  </li>
  [% END # /UNLESS nosex %]
@@ -680,6 +690,7 @@ legend:hover {
  </li>
  [% END # /UNLESS nophonepro %]
 
+<!--
  [% UNLESS nomobile %]
  <li>
  [% IF ( mandatorymobile ) %]
@@ -693,7 +704,7 @@ legend:hover {
  [% END %]
  </li>
  [% END # /UNLESS nomobile %]
-
+-->
  [% UNLESS noemail %]
  <li>
  [% IF ( mandatoryemail ) %]

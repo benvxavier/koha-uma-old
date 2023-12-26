@@ -1,7 +1,7 @@
 [% USE raw %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Leitores sem empréstimos &rsaquo; Relatórios &rsaquo; Koha</title>
+<title>Leitores sem empréstimos &rsaquo; Relatórios &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

@@ -1,9 +1,12 @@
+// Add by Me
+@use "scss/themes/default" as *;
+
 /* Bootstrap variable customizations */
 $headings-color: #727272;
 $headings-font-weight: 600;
 $enable-gradients: false;
 $info: #2679CC;
-$danger: rgb( 185, 32, 32 );
+$danger: rgb(185, 32, 32);
 $font-size-base: 1rem;
 $h1-font-size: $font-size-base * 1.5;
 $h2-font-size: $font-size-base * 1.4;
@@ -11,7 +14,7 @@ $h3-font-size: $font-size-base * 1.3;
 $h4-font-size: $font-size-base * 1.2;
 $h5-font-size: $font-size-base * 1.1;
 $h6-font-size: $font-size-base;
-$base-theme-color: #548300;
+$base-theme-color: $df-secondary;
 $color: #999999;
 $links: #0074AD;
 $links-hover: #005580;
@@ -21,7 +24,7 @@ $sci-heading-color: #727272;
 $high-contrast-grey: #666666;
 
 @mixin shadowed {
-    box-shadow: 0 1px 1px 0 rgba( 0, 0, 0, .2 );
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .2);
 }
 
 @mixin border-radius-all($radius: 3px) {
@@ -30,7 +33,7 @@ $high-contrast-grey: #666666;
 
 @mixin input-focus {
     border-color: $base-theme-color;
-    box-shadow: inset 0 1px 1px rgba( 0, 0, 0, .075 ), 0 0 8px rgba( 194, 228, 136, .6 );
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(194, 228, 136, .6);
 }
 
 /* Bootstrap imports */
@@ -94,13 +97,14 @@ body {
 }
 
 body {
-    background: #FCF9FC none;
+    background: var(--bg-secondary) none;
     display: flex;
     flex-direction: column;
     height: 100%;
 }
 
 a {
+
     &:link,
     &:visited {
         color: $links;
@@ -109,6 +113,7 @@ a {
 
 a,
 button {
+
     &:hover,
     &:active {
         color: $links-hover;
@@ -130,6 +135,7 @@ caption {
 }
 
 .fa {
+
     &.fa-icon-black,
     &.fa-icon-white {
         color: #000;
@@ -143,13 +149,13 @@ caption {
 .navbar-nav {
     margin-right: 0;
 
-    & > li {
-        & > a {
+    &>li {
+        &>a {
             color: $high-contrast-grey;
             font-weight: bold;
         }
 
-        & > .dropdown-menu {
+        &>.dropdown-menu {
             &.dropdown-menu-right {
                 &::after {
                     left: unset;
@@ -173,6 +179,7 @@ caption {
 }
 
 .alert {
+
     &.alert-info,
     &.alert-warning {
         color: #000;
@@ -185,7 +192,7 @@ caption {
 
 .btn-primary {
     background-color: $base-theme-color;
-    border: 1px solid darken( $base-theme-color, 10% );
+    border: 1px solid darken($base-theme-color, 10%);
     color: #FFF;
 
     &:link,
@@ -196,53 +203,53 @@ caption {
     &:hover,
     &:active {
         background-color: $base-theme-color;
-        border-color: lighten( $base-theme-color, 5% );
-        box-shadow: 0 0 0 1px lighten( saturate( $base-theme-color, .5 ), 4 );
+        border-color: lighten($base-theme-color, 5%);
+        box-shadow: 0 0 0 1px lighten(saturate($base-theme-color, .5), 4);
         color: #FFF;
     }
 
     &:focus {
-        box-shadow: 0 0 0 2px lighten( $base-theme-color, 10% );
+        box-shadow: 0 0 0 2px lighten($base-theme-color, 10%);
     }
 
     &.disabled,
     &:disabled {
-        background-color: lighten( $base-theme-color, 5% );
-        border-color: lighten( $base-theme-color, 5% );
+        background-color: lighten($base-theme-color, 5%);
+        border-color: lighten($base-theme-color, 5%);
         box-shadow: none;
         color: #FFF;
         cursor: not-allowed;
 
         &:hover,
         &.hover {
-            background-color: lighten( $base-theme-color, 5% );
-            border-color: lighten( $base-theme-color, 5% );
+            background-color: lighten($base-theme-color, 5%);
+            border-color: lighten($base-theme-color, 5%);
             box-shadow: none;
             color: #FFF;
             cursor: not-allowed;
         }
     }
 
-    &:not( :disabled, .disabled ):active:focus,
-    & &:not( :disabled, .disabled ).active:focus {
-        box-shadow: 0 0 0 .2rem lighten( $base-theme-color, 10% );
+    &:not( :disabled, .disabled):active:focus,
+    & &:not( :disabled, .disabled).active:focus {
+        box-shadow: 0 0 0 .2rem lighten($base-theme-color, 10%);
     }
 
-    &:not( :disabled, .disabled ).active,
-    &:not( :disabled, .disabled ):active,
-    &:not( :disabled, .disabled ):focus,
-    &:not( :disabled, .disabled ).focus {
-        background-color: lighten( $base-theme-color, 5% );
-        border-color: lighten( $base-theme-color, 10% );
+    &:not( :disabled, .disabled).active,
+    &:not( :disabled, .disabled):active,
+    &:not( :disabled, .disabled):focus,
+    &:not( :disabled, .disabled).focus {
+        background-color: lighten($base-theme-color, 5%);
+        border-color: lighten($base-theme-color, 10%);
     }
 }
 
-.show > .btn-primary.dropdown-toggle {
-    background-color: lighten( $base-theme-color, 5% );
-    border-color: lighten( $base-theme-color, 10% );
+.show>.btn-primary.dropdown-toggle {
+    background-color: lighten($base-theme-color, 5%);
+    border-color: lighten($base-theme-color, 10%);
 
     &:focus {
-        box-shadow: 0 0 0 .2rem lighten( $base-theme-color, 10% );
+        box-shadow: 0 0 0 .2rem lighten($base-theme-color, 10%);
     }
 }
 
@@ -250,9 +257,9 @@ caption {
     $base-bg: #B92020;
 
     background-color: $base-bg;
-    background-image: linear-gradient( to bottom, lighten( saturate( $base-bg, .5 ), 4 ), $base-bg );
+    background-image: linear-gradient(to bottom, lighten(saturate($base-bg, .5), 4), $base-bg );
     background-position: 0;
-    border: 1px solid darken( $base-bg, 5% );
+    border: 1px solid darken($base-bg, 5%);
     color: #FFF;
 
     &:link,
@@ -262,15 +269,15 @@ caption {
 
     &:hover,
     &:active {
-        $base-bg: darken( $base-bg, 2 );
+        $base-bg: darken($base-bg, 2);
 
         background-color: $base-bg;
-        background-image: linear-gradient( to bottom, lighten( saturate( $base-bg, .5 ), 4 ), $base-bg );
+        background-image: linear-gradient(to bottom, lighten(saturate($base-bg, .5), 4), $base-bg );
         color: #FFF;
     }
 
     &:focus {
-        box-shadow: 0 0 0 2px lighten( $base-bg, 10% );
+        box-shadow: 0 0 0 2px lighten($base-bg, 10%);
     }
 }
 
@@ -279,9 +286,9 @@ caption {
     $base-bg: #E6E6E6;
 
     background-color: $base-bg;
-    background-image: linear-gradient( to bottom, lighten( saturate( $base-bg, .5 ), 4 ), $base-bg );
+    background-image: linear-gradient(to bottom, lighten(saturate($base-bg, .5), 4), $base-bg );
     background-position: 0;
-    border: 1px solid darken( $base-bg, 20% );
+    border: 1px solid darken($base-bg, 20%);
     color: #000;
 
     &:link,
@@ -291,19 +298,19 @@ caption {
 
     &:hover,
     &:active {
-        $base-bg: darken( $base-bg, 2 );
+        $base-bg: darken($base-bg, 2);
 
         background-color: $base-bg;
-        background-image: linear-gradient( to bottom, lighten( saturate( $base-bg, .5 ), 4 ), $base-bg );
+        background-image: linear-gradient(to bottom, lighten(saturate($base-bg, .5), 4), $base-bg );
         color: #000;
     }
 
     &:focus {
-        box-shadow: 0 0 0 2px darken( $base-bg, 10% );
+        box-shadow: 0 0 0 2px darken($base-bg, 10%);
     }
 
-    &:not( :disabled, .disabled ):active,
-    &:not( :disabled, .disabled ).active {
+    &:not( :disabled, .disabled):active,
+    &:not( :disabled, .disabled).active {
         color: #000;
     }
 }
@@ -315,7 +322,7 @@ textarea,
 .form-control {
     &:focus {
         border-color: $base-theme-color;
-        box-shadow: inset 0 1px 1px rgba( 0, 0, 0, .075 ), 0 0 8px rgba( 194, 228, 136, .6 );
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(194, 228, 136, .6);
     }
 }
 
@@ -327,11 +334,11 @@ textarea,
 .dt-button {
     background-color: transparent;
     border: 0;
-    color: lighten( $links, 1.2 );
+    color: lighten($links, 1.2);
     line-height: 20px;
     padding: 4px 12px;
     text-align: center;
-    text-shadow: 0 1px 1px rgba( 255, 255, 255, .75 );
+    text-shadow: 0 1px 1px rgba(255, 255, 255, .75);
     vertical-align: middle;
 
     &:hover {
@@ -356,15 +363,16 @@ textarea,
 
         &:hover {
             color: #333;
-            filter: alpha( opacity=65 );
+            filter: alpha(opacity=65);
             opacity: .65;
         }
 
         i {
+
             &.fa,
             &.fa:hover {
                 color: #333;
-                filter: alpha( opacity=65 );
+                filter: alpha(opacity=65);
                 opacity: .65;
             }
         }
@@ -431,7 +439,7 @@ div.dt-button-collection button.dt-button.buttons-columnVisibility:hover::before
     width: 1em;
 }
 
-div.dt-button-collection button.dt-button.buttons-columnVisibility:active:not( .disabled ):hover:not( .disabled ) {
+div.dt-button-collection button.dt-button.buttons-columnVisibility:active:not(.disabled):hover:not(.disabled) {
     background: transparent none;
     box-shadow: none;
 }
@@ -455,7 +463,7 @@ div.dt-button-collection button.dt-button.buttons-columnVisibility.active:hover:
     width: 1em;
 }
 
-div.dt-button-collection button.dt-button.buttons-columnVisibility.active:not( .disabled ):hover:not( .disabled ) {
+div.dt-button-collection button.dt-button.buttons-columnVisibility.active:not(.disabled):hover:not(.disabled) {
     background: transparent none;
     box-shadow: none;
 }
@@ -485,7 +493,7 @@ div.dt-button-collection button.dt-button.buttons-print:hover {
     background: #FFC none;
 }
 
-div.dt-button-collection button.dt-button.buttons-html5:not( .disabled )::before {
+div.dt-button-collection button.dt-button.buttons-html5:not(.disabled)::before {
     color: #222BAC;
     display: inline-block;
     font-family: FontAwesome;
@@ -493,19 +501,19 @@ div.dt-button-collection button.dt-button.buttons-html5:not( .disabled )::before
     width: 1em;
 }
 
-div.dt-button-collection button.dt-button.buttons-excel:not( .disabled )::before {
+div.dt-button-collection button.dt-button.buttons-excel:not(.disabled)::before {
     content: "\f1c3";
 }
 
-div.dt-button-collection button.dt-button.buttons-csv:not( .disabled )::before {
+div.dt-button-collection button.dt-button.buttons-csv:not(.disabled)::before {
     content: "\f0ce";
 }
 
-div.dt-button-collection button.dt-button.buttons-copy:not( .disabled )::before {
+div.dt-button-collection button.dt-button.buttons-copy:not(.disabled)::before {
     content: "\f0c5";
 }
 
-div.dt-button-collection button.dt-button.buttons-print:not( .disabled )::before {
+div.dt-button-collection button.dt-button.buttons-print:not(.disabled)::before {
     color: #222BAC;
     content: "\f02f";
     display: inline-block;
@@ -518,7 +526,7 @@ div.dt-button-collection button.dt-button.buttons-print:not( .disabled )::before
     background-color: #FFF;
     border: 2px solid $links-hover;
     border-radius: 3px;
-    box-shadow: 3px 3px 8px rgba( 0, 0, 0, .3 );
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, .3);
     left: 50%;
     margin-left: -200px;
     margin-top: -100px;
@@ -536,7 +544,7 @@ div.dt-button-collection button.dt-button.buttons-print:not( .disabled )::before
         padding: .5em;
     }
 
-    & > div {
+    &>div {
         padding: 1em;
     }
 }
@@ -546,6 +554,7 @@ table {
         &.dtr-column {
             tbody {
                 tr {
+
                     td,
                     th {
                         &.dtr-control {
@@ -572,6 +581,7 @@ table {
                     }
 
                     &.parent {
+
                         td,
                         th {
                             &.dtr-control {
@@ -670,20 +680,20 @@ table {
 }
 
 .table {
-    &.dataTable{
-        thead{
+    &.dataTable {
+        thead {
             .sorting_asc {
-                background: url( "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2bW0iIGhlaWdodD0iMi4zODRtbSIgdmlld0JveD0iMCAwIDYuMDAwMDAwMiAyLjM4NDAzODkiPjxnPjxwYXRoIGZpbGw9IiMwMDZhY2MiIGQ9Ik00LjA1IDEuNzRoLTIuMUwzIC42NHoiLz48L2c+PC9zdmc+" ) no-repeat scroll 100% 80% #E2E8E8;
+                background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2bW0iIGhlaWdodD0iMi4zODRtbSIgdmlld0JveD0iMCAwIDYuMDAwMDAwMiAyLjM4NDAzODkiPjxnPjxwYXRoIGZpbGw9IiMwMDZhY2MiIGQ9Ik00LjA1IDEuNzRoLTIuMUwzIC42NHoiLz48L2c+PC9zdmc+") no-repeat scroll 100% 80% #E2E8E8;
                 padding-right: 19px;
             }
 
             .sorting_desc {
-                background: url( "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2bW0iIGhlaWdodD0iMi4zODRtbSIgdmlld0JveD0iMCAwIDYuMDAwMDAwMiAyLjM4NDAzODkiPjxnPjxwYXRoIGZpbGw9IiMwMDZhY2MiIGQ9Ik00LjA1LjY0aC0yLjFMMyAxLjc0eiIvPjwvZz48L3N2Zz4=" ) no-repeat scroll 100% 80% #E2E8E8;
+                background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2bW0iIGhlaWdodD0iMi4zODRtbSIgdmlld0JveD0iMCAwIDYuMDAwMDAwMiAyLjM4NDAzODkiPjxnPjxwYXRoIGZpbGw9IiMwMDZhY2MiIGQ9Ik00LjA1LjY0aC0yLjFMMyAxLjc0eiIvPjwvZz48L3N2Zz4=") no-repeat scroll 100% 80% #E2E8E8;
                 padding-right: 19px;
             }
 
             .sorting {
-                background: url( "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2bW0iIGhlaWdodD0iMi41NTFtbSIgdmlld0JveD0iMCAwIDYuMDAwMDAwMyAyLjU1MDY2MTQiPjxwYXRoIGZpbGw9IiNhY2FjYWMiIGQ9Ik00LjA1IDEuNDVoLTIuMUwzIDIuNTV6Ii8+PHBhdGggZmlsbD0iI2FjYWNhYyIgZD0iTTQuMDUgMS4xaC0yLjFMMyAweiIvPjwvc3ZnPg==" ) no-repeat scroll 100% 75% #E2E8E8;
+                background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2bW0iIGhlaWdodD0iMi41NTFtbSIgdmlld0JveD0iMCAwIDYuMDAwMDAwMyAyLjU1MDY2MTQiPjxwYXRoIGZpbGw9IiNhY2FjYWMiIGQ9Ik00LjA1IDEuNDVoLTIuMUwzIDIuNTV6Ii8+PHBhdGggZmlsbD0iI2FjYWNhYyIgZD0iTTQuMDUgMS4xaC0yLjFMMyAweiIvPjwvc3ZnPg==") no-repeat scroll 100% 75% #E2E8E8;
                 padding-right: 19px;
             }
         }
@@ -806,7 +816,7 @@ button {
     }
 
     &:focus {
-        box-shadow: 0 0 0 1px lighten( $links, 20% );
+        box-shadow: 0 0 0 1px lighten($links, 20%);
     }
 
     &.btn-lg {
@@ -821,6 +831,7 @@ button {
     }
 
     i {
+
         &.fa,
         &.fa:hover {
             opacity: .65;
@@ -835,7 +846,7 @@ button {
 }
 
 #logo {
-    background: transparent url( "../images/koha-green-logo.svg" ) no-repeat scroll 0%;
+    background: transparent url("../images/koha-green-logo.svg") no-repeat scroll 0%;
     border: 0;
     float: left !important;
     margin: 0;
@@ -870,8 +881,8 @@ button {
     padding: 0 1rem;
 
     .nav {
-        > .active {
-            > p {
+        >.active {
+            >p {
                 padding: 0 15px;
             }
         }
@@ -883,6 +894,7 @@ button {
 }
 
 .fonts-loaded {
+
     body,
     button,
     input,
@@ -903,7 +915,7 @@ button {
     .nav {
         li {
             &.dropdown {
-                > a {
+                >a {
                     &:focus {
                         .caret {
                             border-bottom-color: $base-theme-color;
@@ -944,41 +956,42 @@ button {
             }
         }
 
-            > a {
-                color: #727272;
-                font-weight: bold;
-                text-shadow: none;
+        >a {
+            color: #727272;
+            font-weight: bold;
+            text-shadow: none;
 
+            &:hover {
+                color: $base-theme-color;
+            }
+
+            &:focus {
+                color: $base-theme-color;
+            }
+        }
+
+        &.dropdown {
+            >a {
                 &:hover {
-                    color: $base-theme-color;
+                    .caret {
+                        border-bottom-color: $base-theme-color;
+                        border-top-color: $base-theme-color;
+                    }
                 }
 
                 &:focus {
-                    color: $base-theme-color;
+                    .caret {
+                        border-bottom-color: $base-theme-color;
+                        border-top-color: $base-theme-color;
+                    }
                 }
             }
 
-            &.dropdown {
-                > a {
-                    &:hover {
-                        .caret {
-                            border-bottom-color: $base-theme-color;
-                            border-top-color: $base-theme-color;
-                        }
-                    }
+            &.open {
+                >.dropdown-toggle {
+                    background-color: transparent;
 
-                    &:focus {
-                        .caret {
-                            border-bottom-color: $base-theme-color;
-                            border-top-color: $base-theme-color;
-                        }
-                    }
-                }
-
-                &.open {
-                    > .dropdown-toggle {
-                        background-color: transparent;
-                        li {
+                    li {
                         color: $base-theme-color;
 
                         .caret {
@@ -997,108 +1010,108 @@ button {
     }
 
 
-.navbar-inner {
-    background: #FCF9FC none;
-}
-
-.navbar-fixed-bottom {
-    &.navbar-static-bottom {
-        position: static;
-    }
-
     .navbar-inner {
-        box-shadow: none;
-        min-height: $footer-height;
+        background: #FCF9FC none;
     }
-}
 
-// Wrapper for page content to push down footer
-#wrap {
-    height: auto !important;
-    height: 100%;
-    margin: 0 auto -#{$footer-height + 1};
+    .navbar-fixed-bottom {
+        &.navbar-static-bottom {
+            position: static;
+        }
 
-    // Negative indent footer by its height
-    min-height: 100%;
-    padding-left: 40px;
-    padding-right: 40px;
-}
+        .navbar-inner {
+            box-shadow: none;
+            min-height: $footer-height;
+        }
+    }
 
-#i18nMenu {
-    margin-left: 1em;
+    // Wrapper for page content to push down footer
+    #wrap {
+        height: auto !important;
+        height: 100%;
+        margin: 0 auto -#{$footer-height + 1};
 
-    li {
-        font-size: 85%;
+        // Negative indent footer by its height
+        min-height: 100%;
+        padding-left: 40px;
+        padding-right: 40px;
+    }
 
-        a {
-            color: $links;
+    #i18nMenu {
+        margin-left: 1em;
 
-            &:hover {
-                color: $base-theme-color;
+        li {
+            font-size: 85%;
+
+            a {
+                color: $links;
+
+                &:hover {
+                    color: $base-theme-color;
+                }
+            }
+
+            li {
+                font-size: 100%;
+
+                >a {
+                    font-size: 100%;
+
+                    &:hover {
+                        color: #FFF;
+                    }
+                }
             }
         }
 
-        li {
-            font-size: 100%;
-
-            > a {
-                font-size: 100%;
-
-                &:hover {
-                    color: #FFF;
+        .dropdown-menu {
+            li {
+                p {
+                    clear: both;
+                    display: block;
+                    font-weight: normal;
+                    line-height: 20px;
+                    padding: 3px 20px;
+                    white-space: nowrap;
                 }
             }
         }
     }
 
     .dropdown-menu {
-        li {
-            p {
-                clear: both;
-                display: block;
-                font-weight: normal;
-                line-height: 20px;
-                padding: 3px 20px;
-                white-space: nowrap;
+        border-radius: 0;
+
+        >li {
+            >a {
+                font-size: 90%;
+
+                &:hover {
+                    background: $base-theme-color none;
+                }
+
+                &:focus {
+                    background: $base-theme-color none;
+                }
             }
         }
     }
-}
 
-.dropdown-menu {
-    border-radius: 0;
+    .dropdown-item:active {
+        background-color: $links;
+    }
 
-    > li {
-        > a {
-            font-size: 90%;
-
-            &:hover {
-                background: $base-theme-color none;
-            }
-
-            &:focus {
-                background: $base-theme-color none;
-            }
+    #koha_url {
+        p {
+            color: $high-contrast-grey;
+            float: right;
+            margin: 0;
         }
     }
-}
 
-.dropdown-item:active {
-    background-color: $links;
-}
-
-#koha_url {
-    p {
-        color: $high-contrast-grey;
-        float: right;
-        margin: 0;
+    #wrapper {
+        flex: 1 0 auto;
+        padding-left: 40px;
+        padding-right: 40px;
     }
-}
-
-#wrapper {
-    flex: 1 0 auto;
-    padding-left: 40px;
-    padding-right: 40px;
-}
 
 }

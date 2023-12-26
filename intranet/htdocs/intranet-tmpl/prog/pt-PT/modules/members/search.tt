@@ -8,7 +8,7 @@
 [% SET libraries = Branches.all %]
 [% SET categories = Categories.all.unblessed %]
 [% PROCESS 'patron-search.inc' %]
-<title>Pesquisar leitores &rsaquo; Koha</title>
+<title>Pesquisar leitores &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 <style> .modal-body .close { display: none; } </style>[%# FIXME This is not great, we should make members/memberentrygen.tt use a modal as well and we won't need that here %]
 </head>

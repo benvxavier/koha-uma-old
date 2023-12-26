@@ -7,7 +7,7 @@
 [% SET footerjs = 1 %]
 [% PROCESS 'accounts.inc' %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Detalhes do [% IF type == 'credit' %]crédito[% ELSE %]débito[% END %] &rsaquo; [% INCLUDE 'patron-title.inc' no_html = 1 %] &rsaquo; Leitores &rsaquo; Koha</title>
+<title>Detalhes do [% IF type == 'credit' %]crédito[% ELSE %]débito[% END %] &rsaquo; [% INCLUDE 'patron-title.inc' no_html = 1 %] &rsaquo; Leitores &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

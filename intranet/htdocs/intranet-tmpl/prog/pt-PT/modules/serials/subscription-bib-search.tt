@@ -1,5 +1,5 @@
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Pesquisa &rsaquo; Periódicos &rsaquo; Koha</title>
+<title>Pesquisa &rsaquo; Periódicos &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 <body id="ser_subscription-bib-search" class="ser">

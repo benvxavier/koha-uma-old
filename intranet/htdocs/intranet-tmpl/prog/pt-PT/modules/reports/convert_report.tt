@@ -1,5 +1,5 @@
 [% INCLUDE 'doc-head-open.inc' %]
- <title>Converter relatório &rsaquo; Relatórios &rsaquo; Koha</title>
+ <title>Converter relatório &rsaquo; Relatórios &rsaquo; Biblioteca</title>
  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
  </head>
  <body id="rep_report_convert" class="rep">

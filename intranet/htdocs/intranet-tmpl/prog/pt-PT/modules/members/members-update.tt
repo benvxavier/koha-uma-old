@@ -6,7 +6,7 @@
 [% USE KohaDates %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Atualizar registos de leitores &rsaquo; Leitores &rsaquo; Koha</title>
+<title>Atualizar registos de leitores &rsaquo; Leitores &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

@@ -4,7 +4,7 @@
 [% USE Registers %]
 
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Ferramentas &rsaquo; Koha</title>
+<title>Ferramentas &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 <body id="tools_tools-home" class="tools">

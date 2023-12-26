@@ -4,7 +4,7 @@
 [% PROCESS 'merge-record.inc' %]
 
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Unificar registos &rsaquo; Catalogação &rsaquo; Koha</title>
+<title>Unificar registos &rsaquo; Catalogação &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 <style>
 div.record ul, div.record li { float:none; display:block; }

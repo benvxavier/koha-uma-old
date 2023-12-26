@@ -1,5 +1,5 @@
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Criar um novo tipo de documento &rsaquo; Instalador Web &rsaquo; Koha</title>
+<title>Criar um novo tipo de documento &rsaquo; Instalador Web &rsaquo; Biblioteca</title>
 [% INCLUDE 'installer-doc-head-close.inc' %]
 </head>
 

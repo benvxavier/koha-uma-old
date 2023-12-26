@@ -4,7 +4,7 @@
 [% USE Asset %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Reclamações em atraso &rsaquo; Circulação &rsaquo; Koha</title>
+<title>Reclamações em atraso &rsaquo; Circulação &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 <body id="circ_overdue_recalls" class="circ">

@@ -3,9 +3,9 @@
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 [% IF ( opsearch ) %]
- <title>Pontos de pesquisa de autoridades Z39.50 &rsaquo; Koha</title>
+ <title>Pontos de pesquisa de autoridades Z39.50 &rsaquo; Biblioteca</title>
 [% ELSE %]
- <title>Resultados da pesquisa de autoridades Z39.50 &rsaquo; Koha</title>
+ <title>Resultados da pesquisa de autoridades Z39.50 &rsaquo; Biblioteca</title>
  [% END %]
 [% INCLUDE 'doc-head-close.inc' %]
 <style>

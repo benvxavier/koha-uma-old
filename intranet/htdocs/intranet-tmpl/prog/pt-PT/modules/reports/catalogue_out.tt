@@ -2,7 +2,7 @@
 [% USE Branches %]
 [% USE ItemTypes %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Exemplares nunca emprestados &rsaquo; Relatórios &rsaquo; Koha</title>
+<title>Exemplares nunca emprestados &rsaquo; Relatórios &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 <style>
     .sql {display: none;}

@@ -48,7 +48,7 @@ ul {
 
                     &:hover {
                         //background-color: $background-color-primary;
-                        background: #201d6a;
+                        background: var(--secondary);
                         color: #FFF;
 
                         img {

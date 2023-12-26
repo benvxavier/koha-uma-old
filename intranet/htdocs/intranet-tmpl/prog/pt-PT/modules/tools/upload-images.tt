@@ -3,7 +3,7 @@
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>
- [% IF ( biblio ) %] Carregar imagem local de capa para [% INCLUDE 'biblio-title-head.inc' %] &rsaquo; [% ELSE %] Carregar imagem local de capa &rsaquo; [% END %] Catalogação &rsaquo; Koha</title>
+ [% IF ( biblio ) %] Carregar imagem local de capa para [% INCLUDE 'biblio-title-head.inc' %] &rsaquo; [% ELSE %] Carregar imagem local de capa &rsaquo; [% END %] Catalogação &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 [% FILTER collapse %]
  <style>

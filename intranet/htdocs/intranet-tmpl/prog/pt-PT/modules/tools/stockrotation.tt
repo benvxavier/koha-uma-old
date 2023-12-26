@@ -6,7 +6,7 @@
 [% USE TablesSettings %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Rotação de stock &rsaquo; Catalogação &rsaquo; Koha</title>
+<title>Rotação de stock &rsaquo; Catalogação &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

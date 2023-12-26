@@ -1,6 +1,6 @@
 [% USE raw %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Reservas de curso &rsaquo; Koha</title>
+<title>Reservas de curso &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 <body id="courses_invalid_course" class="course">
 

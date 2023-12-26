@@ -3,9 +3,9 @@
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 [% IF subscription %]
-<title>Renovação da assinatura de periódicos #[% subscription.subscriptionid | html %] &rsaquo; Koha</title>
+<title>Renovação da assinatura de periódicos #[% subscription.subscriptionid | html %] &rsaquo; Biblioteca</title>
 [% ELSE %]
-<title>Renovação da assinatura de periódico &rsaquo; Koha</title>
+<title>Renovação da assinatura de periódico &rsaquo; Biblioteca</title>
 [% END %]
 [% INCLUDE 'doc-head-close.inc' %]
 </head>

@@ -12,7 +12,7 @@
 [% SET searchtype = searchtype || Koha.Preference('DefaultPatronSearchMethod') %]
 [% PROCESS 'patron-search.inc' %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Leitores[% IF ( searching ) %] &rsaquo; Resultados de pesquisa[% END %] &rsaquo; Koha</title>
+<title>Leitores[% IF ( searching ) %] &rsaquo; Resultados de pesquisa[% END %] &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

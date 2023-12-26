@@ -21,7 +21,7 @@
 [% END %]
 [% SET registers = Registers.all( filters => { current_branch => 1 } ) %]
 <title>
- [% IF type == 'WRITEOFF' %] Perdoar um montante para [% INCLUDE 'patron-title.inc' no_html = 1 %] [% ELSE %] Pagar multa para [% INCLUDE 'patron-title.inc' no_html = 1 %] [% END %] &rsaquo; Leitores &rsaquo; Koha </title>
+ [% IF type == 'WRITEOFF' %] Perdoar um montante para [% INCLUDE 'patron-title.inc' no_html = 1 %] [% ELSE %] Pagar multa para [% INCLUDE 'patron-title.inc' no_html = 1 %] [% END %] &rsaquo; Leitores &rsaquo; Biblioteca </title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

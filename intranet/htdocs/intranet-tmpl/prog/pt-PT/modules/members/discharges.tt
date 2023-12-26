@@ -4,7 +4,7 @@
 [% USE KohaDates %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Pedidos de quitação pendentes &rsaquo; Leitores &rsaquo; Koha</title>
+<title>Pedidos de quitação pendentes &rsaquo; Leitores &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 <body id="pat_discharges" class="pat">

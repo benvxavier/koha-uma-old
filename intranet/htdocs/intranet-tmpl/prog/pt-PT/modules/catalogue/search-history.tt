@@ -4,7 +4,7 @@
 [% INCLUDE 'doc-head-open.inc' %]
 [% USE Koha %]
 [% USE KohaDates %]
-<title>Histórico de pesquisa &rsaquo; Catalogação &rsaquo; Koha</title>
+<title>Histórico de pesquisa &rsaquo; Catalogação &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

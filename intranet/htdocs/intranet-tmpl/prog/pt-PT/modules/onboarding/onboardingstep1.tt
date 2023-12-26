@@ -1,6 +1,6 @@
 [% INCLUDE 'doc-head-open.inc' %]
 
-<title>Criar a biblioteca &rsaquo; Instalador Web &rsaquo; Koha</title>
+<title>Criar a biblioteca &rsaquo; Instalador Web &rsaquo; Biblioteca</title>
 [% INCLUDE 'installer-doc-head-close.inc' %]
 </head>
 

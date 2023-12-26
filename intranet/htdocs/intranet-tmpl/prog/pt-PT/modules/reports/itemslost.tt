@@ -8,7 +8,7 @@
 [% USE Price %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Exemplares perdidos &rsaquo; Relatórios &rsaquo; Koha</title>
+<title>Exemplares perdidos &rsaquo; Relatórios &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

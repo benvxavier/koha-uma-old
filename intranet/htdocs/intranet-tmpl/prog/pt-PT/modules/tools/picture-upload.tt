@@ -2,7 +2,7 @@
 [% USE Asset %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Carregar fotografias dos leitores &rsaquo; Ferramentas &rsaquo; Koha</title>
+<title>Carregar fotografias dos leitores &rsaquo; Ferramentas &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

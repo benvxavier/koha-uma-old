@@ -6,7 +6,7 @@
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>
- [% UNLESS blocking_error %] Estatísticas do leitor [% INCLUDE 'patron-title.inc' no_html = 1 %] [% END %] &rsaquo; Leitores &rsaquo; Koha </title>
+ [% UNLESS blocking_error %] Estatísticas do leitor [% INCLUDE 'patron-title.inc' no_html = 1 %] [% END %] &rsaquo; Leitores &rsaquo; Biblioteca </title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

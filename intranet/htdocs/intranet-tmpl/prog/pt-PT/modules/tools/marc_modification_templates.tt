@@ -4,7 +4,7 @@
 [% USE TablesSettings %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Modelos de modificação MARC &rsaquo; Catalogação &rsaquo; Koha</title>
+<title>Modelos de modificação MARC &rsaquo; Catalogação &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 [% FILTER collapse %]
  <style>

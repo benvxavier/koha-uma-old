@@ -7,7 +7,7 @@
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
 <title>
- [% IF op == 'view' %] Conteúdos de [% shelf.shelfname | html %] &rsaquo; [% END %] [% IF op == 'add_form' %] Criar nova lista &rsaquo; [% END %] [% IF op == 'edit_form' %] Editar lista [% shelf.shelfname | html %] &rsaquo; [% END %] Listas &rsaquo; Koha </title>
+ [% IF op == 'view' %] Conteúdos de [% shelf.shelfname | html %] &rsaquo; [% END %] [% IF op == 'add_form' %] Criar nova lista &rsaquo; [% END %] [% IF op == 'edit_form' %] Editar lista [% shelf.shelfname | html %] &rsaquo; [% END %] Listas &rsaquo; Biblioteca </title>
 [% INCLUDE 'doc-head-close.inc' %]
 <style>textarea { width: 100%; }</style>
 

@@ -4,7 +4,7 @@
 [% PROCESS 'member-display-address-style.inc' %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Verificar leitor duplicado &rsaquo; Koha</title>
+<title>Verificar leitor duplicado &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 </head>
 

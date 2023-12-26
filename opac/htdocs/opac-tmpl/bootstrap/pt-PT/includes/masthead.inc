@@ -13,12 +13,16 @@
 
 <button id="scrolltocontent">Ir para o conteúdo principal</button>
 <div id="wrapper">
- <div id="header-region" class="noprint">
+<div id="header-region" class="noprint">
  <nav class="navbar navbar-expand">
- <div id="logo">
+ <!--<div id="logo">
  <a class="navbar-brand" href="/cgi-bin/koha/opac-main.pl">
  [% IF ( LibraryNameTitle ) %] [% LibraryNameTitle | html %] [% ELSE %] Koha online[% END %] </a>
- </div>
+ </div>-->
+<a id="" class="navbar-brand u-flex-center" href="/cgi-bin/koha/opac-main.pl">
+   <img src="http://www.uma.co.ao/static/media/lgH3c.cdc201af.png"
+    alt="uma logo" class="u-img-fluid" height="170px" width="170px">
+ </a>
  [% IF ( Koha.Preference( 'opacbookbag' ) == 1 ) %]
  <div id="cartDetails" class="cart-message">O seu carrinho está vazio.</div>
  [% END %]

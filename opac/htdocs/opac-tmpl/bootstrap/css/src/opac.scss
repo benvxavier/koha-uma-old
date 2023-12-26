@@ -1,4 +1,9 @@
+// Add by Me
+@use "scss/themes";
+@use "scss/utilities";
+
 @import "common";
+
 
 .no-js {
     .dateformat {
@@ -37,6 +42,7 @@
 }
 
 .js {
+
     .dateformat,
     #sortsubmit,
     #sorting-form,
@@ -71,6 +77,7 @@
 }
 
 a {
+
     &:link,
     &:visited {
         &.cartRemove {
@@ -179,7 +186,7 @@ td {
     }
 
     &.bookcover {
-        background: #FFF url( "../images/spinner-small.gif" ) center center no-repeat;
+        background: #FFF url("../images/spinner-small.gif") center center no-repeat;
         min-width: 120px;
         text-align: center;
     }
@@ -232,6 +239,7 @@ th {
 }
 
 #advsearch {
+
     input,
     select {
         max-width: 100%;
@@ -321,7 +329,7 @@ th {
     padding: 0;
 
     span {
-        @include border-radius-all( 3px );
+        @include border-radius-all(3px);
 
         background-color: $base-theme-color;
         color: #FFF;
@@ -345,6 +353,7 @@ th {
     }
 
     a {
+
         &:link,
         &:visited,
         &:hover,
@@ -478,12 +487,12 @@ th {
 
 .fa {
     &.fa-rss {
-        background: rgb( 240, 109, 52 ) none;
+        background: rgb(240, 109, 52) none;
         border-radius: 3px;
         color: #FFF;
         margin: 0 2px;
         padding: 2px 4px;
-        text-shadow: 1px 0 1px rgba( 0, 0, 0, .25 );
+        text-shadow: 1px 0 1px rgba(0, 0, 0, .25);
 
         &.rsssearchicon {
             font-size: 70%;
@@ -492,7 +501,7 @@ th {
 }
 
 .form-control-filtered {
-    background-image: url( "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-funnel-fill'%3E%3Cpath d='M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2z' fill='%23acacac'/%3E%3C/svg%3E" );
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-funnel-fill'%3E%3Cpath d='M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2z' fill='%23acacac'/%3E%3C/svg%3E");
     background-position-x: 6px;
     background-position-y: center;
     background-repeat: no-repeat;
@@ -511,9 +520,10 @@ th {
 .actions,
 .toolbar,
 #action {
+
     a,
     button {
-        color: darken( $links, 5% );
+        color: darken($links, 5%);
 
         &:hover {
             i {
@@ -589,7 +599,7 @@ th {
     .btn-link {
         &.dropdown-toggle {
             background-image: none;
-            box-shadow: inset 0 0 0 1px rgba( 0, 0, 0, .25 );
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .25);
         }
     }
 }
@@ -603,14 +613,14 @@ th {
     padding: 5px 10px;
 
     a {
-        color: darken( $links, 5% );
+        color: darken($links, 5%);
     }
 }
 
 .breadcrumb-item {
-    + .breadcrumb-item {
+    +.breadcrumb-item {
         &::before {
-            background: transparent url( "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' %3E%3Cpath fill-rule='evenodd' d='M7.37 0l5.35 7.3c.2.2.2.51 0 .7l-5.38 8h-4.2l5.64-8.35L3.13.01z'/%3E%3C/svg%3E" ) 50% 50% no-repeat;
+            background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' %3E%3Cpath fill-rule='evenodd' d='M7.37 0l5.35 7.3c.2.2.2.51 0 .7l-5.38 8h-4.2l5.64-8.35L3.13.01z'/%3E%3C/svg%3E") 50% 50% no-repeat;
             background-size: 8px;
             content: "";
             display: inline-block;
@@ -621,6 +631,7 @@ th {
     }
 
     &.active {
+
         a:link,
         a:visited,
         a:hover,
@@ -649,12 +660,12 @@ th {
     flex-grow: 2;
 }
 
-.table-striped tbody > tr:nth-child( odd ) > td,
-.table-striped tbody > tr:nth-child( odd ) > th {
+.table-striped tbody>tr:nth-child(odd)>td,
+.table-striped tbody>tr:nth-child(odd)>th {
     background-color: #F0F3F3;
 
     a {
-        color: darken( $links, 5% );
+        color: darken($links, 5%);
 
         &.btn {
             color: #FFF;
@@ -671,7 +682,7 @@ th {
 
     button {
         &.btn-link {
-            color: darken( $links, 5% );
+            color: darken($links, 5%);
         }
     }
 }
@@ -699,7 +710,7 @@ th {
 }
 
 .no-image {
-    @include border-radius-all( 3px );
+    @include border-radius-all(3px);
 
     background-color: #FFF;
     border: 1px solid #AAA;
@@ -737,7 +748,7 @@ th {
 }
 
 .cover-slider {
-    background: #FFF url( "../images/spinner-small.gif" ) center center no-repeat;
+    background: #FFF url("../images/spinner-small.gif") center center no-repeat;
 
     .hint {
         font-size: 80%;
@@ -746,6 +757,7 @@ th {
 
     a {
         &.nav-active {
+
             &:link,
             &:visited {
                 color: #85CA11;
@@ -794,7 +806,7 @@ div {
         padding: 0;
         width: 100%;
 
-        + div.rows {
+        +div.rows {
             margin-top: .6em;
         }
 
@@ -866,7 +878,7 @@ div {
     display: inline-block;
     font-weight: bold;
     padding: 2px 4px;
-    text-shadow: 0 -1px 0 rgba( 0, 0, 0, .25 );
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
 }
 
 .label-important {
@@ -1147,7 +1159,7 @@ fieldset {
 }
 
 .selections-toolbar {
-    background: linear-gradient( #B2B2B2 0%, #E0E0E0 14%, #E8E8E8 100% );
+    background: linear-gradient(#B2B2B2 0%, #E0E0E0 14%, #E8E8E8 100%);
     border-bottom: none;
     display: flex;
     margin: 0;
@@ -1156,7 +1168,7 @@ fieldset {
     padding-top: .5em;
     flex-wrap: wrap;
 
-    > div:first-child::before {
+    >div:first-child::before {
         content: "";
         padding: 0;
     }
@@ -1491,7 +1503,7 @@ nav {
     }
 
     a {
-        color: darken( $links, 5% );
+        color: darken($links, 5%);
         font-weight: bold;
         text-align: left;
         text-decoration: none;
@@ -1608,6 +1620,7 @@ nav {
 }
 
 #marc {
+
     td,
     th {
         background-color: transparent;
@@ -1736,7 +1749,7 @@ nav {
 }
 
 #didyoumean {
-    @include border-radius-all( 3px );
+    @include border-radius-all(3px);
 
     background-color: #EEE;
     border: 1px solid #E8E8E8;
@@ -1790,9 +1803,9 @@ nav {
 
 #cartDetails {
     background-color: #FFF;
-    border: 1px solid rgba( 0, 0, 0, .2 );
+    border: 1px solid rgba(0, 0, 0, .2);
     border-radius: 6px;
-    box-shadow: 0 5px 10px rgba( 0, 0, 0, .2 );
+    box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
     color: #000;
     display: none;
     font-size: 90%;
@@ -1897,7 +1910,7 @@ nav {
             background-color: #F0F3F3;
             border: 1px solid #D8D8D8;
             border-bottom-width: 0;
-            color: darken( $links, 5% );
+            color: darken($links, 5%);
             display: block;
             margin: 0;
             padding: .4em .6em;
@@ -1924,17 +1937,17 @@ nav {
     }
 
     .commentline {
-        @include border-radius-all( 3px );
+        @include border-radius-all(3px);
         @include shadowed;
 
-        background-color: rgba( 255, 255, 204, .4 );
+        background-color: rgba(255, 255, 204, .4);
         border: 1px solid #CCC;
         display: inline-block;
         margin: .3em;
         padding: .4em;
 
         .yours {
-            background-color: rgba( 239, 254, 213, .4 );
+            background-color: rgba(239, 254, 213, .4);
         }
     }
 
@@ -2035,7 +2048,7 @@ nav {
 }
 
 .hold-message {
-    @include border-radius-all( 3px );
+    @include border-radius-all(3px);
 
     background-color: #FFF0B1;
     display: inline-block;
@@ -2110,6 +2123,7 @@ nav {
 }
 
 .btn-group {
+
     label,
     select {
         font-size: 13px;
@@ -2185,7 +2199,7 @@ nav {
 
 /* Class to be added to toolbar when it starts being fixed at the top of the screen */
 .floating {
-    box-shadow: 0 3px 2px 0 rgba( 0, 0, 0, .4 );
+    box-shadow: 0 3px 2px 0 rgba(0, 0, 0, .4);
     margin-top: 0;
     z-index: 5;
 }
@@ -2216,7 +2230,7 @@ nav {
 .table-bordered {
     border-radius: 0;
 
-    thead:first-child tr:first-child > th {
+    thead:first-child tr:first-child>th {
         &:last-child {
             border-radius: 0;
         }
@@ -2226,7 +2240,7 @@ nav {
         }
     }
 
-    tbody:last-child tr:last-child > td {
+    tbody:last-child tr:last-child>td {
         &:last-child {
             border-radius: 0;
         }
@@ -2338,7 +2352,7 @@ nav {
 
     #browser_previous {
         a {
-            transform: rotate( -90deg );
+            transform: rotate(-90deg);
             white-space: nowrap;
 
             i {
@@ -2349,7 +2363,7 @@ nav {
 
     #browser_next {
         a {
-            transform: rotate( 90deg );
+            transform: rotate(90deg);
             white-space: nowrap;
 
             i {
@@ -2357,9 +2371,9 @@ nav {
             }
         }
     }
-}#log
+}
 
-#holds {
+#log #holds {
     margin: 0 auto;
     max-width: 800px;
 }
@@ -2444,6 +2458,7 @@ nav {
 }
 
 .modal-nojs {
+
     .modal-header,
     .modal-footer {
         display: none;
@@ -2473,7 +2488,7 @@ nav {
     line-height: 135%;
     margin-left: 2em;
 
-    :first-child:not( .term )::before {
+    :first-child:not(.term)::before {
         content: "→ ";
     }
 }
@@ -2493,7 +2508,7 @@ nav {
 
         &:focus {
             border-color: #C00;
-            box-shadow: inset 0 1px 1px rgba( 0, 0, 0, .075 ), 0 0 8px rgba( 204, 0, 0, .6 );
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(204, 0, 0, .6);
             outline: 0 none;
         }
 
@@ -2527,7 +2542,7 @@ nav {
         #search-summary {
             position: absolute;
             top: 50%;
-            transform: translateY( -50% );
+            transform: translateY(-50%);
         }
     }
 
@@ -2561,16 +2576,16 @@ nav {
         padding: 5px;
         width: 100%;
 
-        &:nth-of-type( even ) {
+        &:nth-of-type(even) {
             background-color: #F2F2F2;
         }
 
-        &:nth-of-type( odd ) {
+        &:nth-of-type(odd) {
             background-color: #FFFFFF;
         }
     }
 
-    #ill-supplier-metadata > div > span {
+    #ill-supplier-metadata>div>span {
         display: flex;
         flex-basis: 0;
         flex-flow: row nowrap;
@@ -2615,10 +2630,10 @@ nav {
     min-width: 1.5em;
     padding: .2em;
     text-align: center;
-    text-shadow: 0 -1px 0 rgba( 0, 0, 0, .25 );
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
 
     &:hover {
-        background-color: lighten( $base, 20% );
+        background-color: lighten($base, 20%);
     }
 }
 
@@ -2627,7 +2642,7 @@ nav {
     background-color: #990000;
 
     &:hover {
-        background-color: lighten( #990000, 10% );
+        background-color: lighten(#990000, 10%);
     }
 }
 
@@ -2635,7 +2650,7 @@ nav {
     background-color: #538200;
 
     &:hover {
-        background-color: lighten( #538200, 10% );
+        background-color: lighten(#538200, 10%);
     }
 }
 
@@ -2819,7 +2834,7 @@ $star-selected: #EDB867;
     padding: 6px 12px;
     position: absolute;
     text-decoration: none;
-    text-shadow: 0 -1px 0 rgba( 58, 0, 0, .75 );
+    text-shadow: 0 -1px 0 rgba(58, 0, 0, .75);
     top: -40px;
     transition: top .5s ease-out;
     z-index: 100;
@@ -2841,11 +2856,16 @@ $star-selected: #EDB867;
             display: block;
             padding: .75rem 1.25rem;
 
-            &[aria-expanded="true"] { font-weight: bold; }
-            &[aria-expanded="false"] { font-weight: normal; }
+            &[aria-expanded="true"] {
+                font-weight: bold;
+            }
+
+            &[aria-expanded="false"] {
+                font-weight: normal;
+            }
 
             &:hover {
-                background-color: rgba( 255, 255, 204, .8 );
+                background-color: rgba(255, 255, 204, .8);
                 text-decoration: none;
             }
         }
@@ -2865,7 +2885,7 @@ $star-selected: #EDB867;
 #openid_connect {
     background-color: #FFF;
     border: 1px solid #AAA;
-    box-shadow: 0 1px 1px 0 rgba( 0, 0, 0, .2 );
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .2);
     margin: .5em 0;
 
     i {

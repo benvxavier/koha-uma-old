@@ -2,7 +2,7 @@
 [% USE To %]
 [% USE Asset %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>[% IF ( authid ) %]Modificar autoridade #[% authid | html %] ([% authtypetext | html %])[% ELSE %]Adicionar autoridade [% authtypetext | html %][% END %] &rsaquo; Autoridades &rsaquo; Koha</title>
+<title>[% IF ( authid ) %]Modificar autoridade #[% authid | html %] ([% authtypetext | html %])[% ELSE %]Adicionar autoridade [% authtypetext | html %][% END %] &rsaquo; Autoridades &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 [% Asset.js("lib/hc-sticky.js") | $raw %]
 <script>

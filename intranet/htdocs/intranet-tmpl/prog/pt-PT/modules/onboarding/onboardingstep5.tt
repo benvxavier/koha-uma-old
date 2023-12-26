@@ -1,6 +1,6 @@
 [% INCLUDE 'doc-head-open.inc' %]
 <title>
- [% IF all_done %] Completo [% ELSE %] Criar regra de circulação [% END %] &rsaquo; Instalador Web &rsaquo; Koha </title>
+ [% IF all_done %] Completo [% ELSE %] Criar regra de circulação [% END %] &rsaquo; Instalador Web &rsaquo; Biblioteca </title>
 [% INCLUDE 'installer-doc-head-close.inc' %]
 </head>
 
@@ -8,7 +8,7 @@
  <div class="container-fluid">
  <div class="row">
  <div id="onboarding-step5" class="installer-main col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2">
- <div id="logo"><a href="#">Koha</a></div>
+ <div id="logo"><a href="#">Biblioteca</a></div>
 
  [% IF all_done %]
 
