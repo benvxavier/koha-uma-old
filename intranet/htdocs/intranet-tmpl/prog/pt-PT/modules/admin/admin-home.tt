@@ -22,7 +22,7 @@
 <div class="main container-fluid">
  <div class="row">
  <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
- <h1>Administração do Koha</h1>
+ <h1>Administração da Biblioteca</h1>
  [% IF ( CAN_user_parameters_manage_mana ) %]
  [% IF ( Koha.Preference('Mana') == 1) && !mana_url %]
  <div class="dialog message">
@@ -43,9 +43,9 @@
  [% IF ( CAN_user_parameters_manage_usage_stats ) %]
  [% IF ( Koha.Preference('UsageStats') == 2 ) %]
  <div class="dialog message">
- <h4>Partilhar de forma anónima as estatísticas de uso com a comunidade do Koha?</h4>
- <p> Ainda não decidiu se deseja activar a partilha das estatísticas de uso no Koha. <a href=/cgi-bin/koha/admin/usage_statistics.pl>Alterar as configurações HEA</a>.</p>
- <p> Esta funcionalidade fornece aos programadores do Koha informação valiosa sobre como o Koha deve ser usado e ajuda a tomar decisões no círculo de desenvolvimento</p>
+ <h4>Partilhar de forma anónima as estatísticas de uso com a comunidade da Biblioteca?</h4>
+ <p> Ainda não decidiu se deseja activar a partilha das estatísticas de uso no Biblioteca. <a href=/cgi-bin/koha/admin/usage_statistics.pl>Alterar as configurações HEA</a>.</p>
+ <p> Esta funcionalidade fornece aos programadores da Biblioteca informação valiosa sobre como o sistema da biblioteca deve ser usado e ajuda a tomar decisões no círculo de desenvolvimento</p>
  </div>
  [% END %]
  [% END %]

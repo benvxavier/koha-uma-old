@@ -183,7 +183,7 @@ legend:hover {
  [% SWITCH field %]
  [% CASE 'identity' %] <span>Identidade do leitor</span> |
  [% CASE 'guarantor' %] <span>Informação do fiador</span> |
- [% CASE 'primary_address' %] <span>Endereço</span> |
+ [% CASE 'primary_address' %] <span>Endereço principal</span> |
  [% CASE 'primary_contact' %] <span>Informações do contacto</span> |
  [% CASE 'alt_address' %] <span>Endereço alternativo</span> |
  
@@ -432,6 +432,7 @@ legend:hover {
  </ol>
  </fieldset> <!-- /#memberentry_identity -->
  [% END # hide fieldset %]
+
 
  [% IF show_guarantor || guarantor %]
  [% SET possible_relationships = Koha.Preference('borrowerRelationship') %]

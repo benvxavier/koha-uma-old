@@ -5,7 +5,7 @@
 [% USE HtmlId %]
 [% SET footerjs = 1 %]
 [% INCLUDE 'doc-head-open.inc' %]
-<title>Preferências do sistema &rsaquo; Administração &rsaquo; Koha</title>
+<title>Preferências do sistema &rsaquo; Administração &rsaquo; Biblioteca</title>
 [% INCLUDE 'doc-head-close.inc' %]
 [% Asset.css("lib/jquery/plugins/multiple-select/multiple-select.min.css") | $raw %]
 [% Asset.css("css/preferences.css") | $raw %]
@@ -267,7 +267,7 @@
                 });
             [% END %]
             $("select[multiple='multiple']").multipleSelect( {
-                placeholder: _("Por favor, selecione ..."),
+                placeholder: _("Po>r favor, selecione ..."),
                 selectAllText: _("Seleccionar todos"),
                 allSelected: _("Tudo selecionado"),
                 countSelected: _("# de % selecionados"),
